@@ -109,12 +109,65 @@ class ControlsOverlay extends StatelessWidget {
   }
 
   Widget _buildTargetColorDisplay(BuildContext context) {
+    final currentLevel = game.levelManager.currentLevel;
+
     return ValueListenableBuilder<double>(
       valueListenable: game.matchPercentage,
       builder: (context, matchValue, child) {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // Level info header
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.white.withOpacity(0.2),
+                    Colors.white.withOpacity(0.1),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.3),
+                  width: 1.5,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Level number
+                  Text(
+                    "Level ${currentLevel.id}",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: displayHeight(context) * 0.02,
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.none,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  // Difficulty stars
+                  ...List.generate(
+                    currentLevel.difficultyStars,
+                    (index) => Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                      size: 16,
+                      shadows: [
+                        Shadow(
+                          color: Colors.amber.withOpacity(0.5),
+                          blurRadius: 4,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 15),
+
             // Circular progress indicator around target color
             SizedBox(
               width: displayWidth(context) * 0.28,
@@ -179,6 +232,111 @@ class ControlsOverlay extends StatelessWidget {
                 ],
               ),
             ),
+
+            const SizedBox(height: 10),
+
+            // Drops counter
+            ValueListenableBuilder<int>(
+              valueListenable: game.totalDrops,
+              builder: (context, drops, child) {
+                final remaining = game.maxDrops - drops;
+                final isLow = remaining <= 2;
+
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isLow
+                        ? Colors.red.withOpacity(0.3)
+                        : Colors.white.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(
+                      color: isLow
+                          ? Colors.red.withOpacity(0.6)
+                          : Colors.white.withOpacity(0.3),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.water_drop,
+                        color: isLow ? Colors.red.shade200 : Colors.white,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        "$drops / ${game.maxDrops}",
+                        style: TextStyle(
+                          color: isLow ? Colors.red.shade100 : Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.none,
+                        ),
+                      ),
+                      if (isLow) ...[
+                        const SizedBox(width: 8),
+                        Icon(
+                          Icons.warning_rounded,
+                          color: Colors.red.shade200,
+                          size: 18,
+                        ),
+                      ],
+                    ],
+                  ),
+                );
+              },
+            ),
+
+            // Hint display (if available)
+            if (currentLevel.hint.isNotEmpty) ...[
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                constraints: BoxConstraints(
+                  maxWidth: displayWidth(context) * 0.7,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Colors.blue.withOpacity(0.4),
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.lightbulb_outline,
+                      color: Colors.yellow.shade200,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        currentLevel.hint,
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.9),
+                          fontSize: 12,
+                          decoration: TextDecoration.none,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ],
         );
       },

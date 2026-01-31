@@ -1,12 +1,9 @@
-import 'dart:math';
-
 import 'package:color_mixing_deductive/components/ambient_particles.dart';
 import 'package:color_mixing_deductive/components/background_gradient.dart';
 import 'package:color_mixing_deductive/components/beaker.dart';
 import 'package:color_mixing_deductive/components/particles.dart';
 import 'package:color_mixing_deductive/core/color_logic.dart';
 import 'package:color_mixing_deductive/core/level_manager.dart';
-import 'package:color_mixing_deductive/core/level_model.dart';
 import 'package:flame/game.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
@@ -16,11 +13,12 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   late Color targetColor;
   bool _hasWon = false;
   int rDrops = 0, gDrops = 0, bDrops = 0;
-  final int maxDrops = 20;
+  int maxDrops = 20; // Will be updated per level
   final LevelManager levelManager = LevelManager();
 
   final ValueNotifier<double> matchPercentage = ValueNotifier<double>(0.0);
   final ValueNotifier<int> totalDrops = ValueNotifier<int>(0);
+  final ValueNotifier<bool> dropsLimitReached = ValueNotifier<bool>(false);
 
   late BackgroundGradient backgroundGradient;
   late AmbientParticles ambientParticles;
@@ -37,10 +35,9 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     ambientParticles = AmbientParticles();
     add(ambientParticles);
 
-    startLevel();
     // await FlameAudio.audioCache.loadAll(['drop.mp3', 'win.mp3', 'reset.mp3']);
 
-    targetColor = _generateRandomTarget();
+    startLevel();
 
     beaker = Beaker(position: size / 2, size: Vector2(180, 250));
     add(beaker);
@@ -94,7 +91,6 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     gDrops = 0;
     bDrops = 0;
     _hasWon = false;
-    targetColor = _generateRandomTarget();
     beaker.currentColor = Colors.white.withValues(alpha: .3);
     beaker.liquidLevel = 0.1;
 
@@ -102,42 +98,43 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     // Reset mixing state as well
     totalDrops.value = 0;
     matchPercentage.value = 0.0;
-  }
 
-  Color _generateRandomTarget() {
-    final random = Random();
-    // توليد لون بمزيج عشوائي من الأحمر والأخضر والأزرق
-    return Color.fromARGB(
-      255,
-      random.nextInt(256),
-      random.nextInt(256),
-      random.nextInt(256),
-    );
+    // Start the same level again
+    startLevel();
   }
 
   void addDrop(String colorType) {
     FlameAudio.play('drop.mp3', volume: 0.5);
 
+    // Check if max drops reached
     if (rDrops + gDrops + bDrops >= maxDrops) {
-      return; // الحد الأقصى لعدد القطرات
+      dropsLimitReached.value = true;
+      return;
     }
 
     if (colorType == 'red') rDrops++;
     if (colorType == 'green') gDrops++;
     if (colorType == 'blue') bDrops++;
 
-    // 1. حساب اللون الجديد بناءً على النقاط
+    // Calculate new color based on drops
     Color newColor = ColorLogic.createMixedColor(rDrops, gDrops, bDrops);
 
-    // 2. حساب المستوى (كمية السائل بالنسبة للمجموع الكلي)
+    // Calculate level (liquid amount relative to max)
     double level = (rDrops + gDrops + bDrops) / maxDrops;
 
-    // 3. تحديث الشكل البصري في الـ Beaker
+    // Update beaker visuals
     beaker.updateVisuals(newColor, level);
 
-    // تحديث المراقبين (هذا ما سيجعل الـ UI يتحدث فوراً)
+    // Update observers for UI
     totalDrops.value = rDrops + gDrops + bDrops;
     matchPercentage.value = ColorLogic.checkMatch(newColor, targetColor);
+
+    // Check if approaching limit
+    if (totalDrops.value >= maxDrops - 2) {
+      dropsLimitReached.value = true;
+    } else {
+      dropsLimitReached.value = false;
+    }
   }
 
   void resetMixing() {
@@ -147,39 +144,31 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     bDrops = 0;
     totalDrops.value = 0;
     matchPercentage.value = 0.0;
+    dropsLimitReached.value = false;
     beaker.clearContents();
-    // تحديث الـ UI (لو في حاجة محتاجة تتصفر في الـ Overlay)
-    // النسبة هترجع تلقائياً للصفر أو للقيمة البدائية
-    // notifyListeners();
   }
 
   void startLevel() {
     final level = levelManager.currentLevel;
 
-    // توليد لون هدف بناءً على صعوبة الليفل
-    targetColor = _generateTargetForLevel(level);
+    // Use the pre-defined target color from the level
+    targetColor = level.targetColor;
+
+    // Update max drops from level
+    maxDrops = level.maxDrops;
 
     rDrops = 0;
     gDrops = 0;
     bDrops = 0;
     totalDrops.value = 0;
     matchPercentage.value = 0.0;
+    dropsLimitReached.value = false;
+    _hasWon = false;
 
     if (isLoaded) {
       beaker.clearContents();
     }
     notifyListeners();
-  }
-
-  // دالة ذكية لتوليد لون هدف بناءً على الصعوبة
-  Color _generateTargetForLevel(LevelModel level) {
-    // لو ليفل سهل، بنخلط لونين بس، لو صعب بنخلط التلاتة بنسب معقدة
-    // (ممكن نستخدم الـ difficultyFactor هنا لتقليل العشوائية)
-    return ColorLogic.createMixedColor(
-      Random().nextInt(5),
-      Random().nextInt(5),
-      level.availableColors.contains(Colors.blue) ? Random().nextInt(5) : 0,
-    );
   }
 
   void goToNextLevel() {
