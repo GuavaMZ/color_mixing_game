@@ -9,6 +9,7 @@ mixin AppStrings {
   static const String targetColorText = "Target Color";
   static const String reset = "ResetText";
   static const String newLevel = "NewLevelText";
+  static const String colorText = "ColorText";
 
   static const Map<String, dynamic> En = {
     'welcome_message': 'Welcome to our application!',
@@ -24,6 +25,7 @@ mixin AppStrings {
     targetColorText: 'Target Color',
     reset: 'Reset',
     newLevel: 'New Level',
+    colorText: 'Color',
   };
 
   static const Map<String, dynamic> Ar = {
@@ -40,5 +42,6 @@ mixin AppStrings {
     targetColorText: 'لون الهدف',
     reset: 'إعادة تعيين',
     newLevel: 'مرحلة جديدة',
+    colorText: 'لون',
   };
 }

@@ -25,44 +25,122 @@ class Beaker extends PositionComponent {
   void render(Canvas canvas) {
     super.render(canvas);
 
+    final glassRect = size.toRect();
+    final rrect = RRect.fromRectAndRadius(glassRect, const Radius.circular(15));
+
+    // 1. Draw shadow for depth
+    final shadowPaint = Paint()
+      ..color = Colors.black.withOpacity(0.2)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
+    canvas.drawRRect(rrect.shift(const Offset(0, 5)), shadowPaint);
+
+    // 2. Draw liquid with gradient if level > 0
     if (liquidLevel > 0) {
-      // 1. رسم السائل بحواف ناعمة
-      final liquidRect = Rect.fromLTWH(
-        0,
-        size.y * (1 - liquidLevel), // الارتفاع يتحدد بناءً على المستوى
-        size.x,
-        size.y * liquidLevel,
+      final liquidHeight = size.y * liquidLevel;
+      final liquidTop = size.y * (1 - liquidLevel);
+
+      // Create gradient for liquid depth effect
+      final liquidGradient = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          currentColor.withOpacity(0.7),
+          currentColor,
+          currentColor.withOpacity(0.9),
+        ],
+        stops: const [0.0, 0.5, 1.0],
       );
 
-      // 1. رسم السائل اللي جوه الوعاء
       final liquidPaint = Paint()
-        ..color = currentColor
+        ..shader = liquidGradient.createShader(
+          Rect.fromLTWH(0, liquidTop, size.x, liquidHeight),
+        );
+
+      // Draw liquid with rounded bottom corners
+      final liquidPath = Path()
+        ..moveTo(0, liquidTop)
+        ..lineTo(0, size.y - 15)
+        ..quadraticBezierTo(0, size.y, 15, size.y)
+        ..lineTo(size.x - 15, size.y)
+        ..quadraticBezierTo(size.x, size.y, size.x, size.y - 15)
+        ..lineTo(size.x, liquidTop)
+        ..close();
+
+      canvas.drawPath(liquidPath, liquidPaint);
+
+      // Add shimmer effect on liquid surface
+      final shimmerPaint = Paint()
+        ..color = Colors.white.withOpacity(0.3)
         ..style = PaintingStyle.fill;
 
-      // رسم السائل (مع إضافة زوايا دائرية بسيطة من الأسفل)
+      final shimmerRect = Rect.fromLTWH(
+        size.x * 0.1,
+        liquidTop,
+        size.x * 0.8,
+        3,
+      );
       canvas.drawRRect(
-        RRect.fromRectAndCorners(
-          liquidRect,
-          bottomLeft: Radius.circular(10),
-          bottomRight: Radius.circular(10),
-        ),
-        liquidPaint,
+        RRect.fromRectAndRadius(shimmerRect, const Radius.circular(2)),
+        shimmerPaint,
       );
     }
 
-    // 2. رسم حدود الوعاء (الزجاج)
-    final glassPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.8)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 5;
-
-    final glassRect = size.toRect();
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(glassRect, const Radius.circular(10)),
-      glassPaint,
+    // 3. Draw glass container with gradient
+    final glassGradient = LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [
+        Colors.white.withOpacity(0.4),
+        Colors.white.withOpacity(0.1),
+        Colors.white.withOpacity(0.2),
+      ],
     );
 
-    canvas.drawRect(size.toRect(), glassPaint);
+    final glassFillPaint = Paint()
+      ..shader = glassGradient.createShader(glassRect)
+      ..style = PaintingStyle.fill;
+
+    canvas.drawRRect(rrect, glassFillPaint);
+
+    // 4. Draw glass border
+    final glassBorderPaint = Paint()
+      ..color = Colors.white.withOpacity(0.6)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3;
+
+    canvas.drawRRect(rrect, glassBorderPaint);
+
+    // 5. Add highlight reflection on left side
+    final highlightPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomLeft,
+        colors: [Colors.white.withOpacity(0.5), Colors.white.withOpacity(0.0)],
+      ).createShader(Rect.fromLTWH(0, 0, size.x * 0.3, size.y))
+      ..style = PaintingStyle.fill;
+
+    final highlightPath = Path()
+      ..moveTo(15, 0)
+      ..lineTo(size.x * 0.25, 0)
+      ..lineTo(size.x * 0.2, size.y)
+      ..lineTo(15, size.y)
+      ..quadraticBezierTo(0, size.y, 0, size.y - 15)
+      ..lineTo(0, 15)
+      ..quadraticBezierTo(0, 0, 15, 0)
+      ..close();
+
+    canvas.drawPath(highlightPath, highlightPaint);
+
+    // 6. Add inner glow
+    final innerGlowPaint = Paint()
+      ..color = Colors.white.withOpacity(0.1)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
+
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(glassRect.deflate(4), const Radius.circular(12)),
+      innerGlowPaint,
+    );
   }
 
   // ميثود هنستخدمها لما نضغط على الأزرار لاحقاً
