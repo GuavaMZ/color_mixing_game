@@ -6,9 +6,15 @@ import 'package:flutter/material.dart';
 class LevelManager {
   int currentLevelIndex = 0;
   late List<LevelModel> levels;
+  late Map<int, int> levelStars;
 
   LevelManager() {
     levels = _generateLevels();
+    // Initialize stars for ALL levels: 0 = first level unlocked, -1 = locked
+    levelStars = {};
+    for (int i = 0; i < levels.length; i++) {
+      levelStars[i] = i == 0 ? 0 : -1;
+    }
   }
 
   LevelModel get currentLevel => levels[currentLevelIndex];
@@ -25,6 +31,14 @@ class LevelManager {
     currentLevelIndex = 0;
   }
 
+  /// Reset all progress
+  void resetProgress() {
+    for (int i = 0; i < levels.length; i++) {
+      levelStars[i] = i == 0 ? 0 : -1;
+    }
+    currentLevelIndex = 0;
+  }
+
   /// Generate a progressive list of solvable levels
   List<LevelModel> _generateLevels() {
     return [
@@ -37,7 +51,7 @@ class LevelManager {
         availableColors: [Colors.red, Colors.green],
         maxDrops: 8,
         difficulty: 0.1,
-        hint: 'Try using only red drops!',
+        hintKey: 'hint_level_1',
       ),
 
       // Level 2: Pure Green
@@ -47,7 +61,7 @@ class LevelManager {
         availableColors: [Colors.red, Colors.green],
         maxDrops: 8,
         difficulty: 0.15,
-        hint: 'This time, use only green!',
+        hintKey: 'hint_level_2',
       ),
 
       // Level 3: Yellow (Red + Green equally)
@@ -57,7 +71,7 @@ class LevelManager {
         availableColors: [Colors.red, Colors.green],
         maxDrops: 10,
         difficulty: 0.25,
-        hint: 'Mix red and green equally to make yellow!',
+        hintKey: 'hint_level_3',
       ),
 
       // Level 4: Orange (More red than green)
@@ -67,7 +81,7 @@ class LevelManager {
         availableColors: [Colors.red, Colors.green],
         maxDrops: 10,
         difficulty: 0.3,
-        hint: 'Use more red than green for orange!',
+        hintKey: 'hint_level_4',
       ),
 
       // Level 5: Lime (More green than red)
@@ -77,7 +91,7 @@ class LevelManager {
         availableColors: [Colors.red, Colors.green],
         maxDrops: 10,
         difficulty: 0.35,
-        hint: 'Use more green than red!',
+        hintKey: 'hint_level_5',
       ),
 
       // ===== INTERMEDIATE LEVELS (3 colors) =====
@@ -89,7 +103,7 @@ class LevelManager {
         availableColors: [Colors.red, Colors.green, Colors.blue],
         maxDrops: 10,
         difficulty: 0.4,
-        hint: 'Now you have blue! Try using only blue drops.',
+        hintKey: 'hint_level_6',
       ),
 
       // Level 7: Purple (Red + Blue)
@@ -99,7 +113,7 @@ class LevelManager {
         availableColors: [Colors.red, Colors.green, Colors.blue],
         maxDrops: 12,
         difficulty: 0.45,
-        hint: 'Mix red and blue equally for purple!',
+        hintKey: 'hint_level_7',
       ),
 
       // Level 8: Cyan (Green + Blue)
@@ -109,7 +123,7 @@ class LevelManager {
         availableColors: [Colors.red, Colors.green, Colors.blue],
         maxDrops: 12,
         difficulty: 0.5,
-        hint: 'Mix green and blue equally for cyan!',
+        hintKey: 'hint_level_8',
       ),
 
       // Level 9: Pink (More red, less blue)
@@ -119,7 +133,7 @@ class LevelManager {
         availableColors: [Colors.red, Colors.green, Colors.blue],
         maxDrops: 12,
         difficulty: 0.55,
-        hint: 'Use lots of red with just a touch of blue!',
+        hintKey: 'hint_level_9',
       ),
 
       // Level 10: Brown (All three colors, red dominant)
@@ -129,7 +143,7 @@ class LevelManager {
         availableColors: [Colors.red, Colors.green, Colors.blue],
         maxDrops: 15,
         difficulty: 0.6,
-        hint: 'Mix all three colors! More red, medium green, less blue.',
+        hintKey: 'hint_level_10',
       ),
 
       // ===== ADVANCED LEVELS =====
@@ -141,7 +155,7 @@ class LevelManager {
         availableColors: [Colors.red, Colors.green, Colors.blue],
         maxDrops: 12,
         difficulty: 0.65,
-        hint: 'More green than blue, no red!',
+        hintKey: 'hint_level_11',
       ),
 
       // Level 12: Magenta (Red + Blue, red dominant)
@@ -151,7 +165,7 @@ class LevelManager {
         availableColors: [Colors.red, Colors.green, Colors.blue],
         maxDrops: 12,
         difficulty: 0.7,
-        hint: 'More red than blue, skip green!',
+        hintKey: 'hint_level_12',
       ),
 
       // Level 13: Olive (Red + Green, green dominant)
@@ -161,7 +175,7 @@ class LevelManager {
         availableColors: [Colors.red, Colors.green, Colors.blue],
         maxDrops: 12,
         difficulty: 0.72,
-        hint: 'Lots of green with a little red!',
+        hintKey: 'hint_level_13',
       ),
 
       // Level 14: Gray (Equal mix of all three)
@@ -171,7 +185,7 @@ class LevelManager {
         availableColors: [Colors.red, Colors.green, Colors.blue],
         maxDrops: 15,
         difficulty: 0.75,
-        hint: 'Mix all three colors equally!',
+        hintKey: 'hint_level_14',
       ),
 
       // Level 15: Sky Blue (More blue, some green, tiny red)
@@ -181,7 +195,7 @@ class LevelManager {
         availableColors: [Colors.red, Colors.green, Colors.blue],
         maxDrops: 15,
         difficulty: 0.8,
-        hint: 'Lots of blue, medium green, just a touch of red!',
+        hintKey: 'hint_level_15',
       ),
 
       // ===== EXPERT LEVELS =====
@@ -193,7 +207,7 @@ class LevelManager {
         availableColors: [Colors.red, Colors.green, Colors.blue],
         maxDrops: 18,
         difficulty: 0.85,
-        hint: 'Dominant red with equal green and blue!',
+        hintKey: 'hint_level_16',
       ),
 
       // Level 17: Lavender (Subtle purple-pink)
@@ -203,7 +217,7 @@ class LevelManager {
         availableColors: [Colors.red, Colors.green, Colors.blue],
         maxDrops: 18,
         difficulty: 0.88,
-        hint: 'More blue than red, minimal green!',
+        hintKey: 'hint_level_17',
       ),
 
       // Level 18: Peach (Delicate orange)
@@ -213,7 +227,7 @@ class LevelManager {
         availableColors: [Colors.red, Colors.green, Colors.blue],
         maxDrops: 18,
         difficulty: 0.9,
-        hint: 'Lots of red, good amount of green, tiny blue!',
+        hintKey: 'hint_level_18',
       ),
 
       // Level 19: Mint (Subtle cyan-green)
@@ -223,7 +237,7 @@ class LevelManager {
         availableColors: [Colors.red, Colors.green, Colors.blue],
         maxDrops: 18,
         difficulty: 0.93,
-        hint: 'More green than blue, minimal red!',
+        hintKey: 'hint_level_19',
       ),
 
       // Level 20: Burgundy (Deep red-purple) - FINAL CHALLENGE
@@ -233,7 +247,7 @@ class LevelManager {
         availableColors: [Colors.red, Colors.green, Colors.blue],
         maxDrops: 20,
         difficulty: 0.95,
-        hint: 'Master level! Lots of red, some blue, minimal green!',
+        hintKey: 'hint_level_20',
       ),
     ];
   }
@@ -245,7 +259,7 @@ class LevelManager {
     required List<Color> availableColors,
     required int maxDrops,
     required double difficulty,
-    String hint = '',
+    String hintKey = '',
   }) {
     // Calculate the target color from the recipe
     final Color targetColor = ColorLogic.createMixedColor(
@@ -261,8 +275,35 @@ class LevelManager {
       availableColors: availableColors,
       targetColor: targetColor,
       recipe: recipe,
-      hint: hint,
+      hint: _getHintForLevel(id),
     );
+  }
+
+  /// Get localized hint - for now, using English. Can be extended for localization.
+  String _getHintForLevel(int levelId) {
+    const hints = {
+      1: 'Try using only red drops!',
+      2: 'This time, use only green!',
+      3: 'Mix red and green equally to make yellow!',
+      4: 'Use more red than green for orange!',
+      5: 'Use more green than red!',
+      6: 'Now you have blue! Try using only blue drops.',
+      7: 'Mix red and blue equally for purple!',
+      8: 'Mix green and blue equally for cyan!',
+      9: 'Use lots of red with just a touch of blue!',
+      10: 'Mix all three colors! More red, medium green, less blue.',
+      11: 'More green than blue, no red!',
+      12: 'More red than blue, skip green!',
+      13: 'Lots of green with a little red!',
+      14: 'Mix all three colors equally!',
+      15: 'Lots of blue, medium green, just a touch of red!',
+      16: 'Dominant red with equal green and blue!',
+      17: 'More blue than red, minimal green!',
+      18: 'Lots of red, good amount of green, tiny blue!',
+      19: 'More green than blue, minimal red!',
+      20: 'Master level! Lots of red, some blue, minimal green!',
+    };
+    return hints[levelId] ?? '';
   }
 
   /// Get a random level of specific difficulty
@@ -283,9 +324,26 @@ class LevelManager {
     return filteredLevels[Random().nextInt(filteredLevels.length)];
   }
 
+  void unlockNextLevel(int stars) {
+    levelStars[currentLevelIndex] = stars;
+    if (currentLevelIndex < levels.length - 1) {
+      if (levelStars[currentLevelIndex + 1] == -1) {
+        levelStars[currentLevelIndex + 1] = 0;
+      }
+    }
+  }
+
   /// Get total number of levels
   int get totalLevels => levels.length;
 
   /// Get completion percentage
   double get completionPercentage => (currentLevelIndex / totalLevels) * 100;
+
+  /// Get total stars earned
+  int get totalStarsEarned {
+    return levelStars.values.where((s) => s > 0).fold(0, (sum, s) => sum + s);
+  }
+
+  /// Get maximum possible stars
+  int get maxPossibleStars => levels.length * 3;
 }

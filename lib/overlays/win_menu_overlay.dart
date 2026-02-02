@@ -1,7 +1,8 @@
 import 'dart:ui';
 import 'package:color_mixing_deductive/color_mixer_game.dart';
-import 'package:color_mixing_deductive/helpers/sizehelper.dart';
 import 'package:color_mixing_deductive/helpers/string_manager.dart';
+import 'package:color_mixing_deductive/helpers/theme_constants.dart';
+import 'package:color_mixing_deductive/helpers/audio_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 
@@ -14,16 +15,23 @@ class WinMenuOverlay extends StatefulWidget {
 }
 
 class _WinMenuOverlayState extends State<WinMenuOverlay>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late AnimationController _controller;
+  late AnimationController _starsController;
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
+  final AudioManager _audio = AudioManager();
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(
       duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+
+    _starsController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
 
@@ -35,211 +43,287 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
     _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
 
     _controller.forward();
+
+    // Delay star animation
+    Future.delayed(const Duration(milliseconds: 400), () {
+      if (mounted) _starsController.forward();
+    });
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _starsController.dispose();
     super.dispose();
+  }
+
+  String _getResultMessage(int stars, BuildContext context) {
+    if (stars == 3) return AppStrings.perfectScore.getString(context);
+    if (stars == 2) return AppStrings.greatJob.getString(context);
+    return AppStrings.goodWork.getString(context);
   }
 
   @override
   Widget build(BuildContext context) {
-    int stars = widget.game.calculateStars();
+    final stars = widget.game.calculateStars();
+    final drops = widget.game.totalDrops.value;
 
     return FadeTransition(
       opacity: _fadeAnimation,
       child: Container(
-        color: Colors.black.withOpacity(0.5),
+        color: Colors.black.withOpacity(0.6),
         child: Center(
           child: ScaleTransition(
             scale: _scaleAnimation,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(30),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 30),
-                  padding: const EdgeInsets.all(35),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Colors.white.withOpacity(0.25),
-                        Colors.white.withOpacity(0.15),
+            child: Container(
+              margin: EdgeInsets.symmetric(
+                horizontal: ResponsiveHelper.spacing(context, 24),
+              ),
+              constraints: BoxConstraints(
+                maxWidth: ResponsiveHelper.responsive(
+                  context,
+                  mobile: 340.0,
+                  tablet: 420.0,
+                  desktop: 480.0,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(30),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                  child: Container(
+                    padding: EdgeInsets.all(
+                      ResponsiveHelper.spacing(context, 32),
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.white.withOpacity(0.25),
+                          Colors.white.withOpacity(0.1),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(30),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.3),
+                        width: 2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3),
+                          blurRadius: 30,
+                          spreadRadius: 5,
+                        ),
                       ],
                     ),
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.3),
-                      width: 2,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
-                        blurRadius: 30,
-                        spreadRadius: 5,
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Trophy icon
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: RadialGradient(
-                            colors: [
-                              Colors.amber.withOpacity(0.3),
-                              Colors.amber.withOpacity(0.1),
-                            ],
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Trophy icon with glow
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: RadialGradient(
+                              colors: [
+                                Colors.amber.withOpacity(0.4),
+                                Colors.amber.withOpacity(0.1),
+                                Colors.transparent,
+                              ],
+                              stops: const [0.0, 0.6, 1.0],
+                            ),
                           ),
-                        ),
-                        child: Icon(
-                          Icons.emoji_events,
-                          color: Colors.amber,
-                          size: displayHeight(context) * 0.1,
-                          shadows: [
-                            Shadow(
-                              color: Colors.amber.withOpacity(0.5),
-                              blurRadius: 20,
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // Win text
-                      Text(
-                        AppStrings.wonText.getString(context),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: displayHeight(context) * 0.04,
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.none,
-                          letterSpacing: 1.5,
-                          shadows: [
-                            Shadow(
-                              blurRadius: 15,
-                              color: Colors.amber.withOpacity(0.6),
-                              offset: const Offset(0, 0),
-                            ),
-                            Shadow(
-                              blurRadius: 8,
-                              color: Colors.black.withOpacity(0.5),
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 15),
-
-                      // Stars display
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: List.generate(3, (index) {
-                          return TweenAnimationBuilder<double>(
-                            duration: Duration(
-                              milliseconds: 300 + (index * 150),
-                            ),
-                            tween: Tween(begin: 0.0, end: 1.0),
+                          child: TweenAnimationBuilder<double>(
+                            duration: const Duration(milliseconds: 800),
+                            tween: Tween(begin: 0.5, end: 1.0),
+                            curve: Curves.elasticOut,
                             builder: (context, value, child) {
                               return Transform.scale(
                                 scale: value,
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 5,
-                                  ),
-                                  child: Icon(
-                                    index < stars
-                                        ? Icons.star
-                                        : Icons.star_border,
-                                    color: index < stars
-                                        ? Colors.amber
-                                        : Colors.white.withOpacity(0.3),
-                                    size: 55,
-                                    shadows: index < stars
-                                        ? [
-                                            Shadow(
-                                              color: Colors.amber.withOpacity(
-                                                0.6,
-                                              ),
-                                              blurRadius: 10,
-                                            ),
-                                          ]
-                                        : [],
-                                  ),
+                                child: Icon(
+                                  Icons.emoji_events_rounded,
+                                  color: Colors.amber,
+                                  size: ResponsiveHelper.iconSize(context, 80),
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.amber.withOpacity(0.6),
+                                      blurRadius: 25,
+                                    ),
+                                  ],
                                 ),
                               );
                             },
-                          );
-                        }),
-                      ),
-
-                      const SizedBox(height: 15),
-
-                      // Genius text
-                      Text(
-                        AppStrings.urGeniusText.getString(context),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.9),
-                          fontSize: displayHeight(context) * 0.02,
-                          decoration: TextDecoration.none,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-
-                      const SizedBox(height: 10),
-
-                      // Stats
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(15),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.2),
                           ),
                         ),
-                        child: Text(
-                          "Drops used: ${widget.game.totalDrops.value}",
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
-                            fontSize: 16,
-                            decoration: TextDecoration.none,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
 
-                      const SizedBox(height: 30),
+                        SizedBox(height: ResponsiveHelper.spacing(context, 16)),
 
-                      // Buttons
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // Next Level button
-                          _buildButton(
-                            context: context,
-                            label: AppStrings.newLevel.getString(context),
-                            icon: Icons.arrow_forward_rounded,
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+                        // Win text
+                        ShaderMask(
+                          shaderCallback: (bounds) => const LinearGradient(
+                            colors: [
+                              Color(0xFFFFD700),
+                              Color(0xFFFFA500),
+                              Color(0xFFFFD700),
+                            ],
+                          ).createShader(bounds),
+                          child: Text(
+                            AppStrings.wonText.getString(context),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: ResponsiveHelper.fontSize(context, 36),
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.none,
+                              letterSpacing: 2,
                             ),
-                            onTap: () => widget.game.goToNextLevel(),
                           ),
-                        ],
-                      ),
-                    ],
+                        ),
+
+                        SizedBox(height: ResponsiveHelper.spacing(context, 20)),
+
+                        // Animated Stars
+                        AnimatedBuilder(
+                          animation: _starsController,
+                          builder: (context, child) {
+                            return Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: List.generate(3, (index) {
+                                final delay = index * 0.2;
+                                final progress =
+                                    ((_starsController.value - delay) / 0.4)
+                                        .clamp(0.0, 1.0);
+                                final isEarned = index < stars;
+
+                                return TweenAnimationBuilder<double>(
+                                  duration: Duration.zero,
+                                  tween: Tween(begin: 0, end: progress),
+                                  builder: (context, value, child) {
+                                    return Transform.scale(
+                                      scale: isEarned
+                                          ? Curves.elasticOut.transform(value)
+                                          : 0.8,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                        ),
+                                        child: Icon(
+                                          isEarned
+                                              ? Icons.star_rounded
+                                              : Icons.star_outline_rounded,
+                                          color: isEarned
+                                              ? Colors.amber
+                                              : Colors.white.withOpacity(0.3),
+                                          size: ResponsiveHelper.iconSize(
+                                            context,
+                                            50,
+                                          ),
+                                          shadows: isEarned
+                                              ? [
+                                                  Shadow(
+                                                    color: Colors.amber
+                                                        .withOpacity(0.6),
+                                                    blurRadius: 15,
+                                                  ),
+                                                ]
+                                              : [],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              }),
+                            );
+                          },
+                        ),
+
+                        SizedBox(height: ResponsiveHelper.spacing(context, 12)),
+
+                        // Result message
+                        Text(
+                          _getResultMessage(stars, context),
+                          style: AppTheme.bodyLarge(
+                            context,
+                          ).copyWith(color: Colors.white.withOpacity(0.9)),
+                        ),
+
+                        SizedBox(height: ResponsiveHelper.spacing(context, 16)),
+
+                        // Stats container
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 14,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Colors.white.withOpacity(0.2),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.water_drop_rounded,
+                                color: Colors.cyan.shade200,
+                                size: 22,
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                "${AppStrings.dropsUsed.getString(context)}: $drops",
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.9),
+                                  fontSize: ResponsiveHelper.fontSize(
+                                    context,
+                                    16,
+                                  ),
+                                  decoration: TextDecoration.none,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        SizedBox(height: ResponsiveHelper.spacing(context, 28)),
+
+                        // Action buttons
+                        Row(
+                          children: [
+                            // Replay button
+                            Expanded(
+                              child: _ActionButton(
+                                label: AppStrings.replayLevel.getString(
+                                  context,
+                                ),
+                                icon: Icons.replay_rounded,
+                                isOutlined: true,
+                                onTap: () {
+                                  _audio.playButton();
+                                  widget.game.resetGame();
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            // Next level button
+                            Expanded(
+                              flex: 2,
+                              child: _ActionButton(
+                                label: AppStrings.newLevel.getString(context),
+                                icon: Icons.arrow_forward_rounded,
+                                gradient: AppTheme.primaryGradient,
+                                onTap: () {
+                                  _audio.playButton();
+                                  widget.game.goToNextLevel();
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -249,47 +333,67 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
       ),
     );
   }
+}
 
-  Widget _buildButton({
-    required BuildContext context,
-    required String label,
-    required IconData icon,
-    required Gradient gradient,
-    required VoidCallback onTap,
-  }) {
+class _ActionButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+  final Gradient? gradient;
+  final bool isOutlined;
+
+  const _ActionButton({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+    this.gradient,
+    this.isOutlined = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        gradient: gradient,
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
-        ],
+        gradient: isOutlined ? null : gradient,
+        borderRadius: BorderRadius.circular(16),
+        border: isOutlined
+            ? Border.all(color: Colors.white.withOpacity(0.3), width: 1.5)
+            : null,
+        boxShadow: isOutlined
+            ? null
+            : [
+                BoxShadow(
+                  color: const Color(0xFF667eea).withOpacity(0.4),
+                  blurRadius: 15,
+                  offset: const Offset(0, 5),
+                ),
+              ],
       ),
       child: Material(
-        color: Colors.transparent,
+        color: isOutlined ? Colors.white.withOpacity(0.05) : Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(30),
+          borderRadius: BorderRadius.circular(16),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+            padding: EdgeInsets.symmetric(
+              horizontal: ResponsiveHelper.spacing(context, 16),
+              vertical: ResponsiveHelper.spacing(context, 14),
+            ),
             child: Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
-                    fontSize: 20,
+                  style: TextStyle(
+                    fontSize: ResponsiveHelper.fontSize(context, 15),
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     decoration: TextDecoration.none,
                   ),
                 ),
-                const SizedBox(width: 10),
-                Icon(icon, color: Colors.white, size: 24),
+                const SizedBox(width: 8),
+                Icon(icon, color: Colors.white, size: 20),
               ],
             ),
           ),

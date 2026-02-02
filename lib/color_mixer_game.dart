@@ -4,17 +4,20 @@ import 'package:color_mixing_deductive/components/beaker.dart';
 import 'package:color_mixing_deductive/components/particles.dart';
 import 'package:color_mixing_deductive/core/color_logic.dart';
 import 'package:color_mixing_deductive/core/level_manager.dart';
+import 'package:color_mixing_deductive/helpers/audio_manager.dart';
 import 'package:flame/game.dart';
-import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
+
+enum GameMode { classic, timeAttack }
 
 class ColorMixerGame extends FlameGame with ChangeNotifier {
   late Beaker beaker;
   late Color targetColor;
   bool _hasWon = false;
   int rDrops = 0, gDrops = 0, bDrops = 0;
-  int maxDrops = 20; // Will be updated per level
+  int maxDrops = 20;
   final LevelManager levelManager = LevelManager();
+  final AudioManager _audio = AudioManager();
 
   final ValueNotifier<double> matchPercentage = ValueNotifier<double>(0.0);
   final ValueNotifier<int> totalDrops = ValueNotifier<int>(0);
@@ -22,6 +25,9 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
   late BackgroundGradient backgroundGradient;
   late AmbientParticles ambientParticles;
+
+  GameMode currentMode = GameMode.classic;
+  double timeLeft = 30.0;
 
   @override
   Future<void> onLoad() async {
@@ -35,8 +41,6 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     ambientParticles = AmbientParticles();
     add(ambientParticles);
 
-    // await FlameAudio.audioCache.loadAll(['drop.mp3', 'win.mp3', 'reset.mp3']);
-
     startLevel();
 
     beaker = Beaker(position: size / 2, size: Vector2(180, 250));
@@ -46,34 +50,36 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   @override
   void update(double dt) {
     super.update(dt);
-    // تحقق من حالة الفوز
+
+    if (currentMode == GameMode.timeAttack && !_hasWon) {
+      timeLeft -= dt;
+      if (timeLeft <= 0) {
+        timeLeft = 0;
+        _handleGameOver();
+      }
+      notifyListeners();
+    }
+
+    // Check win condition
     if (!_hasWon &&
         ColorLogic.checkMatch(beaker.currentColor, targetColor) >= 95.0) {
-      _hasWon = true; // تعيين حالة الفوز لمنع التكرار
-      // إضافة تأثيرات الفوز هنا (مثل الانفجار)
+      _hasWon = true;
       showWinEffect();
     }
   }
 
   @override
-  void onMount() {
-    super.onMount();
-    // تشغيل موسيقى هادئة في الخلفية
-    // FlameAudio.bgm.play('background_music.mp3', volume: 0.2);
-  }
-
-  @override
   void onRemove() {
-    // إيقاف الموسيقى عند إغلاق اللعبة
-    FlameAudio.bgm.stop();
+    _audio.stopMusic();
     super.onRemove();
   }
 
   void showWinEffect() {
-    FlameAudio.play('win.mp3', volume: 0.7);
-    // إضافة تأثيرات الفوز (مثل الانفجار)
+    _audio.playWin();
+
+    // Add winning particles
     final explosionColors = [
-      targetColor, // لون الهدف نفسه
+      targetColor,
       Colors.lightBlueAccent,
       Colors.pinkAccent,
       Colors.greenAccent,
@@ -82,7 +88,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     add(WinningParticles(position: beaker.position, colors: explosionColors));
 
     Future.delayed(const Duration(milliseconds: 1500), () {
-      overlays.add('WinMenu'); // هنضيفها في خطوة قادمة
+      overlays.add('WinMenu');
     });
   }
 
@@ -95,16 +101,16 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     beaker.liquidLevel = 0.1;
 
     overlays.remove('WinMenu');
-    // Reset mixing state as well
     totalDrops.value = 0;
     matchPercentage.value = 0.0;
+    dropsLimitReached.value = false;
 
     // Start the same level again
     startLevel();
   }
 
   void addDrop(String colorType) {
-    FlameAudio.play('drop.mp3', volume: 0.5);
+    _audio.playDrop();
 
     // Check if max drops reached
     if (rDrops + gDrops + bDrops >= maxDrops) {
@@ -138,7 +144,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   }
 
   void resetMixing() {
-    FlameAudio.play('reset.mp3', volume: 0.4);
+    _audio.playReset();
     rDrops = 0;
     gDrops = 0;
     bDrops = 0;
@@ -165,6 +171,11 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     dropsLimitReached.value = false;
     _hasWon = false;
 
+    // Reset time for time attack mode
+    if (currentMode == GameMode.timeAttack) {
+      timeLeft = 30.0;
+    }
+
     if (isLoaded) {
       beaker.clearContents();
     }
@@ -172,19 +183,37 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   }
 
   void goToNextLevel() {
-    if (levelManager.nextLevel()) {
-      overlays.remove('WinMenu');
-      startLevel();
-    } else {
-      print("Game Finished!");
-    }
+    int stars = calculateStars();
+    levelManager.unlockNextLevel(stars);
+    overlays.remove('WinMenu');
+    overlays.remove('Controls');
+    overlays.add('LevelMap');
   }
 
   int calculateStars() {
-    // مثال: إذا حلها في أقل من 5 نقط يأخذ 3 نجوم، أقل من 10 نقط نجمتين، وهكذا
     int drops = totalDrops.value;
-    if (drops <= 6) return 3;
-    if (drops <= 12) return 2;
+    int minDrops = levelManager.currentLevel.minDropsNeeded;
+
+    // 3 stars: within 2 drops of optimal
+    // 2 stars: within 5 drops of optimal
+    // 1 star: completed
+    if (drops <= minDrops + 2) return 3;
+    if (drops <= minDrops + 5) return 2;
     return 1;
+  }
+
+  void selectModeAndStart(GameMode mode) {
+    currentMode = mode;
+    if (mode == GameMode.timeAttack) {
+      timeLeft = 30.0;
+    }
+    overlays.remove('MainMenu');
+    overlays.add('LevelMap');
+  }
+
+  void _handleGameOver() {
+    // For now, just show level map to try again
+    overlays.remove('Controls');
+    overlays.add('LevelMap');
   }
 }
