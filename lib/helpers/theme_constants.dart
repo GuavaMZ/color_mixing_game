@@ -140,11 +140,13 @@ class AppTheme {
   static const Curve cosmicCurve = Curves.easeOutQuart;
 
   // --- TEXT STYLES ---
+  // --- TEXT STYLES ---
   static TextStyle heading1(BuildContext context) => TextStyle(
     fontSize: ResponsiveHelper.fontSize(context, 42),
     fontWeight: FontWeight.w900,
     color: Colors.white,
     letterSpacing: 1.5,
+    decoration: TextDecoration.none, // Fix yellow underlines
     fontFamily: 'Roboto', // Assuming default or change nicely
     shadows: [
       Shadow(
@@ -165,6 +167,7 @@ class AppTheme {
     fontWeight: FontWeight.w800,
     color: Colors.white,
     letterSpacing: 1.0,
+    decoration: TextDecoration.none, // Fix yellow underlines
     shadows: [
       Shadow(
         color: cosmicPurple.withValues(alpha: 0.6),
@@ -179,6 +182,7 @@ class AppTheme {
     fontWeight: FontWeight.w700,
     color: Colors.white,
     letterSpacing: 0.5,
+    decoration: TextDecoration.none, // Fix yellow underlines
     shadows: [
       Shadow(
         color: cosmicPurple.withValues(alpha: 0.6),
@@ -194,18 +198,21 @@ class AppTheme {
     fontWeight: FontWeight.w600,
     color: Colors.white.withValues(alpha: 0.95),
     letterSpacing: 0.5,
+    decoration: TextDecoration.none, // Fix yellow underlines
   );
 
   static TextStyle bodyMedium(BuildContext context) => TextStyle(
     fontSize: ResponsiveHelper.fontSize(context, 16),
     fontWeight: FontWeight.w500,
     color: Colors.white.withValues(alpha: 0.8), // Clean high-readability
+    decoration: TextDecoration.none, // Fix yellow underlines
   );
 
   static TextStyle bodySmall(BuildContext context) => TextStyle(
     fontSize: ResponsiveHelper.fontSize(context, 14),
     fontWeight: FontWeight.w400,
     color: Colors.white.withValues(alpha: 0.6),
+    decoration: TextDecoration.none, // Fix yellow underlines
   );
 
   static TextStyle caption(BuildContext context) => TextStyle(
@@ -213,6 +220,7 @@ class AppTheme {
     fontWeight: FontWeight.w500,
     color: neonCyan.withValues(alpha: 0.7),
     letterSpacing: 1.0,
+    decoration: TextDecoration.none, // Fix yellow underlines
   );
 }
 
