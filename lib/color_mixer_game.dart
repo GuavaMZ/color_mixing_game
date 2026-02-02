@@ -73,7 +73,12 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
     startLevel();
 
-    beaker = Beaker(position: size / 2, size: Vector2(180, 250));
+    // Position Beaker slightly above center to make room for bottom controls
+    // size.y * 0.40 places it comfortably above the new minimal controls
+    beaker = Beaker(
+      position: Vector2(size.x / 2, size.y * 0.40),
+      size: Vector2(180, 250),
+    );
     add(beaker);
   }
 
