@@ -1,133 +1,218 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 
 /// Centralized theme constants for consistent styling across the app
 class AppTheme {
-  // === COLORS ===
-  static const Color primaryDark = Color(0xFF1A1A2E);
-  static const Color primaryMedium = Color(0xFF16213E);
-  static const Color primaryLight = Color(0xFF0F3460);
-  static const Color accent = Color(0xFF4facfe);
-  static const Color accentSecondary = Color(0xFF667eea);
-  static const Color success = Color(0xFF4ADE80);
-  static const Color warning = Color(0xFFFBBF24);
-  static const Color error = Color(0xFFF87171);
+  // === COSMIC LABORATORY PALETTE ===
+  static const Color primaryDark = Color(0xFF0B0E14); // Deepest Void
+  static const Color primaryMedium = Color(0xFF15192B); // Deep Navy
+  static const Color primaryLight = Color(0xFF2A2E45); // Lighter Navy
+
+  static const Color neonCyan = Color(0xFF00F0FF); // Electric Cyan
+  static const Color neonMagenta = Color(0xFFFF0099); // Electric Magenta
+  static const Color electricYellow = Color(0xFFFAFF00); // Voltage Yellow
+  static const Color cosmicPurple = Color(0xFF7000FF); // Deep Purple
+  static const Color success = Color(0xFF00FF94); // Neon Green
+
+  // Legacy mappings for compatibility (updating to cosmic tones)
+  static const Color primaryColor = neonCyan;
+  static const Color secondaryColor = cosmicPurple;
+  static const Color accentColor = electricYellow;
+  static const Color cardColor = Color(0xFF1E2235);
+  static const Color backgroundColor = primaryDark;
 
   // === GRADIENTS ===
+  // Missing gradients requested by user
+  static const LinearGradient backgroundGradient = cosmicBackground; // Alias
+
   static const LinearGradient primaryGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF667eea), Color(0xFF764ba2)],
+    colors: [
+      Color(0xFF00F0FF), // Neon Cyan
+      Color(0xFF0099FF), // Deep Blue
+    ],
   );
 
-  static const LinearGradient backgroundGradient = LinearGradient(
-    begin: Alignment.topCenter,
-    end: Alignment.bottomCenter,
-    colors: [Color(0xFF1A1A2E), Color(0xFF16213E), Color(0xFF0F3460)],
+  static const LinearGradient secondaryGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      Color(0xFFFF0099), // Neon Magenta
+      Color(0xFF7000FF), // Cosmic Purple
+    ],
+  );
+
+  static const LinearGradient cosmicBackground = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      Color(0xFF0F1525), // Void
+      Color(0xFF1F1835), // Deep Purple Haze
+      Color(0xFF0B0E14), // Void
+    ],
+    stops: [0.0, 0.5, 1.0],
   );
 
   static const LinearGradient glassGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0x40FFFFFF), Color(0x10FFFFFF)],
+    colors: [
+      Color(0x26FFFFFF), // White 15%
+      Color(0x0DFFFFFF), // White 5%
+    ],
   );
 
-  static const LinearGradient successGradient = LinearGradient(
-    colors: [Color(0xFF4ADE80), Color(0xFF22C55E)],
+  static const LinearGradient neonBorderGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      Color(0x8000F0FF), // Cyan 50%
+      Color(0x80FF0099), // Magenta 50%
+    ],
   );
 
-  static const LinearGradient warningGradient = LinearGradient(
-    colors: [Color(0xFFFBBF24), Color(0xFFF59E0B)],
-  );
-
-  // === GLASSMORPHISM ===
-  static BoxDecoration glassDecoration({
+  // === COSMIC GLASS DECORATION ===
+  static BoxDecoration cosmicGlass({
     double borderRadius = 20,
     Color? borderColor,
-    double borderWidth = 1.5,
+    bool isInteractive = false,
   }) {
     return BoxDecoration(
       gradient: glassGradient,
       borderRadius: BorderRadius.circular(borderRadius),
       border: Border.all(
-        color: borderColor ?? Colors.white.withOpacity(0.3),
+        color: borderColor ?? Colors.white.withValues(alpha: 0.2),
+        width: 1.5,
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.4),
+          blurRadius: 16,
+          offset: const Offset(0, 8),
+        ),
+        if (isInteractive)
+          BoxShadow(
+            color: neonCyan.withValues(alpha: 0.1),
+            blurRadius: 8,
+            spreadRadius: 0,
+          ),
+      ],
+    );
+  }
+
+  // Legacy support - remapping to cosmic style
+  static BoxDecoration cartoonDecoration({
+    double borderRadius = 24,
+    Color? fillColor,
+    Color borderColor = Colors.white,
+    double borderWidth = 2,
+  }) {
+    // Transforming "cartoon" requests into "cosmic" style automatically
+    return BoxDecoration(
+      color:
+          fillColor?.withValues(alpha: 0.8) ?? cardColor.withValues(alpha: 0.8),
+      borderRadius: BorderRadius.circular(borderRadius),
+      border: Border.all(
+        color: borderColor == Colors.white
+            ? Colors.white.withValues(alpha: 0.3)
+            : borderColor,
         width: borderWidth,
       ),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.2),
-          blurRadius: 20,
-          spreadRadius: 2,
+          color: Colors.black.withValues(alpha: 0.3),
+          blurRadius: 10,
+          offset: const Offset(0, 4),
+        ),
+        BoxShadow(
+          color: (fillColor ?? neonCyan).withValues(alpha: 0.2),
+          blurRadius: 15,
+          spreadRadius: -2,
         ),
       ],
     );
   }
 
-  // === SHADOWS ===
-  static List<BoxShadow> cardShadow = [
-    BoxShadow(
-      color: Colors.black.withOpacity(0.3),
-      blurRadius: 15,
-      offset: const Offset(0, 5),
-    ),
-  ];
-
-  static List<BoxShadow> glowShadow(Color color) => [
-    BoxShadow(color: color.withOpacity(0.5), blurRadius: 20, spreadRadius: 2),
-  ];
-
-  // === ANIMATIONS ===
+  // --- ANIMATIONS ---
+  static const Duration animationNormal = Duration(milliseconds: 400);
   static const Duration animationFast = Duration(milliseconds: 200);
-  static const Duration animationNormal = Duration(milliseconds: 350);
-  static const Duration animationSlow = Duration(milliseconds: 600);
-  static const Duration animationVerySlow = Duration(milliseconds: 1000);
+  static const Curve cosmicCurve = Curves.easeOutQuart;
 
-  static const Curve animationCurve = Curves.easeOutCubic;
-  static const Curve bounceCurve = Curves.elasticOut;
-
-  // === TEXT STYLES ===
+  // --- TEXT STYLES ---
   static TextStyle heading1(BuildContext context) => TextStyle(
-    fontSize: ResponsiveHelper.fontSize(context, 48),
-    fontWeight: FontWeight.bold,
+    fontSize: ResponsiveHelper.fontSize(context, 42),
+    fontWeight: FontWeight.w900,
     color: Colors.white,
-    letterSpacing: 2,
-    shadows: [Shadow(color: accentSecondary.withOpacity(0.5), blurRadius: 20)],
+    letterSpacing: 1.5,
+    fontFamily: 'Roboto', // Assuming default or change nicely
+    shadows: [
+      Shadow(
+        color: neonCyan.withValues(alpha: 0.6),
+        blurRadius: 15,
+        offset: const Offset(0, 0),
+      ),
+      Shadow(
+        color: Colors.black.withValues(alpha: 0.5),
+        offset: const Offset(2, 2),
+        blurRadius: 4,
+      ),
+    ],
   );
 
   static TextStyle heading2(BuildContext context) => TextStyle(
-    fontSize: ResponsiveHelper.fontSize(context, 32),
-    fontWeight: FontWeight.bold,
+    fontSize: ResponsiveHelper.fontSize(context, 28),
+    fontWeight: FontWeight.w800,
     color: Colors.white,
-    letterSpacing: 1.5,
+    letterSpacing: 1.0,
+    shadows: [
+      Shadow(
+        color: cosmicPurple.withValues(alpha: 0.6),
+        blurRadius: 12,
+        offset: const Offset(0, 0),
+      ),
+    ],
   );
 
   static TextStyle heading3(BuildContext context) => TextStyle(
     fontSize: ResponsiveHelper.fontSize(context, 24),
-    fontWeight: FontWeight.w600,
+    fontWeight: FontWeight.w700,
     color: Colors.white,
+    letterSpacing: 0.5,
+    shadows: [
+      Shadow(
+        color: cosmicPurple.withValues(alpha: 0.6),
+        blurRadius: 10,
+        offset: const Offset(0, 0),
+      ),
+    ],
   );
 
+  // Modern, clean body text
   static TextStyle bodyLarge(BuildContext context) => TextStyle(
     fontSize: ResponsiveHelper.fontSize(context, 18),
-    fontWeight: FontWeight.w500,
-    color: Colors.white.withOpacity(0.9),
+    fontWeight: FontWeight.w600,
+    color: Colors.white.withValues(alpha: 0.95),
+    letterSpacing: 0.5,
   );
 
   static TextStyle bodyMedium(BuildContext context) => TextStyle(
     fontSize: ResponsiveHelper.fontSize(context, 16),
-    fontWeight: FontWeight.normal,
-    color: Colors.white.withOpacity(0.8),
+    fontWeight: FontWeight.w500,
+    color: Colors.white.withValues(alpha: 0.8), // Clean high-readability
   );
 
   static TextStyle bodySmall(BuildContext context) => TextStyle(
     fontSize: ResponsiveHelper.fontSize(context, 14),
-    fontWeight: FontWeight.normal,
-    color: Colors.white.withOpacity(0.7),
+    fontWeight: FontWeight.w400,
+    color: Colors.white.withValues(alpha: 0.6),
   );
 
   static TextStyle caption(BuildContext context) => TextStyle(
     fontSize: ResponsiveHelper.fontSize(context, 12),
-    fontWeight: FontWeight.normal,
-    color: Colors.white.withOpacity(0.6),
+    fontWeight: FontWeight.w500,
+    color: neonCyan.withValues(alpha: 0.7),
+    letterSpacing: 1.0,
   );
 }
 

@@ -60,8 +60,8 @@ class _SettingsOverlayState extends State<SettingsOverlay>
   Widget build(BuildContext context) {
     return FadeTransition(
       opacity: _fadeAnimation,
-      child: Container(
-        color: Colors.black.withOpacity(0.5),
+      child: Material(
+        color: Colors.black.withOpacity(0.4),
         child: Center(
           child: ScaleTransition(
             scale: _scaleAnimation,
@@ -77,93 +77,84 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                   desktop: 480.0,
                 ),
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                  child: Container(
-                    decoration: AppTheme.glassDecoration(borderRadius: 24),
-                    padding: EdgeInsets.all(
-                      ResponsiveHelper.spacing(context, 24),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
+              child: Container(
+                decoration: AppTheme.cartoonDecoration(borderRadius: 30),
+                padding: EdgeInsets.all(ResponsiveHelper.spacing(context, 24)),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Header
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              AppStrings.settings.getString(context),
-                              style: AppTheme.heading2(context),
-                            ),
-                            _CloseButton(onTap: _close),
-                          ],
+                        Text(
+                          AppStrings.settings.getString(context),
+                          style: AppTheme.heading2(context),
                         ),
-                        const SizedBox(height: 24),
-
-                        // Sound Effects toggle
-                        _SettingsTile(
-                          icon: Icons.volume_up_rounded,
-                          title: AppStrings.soundEffects.getString(context),
-                          trailing: _ToggleSwitch(
-                            value: _audio.sfxEnabled,
-                            onChanged: (value) {
-                              setState(() {
-                                _audio.sfxEnabled = value;
-                              });
-                              if (value) _audio.playButton();
-                            },
-                          ),
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        // Music toggle
-                        _SettingsTile(
-                          icon: Icons.music_note_rounded,
-                          title: AppStrings.music.getString(context),
-                          trailing: _ToggleSwitch(
-                            value: _audio.musicEnabled,
-                            onChanged: (value) {
-                              _audio.playButton();
-                              setState(() {
-                                _audio.musicEnabled = value;
-                              });
-                            },
-                          ),
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        // Language selector
-                        _SettingsTile(
-                          icon: Icons.language_rounded,
-                          title: AppStrings.language.getString(context),
-                          trailing: _LanguageSelector(
-                            currentLocale:
-                                _localization.currentLocale?.languageCode ??
-                                'en',
-                            onChanged: (code) {
-                              _audio.playButton();
-                              _localization.translate(code);
-                            },
-                          ),
-                        ),
-
-                        const SizedBox(height: 24),
-
-                        // Close button
-                        SizedBox(
-                          width: double.infinity,
-                          child: _GradientButton(
-                            label: AppStrings.back.getString(context),
-                            onTap: _close,
-                          ),
-                        ),
+                        _CloseButton(onTap: _close),
                       ],
                     ),
-                  ),
+                    const SizedBox(height: 24),
+
+                    // Sound Effects toggle
+                    _SettingsTile(
+                      icon: Icons.volume_up_rounded,
+                      title: AppStrings.soundEffects.getString(context),
+                      trailing: _ToggleSwitch(
+                        value: _audio.sfxEnabled,
+                        onChanged: (value) {
+                          setState(() {
+                            _audio.sfxEnabled = value;
+                          });
+                          if (value) _audio.playButton();
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Music toggle
+                    _SettingsTile(
+                      icon: Icons.music_note_rounded,
+                      title: AppStrings.music.getString(context),
+                      trailing: _ToggleSwitch(
+                        value: _audio.musicEnabled,
+                        onChanged: (value) {
+                          _audio.playButton();
+                          setState(() {
+                            _audio.musicEnabled = value;
+                          });
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Language selector
+                    _SettingsTile(
+                      icon: Icons.language_rounded,
+                      title: AppStrings.language.getString(context),
+                      trailing: _LanguageSelector(
+                        currentLocale:
+                            _localization.currentLocale?.languageCode ?? 'en',
+                        onChanged: (code) {
+                          _audio.playButton();
+                          _localization.translate(code);
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Close button
+                    SizedBox(
+                      width: double.infinity,
+                      child: _GradientButton(
+                        label: AppStrings.back.getString(context),
+                        onTap: _close,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -190,9 +181,9 @@ class _SettingsTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.white.withOpacity(0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white.withOpacity(0.2), width: 2),
       ),
       child: Row(
         children: [
@@ -229,16 +220,9 @@ class _ToggleSwitch extends StatelessWidget {
         height: 32,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          gradient: value
-              ? const LinearGradient(
-                  colors: [Color(0xFF667eea), Color(0xFF764ba2)],
-                )
-              : null,
-          color: value ? null : Colors.white.withOpacity(0.2),
-          border: Border.all(
-            color: value ? Colors.transparent : Colors.white.withOpacity(0.3),
-            width: 1.5,
-          ),
+          gradient: value ? AppTheme.primaryGradient : null,
+          color: value ? null : Colors.white.withOpacity(0.15),
+          border: Border.all(color: Colors.black, width: 2.5),
         ),
         child: AnimatedAlign(
           duration: const Duration(milliseconds: 200),
@@ -299,11 +283,11 @@ class _LanguageSelector extends StatelessWidget {
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                gradient: isSelected
-                    ? const LinearGradient(
-                        colors: [Color(0xFF667eea), Color(0xFF764ba2)],
-                      )
-                    : null,
+                gradient: isSelected ? AppTheme.secondaryGradient : null,
+                border: Border.all(
+                  color: isSelected ? Colors.black : Colors.transparent,
+                  width: 2,
+                ),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(
@@ -365,9 +349,9 @@ class _GradientButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF667eea).withOpacity(0.4),
-            blurRadius: 12,
+            color: Colors.black.withOpacity(0.3),
             offset: const Offset(0, 4),
+            blurRadius: 0,
           ),
         ],
       ),

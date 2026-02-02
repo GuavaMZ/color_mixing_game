@@ -1,10 +1,14 @@
 import 'package:color_mixing_deductive/color_mixer_game.dart';
 import 'package:color_mixing_deductive/helpers/audio_manager.dart';
 import 'package:color_mixing_deductive/overlays/controls_overlay.dart';
+import 'package:color_mixing_deductive/overlays/game_over_overlay.dart';
 import 'package:color_mixing_deductive/overlays/level_map_overlay.dart';
 import 'package:color_mixing_deductive/overlays/main_menu_overlay.dart';
 import 'package:color_mixing_deductive/overlays/settings_overlay.dart';
+import 'package:color_mixing_deductive/overlays/shop_overlay.dart';
+import 'package:color_mixing_deductive/overlays/transition_overlay.dart';
 import 'package:color_mixing_deductive/overlays/win_menu_overlay.dart';
+import 'package:color_mixing_deductive/overlays/pause_menu_overlay.dart';
 import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
@@ -93,8 +97,13 @@ class _MyAppState extends State<MyApp> {
           'LevelMap': (context, game) => LevelMapOverlay(game: game),
           'MainMenu': (context, game) => MainMenuOverlay(game: game),
           'Settings': (context, game) => SettingsOverlay(game: game),
+          'Transition': (context, game) => TransitionOverlay(game: game),
+          'GameOver': (context, game) =>
+              GameOverOverlay(game: game), // إضافة هذا السطر
+          'Shop': (context, game) => ShopOverlay(game: game),
+          'PauseMenu': (context, game) => PauseMenuOverlay(game: game),
         },
-        initialActiveOverlays: const ['MainMenu'],
+        initialActiveOverlays: const ['MainMenu', 'Transition'],
         loadingBuilder: (context) => Container(
           color: const Color(0xFF1A1A2E),
           child: const Center(

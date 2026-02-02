@@ -17,7 +17,7 @@ class ControlsOverlay extends StatelessWidget {
       listenable: game,
       builder: (context, child) => Stack(
         children: [
-          // Top section - Target color with circular progress
+          // Top section - Target color
           Positioned(
             top:
                 ResponsiveHelper.safePadding(context).top +
@@ -27,82 +27,119 @@ class ControlsOverlay extends StatelessWidget {
             child: Center(child: _buildTargetColorDisplay(context)),
           ),
 
-          // Pause button
+          // Pause button (Cosmic Style)
           Positioned(
             top:
                 ResponsiveHelper.safePadding(context).top +
                 ResponsiveHelper.spacing(context, 16),
             right: ResponsiveHelper.spacing(context, 16),
-            child: _buildPauseButton(context),
+            child: _CosmicButton(
+              onTap: () {
+                AudioManager().playButton();
+                game.overlays.add('PauseMenu'); // Open new menu
+              },
+              child: Icon(
+                Icons.menu_rounded, // Changed icon
+                color: AppTheme.neonCyan,
+                size: 24,
+              ),
+              width: 50,
+              height: 50,
+              color: AppTheme.cardColor.withValues(alpha: 0.5),
+              borderColor: AppTheme.neonCyan.withValues(alpha: 0.5),
+              borderRadius: 14,
+            ),
           ),
 
-          // Bottom controls area with glass morphism
+          // ... (TimeAttack code unchanged)
+
+          // Bottom controls area (Compact)
           Align(
             alignment: Alignment.bottomCenter,
-            child: ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
-              ),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                child: Container(
-                  padding: EdgeInsets.only(
-                    bottom: ResponsiveHelper.safePadding(context).bottom + 16,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.white.withOpacity(0.15),
-                        Colors.white.withOpacity(0.05),
-                      ],
+            child: Container(
+              margin: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ), // Reduced margin
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(
+                  24,
+                ), // Slightly smaller radius
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                  child: Container(
+                    padding: EdgeInsets.only(
+                      bottom: ResponsiveHelper.safePadding(
+                        context,
+                      ).bottom, // Reduced padding
+                      top: 10, // Reduced padding
+                      left: 16,
+                      right: 16,
                     ),
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
+                    decoration: AppTheme.cosmicGlass(
+                      borderRadius: 24,
+                      borderColor: Colors.white.withValues(alpha: 0.15),
                     ),
-                    border: Border(
-                      top: BorderSide(
-                        color: Colors.white.withOpacity(0.3),
-                        width: 1.5,
-                      ),
-                    ),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(height: ResponsiveHelper.spacing(context, 20)),
-
-                      // Match percentage display with animated counter
-                      ValueListenableBuilder<double>(
-                        valueListenable: game.matchPercentage,
-                        builder: (context, value, child) => Padding(
-                          padding: const EdgeInsets.only(bottom: 15),
-                          child: _MatchPercentageDisplay(
-                            value: value,
-                            context: context,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Match percentage display
+                        ValueListenableBuilder<double>(
+                          valueListenable: game.matchPercentage,
+                          builder: (context, value, child) => Padding(
+                            padding: const EdgeInsets.only(bottom: 20),
+                            child: _MatchPercentageDisplay(
+                              value: value,
+                              context: context,
+                            ),
                           ),
                         ),
-                      ),
 
-                      // Color buttons row
-                      _buildControlsRow(context),
+                        // Color buttons row
+                        _buildControlsRow(context),
 
-                      SizedBox(height: ResponsiveHelper.spacing(context, 16)),
+                        // SizedBox(height: ResponsiveHelper.spacing(context, 20)),
 
-                      // Reset button (shown when drops > 0)
-                      ValueListenableBuilder<int>(
-                        valueListenable: game.totalDrops,
-                        builder: (context, value, child) {
-                          if (value > 0) {
-                            return _buildResetButton(context);
-                          }
-                          return const SizedBox(height: 40);
-                        },
-                      ),
-                    ],
+                        // Reset button
+                        ValueListenableBuilder<int>(
+                          valueListenable: game.totalDrops,
+                          builder: (context, value, child) {
+                            if (value > 0) {
+                              return _CosmicButton(
+                                onTap: game.resetMixing,
+                                color: AppTheme.cardColor.withValues(
+                                  alpha: 0.6,
+                                ),
+                                borderColor: Colors.white.withValues(
+                                  alpha: 0.3,
+                                ),
+                                width: 150,
+                                height: 50,
+                                borderRadius: 25,
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.refresh_rounded,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      AppStrings.reset.getString(context),
+                                      style: AppTheme.bodyMedium(
+                                        context,
+                                      ).copyWith(fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                            return const SizedBox(height: 50);
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -113,48 +150,13 @@ class ControlsOverlay extends StatelessWidget {
     );
   }
 
-  Widget _buildPauseButton(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(14),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: Colors.white.withOpacity(0.2)),
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () {
-                AudioManager().playButton();
-                game.overlays.remove('Controls');
-                game.overlays.add('LevelMap');
-              },
-              borderRadius: BorderRadius.circular(14),
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Icon(
-                  Icons.grid_view_rounded,
-                  color: Colors.white.withOpacity(0.8),
-                  size: 22,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildTargetColorDisplay(BuildContext context) {
     final currentLevel = game.levelManager.currentLevel;
     final circleSize = ResponsiveHelper.responsive<double>(
       context,
-      mobile: 100.0,
-      tablet: 120.0,
-      desktop: 140.0,
+      mobile: 110.0,
+      tablet: 130.0,
+      desktop: 150.0,
     );
 
     return ValueListenableBuilder<double>(
@@ -163,21 +165,23 @@ class ControlsOverlay extends StatelessWidget {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Level info header
+            // Level info header (Neon Badge)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.white.withOpacity(0.2),
-                    Colors.white.withOpacity(0.1),
-                  ],
-                ),
+                color: AppTheme.primaryDark.withValues(alpha: 0.8),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.3),
+                  color: AppTheme.neonCyan.withValues(alpha: 0.6),
                   width: 1.5,
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.neonCyan.withValues(alpha: 0.2),
+                    blurRadius: 10,
+                    spreadRadius: -2,
+                  ),
+                ],
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -186,10 +190,11 @@ class ControlsOverlay extends StatelessWidget {
                   Text(
                     "${AppStrings.levelText.getString(context)} ${currentLevel.id}",
                     style: TextStyle(
-                      color: Colors.white,
+                      color: AppTheme.neonCyan,
                       fontSize: ResponsiveHelper.fontSize(context, 16),
                       fontWeight: FontWeight.bold,
                       decoration: TextDecoration.none,
+                      letterSpacing: 1,
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -197,12 +202,12 @@ class ControlsOverlay extends StatelessWidget {
                   ...List.generate(
                     currentLevel.difficultyStars,
                     (index) => Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                      size: 14,
+                      Icons.star_rounded,
+                      color: AppTheme.electricYellow,
+                      size: 16,
                       shadows: [
                         Shadow(
-                          color: Colors.amber.withOpacity(0.5),
+                          color: AppTheme.electricYellow.withValues(alpha: 0.5),
                           blurRadius: 4,
                         ),
                       ],
@@ -212,7 +217,7 @@ class ControlsOverlay extends StatelessWidget {
               ),
             ),
 
-            SizedBox(height: ResponsiveHelper.spacing(context, 16)),
+            SizedBox(height: ResponsiveHelper.spacing(context, 20)),
 
             // Circular progress indicator around target color
             SizedBox(
@@ -221,6 +226,21 @@ class ControlsOverlay extends StatelessWidget {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
+                  // Glow Layer
+                  Container(
+                    width: circleSize,
+                    height: circleSize,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: game.targetColor.withValues(alpha: 0.4),
+                          blurRadius: 30,
+                          spreadRadius: 5,
+                        ),
+                      ],
+                    ),
+                  ),
                   // Progress circle
                   SizedBox(
                     width: circleSize,
@@ -232,12 +252,13 @@ class ControlsOverlay extends StatelessWidget {
                       builder: (context, value, child) {
                         return CircularProgressIndicator(
                           value: value,
-                          strokeWidth: 5,
-                          backgroundColor: Colors.white.withOpacity(0.2),
+                          strokeWidth: 4,
+                          backgroundColor: Colors.white.withValues(alpha: 0.05),
+                          strokeCap: StrokeCap.round,
                           valueColor: AlwaysStoppedAnimation<Color>(
                             Color.lerp(
-                              const Color(0xFFF87171),
-                              const Color(0xFF4ADE80),
+                              AppTheme.neonMagenta,
+                              AppTheme.success,
                               value,
                             )!,
                           ),
@@ -246,26 +267,45 @@ class ControlsOverlay extends StatelessWidget {
                     ),
                   ),
 
-                  // Target color circle with glow
+                  // Target color circle with complex border
                   Container(
-                    width: circleSize * 0.78,
-                    height: circleSize * 0.78,
+                    width: circleSize * 0.85,
+                    height: circleSize * 0.85,
                     decoration: BoxDecoration(
                       color: game.targetColor,
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 3),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        width: 1,
+                      ),
+                      gradient: RadialGradient(
+                        colors: [
+                          game.targetColor.withValues(alpha: 0.7),
+                          game.targetColor,
+                        ],
+                        center: Alignment.topLeft,
+                        radius: 1.2,
+                      ),
                       boxShadow: [
                         BoxShadow(
-                          color: game.targetColor.withOpacity(0.6),
-                          blurRadius: 20,
-                          spreadRadius: 3,
-                        ),
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 8,
-                          offset: const Offset(0, 4),
+                          color: Colors.black.withValues(alpha: 0.5),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
                         ),
                       ],
+                    ),
+                  ),
+                  // Glossy Reflection
+                  Positioned(
+                    top: circleSize * 0.15,
+                    right: circleSize * 0.2,
+                    child: Container(
+                      width: circleSize * 0.2,
+                      height: circleSize * 0.1,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.all(Radius.circular(50)),
+                      ),
                     ),
                   ),
                 ],
@@ -274,27 +314,7 @@ class ControlsOverlay extends StatelessWidget {
 
             SizedBox(height: ResponsiveHelper.spacing(context, 12)),
 
-            Text(
-              AppStrings.targetColorText.getString(context),
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: ResponsiveHelper.fontSize(context, 16),
-                fontWeight: FontWeight.bold,
-                decoration: TextDecoration.none,
-                letterSpacing: 1.2,
-                shadows: [
-                  Shadow(
-                    color: Colors.black.withOpacity(0.5),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-            ),
-
-            SizedBox(height: ResponsiveHelper.spacing(context, 10)),
-
-            // Drops counter
+            // Drops counter (Integrated)
             _buildDropsCounter(context),
 
             // Hint display (if available)
@@ -313,49 +333,42 @@ class ControlsOverlay extends StatelessWidget {
       valueListenable: game.totalDrops,
       builder: (context, drops, child) {
         final remaining = game.maxDrops - drops;
-        final isLow = remaining <= 2 && drops > 0;
+        final isLow = remaining <= 3 && drops > 0;
+        final isFull = drops >= game.maxDrops;
 
-        return AnimatedContainer(
-          duration: AppTheme.animationFast,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        Color statusColor = AppTheme.neonCyan;
+        if (isLow) statusColor = AppTheme.electricYellow;
+        if (isFull) statusColor = AppTheme.neonMagenta;
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           decoration: BoxDecoration(
-            color: isLow
-                ? Colors.red.withOpacity(0.3)
-                : Colors.white.withOpacity(0.15),
-            borderRadius: BorderRadius.circular(15),
+            color: Colors.black.withValues(alpha: 0.4),
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isLow
-                  ? Colors.red.withOpacity(0.6)
-                  : Colors.white.withOpacity(0.3),
-              width: 1.5,
+              color: statusColor.withValues(alpha: 0.5),
+              width: 1,
             ),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                Icons.water_drop,
-                color: isLow ? Colors.red.shade200 : Colors.white,
-                size: 18,
+                isFull ? Icons.do_not_disturb_on : Icons.science,
+                color: statusColor,
+                size: 16,
               ),
               const SizedBox(width: 8),
               Text(
                 "$drops / ${game.maxDrops}",
                 style: TextStyle(
-                  color: isLow ? Colors.red.shade100 : Colors.white,
-                  fontSize: ResponsiveHelper.fontSize(context, 16),
-                  fontWeight: FontWeight.bold,
+                  color: Colors.white.withValues(alpha: 0.9),
+                  fontSize: ResponsiveHelper.fontSize(context, 14),
+                  fontWeight: FontWeight.w600,
                   decoration: TextDecoration.none,
+                  letterSpacing: 0.5,
                 ),
               ),
-              if (isLow) ...[
-                const SizedBox(width: 8),
-                Icon(
-                  Icons.warning_rounded,
-                  color: Colors.red.shade200,
-                  size: 18,
-                ),
-              ],
             ],
           ),
         );
@@ -370,27 +383,26 @@ class ControlsOverlay extends StatelessWidget {
         maxWidth: ResponsiveHelper.screenWidth(context) * 0.7,
       ),
       decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.2),
+        color: AppTheme.cosmicPurple.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.blue.withOpacity(0.4), width: 1),
+        border: Border.all(
+          color: AppTheme.cosmicPurple.withValues(alpha: 0.5),
+          width: 1,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.lightbulb_outline,
-            color: Colors.yellow.shade200,
-            size: 16,
-          ),
+          Icon(Icons.auto_awesome, color: AppTheme.accentColor, size: 16),
           const SizedBox(width: 8),
           Flexible(
             child: Text(
               hint,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.9),
-                fontSize: ResponsiveHelper.fontSize(context, 12),
+                color: Colors.white.withValues(alpha: 0.9),
+                fontSize: ResponsiveHelper.fontSize(context, 13),
                 decoration: TextDecoration.none,
-                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.w500,
               ),
               textAlign: TextAlign.center,
               maxLines: 2,
@@ -402,137 +414,210 @@ class ControlsOverlay extends StatelessWidget {
     );
   }
 
-  Widget _buildColorButton(
-    Color color,
-    String type,
-    BuildContext context,
-    VoidCallback onTap,
-  ) {
-    final buttonSize = ResponsiveHelper.responsive<double>(
-      context,
-      mobile: 70.0,
-      tablet: 80.0,
-      desktop: 90.0,
+  Widget _buildControlsRow(BuildContext context) {
+    final currentLevel = game.levelManager.currentLevel;
+
+    return ValueListenableBuilder<bool>(
+      valueListenable: game.dropsLimitReached,
+      builder: (context, isLimitReached, _) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: currentLevel.availableColors.map((color) {
+            String type = "";
+            if (color == Colors.red) {
+              type = "red";
+            } else if (color == Colors.green) {
+              type = "green";
+            } else if (color == Colors.blue) {
+              type = "blue";
+            }
+
+            final buttonSize = ResponsiveHelper.responsive<double>(
+              context,
+              mobile: 72.0,
+              tablet: 82.0,
+              desktop: 90.0,
+            );
+
+            return Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: ResponsiveHelper.spacing(context, 10),
+              ),
+              child: Opacity(
+                opacity: isLimitReached ? 0.4 : 1.0,
+                child: _CosmicButton(
+                  onTap: isLimitReached ? null : () => game.addDrop(type),
+                  width: buttonSize,
+                  height: buttonSize,
+                  borderRadius: buttonSize / 2,
+                  color: color,
+                  isCircular: true,
+                  disableDepthConfig: true, // Special sizing for these
+                  child: Icon(
+                    Icons.water_drop,
+                    color: Colors.white,
+                    size: buttonSize * 0.45,
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        );
+      },
+    );
+  }
+}
+
+class _CosmicButton extends StatefulWidget {
+  final VoidCallback? onTap;
+  final Widget child;
+  final double width;
+  final double height;
+  final Color color;
+  final Color? borderColor;
+  final double borderRadius;
+  final bool isCircular;
+  final bool disableDepthConfig; // For complex shapes
+
+  const _CosmicButton({
+    required this.onTap,
+    required this.child,
+    required this.width,
+    required this.height,
+    required this.color,
+    this.borderColor,
+    this.borderRadius = 16,
+    this.isCircular = false,
+    this.disableDepthConfig = false,
+  });
+
+  @override
+  State<_CosmicButton> createState() => _CosmicButtonState();
+}
+
+class _CosmicButtonState extends State<_CosmicButton>
+    with SingleTickerProviderStateMixin {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final shadowHeight = 4.0;
+
+    // Gradient Logic
+    LinearGradient fillGradient = LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [
+        widget.color.withValues(alpha: 0.9), // Lighter top
+        widget.color, // Normal
+        widget.color
+            .withValues(alpha: 0.8)
+            .withBlue(0)
+            .withRed(0)
+            .withGreen(0), // Darker bottom
+      ],
+      stops: [0.0, 0.5, 1.0],
     );
 
     return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: AppTheme.animationFast,
-        width: buttonSize,
-        height: buttonSize,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: RadialGradient(
-            colors: [color.withOpacity(0.9), color, color.withOpacity(0.85)],
-            center: const Alignment(-0.3, -0.3),
-            stops: const [0.0, 0.6, 1.0],
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: color.withOpacity(0.6),
-              blurRadius: 15,
-              spreadRadius: 2,
-              offset: const Offset(0, 5),
-            ),
-            BoxShadow(
-              color: Colors.black.withOpacity(0.3),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
-            ),
-          ],
-          border: Border.all(color: Colors.white.withOpacity(0.4), width: 3),
-        ),
-        child: Icon(
-          Icons.water_drop,
-          color: Colors.white.withOpacity(0.9),
-          size: buttonSize * 0.45,
-          shadows: [
-            Shadow(color: Colors.black.withOpacity(0.3), blurRadius: 4),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildResetButton(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.white.withOpacity(0.2),
-            Colors.white.withOpacity(0.1),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: Colors.white.withOpacity(0.3), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: game.resetMixing,
-          borderRadius: BorderRadius.circular(25),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.refresh_rounded,
-                  color: Colors.white.withOpacity(0.9),
-                  size: 22,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  AppStrings.reset.getString(context),
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
-                    fontSize: ResponsiveHelper.fontSize(context, 16),
-                    fontWeight: FontWeight.w600,
-                    decoration: TextDecoration.none,
+      onTapDown: widget.onTap != null
+          ? (_) => setState(() => _isPressed = true)
+          : null,
+      onTapUp: widget.onTap != null
+          ? (_) => setState(() => _isPressed = false)
+          : null,
+      onTapCancel: () => setState(() => _isPressed = false),
+      onTap: widget.onTap,
+      child: Container(
+        width: widget.width,
+        height: widget.height + (widget.disableDepthConfig ? 0 : shadowHeight),
+        // alignment: Alignment.topCenter,
+        child: Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            // Shadow Layer (Bottom) - Only if not pressed fully
+            if (!widget.disableDepthConfig)
+              Positioned(
+                left: 2,
+                right: 2,
+                top: shadowHeight,
+                bottom: 0,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(widget.borderRadius),
                   ),
                 ),
-              ],
+              ),
+
+            // Button Face (Top)
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 60),
+              curve: Curves.easeInOut,
+              margin: EdgeInsets.only(
+                top: _isPressed ? shadowHeight : 0,
+                bottom: _isPressed ? 0 : shadowHeight,
+              ),
+              width: widget.width,
+              height: widget.height,
+              decoration: BoxDecoration(
+                gradient: fillGradient,
+                borderRadius: BorderRadius.circular(widget.borderRadius),
+                border: Border.all(
+                  color:
+                      widget.borderColor ?? Colors.white.withValues(alpha: 0.4),
+                  width: 1.5,
+                ),
+                boxShadow: [
+                  // Inner Glow (Top Edge)
+                  BoxShadow(
+                    color: Colors.white.withValues(alpha: 0.3),
+                    offset: Offset(0, 1),
+                    blurRadius: 0,
+                    spreadRadius: 0, // Inset feel simulated
+                  ),
+                  // Outer Glow (Neon)
+                  if (!_isPressed && widget.onTap != null)
+                    BoxShadow(
+                      color: (widget.borderColor ?? widget.color).withValues(
+                        alpha: 0.3,
+                      ),
+                      offset: Offset(0, 2),
+                      blurRadius: 10,
+                    ),
+                ],
+              ),
+              child: Stack(
+                children: [
+                  // Glossy Shine
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: widget.height * 0.4,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.white.withValues(alpha: 0.2),
+                            Colors.white.withValues(alpha: 0.0),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(widget.borderRadius),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Center(child: widget.child),
+                ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
-    );
-  }
-
-  Widget _buildControlsRow(BuildContext context) {
-    final currentLevel = game.levelManager.currentLevel;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: currentLevel.availableColors.map((color) {
-        String type = "";
-        if (color == Colors.red) {
-          type = "red";
-        } else if (color == Colors.green) {
-          type = "green";
-        } else if (color == Colors.blue) {
-          type = "blue";
-        }
-
-        return Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: ResponsiveHelper.spacing(context, 10),
-          ),
-          child: _buildColorButton(
-            color,
-            type,
-            context,
-            () => game.addDrop(type),
-          ),
-        );
-      }).toList(),
     );
   }
 }
@@ -545,9 +630,10 @@ class _MatchPercentageDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Interpolate color from Magenta to Green
     final color = Color.lerp(
-      const Color(0xFFF87171),
-      const Color(0xFF4ADE80),
+      AppTheme.neonMagenta,
+      AppTheme.success,
       value / 100,
     )!;
 
@@ -556,32 +642,103 @@ class _MatchPercentageDisplay extends StatelessWidget {
       curve: Curves.easeOutCubic,
       tween: Tween(begin: 0, end: value),
       builder: (context, animatedValue, child) {
-        return Row(
-          mainAxisSize: MainAxisSize.min,
+        return Column(
           children: [
+            // Shadowed Text for Neon effect
             Text(
               "${animatedValue.toStringAsFixed(0)}%",
               style: TextStyle(
-                fontSize: ResponsiveHelper.fontSize(context, 28),
+                fontSize: ResponsiveHelper.fontSize(context, 48),
                 color: color,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w900,
                 decoration: TextDecoration.none,
+                fontFamily: 'Segoe UI', // Clean rounded
                 shadows: [
-                  Shadow(color: color.withOpacity(0.4), blurRadius: 12),
+                  Shadow(
+                    color: color.withValues(alpha: 0.6),
+                    offset: const Offset(0, 0),
+                    blurRadius: 15,
+                  ),
                 ],
               ),
             ),
-            const SizedBox(width: 8),
             Text(
-              AppStrings.precentageMatch.getString(context),
+              AppStrings.precentageMatch.getString(context).toUpperCase(),
               style: TextStyle(
-                fontSize: ResponsiveHelper.fontSize(context, 16),
-                color: Colors.white.withOpacity(0.8),
-                fontWeight: FontWeight.w500,
+                fontSize: ResponsiveHelper.fontSize(context, 12),
+                color: Colors.white.withValues(alpha: 0.7),
+                fontWeight: FontWeight.bold,
                 decoration: TextDecoration.none,
+                letterSpacing: 2.0,
               ),
             ),
           ],
+        );
+      },
+    );
+  }
+}
+
+class _TimeAttackTimer extends StatelessWidget {
+  final ColorMixerGame game;
+  const _TimeAttackTimer({required this.game});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: game,
+      builder: (context, child) {
+        final time = game.timeLeft.ceil();
+        final isLow = time <= 10;
+        final color = isLow ? AppTheme.neonMagenta : AppTheme.neonCyan;
+
+        return TweenAnimationBuilder<double>(
+          duration: const Duration(milliseconds: 500),
+          tween: Tween(begin: 1.0, end: isLow ? 1.1 : 1.0),
+          builder: (context, scale, child) {
+            return Transform.scale(
+              scale: isLow ? (1.0 + (game.timeLeft % 1.0) * 0.1) : 1.0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.6),
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(color: color, width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: color.withValues(alpha: 0.4),
+                      blurRadius: 10,
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.timer_outlined, color: color, size: 20),
+                    const SizedBox(width: 8),
+                    Text(
+                      "$time",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 20,
+                        decoration: TextDecoration.none,
+                        shadows: [
+                          Shadow(
+                            color: color.withValues(alpha: 0.6),
+                            blurRadius: 10,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         );
       },
     );

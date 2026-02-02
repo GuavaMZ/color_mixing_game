@@ -55,6 +55,22 @@ mixin AppStrings {
   static const String loading = "loading";
   static const String welcomeMessage = "welcome_message";
 
+  // Shop
+  static const String shopTitle = "shop_title";
+  static const String beakerClassic = "beaker_classic";
+  static const String beakerFlask = "beaker_flask";
+  static const String beakerMagic = "beaker_magic";
+  static const String beakerHex = "beaker_hex";
+  static const String select = "select";
+  static const String selected = "selected";
+  static const String price = "price";
+
+  // Pause Menu
+  static const String menu = "menu";
+  static const String giveUp = "give_up";
+  static const String areYouSure = "are_you_sure";
+  static const String giveUpConfirm = "give_up_confirm";
+
   static const Map<String, dynamic> En = {
     // Colors
     redColor: 'Red',
@@ -111,6 +127,21 @@ mixin AppStrings {
     // Misc
     loading: 'Loading...',
     welcomeMessage: 'Welcome to Color Lab!',
+    // Shop
+    shopTitle: 'Chemical Shop',
+    beakerClassic: 'Classic Beaker',
+    beakerFlask: 'Lab Flask',
+    beakerMagic: 'Magic Box',
+    beakerHex: 'Hexa Beaker',
+    select: 'Select',
+    selected: 'Selected',
+    price: 'Price',
+
+    // Pause Menu
+    menu: 'Menu',
+    giveUp: 'Give Up',
+    areYouSure: 'Are you sure?',
+    giveUpConfirm: 'You will lose progress',
   };
 
   static const Map<String, dynamic> Ar = {
@@ -169,6 +200,22 @@ mixin AppStrings {
     // Misc
     loading: 'جاري التحميل...',
     welcomeMessage: 'مرحباً بك في مختبر الألوان!',
+
+    // Shop
+    shopTitle: 'المتجر الكيميائي',
+    beakerClassic: 'كأس كلاسيكي',
+    beakerFlask: 'قارورة مختبر',
+    beakerMagic: 'صندوق سحري',
+    beakerHex: 'كأس سداسي',
+    select: 'اختيار',
+    selected: 'مختار',
+    price: 'السعر',
+
+    // Pause Menu
+    menu: 'القائمة',
+    giveUp: 'استسلام',
+    areYouSure: 'هل أنت متأكد؟',
+    giveUpConfirm: 'ستفقد التقدم',
   };
 
   static const Map<String, dynamic> Es = {
@@ -227,6 +274,22 @@ mixin AppStrings {
     // Misc
     loading: 'Cargando...',
     welcomeMessage: '¡Bienvenido a Color Lab!',
+
+    // Shop
+    shopTitle: 'Tienda Química',
+    beakerClassic: 'Vaso Clásico',
+    beakerFlask: 'Matraz de Lab',
+    beakerMagic: 'Caja Mágica',
+    beakerHex: 'Vaso Hexagonal',
+    select: 'Seleccionar',
+    selected: 'Seleccionado',
+    price: 'Precio',
+
+    // Pause Menu
+    menu: 'Menú',
+    giveUp: 'Rendirse',
+    areYouSure: '¿Estás seguro?',
+    giveUpConfirm: 'Perderás el progreso',
   };
 
   static const Map<String, dynamic> Fr = {
@@ -285,5 +348,21 @@ mixin AppStrings {
     // Misc
     loading: 'Chargement...',
     welcomeMessage: 'Bienvenue dans Color Lab !',
+
+    // Shop
+    shopTitle: 'Boutique Chimique',
+    beakerClassic: 'Bécher Classique',
+    beakerFlask: 'Fiole de Labo',
+    beakerMagic: 'Boîte Magique',
+    beakerHex: 'Bécher Hexa',
+    select: 'Sélectionner',
+    selected: 'Sélectionné',
+    price: 'Prix',
+
+    // Pause Menu
+    menu: 'Menu',
+    giveUp: 'Abandonner',
+    areYouSure: 'Êtes-vous sûr ?',
+    giveUpConfirm: 'Vous perdrez la progression',
   };
 }

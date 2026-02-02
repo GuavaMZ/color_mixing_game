@@ -1,21 +1,34 @@
 import 'dart:math';
 import 'package:color_mixing_deductive/core/color_logic.dart';
 import 'package:color_mixing_deductive/core/level_model.dart';
+import 'package:color_mixing_deductive/core/save_manager.dart';
 import 'package:flutter/material.dart';
 
 class LevelManager {
   int currentLevelIndex = 0;
-  late List<LevelModel> levels;
-  late Map<int, int> levelStars;
+  List<LevelModel> classicLevels = [];
+  List<LevelModel> timeAttackLevels = [];
+
+  Map<int, int> classicLevelStars = {};
+  Map<int, int> timeAttackLevelStars = {};
+
+  String currentMode = 'classic';
 
   LevelManager() {
-    levels = _generateLevels();
-    // Initialize stars for ALL levels: 0 = first level unlocked, -1 = locked
-    levelStars = {};
-    for (int i = 0; i < levels.length; i++) {
-      levelStars[i] = i == 0 ? 0 : -1;
+    classicLevels = _generateClassicLevels(100);
+    timeAttackLevels = _generateTimeAttackLevels(100);
+
+    // Default initialization (will be overwritten by initProgress)
+    for (int i = 0; i < 100; i++) {
+      classicLevelStars[i] = i == 0 ? 0 : -1;
+      timeAttackLevelStars[i] = i == 0 ? 0 : -1;
     }
   }
+
+  List<LevelModel> get levels =>
+      currentMode == 'classic' ? classicLevels : timeAttackLevels;
+  Map<int, int> get levelStars =>
+      currentMode == 'classic' ? classicLevelStars : timeAttackLevelStars;
 
   LevelModel get currentLevel => levels[currentLevelIndex];
 
@@ -31,319 +44,200 @@ class LevelManager {
     currentLevelIndex = 0;
   }
 
-  /// Reset all progress
-  void resetProgress() {
-    for (int i = 0; i < levels.length; i++) {
-      levelStars[i] = i == 0 ? 0 : -1;
+  Future<void> initProgress() async {
+    classicLevelStars = await SaveManager.loadProgress('classic');
+    timeAttackLevelStars = await SaveManager.loadProgress('timeAttack');
+
+    if (classicLevelStars.isEmpty || (classicLevelStars[0] ?? -1) == -1) {
+      classicLevelStars[0] = 0;
     }
-    currentLevelIndex = 0;
+    if (timeAttackLevelStars.isEmpty || (timeAttackLevelStars[0] ?? -1) == -1) {
+      timeAttackLevelStars[0] = 0;
+    }
   }
 
-  /// Generate a progressive list of solvable levels
-  List<LevelModel> _generateLevels() {
-    return [
-      // ===== BEGINNER LEVELS (2 colors) =====
+  /// Classic Mode: Logical, step-by-step introduction to color theory
+  List<LevelModel> _generateClassicLevels(int count) {
+    final List<LevelModel> result = [];
 
-      // Level 1: Pure Red (easiest - just one color)
-      _createLevel(
-        id: 1,
-        recipe: {'red': 3, 'green': 0, 'blue': 0},
-        availableColors: [Colors.red, Colors.green],
-        maxDrops: 8,
-        difficulty: 0.1,
-        hintKey: 'hint_level_1',
-      ),
+    for (int i = 1; i <= count; i++) {
+      int r = 0, g = 0, b = 0;
+      int maxDrops = 10;
+      double difficulty = i / count;
 
-      // Level 2: Pure Green
-      _createLevel(
-        id: 2,
-        recipe: {'red': 0, 'green': 3, 'blue': 0},
-        availableColors: [Colors.red, Colors.green],
-        maxDrops: 8,
-        difficulty: 0.15,
-        hintKey: 'hint_level_2',
-      ),
+      if (i <= 3) {
+        // Pure Primary Colors
+        if (i == 1) r = 3;
+        if (i == 2) g = 3;
+        if (i == 3) b = 3;
+        maxDrops = 6;
+      } else if (i <= 9) {
+        // Equal Binary Mixes (Yellow, Purple, Cyan)
+        if (i <= 5) {
+          r = 2;
+          g = 2;
+        } // Yellow
+        else if (i <= 7) {
+          r = 2;
+          b = 2;
+        } // Purple
+        else {
+          g = 2;
+          b = 2;
+        } // Cyan
+        maxDrops = 8;
+      } else if (i <= 20) {
+        // Proportional Binary Mixes (Orange, Lime, etc)
+        if (i % 3 == 0) {
+          r = 4;
+          g = 1;
+        } else if (i % 3 == 1) {
+          g = 4;
+          b = 1;
+        } else {
+          b = 4;
+          r = 1;
+        }
+        maxDrops = 10;
+      } else if (i <= 50) {
+        // Introduction to 3rd color
+        r = 2 + (i % 4);
+        g = 2 + ((i + 1) % 4);
+        b = 1;
+        maxDrops = 15;
+      } else {
+        // Complex tertiary shades
+        final random = Random(i);
+        r = random.nextInt(6) + 1;
+        g = random.nextInt(6) + 1;
+        b = random.nextInt(6) + 1;
+        maxDrops = 20;
+      }
 
-      // Level 3: Yellow (Red + Green equally)
-      _createLevel(
-        id: 3,
-        recipe: {'red': 2, 'green': 2, 'blue': 0},
-        availableColors: [Colors.red, Colors.green],
-        maxDrops: 10,
-        difficulty: 0.25,
-        hintKey: 'hint_level_3',
-      ),
-
-      // Level 4: Orange (More red than green)
-      _createLevel(
-        id: 4,
-        recipe: {'red': 3, 'green': 1, 'blue': 0},
-        availableColors: [Colors.red, Colors.green],
-        maxDrops: 10,
-        difficulty: 0.3,
-        hintKey: 'hint_level_4',
-      ),
-
-      // Level 5: Lime (More green than red)
-      _createLevel(
-        id: 5,
-        recipe: {'red': 1, 'green': 3, 'blue': 0},
-        availableColors: [Colors.red, Colors.green],
-        maxDrops: 10,
-        difficulty: 0.35,
-        hintKey: 'hint_level_5',
-      ),
-
-      // ===== INTERMEDIATE LEVELS (3 colors) =====
-
-      // Level 6: Pure Blue (introduction to third color)
-      _createLevel(
-        id: 6,
-        recipe: {'red': 0, 'green': 0, 'blue': 3},
-        availableColors: [Colors.red, Colors.green, Colors.blue],
-        maxDrops: 10,
-        difficulty: 0.4,
-        hintKey: 'hint_level_6',
-      ),
-
-      // Level 7: Purple (Red + Blue)
-      _createLevel(
-        id: 7,
-        recipe: {'red': 2, 'green': 0, 'blue': 2},
-        availableColors: [Colors.red, Colors.green, Colors.blue],
-        maxDrops: 12,
-        difficulty: 0.45,
-        hintKey: 'hint_level_7',
-      ),
-
-      // Level 8: Cyan (Green + Blue)
-      _createLevel(
-        id: 8,
-        recipe: {'red': 0, 'green': 2, 'blue': 2},
-        availableColors: [Colors.red, Colors.green, Colors.blue],
-        maxDrops: 12,
-        difficulty: 0.5,
-        hintKey: 'hint_level_8',
-      ),
-
-      // Level 9: Pink (More red, less blue)
-      _createLevel(
-        id: 9,
-        recipe: {'red': 4, 'green': 0, 'blue': 1},
-        availableColors: [Colors.red, Colors.green, Colors.blue],
-        maxDrops: 12,
-        difficulty: 0.55,
-        hintKey: 'hint_level_9',
-      ),
-
-      // Level 10: Brown (All three colors, red dominant)
-      _createLevel(
-        id: 10,
-        recipe: {'red': 3, 'green': 2, 'blue': 1},
-        availableColors: [Colors.red, Colors.green, Colors.blue],
-        maxDrops: 15,
-        difficulty: 0.6,
-        hintKey: 'hint_level_10',
-      ),
-
-      // ===== ADVANCED LEVELS =====
-
-      // Level 11: Teal (Green + Blue, green dominant)
-      _createLevel(
-        id: 11,
-        recipe: {'red': 0, 'green': 3, 'blue': 2},
-        availableColors: [Colors.red, Colors.green, Colors.blue],
-        maxDrops: 12,
-        difficulty: 0.65,
-        hintKey: 'hint_level_11',
-      ),
-
-      // Level 12: Magenta (Red + Blue, red dominant)
-      _createLevel(
-        id: 12,
-        recipe: {'red': 3, 'green': 0, 'blue': 2},
-        availableColors: [Colors.red, Colors.green, Colors.blue],
-        maxDrops: 12,
-        difficulty: 0.7,
-        hintKey: 'hint_level_12',
-      ),
-
-      // Level 13: Olive (Red + Green, green dominant)
-      _createLevel(
-        id: 13,
-        recipe: {'red': 1, 'green': 4, 'blue': 0},
-        availableColors: [Colors.red, Colors.green, Colors.blue],
-        maxDrops: 12,
-        difficulty: 0.72,
-        hintKey: 'hint_level_13',
-      ),
-
-      // Level 14: Gray (Equal mix of all three)
-      _createLevel(
-        id: 14,
-        recipe: {'red': 2, 'green': 2, 'blue': 2},
-        availableColors: [Colors.red, Colors.green, Colors.blue],
-        maxDrops: 15,
-        difficulty: 0.75,
-        hintKey: 'hint_level_14',
-      ),
-
-      // Level 15: Sky Blue (More blue, some green, tiny red)
-      _createLevel(
-        id: 15,
-        recipe: {'red': 1, 'green': 2, 'blue': 4},
-        availableColors: [Colors.red, Colors.green, Colors.blue],
-        maxDrops: 15,
-        difficulty: 0.8,
-        hintKey: 'hint_level_15',
-      ),
-
-      // ===== EXPERT LEVELS =====
-
-      // Level 16: Coral (Complex red-orange-pink)
-      _createLevel(
-        id: 16,
-        recipe: {'red': 5, 'green': 2, 'blue': 2},
-        availableColors: [Colors.red, Colors.green, Colors.blue],
-        maxDrops: 18,
-        difficulty: 0.85,
-        hintKey: 'hint_level_16',
-      ),
-
-      // Level 17: Lavender (Subtle purple-pink)
-      _createLevel(
-        id: 17,
-        recipe: {'red': 3, 'green': 1, 'blue': 4},
-        availableColors: [Colors.red, Colors.green, Colors.blue],
-        maxDrops: 18,
-        difficulty: 0.88,
-        hintKey: 'hint_level_17',
-      ),
-
-      // Level 18: Peach (Delicate orange)
-      _createLevel(
-        id: 18,
-        recipe: {'red': 4, 'green': 3, 'blue': 1},
-        availableColors: [Colors.red, Colors.green, Colors.blue],
-        maxDrops: 18,
-        difficulty: 0.9,
-        hintKey: 'hint_level_18',
-      ),
-
-      // Level 19: Mint (Subtle cyan-green)
-      _createLevel(
-        id: 19,
-        recipe: {'red': 1, 'green': 4, 'blue': 3},
-        availableColors: [Colors.red, Colors.green, Colors.blue],
-        maxDrops: 18,
-        difficulty: 0.93,
-        hintKey: 'hint_level_19',
-      ),
-
-      // Level 20: Burgundy (Deep red-purple) - FINAL CHALLENGE
-      _createLevel(
-        id: 20,
-        recipe: {'red': 5, 'green': 1, 'blue': 3},
-        availableColors: [Colors.red, Colors.green, Colors.blue],
-        maxDrops: 20,
-        difficulty: 0.95,
-        hintKey: 'hint_level_20',
-      ),
-    ];
+      result.add(
+        _createLevel(
+          id: i,
+          recipe: {'red': r, 'green': g, 'blue': b},
+          maxDrops: maxDrops,
+          difficulty: difficulty,
+        ),
+      );
+    }
+    return result;
   }
 
-  /// Helper method to create a level from a recipe
+  /// Time Attack Mode: Faster paced, more randomized but still progressive
+  List<LevelModel> _generateTimeAttackLevels(int count) {
+    final List<LevelModel> result = [];
+    final random = Random(12345);
+
+    for (int i = 1; i <= count; i++) {
+      double difficulty = i / count;
+      int r = 0, g = 0, b = 0;
+      int maxDrops = 12 + (i ~/ 10);
+
+      // More random than classic but scaling complexity
+      if (i <= 20) {
+        r = random.nextInt(4);
+        g = random.nextInt(4);
+        if (r + g == 0) r = 2;
+      } else if (i <= 50) {
+        r = random.nextInt(5);
+        g = random.nextInt(5);
+        b = random.nextInt(3);
+        if (r + g + b == 0) g = 3;
+      } else {
+        r = random.nextInt(7) + 1;
+        g = random.nextInt(7) + 1;
+        b = random.nextInt(7) + 1;
+      }
+
+      result.add(
+        _createLevel(
+          id: i,
+          recipe: {'red': r, 'green': g, 'blue': b},
+          maxDrops: maxDrops,
+          difficulty: difficulty,
+        ),
+      );
+    }
+    return result;
+  }
+
   LevelModel _createLevel({
     required int id,
     required Map<String, int> recipe,
-    required List<Color> availableColors,
     required int maxDrops,
     required double difficulty,
-    String hintKey = '',
   }) {
-    // Calculate the target color from the recipe
-    final Color targetColor = ColorLogic.createMixedColor(
-      recipe['red'] ?? 0,
-      recipe['green'] ?? 0,
-      recipe['blue'] ?? 0,
-    );
+    final int r = recipe['red'] ?? 0;
+    final int g = recipe['green'] ?? 0;
+    final int b = recipe['blue'] ?? 0;
+
+    final Color targetColor = ColorLogic.createMixedColor(r, g, b);
 
     return LevelModel(
       id: id,
       maxDrops: maxDrops,
       difficultyFactor: difficulty,
-      availableColors: availableColors,
+      availableColors: [Colors.red, Colors.green, Colors.blue],
       targetColor: targetColor,
       recipe: recipe,
-      hint: _getHintForLevel(id),
+      hint: _generateSmartHint(r, g, b),
     );
   }
 
-  /// Get localized hint - for now, using English. Can be extended for localization.
-  String _getHintForLevel(int levelId) {
-    const hints = {
-      1: 'Try using only red drops!',
-      2: 'This time, use only green!',
-      3: 'Mix red and green equally to make yellow!',
-      4: 'Use more red than green for orange!',
-      5: 'Use more green than red!',
-      6: 'Now you have blue! Try using only blue drops.',
-      7: 'Mix red and blue equally for purple!',
-      8: 'Mix green and blue equally for cyan!',
-      9: 'Use lots of red with just a touch of blue!',
-      10: 'Mix all three colors! More red, medium green, less blue.',
-      11: 'More green than blue, no red!',
-      12: 'More red than blue, skip green!',
-      13: 'Lots of green with a little red!',
-      14: 'Mix all three colors equally!',
-      15: 'Lots of blue, medium green, just a touch of red!',
-      16: 'Dominant red with equal green and blue!',
-      17: 'More blue than red, minimal green!',
-      18: 'Lots of red, good amount of green, tiny blue!',
-      19: 'More green than blue, minimal red!',
-      20: 'Master level! Lots of red, some blue, minimal green!',
-    };
-    return hints[levelId] ?? '';
+  String _generateSmartHint(int r, int g, int b) {
+    if (r > 0 && g == 0 && b == 0) return "Think red. Just red.";
+    if (g > 0 && r == 0 && b == 0) return "Go with pure green energy.";
+    if (b > 0 && r == 0 && g == 0) return "Only the blue drops today.";
+
+    if (r == g && r > 0 && b == 0) return "Mix red and green equally!";
+    if (r == b && r > 0 && g == 0) return "A balanced mix of red and blue.";
+    if (g == b && g > 0 && r == 0) return "Combine green and blue evenly.";
+
+    if (r > g && r > b) {
+      if (g > 0 && b > 0) return "Mostly red, with a splash of both others.";
+      if (g > 0) return "Red is the base, add a bit of green.";
+      return "Strong red with a touch of blue.";
+    }
+
+    if (g > r && g > b) {
+      if (r > 0 && b > 0)
+        return "Green is dominant here. Add a tiny bit of others.";
+      if (r > 0) return "Start with green, then some red.";
+      return "Mainly green, balanced with blue.";
+    }
+
+    if (b > r && b > g) {
+      if (r > 0 && g > 0)
+        return "A deep blue theme with slight hints of red and green.";
+      if (r > 0) return "Blue first, then add red.";
+      return "Lots of blue, just a little green.";
+    }
+
+    if (r == g && g == b && r > 0)
+      return "The perfect balance of all three colors!";
+
+    return "Observe the target closely and find the right mix.";
   }
 
-  /// Get a random level of specific difficulty
-  LevelModel getRandomLevelByDifficulty(
-    double minDifficulty,
-    double maxDifficulty,
-  ) {
-    final filteredLevels = levels
-        .where(
-          (level) =>
-              level.difficultyFactor >= minDifficulty &&
-              level.difficultyFactor <= maxDifficulty,
-        )
-        .toList();
+  void unlockNextLevel(int currentLvlIdx, int stars) {
+    levelStars[currentLvlIdx] = stars;
 
-    if (filteredLevels.isEmpty) return levels[0];
-
-    return filteredLevels[Random().nextInt(filteredLevels.length)];
-  }
-
-  void unlockNextLevel(int stars) {
-    levelStars[currentLevelIndex] = stars;
-    if (currentLevelIndex < levels.length - 1) {
-      if (levelStars[currentLevelIndex + 1] == -1) {
-        levelStars[currentLevelIndex + 1] = 0;
+    int nextLvl = currentLvlIdx + 1;
+    if (nextLvl < 100) {
+      if ((levelStars[nextLvl] ?? -1) == -1) {
+        levelStars[nextLvl] = 0;
       }
     }
+
+    SaveManager.saveProgress(levelStars, currentMode);
   }
 
-  /// Get total number of levels
   int get totalLevels => levels.length;
 
-  /// Get completion percentage
-  double get completionPercentage => (currentLevelIndex / totalLevels) * 100;
-
-  /// Get total stars earned
   int get totalStarsEarned {
     return levelStars.values.where((s) => s > 0).fold(0, (sum, s) => sum + s);
   }
-
-  /// Get maximum possible stars
-  int get maxPossibleStars => levels.length * 3;
 }

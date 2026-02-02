@@ -20,7 +20,6 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
   late AnimationController _logoController;
   late AnimationController _buttonsController;
   late Animation<double> _logoScale;
-  late Animation<double> _logoGlow;
   late Animation<Offset> _classicSlide;
   late Animation<Offset> _timeSlide;
   late Animation<double> _fadeIn;
@@ -29,24 +28,14 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
   void initState() {
     super.initState();
 
-    // Logo animation
+    // Start logo animation
     _logoController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
 
-    _logoScale = Tween<double>(begin: 0.5, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _logoController,
-        curve: const Interval(0.0, 0.6, curve: Curves.elasticOut),
-      ),
-    );
-
-    _logoGlow = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _logoController,
-        curve: const Interval(0.4, 1.0, curve: Curves.easeOut),
-      ),
+    _logoScale = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _logoController, curve: Curves.elasticOut),
     );
 
     // Buttons animation
@@ -93,7 +82,6 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     final safePadding = MediaQuery.of(context).padding;
 
     return Scaffold(
@@ -121,12 +109,24 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                         children: [
                           FadeTransition(
                             opacity: _fadeIn,
-                            child: _buildIconButton(
-                              icon: Icons.settings_rounded,
-                              onTap: () {
-                                AudioManager().playButton();
-                                widget.game.overlays.add('Settings');
-                              },
+                            child: Row(
+                              children: [
+                                _buildIconButton(
+                                  icon: Icons.shopping_basket_rounded,
+                                  onTap: () {
+                                    AudioManager().playButton();
+                                    widget.game.overlays.add('Shop');
+                                  },
+                                ),
+                                const SizedBox(width: 12),
+                                _buildIconButton(
+                                  icon: Icons.settings_rounded,
+                                  onTap: () {
+                                    AudioManager().playButton();
+                                    widget.game.overlays.add('Settings');
+                                  },
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -143,58 +143,24 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                           scale: _logoScale.value,
                           child: Column(
                             children: [
-                              // Glowing title
-                              ShaderMask(
-                                shaderCallback: (bounds) =>
-                                    const LinearGradient(
-                                      colors: [
-                                        Color(0xFF4facfe),
-                                        Color(0xFF667eea),
-                                        Color(0xFF764ba2),
-                                      ],
-                                    ).createShader(bounds),
-                                child: Text(
-                                  AppStrings.appTitle.getString(context),
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: ResponsiveHelper.fontSize(
-                                      context,
-                                      64,
-                                    ),
-                                    fontWeight: FontWeight.w900,
-                                    color: Colors.white,
-                                    letterSpacing: 6,
-                                    height: 1.1,
-                                    shadows: [
-                                      Shadow(
-                                        color: const Color(
-                                          0xFF667eea,
-                                        ).withOpacity(_logoGlow.value * 0.8),
-                                        blurRadius: 30 * _logoGlow.value,
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              Text(
+                                AppStrings.appTitle.getString(context),
+                                textAlign: TextAlign.center,
+                                style: AppTheme.heading1(context),
                               ),
                               const SizedBox(height: 8),
                               // Subtitle line
                               Container(
                                 width: 80,
-                                height: 3,
+                                height: 4,
                                 decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      Color(0xFF4facfe),
-                                      Color(0xFF764ba2),
-                                    ],
-                                  ),
+                                  color: Colors.white,
                                   borderRadius: BorderRadius.circular(2),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: const Color(
-                                        0xFF667eea,
-                                      ).withOpacity(0.5),
-                                      blurRadius: 10,
+                                      color: Colors.black.withOpacity(0.3),
+                                      offset: const Offset(0, 4),
+                                      blurRadius: 0,
                                     ),
                                   ],
                                 ),
@@ -220,7 +186,8 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                         ),
                         onTap: () {
                           AudioManager().playButton();
-                          widget.game.selectModeAndStart(GameMode.classic);
+                          widget.game.currentMode = GameMode.classic;
+                          widget.game.transitionTo('MainMenu', 'LevelMap');
                         },
                       ),
                     ),
@@ -239,7 +206,9 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                         ),
                         onTap: () {
                           AudioManager().playButton();
-                          widget.game.selectModeAndStart(GameMode.timeAttack);
+                          widget.game.currentMode = GameMode.timeAttack;
+                          widget.game.timeLeft = 30.0;
+                          widget.game.transitionTo('MainMenu', 'LevelMap');
                         },
                       ),
                     ),
@@ -280,94 +249,63 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
           desktop: 450.0,
         ),
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.white.withOpacity(0.15),
-                  Colors.white.withOpacity(0.05),
+      child: Container(
+        decoration: AppTheme.cartoonDecoration(
+          borderRadius: 24,
+          fillColor: AppTheme.cardColor.withOpacity(0.8),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(24),
+            child: Padding(
+              padding: EdgeInsets.all(ResponsiveHelper.spacing(context, 20)),
+              child: Row(
+                children: [
+                  // Icon container with gradient
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      gradient: gradient,
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: Colors.white, width: 2),
+                    ),
+                    child: Icon(
+                      icon,
+                      color: Colors.white,
+                      size: ResponsiveHelper.iconSize(context, 28),
+                    ),
+                  ),
+                  SizedBox(width: ResponsiveHelper.spacing(context, 16)),
+                  // Text content
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: AppTheme.heading3(context).copyWith(
+                            fontSize: ResponsiveHelper.fontSize(context, 20),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          subtitle,
+                          style: AppTheme.caption(context),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Arrow
+                  const Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    color: Colors.white,
+                    size: 18,
+                  ),
                 ],
-              ),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.2),
-                width: 1.5,
-              ),
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: onTap,
-                borderRadius: BorderRadius.circular(20),
-                splashColor: Colors.white.withOpacity(0.1),
-                highlightColor: Colors.white.withOpacity(0.05),
-                child: Padding(
-                  padding: EdgeInsets.all(
-                    ResponsiveHelper.spacing(context, 20),
-                  ),
-                  child: Row(
-                    children: [
-                      // Icon container with gradient
-                      Container(
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
-                          gradient: gradient,
-                          borderRadius: BorderRadius.circular(15),
-                          boxShadow: [
-                            BoxShadow(
-                              color: (gradient as LinearGradient).colors.first
-                                  .withOpacity(0.4),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          icon,
-                          color: Colors.white,
-                          size: ResponsiveHelper.iconSize(context, 28),
-                        ),
-                      ),
-                      SizedBox(width: ResponsiveHelper.spacing(context, 16)),
-                      // Text content
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              title,
-                              style: AppTheme.heading3(context).copyWith(
-                                fontSize: ResponsiveHelper.fontSize(
-                                  context,
-                                  20,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              subtitle,
-                              style: AppTheme.caption(context),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
-                      // Arrow
-                      Icon(
-                        Icons.arrow_forward_ios_rounded,
-                        color: Colors.white.withOpacity(0.5),
-                        size: 18,
-                      ),
-                    ],
-                  ),
-                ),
               ),
             ),
           ),
@@ -380,30 +318,20 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
     required IconData icon,
     required VoidCallback onTap,
   }) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(15),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: Colors.white.withOpacity(0.2)),
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: onTap,
-              borderRadius: BorderRadius.circular(15),
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Icon(
-                  icon,
-                  color: Colors.white.withOpacity(0.8),
-                  size: 24,
-                ),
-              ),
-            ),
+    return Container(
+      decoration: AppTheme.cartoonDecoration(
+        borderRadius: 15,
+        borderWidth: 3,
+        fillColor: Colors.white.withOpacity(0.1),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(15),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Icon(icon, color: Colors.white, size: 24),
           ),
         ),
       ),
@@ -471,8 +399,10 @@ class _FloatingBubbleState extends State<_FloatingBubble>
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  Colors.white.withOpacity(_opacity),
-                  Colors.white.withOpacity(0),
+                  Colors.primaries[widget.index % Colors.primaries.length]
+                      .withOpacity(_opacity * 3),
+                  Colors.primaries[widget.index % Colors.primaries.length]
+                      .withOpacity(0),
                 ],
               ),
             ),

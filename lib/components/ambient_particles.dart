@@ -4,7 +4,7 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
 /// Ambient floating particles for a relaxing atmosphere
-class AmbientParticles extends Component with HasGameRef<ColorMixerGame> {
+class AmbientParticles extends Component with HasGameReference<ColorMixerGame> {
   final List<FloatingBubble> bubbles = [];
   final Random random = Random();
   final int particleCount = 15;
@@ -18,8 +18,8 @@ class AmbientParticles extends Component with HasGameRef<ColorMixerGame> {
       bubbles.add(
         FloatingBubble(
           position: Vector2(
-            random.nextDouble() * gameRef.size.x,
-            random.nextDouble() * gameRef.size.y,
+            random.nextDouble() * game.size.x,
+            random.nextDouble() * game.size.y,
           ),
           size: 5 + random.nextDouble() * 15,
           speed: 10 + random.nextDouble() * 30,
@@ -33,7 +33,7 @@ class AmbientParticles extends Component with HasGameRef<ColorMixerGame> {
     super.update(dt);
 
     for (var bubble in bubbles) {
-      bubble.update(dt, gameRef.size);
+      bubble.update(dt, game.size);
     }
   }
 
@@ -59,7 +59,12 @@ class FloatingBubble {
     required this.size,
     required this.speed,
   }) : opacity = 0.1 + Random().nextDouble() * 0.2,
-       phase = Random().nextDouble() * pi * 2;
+       phase = Random().nextDouble() * pi * 2,
+       _highlightPaint = Paint()..style = PaintingStyle.fill,
+       _gradientPaint = Paint();
+
+  final Paint _highlightPaint;
+  final Paint _gradientPaint;
 
   void update(double dt, Vector2 screenSize) {
     // Float upward
@@ -83,29 +88,26 @@ class FloatingBubble {
     // Draw bubble with gradient
     final gradient = RadialGradient(
       colors: [
-        Colors.white.withOpacity(opacity * 0.8),
-        Colors.white.withOpacity(opacity * 0.3),
-        Colors.white.withOpacity(0),
+        Colors.white.withValues(alpha: opacity * 0.8),
+        Colors.white.withValues(alpha: opacity * 0.3),
+        Colors.white.withValues(alpha: 0),
       ],
       stops: const [0.0, 0.7, 1.0],
     );
 
-    final gradientPaint = Paint()
-      ..shader = gradient.createShader(
-        Rect.fromCircle(center: Offset(position.x, position.y), radius: size),
-      );
+    _gradientPaint.shader = gradient.createShader(
+      Rect.fromCircle(center: Offset(position.x, position.y), radius: size),
+    );
 
-    canvas.drawCircle(Offset(position.x, position.y), size, gradientPaint);
+    canvas.drawCircle(Offset(position.x, position.y), size, _gradientPaint);
 
     // Add highlight
-    final highlightPaint = Paint()
-      ..color = Colors.white.withOpacity(opacity * 1.5)
-      ..style = PaintingStyle.fill;
+    _highlightPaint.color = Colors.white.withValues(alpha: opacity * 1.5);
 
     canvas.drawCircle(
       Offset(position.x - size * 0.3, position.y - size * 0.3),
       size * 0.3,
-      highlightPaint,
+      _highlightPaint,
     );
   }
 }
