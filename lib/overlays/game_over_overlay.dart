@@ -32,21 +32,27 @@ class GameOverOverlay extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  Icons.timer_off_outlined,
+                  game.isTimeUp
+                      ? Icons.timer_off_outlined
+                      : Icons.opacity_rounded,
                   color: AppTheme.primaryColor,
                   size: 80,
                 ),
               ),
               const SizedBox(height: 24),
               Text(
-                AppStrings.timeUp.getString(context),
+                game.isTimeUp
+                    ? AppStrings.timeUp.getString(context)
+                    : AppStrings.outOfDrops.getString(context),
                 style: AppTheme.heading2(
                   context,
                 ).copyWith(color: Colors.white, fontSize: 36),
               ),
               const SizedBox(height: 12),
               Text(
-                AppStrings.timeUpDesc.getString(context),
+                game.isTimeUp
+                    ? AppStrings.timeUpDesc.getString(context)
+                    : AppStrings.outOfDropsDesc.getString(context),
                 textAlign: TextAlign.center,
                 style: AppTheme.bodyMedium(
                   context,

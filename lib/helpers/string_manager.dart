@@ -53,6 +53,8 @@ mixin AppStrings {
   static const String timeUpDesc = "time_up_desc";
   static const String tryAgain = "try_again";
   static const String retry = "retry";
+  static const String outOfDrops = "out_of_drops";
+  static const String outOfDropsDesc = "out_of_drops_desc";
   static const String levelMapText = "level_map_text";
 
   // Misc
@@ -152,6 +154,8 @@ mixin AppStrings {
     timeUpDesc: "You weren't fast enough this time. Try again!",
     tryAgain: 'Try Again',
     retry: 'Retry',
+    outOfDrops: 'Out of Drops!',
+    outOfDropsDesc: 'You reached the maximum drops. Try focusing on the ratio!',
     levelMapText: 'Map',
 
     // Misc
@@ -254,6 +258,9 @@ mixin AppStrings {
     timeUpDesc: 'لم تكن سريعاً بما يكفي هذه المرة. حاول مرة أخرى!',
     tryAgain: 'حاول مجدداً',
     retry: 'إعادة',
+    outOfDrops: 'نفدت القطرات!',
+    outOfDropsDesc:
+        'لقد وصلت إلى الحد الأقصى للقطرات. حاول التركيز على النسبة!',
     levelMapText: 'الخريطة',
 
     // Misc
@@ -357,6 +364,9 @@ mixin AppStrings {
         'No has sido lo suficientemente rápido esta vez. ¡Inténtalo de nuevo!',
     tryAgain: 'Intentar de Nuevo',
     retry: 'Reintentar',
+    outOfDrops: '¡Sin Gotas!',
+    outOfDropsDesc:
+        'Has alcanzado el máximo de gotas. ¡Intenta concentrarte en la proporción!',
     levelMapText: 'Mapa',
 
     // Misc
@@ -460,6 +470,9 @@ mixin AppStrings {
     timeUpDesc: "Tu n'as pas été assez rapide cette fois. Réessaie !",
     tryAgain: 'Réessayer',
     retry: 'Réessayer',
+    outOfDrops: 'Plus de Gouttes !',
+    outOfDropsDesc:
+        'Tu as atteint le maximum de gouttes. Essaie de te concentrer sur le ratio !',
     levelMapText: 'Carte',
 
     // Misc

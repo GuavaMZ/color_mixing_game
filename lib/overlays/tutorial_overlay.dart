@@ -22,7 +22,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
   final List<String> _instructions = [
     "Welcome to Color Lab! 🧪\nYour goal is to mix colors to match the target.",
     "Tap the Red, Green, and Blue buttons to add drops into the beaker. 🔴🟢🔵",
-    "Watch the 'Match %' indicator.\nGet above 95% to win! 🏆",
+    "Watch the 'Match %' indicator.\nReach 100% to win! 🏆",
     "Be careful not to overflow! You have a limited number of drops per level. 💧",
   ];
 

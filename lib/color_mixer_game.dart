@@ -34,6 +34,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   GameMode currentMode = GameMode.none;
   double timeLeft = 30.0;
   double maxTime = 30.0; // Added for progress calculation
+  bool isTimeUp = false;
 
   void Function(VoidCallback)? _transitionCallback;
 
@@ -91,6 +92,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       timeLeft -= dt;
       if (timeLeft <= 0) {
         timeLeft = 0;
+        isTimeUp = true;
         _handleGameOver();
       }
       notifyListeners();
@@ -99,7 +101,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     // Check win condition ONLY if color changed
     if (!_hasWon && beaker.currentColor != _lastBeakerColor) {
       _lastBeakerColor = beaker.currentColor;
-      if (ColorLogic.checkMatch(beaker.currentColor, targetColor) >= 95.0) {
+      if (ColorLogic.checkMatch(beaker.currentColor, targetColor) == 100.0) {
         _hasWon = true;
         showWinEffect();
       }
@@ -200,6 +202,10 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     // Check if max drops reached
     if (rDrops + gDrops + bDrops >= maxDrops) {
       dropsLimitReached.value = true;
+      if (!_hasWon) {
+        isTimeUp = false;
+        _handleGameOver();
+      }
     }
 
     // Calculate new color based on drops
@@ -214,6 +220,12 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     // Update observers for UI
     totalDrops.value = rDrops + gDrops + bDrops;
     matchPercentage.value = ColorLogic.checkMatch(newColor, targetColor);
+
+    // Auto-win if 100% match
+    if (matchPercentage.value == 100.0) {
+      _hasWon = true;
+      showWinEffect();
+    }
 
     // Check if approaching limit
     if (totalDrops.value >= maxDrops - 2) {
@@ -258,8 +270,10 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       maxTime = 30.0 - (level.difficultyFactor * 10);
       maxTime = maxTime.clamp(10, 30);
       timeLeft = maxTime;
+      isTimeUp = false;
     } else {
       timeLeft = 0;
+      isTimeUp = false;
     }
 
     notifyListeners();

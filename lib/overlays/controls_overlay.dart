@@ -106,51 +106,7 @@ class ControlsOverlay extends StatelessWidget {
                         // Color buttons row
                         _buildControlsRow(context),
 
-                        // Reset button
-                        ValueListenableBuilder<int>(
-                          valueListenable: game.totalDrops,
-                          builder: (context, value, child) {
-                            if (value > 0) {
-                              return Padding(
-                                padding: const EdgeInsets.only(top: 8.0),
-                                child: _CosmicButton(
-                                  onTap: game.resetMixing,
-                                  color: AppTheme.cardColor.withValues(
-                                    alpha: 0.6,
-                                  ),
-                                  borderColor: Colors.white.withValues(
-                                    alpha: 0.2,
-                                  ),
-                                  width: 120, // Smaller reset button
-                                  height: 40,
-                                  borderRadius: 20,
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.refresh_rounded,
-                                        color: Colors.white,
-                                        size: 18,
-                                      ),
-                                      SizedBox(width: 6),
-                                      Text(
-                                        AppStrings.reset.getString(context),
-                                        style: AppTheme.bodyMedium(context)
-                                            .copyWith(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }
-                            return const SizedBox(
-                              height: 48,
-                            ); // Placeholder space
-                          },
-                        ),
+                        const SizedBox(height: 16), // Placeholder space
                       ],
                     ),
                   ),
