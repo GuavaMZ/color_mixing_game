@@ -21,11 +21,14 @@ class AudioManager {
   static const String buttonSound = 'button.mp3';
   static const String starSound = 'star.mp3';
   static const String unlockSound = 'unlock.mp3';
+  static const String gameOverSound = 'game_over.mp3';
   static const String ambientMusic = 'ambient.mp3';
 
   // Persistence keys
   static const String _sfxKey = 'sfx_enabled';
   static const String _musicKey = 'music_enabled';
+
+  final Set<String> _loadedSounds = {};
 
   /// Initialize audio system and preload sounds
   Future<void> initialize() async {
@@ -37,29 +40,50 @@ class AudioManager {
       _sfxEnabled = prefs.getBool(_sfxKey) ?? true;
       _musicEnabled = prefs.getBool(_musicKey) ?? true;
 
-      // Preload all sound effects
-      await FlameAudio.audioCache.loadAll([
+      // Preload available sound effects
+      final soundsToLoad = [
         dropSound,
         winSound,
         resetSound,
-        // buttonSound,
-        // starSound,
-        // unlockSound,
-      ]);
+        buttonSound,
+        starSound,
+        unlockSound,
+        gameOverSound,
+      ];
+
+      for (final sound in soundsToLoad) {
+        try {
+          await FlameAudio.audioCache.load(sound);
+          _loadedSounds.add(sound);
+          debugPrint('AudioManager: Loaded $sound');
+        } catch (e) {
+          debugPrint('AudioManager: Asset $sound not found or failed to load');
+        }
+      }
+
       _initialized = true;
-      debugPrint('AudioManager: Initialized successfully');
+      debugPrint(
+        'AudioManager: Initialized with ${_loadedSounds.length} sounds',
+      );
 
       if (_musicEnabled) {
         startMusic();
       }
     } catch (e) {
-      debugPrint('AudioManager: Failed to initialize - $e');
+      debugPrint('AudioManager: Critical initialization failure - $e');
+      // Even if cache fails, we mark initialized to allow settings to work
+      _initialized = true;
     }
   }
 
   /// Play sound effect
   Future<void> playSfx(String sound, {double? volume}) async {
     if (!_sfxEnabled || !_initialized) return;
+
+    if (!_loadedSounds.contains(sound)) {
+      debugPrint('AudioManager: Cannot play $sound - not loaded');
+      return;
+    }
 
     try {
       await FlameAudio.play(sound, volume: volume ?? _sfxVolume);
@@ -69,7 +93,7 @@ class AudioManager {
   }
 
   /// Play drop sound
-  void playDrop() => playSfx(dropSound, volume: 0.5);
+  void playDrop() => playSfx(dropSound, volume: 0.8);
 
   /// Play win celebration sound
   void playWin() => playSfx(winSound, volume: 0.7);
@@ -85,6 +109,9 @@ class AudioManager {
 
   /// Play level unlock sound
   void playUnlock() => playSfx(unlockSound, volume: 0.6);
+
+  /// Play game over sound
+  void playGameOver() => playSfx(gameOverSound, volume: 0.5);
 
   /// Start background music
   Future<void> startMusic() async {

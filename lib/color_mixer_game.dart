@@ -9,7 +9,6 @@ import 'package:color_mixing_deductive/core/level_manager.dart';
 import 'package:color_mixing_deductive/core/save_manager.dart';
 import 'package:color_mixing_deductive/helpers/audio_manager.dart';
 import 'package:flame/game.dart';
-import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 
 enum GameMode { classic, timeAttack, none }
@@ -199,15 +198,6 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       ),
     );
 
-    // Check if max drops reached
-    if (rDrops + gDrops + bDrops >= maxDrops) {
-      dropsLimitReached.value = true;
-      if (!_hasWon) {
-        isTimeUp = false;
-        _handleGameOver();
-      }
-    }
-
     // Calculate new color based on drops
     Color newColor = ColorLogic.createMixedColor(rDrops, gDrops, bDrops);
 
@@ -227,9 +217,13 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       showWinEffect();
     }
 
-    // Check if approaching limit
-    if (totalDrops.value >= maxDrops - 2) {
+    // Check if max drops reached
+    if (totalDrops.value >= maxDrops) {
       dropsLimitReached.value = true;
+      if (!_hasWon) {
+        isTimeUp = false;
+        _handleGameOver();
+      }
     } else {
       dropsLimitReached.value = false;
     }
@@ -328,11 +322,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
   void _handleGameOver() {
     _hasWon = false; // نضمن أن حالة الفوز لم تتحقق
-    // إيقاف أي أصوات أو حركات جارية
-    FlameAudio.play(
-      'game_over_sound.mp3',
-      volume: 0.5,
-    ); // اختيار صوت يوحي بالخسارة
+
+    _audio.playGameOver();
 
     overlays.add('GameOver');
   }
