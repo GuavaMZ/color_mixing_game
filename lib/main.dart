@@ -25,15 +25,16 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  // Set system UI overlay style
+  // Set system UI overlay style and mode
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.light,
-      systemNavigationBarColor: Color(0xFF1A1A2E),
+      systemNavigationBarColor: Colors.transparent,
       systemNavigationBarIconBrightness: Brightness.light,
     ),
   );
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
   // Initialize localization
   await FlutterLocalization.instance.ensureInitialized();
@@ -90,29 +91,75 @@ class _MyAppState extends State<MyApp> {
           surface: Color(0xFF16213E),
         ),
       ),
-      home: GameWidget<ColorMixerGame>(
-        game: ColorMixerGame(),
-        overlayBuilderMap: {
-          'Controls': (context, game) => ControlsOverlay(game: game),
-          'WinMenu': (context, game) => WinMenuOverlay(game: game),
-          'LevelMap': (context, game) => LevelMapOverlay(game: game),
-          'MainMenu': (context, game) => MainMenuOverlay(game: game),
-          'Settings': (context, game) => SettingsOverlay(game: game),
-          'Transition': (context, game) => TransitionOverlay(game: game),
-          'GameOver': (context, game) => GameOverOverlay(game: game),
-          'Shop': (context, game) => ShopOverlay(game: game),
-          'PauseMenu': (context, game) => PauseMenuOverlay(game: game),
-          'Tutorial': (context, game) => TutorialOverlay(game: game),
+      home: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
+          if (didPop) return;
+          final shouldPop = await _showExitDialog(context);
+          if (shouldPop == true && mounted) {
+            SystemNavigator.pop();
+          }
         },
-        initialActiveOverlays: const ['MainMenu', 'Transition'],
-        loadingBuilder: (context) => Container(
-          color: const Color(0xFF1A1A2E),
-          child: const Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF667eea)),
+        child: GameWidget<ColorMixerGame>(
+          game: ColorMixerGame(),
+          overlayBuilderMap: {
+            'Controls': (context, game) => ControlsOverlay(game: game),
+            'WinMenu': (context, game) => WinMenuOverlay(game: game),
+            'LevelMap': (context, game) => LevelMapOverlay(game: game),
+            'MainMenu': (context, game) => MainMenuOverlay(game: game),
+            'Settings': (context, game) => SettingsOverlay(game: game),
+            'Transition': (context, game) => TransitionOverlay(game: game),
+            'GameOver': (context, game) => GameOverOverlay(game: game),
+            'Shop': (context, game) => ShopOverlay(game: game),
+            'PauseMenu': (context, game) => PauseMenuOverlay(game: game),
+            'Tutorial': (context, game) => TutorialOverlay(game: game),
+          },
+          initialActiveOverlays: const ['MainMenu', 'Transition'],
+          loadingBuilder: (context) => Container(
+            color: const Color(0xFF1A1A2E),
+            child: const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF667eea)),
+              ),
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Future<bool?> _showExitDialog(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1A1A2E),
+        title: Text(
+          AppStrings.quitGame.getString(context),
+          style: const TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          AppStrings.areYouSureQuit.getString(context),
+          style: const TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(
+              AppStrings.cancel.getString(context),
+              style: const TextStyle(color: Colors.white54),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF667eea),
+            ),
+            child: Text(
+              AppStrings.quit.getString(context),
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
       ),
     );
   }

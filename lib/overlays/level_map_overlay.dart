@@ -81,9 +81,29 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
                       const SizedBox(width: 16),
                       // Title
                       Expanded(
-                        child: Text(
-                          AppStrings.levelMap.getString(context),
-                          style: AppTheme.heading2(context),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AppStrings.levelMap.getString(context),
+                              style: AppTheme.heading2(context),
+                            ),
+                            Text(
+                              widget.game.currentMode == GameMode.timeAttack
+                                  ? AppStrings.timeAttackMode.getString(context)
+                                  : AppStrings.classicMode.getString(context),
+                              style: TextStyle(
+                                color:
+                                    widget.game.currentMode ==
+                                        GameMode.timeAttack
+                                    ? AppTheme.neonMagenta
+                                    : AppTheme.neonCyan,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       // Progress indicator

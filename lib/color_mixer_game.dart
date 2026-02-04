@@ -12,7 +12,7 @@ import 'package:flame/game.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/material.dart';
 
-enum GameMode { classic, timeAttack }
+enum GameMode { classic, timeAttack, none }
 
 class ColorMixerGame extends FlameGame with ChangeNotifier {
   late Beaker beaker;
@@ -31,8 +31,9 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   late BackgroundGradient backgroundGradient;
   late AmbientParticles ambientParticles;
 
-  GameMode currentMode = GameMode.classic;
+  GameMode currentMode = GameMode.none;
   double timeLeft = 30.0;
+  double maxTime = 30.0; // Added for progress calculation
 
   void Function(VoidCallback)? _transitionCallback;
 
@@ -72,15 +73,14 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     ambientParticles = AmbientParticles();
     add(ambientParticles);
 
-    startLevel();
-
     // Position Beaker slightly above center to make room for bottom controls
-    // size.y * 0.40 places it comfortably above the new minimal controls
     beaker = Beaker(
       position: Vector2(size.x / 2, size.y * 0.54),
       size: Vector2(180, 250),
     );
     add(beaker);
+
+    startLevel();
   }
 
   @override
@@ -131,20 +131,20 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   }
 
   void resetGame() {
+    _hasWon = false;
+    // Remove WinMenu overlay if it exists (for replay from win screen)
+    overlays.remove('WinMenu');
+
+    // Removed levelManager.reset() as it resets currentLevelIndex to 0
+    beaker.clearContents();
+    totalDrops.value = 0;
+    matchPercentage.value = 0;
     rDrops = 0;
     gDrops = 0;
     bDrops = 0;
-    _hasWon = false;
-    beaker.currentColor = Colors.white.withValues(alpha: 0.3);
-    beaker.liquidLevel = 0.1;
-
-    overlays.remove('WinMenu');
-    totalDrops.value = 0;
-    matchPercentage.value = 0.0;
     dropsLimitReached.value = false;
-
-    // Start the same level again
     startLevel();
+    notifyListeners();
   }
 
   void addDrop(String colorType) {
@@ -236,29 +236,32 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
   void startLevel() {
     final level = levelManager.currentLevel;
-
-    // Use the pre-defined target color from the level
     targetColor = level.targetColor;
-
-    // Update max drops from level
     maxDrops = level.maxDrops;
 
+    // Thoroughly reset game state
     rDrops = 0;
     gDrops = 0;
     bDrops = 0;
     totalDrops.value = 0;
-    matchPercentage.value = 0.0;
+    matchPercentage.value = 0;
     dropsLimitReached.value = false;
     _hasWon = false;
+    _lastBeakerColor = Colors.transparent;
 
-    // Reset time for time attack mode
+    // Reset beaker visuals immediately
+    beaker.clearContents();
+    beaker.currentColor = Colors.white.withValues(alpha: .2);
+
     if (currentMode == GameMode.timeAttack) {
-      timeLeft = 30.0;
+      // Base time scales with difficulty
+      maxTime = 30.0 - (level.difficultyFactor * 10);
+      maxTime = maxTime.clamp(10, 30);
+      timeLeft = maxTime;
+    } else {
+      timeLeft = 0;
     }
 
-    if (isLoaded) {
-      beaker.clearContents();
-    }
     notifyListeners();
   }
 
@@ -268,15 +271,16 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     // Save progress
     levelManager.unlockNextLevel(levelManager.currentLevelIndex, stars);
 
+    // Remove WinMenu overlay
+    overlays.remove('WinMenu');
+
     // Check if next level exists
     int nextLevelIndex = levelManager.currentLevelIndex + 1;
     if (nextLevelIndex < levelManager.levels.length) {
       levelManager.currentLevelIndex = nextLevelIndex;
-      resetGame(); // This restarts the level with the new index
-      // Ensure we are on controls view (resetGame does startLevel)
+      startLevel(); // Initialize and start the next level
     } else {
       // Game Completed? Back to map
-      overlays.remove('WinMenu');
       overlays.add('LevelMap');
     }
     notifyListeners();

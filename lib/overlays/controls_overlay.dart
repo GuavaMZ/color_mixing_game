@@ -51,7 +51,15 @@ class ControlsOverlay extends StatelessWidget {
             ),
           ),
 
-          // ... (TimeAttack code unchanged)
+          // Time Attack Timer (Conditional)
+          if (game.currentMode == GameMode.timeAttack)
+            Positioned(
+              top:
+                  ResponsiveHelper.safePadding(context).top +
+                  ResponsiveHelper.spacing(context, 16),
+              left: ResponsiveHelper.spacing(context, 16),
+              child: _TimeAttackTimer(game: game),
+            ),
 
           // Bottom controls area (Compact)
           Align(
@@ -402,7 +410,7 @@ class ControlsOverlay extends StatelessWidget {
           const SizedBox(width: 8),
           Flexible(
             child: Text(
-              hint,
+              hint.getString(context),
               style: TextStyle(
                 color: Colors.white.withValues(alpha: 0.9),
                 fontSize: ResponsiveHelper.fontSize(context, 13),
@@ -516,11 +524,7 @@ class _CosmicButtonState extends State<_CosmicButton>
       colors: [
         widget.color.withValues(alpha: 0.9), // Lighter top
         widget.color, // Normal
-        widget.color
-            .withValues(alpha: 0.8)
-            .withBlue(0)
-            .withRed(0)
-            .withGreen(0), // Darker bottom
+        Color.lerp(widget.color, Colors.black, 0.3)!, // Proper darkening
       ],
       stops: [0.0, 0.5, 1.0],
     );
@@ -694,54 +698,150 @@ class _TimeAttackTimer extends StatelessWidget {
     return ListenableBuilder(
       listenable: game,
       builder: (context, child) {
-        final time = game.timeLeft.ceil();
+        final time = game.timeLeft;
+        final progress = (time / game.maxTime).clamp(0.0, 1.0);
         final isLow = time <= 10;
         final color = isLow ? AppTheme.neonMagenta : AppTheme.neonCyan;
+        final size = 70.0;
 
         return TweenAnimationBuilder<double>(
-          duration: const Duration(milliseconds: 500),
-          tween: Tween(begin: 1.0, end: isLow ? 1.1 : 1.0),
+          duration: const Duration(milliseconds: 300),
+          tween: Tween(begin: 1.0, end: isLow ? 1.05 : 1.0),
           builder: (context, scale, child) {
             return Transform.scale(
-              scale: isLow ? (1.0 + (game.timeLeft % 1.0) * 0.1) : 1.0,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.6),
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: color, width: 2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: color.withValues(alpha: 0.4),
-                      blurRadius: 10,
+              scale: isLow
+                  ? (1.0 + (progress < 0.2 ? (game.timeLeft % 0.5) * 0.1 : 0.0))
+                  : 1.0,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Outer Ambient Glow
+                  Container(
+                    width: size + 20,
+                    height: size + 20,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: color.withValues(alpha: 0.15),
+                          blurRadius: 25,
+                          spreadRadius: 5,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.timer_outlined, color: color, size: 20),
-                    const SizedBox(width: 8),
-                    Text(
-                      "$time",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 20,
-                        decoration: TextDecoration.none,
-                        shadows: [
-                          Shadow(
-                            color: color.withValues(alpha: 0.6),
-                            blurRadius: 10,
+                  ),
+
+                  // Glass Background for Timer
+                  Container(
+                    width: size,
+                    height: size,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.black.withValues(alpha: 0.3),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.1),
+                        width: 1,
+                      ),
+                    ),
+                  ),
+
+                  // Background ring (track)
+                  SizedBox(
+                    width: size - 4,
+                    height: size - 4,
+                    child: CircularProgressIndicator(
+                      value: 1.0,
+                      strokeWidth: 4,
+                      backgroundColor: Colors.transparent,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Colors.white.withValues(alpha: 0.05),
+                      ),
+                    ),
+                  ),
+
+                  // Progress ring (Neon)
+                  SizedBox(
+                    width: size - 4,
+                    height: size - 4,
+                    child: CircularProgressIndicator(
+                      value: progress,
+                      strokeWidth: 6,
+                      strokeCap: StrokeCap.round,
+                      backgroundColor: Colors.transparent,
+                      valueColor: AlwaysStoppedAnimation<Color>(color),
+                    ),
+                  ),
+
+                  // The "Clock Hand" Dot
+                  // Rotate it based on progress
+                  Transform.rotate(
+                    angle: (1.0 - progress) * 2 * 3.14159,
+                    child: SizedBox(
+                      width: size - 4,
+                      height: size - 4,
+                      child: Stack(
+                        children: [
+                          Align(
+                            alignment: Alignment.topCenter,
+                            child: Container(
+                              margin: const EdgeInsets.only(top: 0),
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: color,
+                                    blurRadius: 8,
+                                    spreadRadius: 2,
+                                  ),
+                                  BoxShadow(
+                                    color: Colors.white.withValues(alpha: 0.8),
+                                    blurRadius: 2,
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+
+                  // Countdown Text
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        time.ceil().toString(),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 24,
+                          decoration: TextDecoration.none,
+                          letterSpacing: -1,
+                          shadows: [
+                            Shadow(
+                              color: color.withValues(alpha: 0.8),
+                              blurRadius: 10,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        "SEC",
+                        style: TextStyle(
+                          color: color.withValues(alpha: 0.8),
+                          fontWeight: FontWeight.w900,
+                          fontSize: 9,
+                          decoration: TextDecoration.none,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             );
           },

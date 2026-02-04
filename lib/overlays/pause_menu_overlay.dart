@@ -58,6 +58,7 @@ class _PauseMenuOverlayState extends State<PauseMenuOverlay>
 
   void _quit() {
     _audio.playButton();
+    widget.game.currentMode = GameMode.none; // Stop timer
     widget.game.overlays.remove('PauseMenu');
     widget.game.transitionTo('Controls', 'MainMenu');
   }
@@ -73,6 +74,7 @@ class _PauseMenuOverlayState extends State<PauseMenuOverlay>
 
     // Confirm Give Up -> Exit to Map
     _audio.playButton();
+    widget.game.currentMode = GameMode.none; // Stop timer
     widget.game.overlays.remove('PauseMenu');
     widget.game.transitionTo('Controls', 'LevelMap');
   }

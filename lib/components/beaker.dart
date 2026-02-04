@@ -118,9 +118,7 @@ class Beaker extends PositionComponent {
         end: Alignment.bottomCenter,
         colors: [
           currentColor,
-          currentColor
-              .withValues(alpha: 0.8)
-              .withBlue(0), // Darker bottom simplified
+          Color.lerp(currentColor, Colors.black, 0.2)!, // Proper darkening
         ],
       ).createShader(Rect.fromLTWH(0, 0, size.x, size.y));
 

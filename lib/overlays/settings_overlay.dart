@@ -133,7 +133,7 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                     // Language selector
                     _SettingsTile(
                       icon: Icons.language_rounded,
-                      title: AppStrings.language.getString(context),
+                      title: '',
                       trailing: _LanguageSelector(
                         currentLocale:
                             _localization.currentLocale?.languageCode ?? 'en',

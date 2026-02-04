@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:color_mixing_deductive/core/color_logic.dart';
 import 'package:color_mixing_deductive/core/level_model.dart';
 import 'package:color_mixing_deductive/core/save_manager.dart';
+import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:flutter/material.dart';
 
 class LevelManager {
@@ -56,62 +57,129 @@ class LevelManager {
     }
   }
 
+  int _gcd(int a, int b) {
+    while (b != 0) {
+      int t = b;
+      b = a % b;
+      a = t;
+    }
+    return a;
+  }
+
+  int _gcd3(int a, int b, int c) {
+    if (a == 0 && b == 0 && c == 0) return 1;
+    // Handle cases where some are zero
+    int res = a;
+    if (b > 0) res = (res == 0) ? b : _gcd(res, b);
+    if (c > 0) res = (res == 0) ? c : _gcd(res, c);
+    return res;
+  }
+
+  String _getRatioKey(int r, int g, int b) {
+    if (r == 0 && g == 0 && b == 0) return "0-0-0";
+    final common = _gcd3(r, g, b);
+    return "${r ~/ common}-${g ~/ common}-${b ~/ common}";
+  }
+
   /// Classic Mode: Logical, step-by-step introduction to color theory
   List<LevelModel> _generateClassicLevels(int count) {
     final List<LevelModel> result = [];
+    final Set<String> usedRatios = {};
 
     for (int i = 1; i <= count; i++) {
       int r = 0, g = 0, b = 0;
       int maxDrops = 10;
       double difficulty = i / count;
 
-      if (i <= 3) {
-        // Pure Primary Colors
-        if (i == 1) r = 3;
-        if (i == 2) g = 3;
-        if (i == 3) b = 3;
-        maxDrops = 6;
-      } else if (i <= 9) {
-        // Equal Binary Mixes (Yellow, Purple, Cyan)
-        if (i <= 5) {
-          r = 2;
-          g = 2;
-        } // Yellow
-        else if (i <= 7) {
-          r = 2;
-          b = 2;
-        } // Purple
-        else {
-          g = 2;
-          b = 2;
-        } // Cyan
-        maxDrops = 8;
-      } else if (i <= 20) {
-        // Proportional Binary Mixes (Orange, Lime, etc)
-        if (i % 3 == 0) {
-          r = 4;
-          g = 1;
-        } else if (i % 3 == 1) {
-          g = 4;
-          b = 1;
+      // Smart loop to ensure uniqueness
+      bool uniqueFound = false;
+      int attempts = 0;
+      final rng = Random(i + 100);
+
+      while (!uniqueFound && attempts < 100) {
+        attempts++;
+        if (i <= 3) {
+          // Phase 1: Pure Primaries (Only 3 possible unique ratios)
+          if (i == 1)
+            r = 3;
+          else if (i == 2)
+            g = 3;
+          else
+            b = 3;
+          maxDrops = 8;
+        } else if (i <= 12) {
+          // Phase 2: Fundamental Binary Mixes (Yellow, Cyan, Magenta)
+          // Ratios: 1:1, 2:1, 1:2
+          final combination = (i - 4) % 3;
+          final ratioType = (i - 4) ~/ 3; // 0=1:1, 1=2:1, 2=1:2
+
+          int val1 = (ratioType == 2) ? 1 : 2;
+          int val2 = (ratioType == 1) ? 1 : 2;
+          if (ratioType == 0) {
+            val1 = 2;
+            val2 = 2;
+          }
+
+          if (combination == 0) {
+            r = val1;
+            g = val2;
+            b = 0;
+          } else if (combination == 1) {
+            g = val1;
+            b = val2;
+            r = 0;
+          } else {
+            b = val1;
+            r = val2;
+            g = 0;
+          }
+          maxDrops = 10;
+        } else if (i <= 35) {
+          // Phase 3: Tertiary Colors (Varied Binary Mixes)
+          final combination = i % 3;
+          r = 0;
+          g = 0;
+          b = 0;
+          int v1 = rng.nextInt(5) + 1;
+          int v2 = rng.nextInt(5) + 1;
+          if (combination == 0) {
+            r = v1;
+            g = v2;
+          } else if (combination == 1) {
+            g = v1;
+            b = v2;
+          } else {
+            b = v1;
+            r = v2;
+          }
+          maxDrops = 12;
+        } else if (i <= 65) {
+          // Phase 4: Introduction to 3rd Color (Low saturation)
+          r = rng.nextInt(6) + 2;
+          g = rng.nextInt(6) + 2;
+          b = rng.nextInt(6) + 2;
+          // Force one to be the "contaminant" (very low)
+          final weak = rng.nextInt(3);
+          if (weak == 0)
+            r = 1;
+          else if (weak == 1)
+            g = 1;
+          else
+            b = 1;
+          maxDrops = 15;
         } else {
-          b = 4;
-          r = 1;
+          // Phase 5: Complex RGB Master Levels
+          r = rng.nextInt(10) + 2;
+          g = rng.nextInt(10) + 2;
+          b = rng.nextInt(10) + 2;
+          maxDrops = 20;
         }
-        maxDrops = 10;
-      } else if (i <= 50) {
-        // Introduction to 3rd color
-        r = 2 + (i % 4);
-        g = 2 + ((i + 1) % 4);
-        b = 1;
-        maxDrops = 15;
-      } else {
-        // Complex tertiary shades
-        final random = Random(i);
-        r = random.nextInt(6) + 1;
-        g = random.nextInt(6) + 1;
-        b = random.nextInt(6) + 1;
-        maxDrops = 20;
+
+        final key = _getRatioKey(r, g, b);
+        if (!usedRatios.contains(key) && (r + g + b > 0)) {
+          usedRatios.add(key);
+          uniqueFound = true;
+        }
       }
 
       result.add(
@@ -129,27 +197,42 @@ class LevelManager {
   /// Time Attack Mode: Faster paced, more randomized but still progressive
   List<LevelModel> _generateTimeAttackLevels(int count) {
     final List<LevelModel> result = [];
-    final random = Random(12345);
+    final Set<String> usedRatios = {};
 
     for (int i = 1; i <= count; i++) {
+      final random = Random(i + 2000);
       double difficulty = i / count;
       int r = 0, g = 0, b = 0;
-      int maxDrops = 12 + (i ~/ 10);
+      int maxDrops = 10 + (i ~/ 5);
 
-      // More random than classic but scaling complexity
-      if (i <= 20) {
-        r = random.nextInt(4);
-        g = random.nextInt(4);
-        if (r + g == 0) r = 2;
-      } else if (i <= 50) {
-        r = random.nextInt(5);
-        g = random.nextInt(5);
-        b = random.nextInt(3);
-        if (r + g + b == 0) g = 3;
-      } else {
-        r = random.nextInt(7) + 1;
-        g = random.nextInt(7) + 1;
-        b = random.nextInt(7) + 1;
+      bool uniqueFound = false;
+      int attempts = 0;
+
+      while (!uniqueFound && attempts < 100) {
+        attempts++;
+        if (i <= 15) {
+          // Early levels: mostly 1 or 2 colors
+          if (random.nextBool()) {
+            r = random.nextInt(5) + 1;
+            g = random.nextInt(5);
+          } else {
+            g = random.nextInt(5) + 1;
+            b = random.nextInt(5);
+          }
+        } else {
+          // Later levels: full complexity
+          r = random.nextInt(12) + 1;
+          g = random.nextInt(12) + 1;
+          b = random.nextInt(12) + 1;
+        }
+
+        if (r + g + b == 0) r = 5;
+
+        final key = _getRatioKey(r, g, b);
+        if (!usedRatios.contains(key)) {
+          usedRatios.add(key);
+          uniqueFound = true;
+        }
       }
 
       result.add(
@@ -188,38 +271,35 @@ class LevelManager {
   }
 
   String _generateSmartHint(int r, int g, int b) {
-    if (r > 0 && g == 0 && b == 0) return "Think red. Just red.";
-    if (g > 0 && r == 0 && b == 0) return "Go with pure green energy.";
-    if (b > 0 && r == 0 && g == 0) return "Only the blue drops today.";
+    if (r > 0 && g == 0 && b == 0) return AppStrings.hintPureRed;
+    if (g > 0 && r == 0 && b == 0) return AppStrings.hintPureGreen;
+    if (b > 0 && r == 0 && g == 0) return AppStrings.hintPureBlue;
 
-    if (r == g && r > 0 && b == 0) return "Mix red and green equally!";
-    if (r == b && r > 0 && g == 0) return "A balanced mix of red and blue.";
-    if (g == b && g > 0 && r == 0) return "Combine green and blue evenly.";
+    if (r == g && r > 0 && b == 0) return AppStrings.hintMixRG;
+    if (r == b && r > 0 && g == 0) return AppStrings.hintMixRB;
+    if (g == b && g > 0 && r == 0) return AppStrings.hintMixGB;
 
     if (r > g && r > b) {
-      if (g > 0 && b > 0) return "Mostly red, with a splash of both others.";
-      if (g > 0) return "Red is the base, add a bit of green.";
-      return "Strong red with a touch of blue.";
+      if (g > 0 && b > 0) return AppStrings.hintMostlyRed;
+      if (g > 0) return AppStrings.hintRedGreen;
+      return AppStrings.hintRedBlue;
     }
 
     if (g > r && g > b) {
-      if (r > 0 && b > 0)
-        return "Green is dominant here. Add a tiny bit of others.";
-      if (r > 0) return "Start with green, then some red.";
-      return "Mainly green, balanced with blue.";
+      if (r > 0 && b > 0) return AppStrings.hintMostlyGreen;
+      if (r > 0) return AppStrings.hintGreenRed;
+      return AppStrings.hintGreenBlue;
     }
 
     if (b > r && b > g) {
-      if (r > 0 && g > 0)
-        return "A deep blue theme with slight hints of red and green.";
-      if (r > 0) return "Blue first, then add red.";
-      return "Lots of blue, just a little green.";
+      if (r > 0 && g > 0) return AppStrings.hintMostlyBlue;
+      if (r > 0) return AppStrings.hintBlueRed;
+      return AppStrings.hintBlueGreen;
     }
 
-    if (r == g && g == b && r > 0)
-      return "The perfect balance of all three colors!";
+    if (r == g && g == b && r > 0) return AppStrings.hintBalanceAll;
 
-    return "Observe the target closely and find the right mix.";
+    return AppStrings.hintObserve;
   }
 
   void unlockNextLevel(int currentLvlIdx, int stars) {

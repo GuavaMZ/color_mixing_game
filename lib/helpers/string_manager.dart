@@ -23,11 +23,12 @@ mixin AppStrings {
   // Main menu
   static const String appTitle = "app_title";
   static const String classicMode = "classic_mode";
-  static const String classicModeDesc = "classic_mode_desc";
-  static const String timeAttack = "time_attack";
-  static const String timeAttackDesc = "time_attack_desc";
+  static const String classicModeSubtitle = "classic_mode_subtitle";
+  static const String timeAttackMode = "time_attack_mode";
+  static const String timeAttackModeSubtitle = "time_attack_mode_subtitle";
   static const String settings = "settings";
   static const String play = "play";
+  static const String shop = "shop";
 
   // Level map
   static const String levelMap = "level_map";
@@ -49,11 +50,36 @@ mixin AppStrings {
   static const String quit = "quit";
   static const String gameOver = "game_over";
   static const String timeUp = "time_up";
+  static const String timeUpDesc = "time_up_desc";
   static const String tryAgain = "try_again";
+  static const String retry = "retry";
+  static const String levelMapText = "level_map_text";
 
   // Misc
   static const String loading = "loading";
   static const String welcomeMessage = "welcome_message";
+  static const String quitGame = "quit_game";
+  static const String areYouSureQuit = "are_you_sure_quit";
+  static const String cancel = "cancel";
+
+  // Hints
+  static const String hintPureRed = "hint_pure_red";
+  static const String hintPureGreen = "hint_pure_green";
+  static const String hintPureBlue = "hint_pure_blue";
+  static const String hintMixRG = "hint_mix_rg";
+  static const String hintMixRB = "hint_mix_rb";
+  static const String hintMixGB = "hint_mix_gb";
+  static const String hintMostlyRed = "hint_mostly_red";
+  static const String hintRedGreen = "hint_red_green";
+  static const String hintRedBlue = "hint_red_blue";
+  static const String hintMostlyGreen = "hint_mostly_green";
+  static const String hintGreenRed = "hint_green_red";
+  static const String hintGreenBlue = "hint_green_blue";
+  static const String hintMostlyBlue = "hint_mostly_blue";
+  static const String hintBlueRed = "hint_blue_red";
+  static const String hintBlueGreen = "hint_blue_green";
+  static const String hintBalanceAll = "hint_balance_all";
+  static const String hintObserve = "hint_observe";
 
   // Shop
   static const String shopTitle = "shop_title";
@@ -97,17 +123,16 @@ mixin AppStrings {
 
     // Main menu
     appTitle: 'COLOR\nLAB',
-    classicMode: 'Classic Mode',
-    classicModeDesc: 'Relax and solve puzzles at your own pace',
-    timeAttack: 'Time Attack',
-    timeAttackDesc: 'Race against the clock!',
-    settings: 'Settings',
+    // Menu
     play: 'Play',
-
-    // Level map
-    levelMap: 'Level Map',
+    shop: 'Shop',
+    settings: 'Settings',
     levelText: 'Level',
-    locked: 'Locked',
+    classicMode: 'CLASSIC MODE',
+    classicModeSubtitle: 'Master the art of color mixing',
+    timeAttackMode: 'TIME ATTACK',
+    timeAttackModeSubtitle: 'Mix fast against the clock',
+    levelMap: 'Level Map',
     back: 'Back',
 
     // Settings
@@ -121,10 +146,13 @@ mixin AppStrings {
     // Game states
     paused: 'Paused',
     resume: 'Resume',
-    quit: 'Quit',
+    // Game states
     gameOver: 'Game Over',
-    timeUp: 'Time\'s Up!',
+    timeUp: "Time's Up!",
+    timeUpDesc: "You weren't fast enough this time. Try again!",
     tryAgain: 'Try Again',
+    retry: 'Retry',
+    levelMapText: 'Map',
 
     // Misc
     loading: 'Loading...',
@@ -146,6 +174,30 @@ mixin AppStrings {
     giveUp: 'Give Up',
     areYouSure: 'Are you sure?',
     giveUpConfirm: 'You will lose progress',
+
+    // Exit Dialog
+    quitGame: 'Quit Game',
+    areYouSureQuit: 'Are you sure you want to quit?',
+    cancel: 'Cancel',
+
+    // Hints
+    hintPureRed: "Think red. Just red.",
+    hintPureGreen: "Go with pure green energy.",
+    hintPureBlue: "Only the blue drops today.",
+    hintMixRG: "Mix red and green equally!",
+    hintMixRB: "A balanced mix of red and blue.",
+    hintMixGB: "Combine green and blue evenly.",
+    hintMostlyRed: "Mostly red, with a splash of both others.",
+    hintRedGreen: "Red is the base, add a bit of green.",
+    hintRedBlue: "Strong red with a touch of blue.",
+    hintMostlyGreen: "Green is dominant here. Add a tiny bit of others.",
+    hintGreenRed: "Start with green, then some red.",
+    hintGreenBlue: "Mainly green, balanced with blue.",
+    hintMostlyBlue: "A deep blue theme with slight hints of red and green.",
+    hintBlueRed: "Blue first, then add red.",
+    hintBlueGreen: "Lots of blue, just a little green.",
+    hintBalanceAll: "The perfect balance of all three colors!",
+    hintObserve: "Observe the target closely and find the right mix.",
   };
 
   static const Map<String, dynamic> Ar = {
@@ -172,16 +224,16 @@ mixin AppStrings {
 
     // Main menu
     appTitle: 'مختبر\nالألوان',
-    classicMode: 'الوضع الكلاسيكي',
-    classicModeDesc: 'استرخِ وحل الألغاز بهدوء',
-    timeAttack: 'تحدي الوقت',
-    timeAttackDesc: 'سباق مع الزمن!',
+    // Menu
+    play: 'لعب',
+    shop: 'المتجر',
     settings: 'الإعدادات',
-    play: 'العب',
-
-    // Level map
-    levelMap: 'خريطة المستويات',
     levelText: 'المستوى',
+    classicMode: 'الوضع الكلاسيكي',
+    classicModeSubtitle: 'أتقن فن مزج الألوان',
+    timeAttackMode: 'هجوم الوقت',
+    timeAttackModeSubtitle: 'امزج بسرعة ضد الوقت',
+    levelMap: 'خريطة المستويات',
     locked: 'مقفل',
     back: 'رجوع',
 
@@ -196,10 +248,13 @@ mixin AppStrings {
     // Game states
     paused: 'إيقاف مؤقت',
     resume: 'استمرار',
-    quit: 'خروج',
+    // Game states
     gameOver: 'انتهت اللعبة',
     timeUp: 'انتهى الوقت!',
-    tryAgain: 'حاول مرة أخرى',
+    timeUpDesc: 'لم تكن سريعاً بما يكفي هذه المرة. حاول مرة أخرى!',
+    tryAgain: 'حاول مجدداً',
+    retry: 'إعادة',
+    levelMapText: 'الخريطة',
 
     // Misc
     loading: 'جاري التحميل...',
@@ -222,6 +277,30 @@ mixin AppStrings {
     giveUp: 'استسلام',
     areYouSure: 'هل أنت متأكد؟',
     giveUpConfirm: 'ستفقد التقدم',
+
+    // Exit Dialog
+    quitGame: 'الخروج من اللعبة',
+    areYouSureQuit: 'هل أنت متأكد أنك تريد الخروج؟',
+    cancel: 'إلغاء',
+
+    // hints
+    hintPureRed: "فكر بالأحمر. الأحمر فقط.",
+    hintPureGreen: "استخدم طاقة اللون الأخضر الصافية.",
+    hintPureBlue: "القطرات الزرقاء فقط اليوم.",
+    hintMixRG: "امزج الأحمر والأخضر بالتساوي!",
+    hintMixRB: "مزيج متوازن من الأحمر والأزرق.",
+    hintMixGB: "اجمع بين الأخضر والأزرق بالتساوي.",
+    hintMostlyRed: "أحمر بشكل أساسي، مع لمسة من الألوان الأخرى.",
+    hintRedGreen: "الأحمر هو القاعدة، أضف القليل من الأخضر.",
+    hintRedBlue: "أحمر قوي مع لمسة من الأزرق.",
+    hintMostlyGreen: "الأخضر مهيمن هنا. أضف القليل جداً من الآخرين.",
+    hintGreenRed: "ابدأ بالأخضر، ثم بعض الأحمر.",
+    hintGreenBlue: "أخضر بشكل أساسي، متوازن مع الأزرق.",
+    hintMostlyBlue: "طابع أزرق عميق مع تلميحات بسيطة من الأحمر والأخضر.",
+    hintBlueRed: "الأزرق أولاً، ثم أضف الأحمر.",
+    hintBlueGreen: "الكثير من الأزرق، فقط القليل من الأخضر.",
+    hintBalanceAll: "التوازن المثالي لجميع الألوان الثلاثة!",
+    hintObserve: "راقب الهدف عن كثب وجد المزيج الصحيح.",
   };
 
   static const Map<String, dynamic> Es = {
@@ -248,17 +327,16 @@ mixin AppStrings {
 
     // Main menu
     appTitle: 'LAB DE\nCOLORES',
-    classicMode: 'Modo Clásico',
-    classicModeDesc: 'Relájate y resuelve puzzles a tu ritmo',
-    timeAttack: 'Contrarreloj',
-    timeAttackDesc: '¡Corre contra el tiempo!',
-    settings: 'Ajustes',
+    // Menu
     play: 'Jugar',
-
-    // Level map
-    levelMap: 'Mapa de Niveles',
+    shop: 'Tienda',
+    settings: 'Ajustes',
     levelText: 'Nivel',
-    locked: 'Bloqueado',
+    classicMode: 'MODO CLÁSICO',
+    classicModeSubtitle: 'Domina el arte de mezclar colores',
+    timeAttackMode: 'ATAQUE DE TIEMPO',
+    timeAttackModeSubtitle: 'Mezcla rápido contra el reloj',
+    levelMap: 'Mapa de Niveles',
     back: 'Volver',
 
     // Settings
@@ -272,10 +350,14 @@ mixin AppStrings {
     // Game states
     paused: 'Pausado',
     resume: 'Continuar',
-    quit: 'Salir',
-    gameOver: 'Fin del Juego',
+    // Game states
+    gameOver: 'Juego Terminado',
     timeUp: '¡Tiempo Agotado!',
+    timeUpDesc:
+        'No has sido lo suficientemente rápido esta vez. ¡Inténtalo de nuevo!',
     tryAgain: 'Intentar de Nuevo',
+    retry: 'Reintentar',
+    levelMapText: 'Mapa',
 
     // Misc
     loading: 'Cargando...',
@@ -298,6 +380,30 @@ mixin AppStrings {
     giveUp: 'Rendirse',
     areYouSure: '¿Estás seguro?',
     giveUpConfirm: 'Perderás el progreso',
+
+    // Exit Dialog
+    quitGame: 'Salir del Juego',
+    areYouSureQuit: '¿Estás seguro de que quieres salir?',
+    cancel: 'Cancelar',
+
+    // Hints
+    hintPureRed: "Piensa en rojo. Solo rojo.",
+    hintPureGreen: "Ve con energía verde pura.",
+    hintPureBlue: "Hoy solo las gotas azules.",
+    hintMixRG: "¡Mezcla rojo y verde por igual!",
+    hintMixRB: "Una mezcla equilibrada de rojo y azul.",
+    hintMixGB: "Combina verde y azul uniformemente.",
+    hintMostlyRed: "Mayormente rojo, con un toque de los otros dos.",
+    hintRedGreen: "El rojo es la base, añade un poco de verde.",
+    hintRedBlue: "Rojo intenso con un toque de azul.",
+    hintMostlyGreen: "El verde es dominante aquí. Añade un poco de los otros.",
+    hintGreenRed: "Empieza con verde, luego un poco de rojo.",
+    hintGreenBlue: "Principalmente verde, equilibrado con azul.",
+    hintMostlyBlue: "Un tema azul profundo con ligeros toques de rojo y verde.",
+    hintBlueRed: "Azul primero, luego añade rojo.",
+    hintBlueGreen: "Mucho azul, solo un poco de verde.",
+    hintBalanceAll: "¡El equilibrio perfecto de los tres colores!",
+    hintObserve: "Observa el objetivo de cerca y encuentra la mezcla adecuada.",
   };
 
   static const Map<String, dynamic> Fr = {
@@ -324,16 +430,16 @@ mixin AppStrings {
 
     // Main menu
     appTitle: 'LABO\nCOULEURS',
-    classicMode: 'Mode Classique',
-    classicModeDesc: 'Détends-toi et résous des puzzles à ton rythme',
-    timeAttack: 'Contre la Montre',
-    timeAttackDesc: 'Course contre le temps !',
-    settings: 'Paramètres',
+    // Menu
     play: 'Jouer',
-
-    // Level map
-    levelMap: 'Carte des Niveaux',
+    shop: 'Boutique',
+    settings: 'Paramètres',
     levelText: 'Niveau',
+    classicMode: 'MODE CLASSIQUE',
+    classicModeSubtitle: "Maîtrisez l'art du mélange des couleurs",
+    timeAttackMode: 'CONTRE LA MONTRE',
+    timeAttackModeSubtitle: 'Mélangez vite contre la montre',
+    levelMap: 'Carte des Niveaux',
     locked: 'Verrouillé',
     back: 'Retour',
 
@@ -348,10 +454,13 @@ mixin AppStrings {
     // Game states
     paused: 'Pause',
     resume: 'Reprendre',
-    quit: 'Quitter',
-    gameOver: 'Fin de Partie',
-    timeUp: 'Temps Écoulé !',
+    // Game states
+    gameOver: 'Fin de la Partie',
+    timeUp: "Temps Écoulé !",
+    timeUpDesc: "Tu n'as pas été assez rapide cette fois. Réessaie !",
     tryAgain: 'Réessayer',
+    retry: 'Réessayer',
+    levelMapText: 'Carte',
 
     // Misc
     loading: 'Chargement...',
@@ -374,5 +483,30 @@ mixin AppStrings {
     giveUp: 'Abandonner',
     areYouSure: 'Êtes-vous sûr ?',
     giveUpConfirm: 'Vous perdrez la progression',
+
+    // Exit Dialog
+    quitGame: 'Quitter le Jeu',
+    areYouSureQuit: 'Êtes-vous sûr de vouloir quitter ?',
+    cancel: 'Annuler',
+
+    // Hints
+    hintPureRed: "Pense au rouge. Juste au rouge.",
+    hintPureGreen: "Utilise l'énergie du vert pur.",
+    hintPureBlue: "Seulement les gouttes bleues aujourd'hui.",
+    hintMixRG: "Mélange le rouge et le vert à parts égales !",
+    hintMixRB: "Un mélange équilibré de rouge et de bleu.",
+    hintMixGB: "Combine le vert et le bleu uniformément.",
+    hintMostlyRed: "Principalement du rouge, avec une touche des deux autres.",
+    hintRedGreen: "Le rouge est la base, ajoute un peu de vert.",
+    hintRedBlue: "Rouge vif avec un soupçon de bleu.",
+    hintMostlyGreen: "Le vert domine ici. Ajoute un tout petit peu des autres.",
+    hintGreenRed: "Commence par le vert, puis un peu de rouge.",
+    hintGreenBlue: "Surtout du vert, équilibré avec du bleu.",
+    hintMostlyBlue:
+        "Un thème bleu profond avec de légers reflets rouges et verts.",
+    hintBlueRed: "Le bleu d'abord, puis ajoute du rouge.",
+    hintBlueGreen: "Beaucoup de bleu, juste un peu de vert.",
+    hintBalanceAll: "L'équilibre parfait des trois couleurs !",
+    hintObserve: "Observe attentivement la cible et trouve le bon mélange.",
   };
 }

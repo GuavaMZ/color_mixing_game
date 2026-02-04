@@ -1,6 +1,8 @@
 import 'package:color_mixing_deductive/helpers/audio_manager.dart';
+import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import '../color_mixer_game.dart';
 
 class GameOverOverlay extends StatelessWidget {
@@ -37,14 +39,14 @@ class GameOverOverlay extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               Text(
-                "Time's Up!",
+                AppStrings.timeUp.getString(context),
                 style: AppTheme.heading2(
                   context,
                 ).copyWith(color: Colors.white, fontSize: 36),
               ),
               const SizedBox(height: 12),
               Text(
-                "You weren't fast enough this time. Try again!",
+                AppStrings.timeUpDesc.getString(context),
                 textAlign: TextAlign.center,
                 style: AppTheme.bodyMedium(
                   context,
@@ -57,7 +59,7 @@ class GameOverOverlay extends StatelessWidget {
                   Expanded(
                     child: _buildActionButton(
                       context,
-                      label: "Retry",
+                      label: AppStrings.retry.getString(context),
                       icon: Icons.replay_rounded,
                       color: AppTheme.primaryColor,
                       onTap: () {
@@ -71,7 +73,7 @@ class GameOverOverlay extends StatelessWidget {
                   Expanded(
                     child: _buildActionButton(
                       context,
-                      label: "Map",
+                      label: AppStrings.levelMapText.getString(context),
                       icon: Icons.map_rounded,
                       color: AppTheme.secondaryColor,
                       onTap: () {

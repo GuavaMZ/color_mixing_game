@@ -179,7 +179,9 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                       child: _buildModeButton(
                         context: context,
                         title: AppStrings.classicMode.getString(context),
-                        subtitle: AppStrings.classicModeDesc.getString(context),
+                        subtitle: AppStrings.classicModeSubtitle.getString(
+                          context,
+                        ),
                         icon: Icons.palette_outlined,
                         gradient: const LinearGradient(
                           colors: [Color(0xFF4facfe), Color(0xFF00f2fe)],
@@ -198,8 +200,10 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                       position: _timeSlide,
                       child: _buildModeButton(
                         context: context,
-                        title: AppStrings.timeAttack.getString(context),
-                        subtitle: AppStrings.timeAttackDesc.getString(context),
+                        title: AppStrings.timeAttackMode.getString(context),
+                        subtitle: AppStrings.timeAttackModeSubtitle.getString(
+                          context,
+                        ),
                         icon: Icons.timer_outlined,
                         gradient: const LinearGradient(
                           colors: [Color(0xFFf093fb), Color(0xFFf5576c)],
