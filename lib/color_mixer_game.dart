@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:color_mixing_deductive/components/ambient_particles.dart';
 import 'package:color_mixing_deductive/components/background_gradient.dart';
 import 'package:color_mixing_deductive/components/pattern_background.dart';
@@ -58,7 +57,9 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     super.onLoad();
 
     // تحميل التقدم المحفوظ من الهاتف
+    // تحميل التقدم المحفوظ من الهاتف
     await levelManager.initProgress();
+    totalStars = await SaveManager.loadTotalStars();
 
     // Add background gradient first (rendered first)
     backgroundGradient = BackgroundGradient();
@@ -169,16 +170,30 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     }
 
     // Add pouring effect
-    final random = Random();
-    final randomStyle =
-        PouringStyle.values[random.nextInt(PouringStyle.values.length)];
+    final double beakerY = beaker.position.y;
+    final double beakerHeight = beaker.size.y;
+    final double beakerTop = beakerY - beakerHeight / 2;
+
+    // Calculate current liquid level height
+    final double currentDropsRatio = (rDrops + gDrops + bDrops) / maxDrops;
+    // Don't go above 1.0 logic-wise for targetY calculation
+    final double effectiveRatio = currentDropsRatio > 1.0
+        ? 1.0
+        : currentDropsRatio;
+
+    // Target Y is where the liquid surface is
+    // When empty (ratio 0), targetY = beakerBottom (beakerY + beakerHeight/2)
+    // When full (ratio 1), targetY = beakerTop (beakerY - beakerHeight/2)
+    // Wait, let's just use linear interpolation from bottom to top
+    final double beakerBottom = beakerY + beakerHeight / 2;
+    final double targetY = beakerBottom - (effectiveRatio * beakerHeight);
 
     add(
       PouringEffect(
-        position: Vector2(size.x / 2 - 25, size.y / 2 - 250),
-        size: Vector2(50, 150),
+        position: Vector2(size.x / 2, beakerTop - 150),
+        targetY: targetY,
+        sourceY: beakerTop - 150,
         color: dropColor,
-        style: randomStyle,
       ),
     );
 

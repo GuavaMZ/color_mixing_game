@@ -1,5 +1,6 @@
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Centralized audio management with caching and volume controls
 class AudioManager {
@@ -22,11 +23,20 @@ class AudioManager {
   static const String unlockSound = 'unlock.mp3';
   static const String ambientMusic = 'ambient.mp3';
 
+  // Persistence keys
+  static const String _sfxKey = 'sfx_enabled';
+  static const String _musicKey = 'music_enabled';
+
   /// Initialize audio system and preload sounds
   Future<void> initialize() async {
     if (_initialized) return;
 
     try {
+      // Load settings
+      final prefs = await SharedPreferences.getInstance();
+      _sfxEnabled = prefs.getBool(_sfxKey) ?? true;
+      _musicEnabled = prefs.getBool(_musicKey) ?? true;
+
       // Preload all sound effects
       await FlameAudio.audioCache.loadAll([
         dropSound,
@@ -38,6 +48,10 @@ class AudioManager {
       ]);
       _initialized = true;
       debugPrint('AudioManager: Initialized successfully');
+
+      if (_musicEnabled) {
+        startMusic();
+      }
     } catch (e) {
       debugPrint('AudioManager: Failed to initialize - $e');
     }
@@ -77,7 +91,9 @@ class AudioManager {
     if (!_musicEnabled || !_initialized) return;
 
     try {
-      await FlameAudio.bgm.play(ambientMusic, volume: _musicVolume);
+      if (!FlameAudio.bgm.isPlaying) {
+        await FlameAudio.bgm.play(ambientMusic, volume: _musicVolume);
+      }
     } catch (e) {
       debugPrint('AudioManager: Failed to start music - $e');
     }
@@ -95,7 +111,9 @@ class AudioManager {
 
   /// Resume background music
   void resumeMusic() {
-    FlameAudio.bgm.resume();
+    if (_musicEnabled) {
+      FlameAudio.bgm.resume();
+    }
   }
 
   // === Settings ===
@@ -103,11 +121,13 @@ class AudioManager {
   bool get sfxEnabled => _sfxEnabled;
   set sfxEnabled(bool value) {
     _sfxEnabled = value;
+    _saveSettings();
   }
 
   bool get musicEnabled => _musicEnabled;
   set musicEnabled(bool value) {
     _musicEnabled = value;
+    _saveSettings();
     if (!value) {
       stopMusic();
     } else if (_initialized) {
@@ -127,6 +147,12 @@ class AudioManager {
       // Update current music volume
       FlameAudio.bgm.audioPlayer.setVolume(_musicVolume);
     }
+  }
+
+  Future<void> _saveSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_sfxKey, _sfxEnabled);
+    await prefs.setBool(_musicKey, _musicEnabled);
   }
 
   /// Toggle SFX on/off

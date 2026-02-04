@@ -61,6 +61,8 @@ mixin AppStrings {
   static const String beakerFlask = "beaker_flask";
   static const String beakerMagic = "beaker_magic";
   static const String beakerHex = "beaker_hex";
+  static const String beakerCylinder = "beaker_cylinder";
+  static const String beakerRound = "beaker_round";
   static const String select = "select";
   static const String selected = "selected";
   static const String price = "price";
@@ -133,6 +135,8 @@ mixin AppStrings {
     beakerFlask: 'Lab Flask',
     beakerMagic: 'Magic Box',
     beakerHex: 'Hexa Beaker',
+    beakerCylinder: 'Cylinder',
+    beakerRound: 'Round Flask',
     select: 'Select',
     selected: 'Selected',
     price: 'Price',
@@ -207,6 +211,8 @@ mixin AppStrings {
     beakerFlask: 'قارورة مختبر',
     beakerMagic: 'صندوق سحري',
     beakerHex: 'كأس سداسي',
+    beakerCylinder: 'أنبوب',
+    beakerRound: 'دورق دائري',
     select: 'اختيار',
     selected: 'مختار',
     price: 'السعر',
@@ -281,6 +287,8 @@ mixin AppStrings {
     beakerFlask: 'Matraz de Lab',
     beakerMagic: 'Caja Mágica',
     beakerHex: 'Vaso Hexagonal',
+    beakerCylinder: 'Cilindro',
+    beakerRound: 'Matraz Redondo',
     select: 'Seleccionar',
     selected: 'Seleccionado',
     price: 'Precio',
@@ -355,6 +363,8 @@ mixin AppStrings {
     beakerFlask: 'Fiole de Labo',
     beakerMagic: 'Boîte Magique',
     beakerHex: 'Bécher Hexa',
+    beakerCylinder: 'Cylindre',
+    beakerRound: 'Ballon Rond',
     select: 'Sélectionner',
     selected: 'Sélectionné',
     price: 'Prix',

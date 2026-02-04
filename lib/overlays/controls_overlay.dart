@@ -58,39 +58,39 @@ class ControlsOverlay extends StatelessWidget {
             alignment: Alignment.bottomCenter,
             child: Container(
               margin: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
-              ), // Reduced margin
+                horizontal:
+                    24, // Increased horizontal margin to make container smaller width-wise
+                vertical: 8,
+              ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(
-                  24,
-                ), // Slightly smaller radius
+                borderRadius: BorderRadius.circular(20),
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), // Less blur
                   child: Container(
                     padding: EdgeInsets.only(
-                      bottom: ResponsiveHelper.safePadding(
-                        context,
-                      ).bottom, // Reduced padding
-                      top: 10, // Reduced padding
-                      left: 16,
-                      right: 16,
+                      bottom: ResponsiveHelper.safePadding(context).bottom + 8,
+                      top: 8,
+                      left: 12,
+                      right: 12,
                     ),
                     decoration: AppTheme.cosmicGlass(
-                      borderRadius: 24,
-                      borderColor: Colors.white.withValues(alpha: 0.15),
+                      borderRadius: 20,
+                      borderColor: Colors.white.withValues(alpha: 0.1),
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // Match percentage display
+                        // Match percentage display - Scaled down
                         ValueListenableBuilder<double>(
                           valueListenable: game.matchPercentage,
                           builder: (context, value, child) => Padding(
-                            padding: const EdgeInsets.only(bottom: 20),
-                            child: _MatchPercentageDisplay(
-                              value: value,
-                              context: context,
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: Transform.scale(
+                              scale: 0.8, // Make percentage smaller
+                              child: _MatchPercentageDisplay(
+                                value: value,
+                                context: context,
+                              ),
                             ),
                           ),
                         ),
@@ -98,44 +98,49 @@ class ControlsOverlay extends StatelessWidget {
                         // Color buttons row
                         _buildControlsRow(context),
 
-                        // SizedBox(height: ResponsiveHelper.spacing(context, 20)),
-
                         // Reset button
                         ValueListenableBuilder<int>(
                           valueListenable: game.totalDrops,
                           builder: (context, value, child) {
                             if (value > 0) {
-                              return _CosmicButton(
-                                onTap: game.resetMixing,
-                                color: AppTheme.cardColor.withValues(
-                                  alpha: 0.6,
-                                ),
-                                borderColor: Colors.white.withValues(
-                                  alpha: 0.3,
-                                ),
-                                width: 150,
-                                height: 50,
-                                borderRadius: 25,
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      Icons.refresh_rounded,
-                                      color: Colors.white,
-                                      size: 20,
-                                    ),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      AppStrings.reset.getString(context),
-                                      style: AppTheme.bodyMedium(
-                                        context,
-                                      ).copyWith(fontWeight: FontWeight.bold),
-                                    ),
-                                  ],
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: _CosmicButton(
+                                  onTap: game.resetMixing,
+                                  color: AppTheme.cardColor.withValues(
+                                    alpha: 0.6,
+                                  ),
+                                  borderColor: Colors.white.withValues(
+                                    alpha: 0.2,
+                                  ),
+                                  width: 120, // Smaller reset button
+                                  height: 40,
+                                  borderRadius: 20,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.refresh_rounded,
+                                        color: Colors.white,
+                                        size: 18,
+                                      ),
+                                      SizedBox(width: 6),
+                                      Text(
+                                        AppStrings.reset.getString(context),
+                                        style: AppTheme.bodyMedium(context)
+                                            .copyWith(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14,
+                                            ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               );
                             }
-                            return const SizedBox(height: 50);
+                            return const SizedBox(
+                              height: 48,
+                            ); // Placeholder space
                           },
                         ),
                       ],
@@ -432,16 +437,17 @@ class ControlsOverlay extends StatelessWidget {
               type = "blue";
             }
 
+            // Reduced button sizes
             final buttonSize = ResponsiveHelper.responsive<double>(
               context,
-              mobile: 72.0,
-              tablet: 82.0,
-              desktop: 90.0,
+              mobile: 56.0,
+              tablet: 64.0,
+              desktop: 72.0,
             );
 
             return Padding(
               padding: EdgeInsets.symmetric(
-                horizontal: ResponsiveHelper.spacing(context, 10),
+                horizontal: ResponsiveHelper.spacing(context, 8),
               ),
               child: Opacity(
                 opacity: isLimitReached ? 0.4 : 1.0,
@@ -452,7 +458,7 @@ class ControlsOverlay extends StatelessWidget {
                   borderRadius: buttonSize / 2,
                   color: color,
                   isCircular: true,
-                  disableDepthConfig: true, // Special sizing for these
+                  disableDepthConfig: true,
                   child: Icon(
                     Icons.water_drop,
                     color: Colors.white,

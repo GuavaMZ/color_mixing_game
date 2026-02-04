@@ -13,6 +13,7 @@ import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:color_mixing_deductive/overlays/tutorial_overlay.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 
 void main() async {
@@ -98,10 +99,10 @@ class _MyAppState extends State<MyApp> {
           'MainMenu': (context, game) => MainMenuOverlay(game: game),
           'Settings': (context, game) => SettingsOverlay(game: game),
           'Transition': (context, game) => TransitionOverlay(game: game),
-          'GameOver': (context, game) =>
-              GameOverOverlay(game: game), // إضافة هذا السطر
+          'GameOver': (context, game) => GameOverOverlay(game: game),
           'Shop': (context, game) => ShopOverlay(game: game),
           'PauseMenu': (context, game) => PauseMenuOverlay(game: game),
+          'Tutorial': (context, game) => TutorialOverlay(game: game),
         },
         initialActiveOverlays: const ['MainMenu', 'Transition'],
         loadingBuilder: (context) => Container(

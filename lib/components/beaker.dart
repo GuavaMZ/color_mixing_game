@@ -4,7 +4,7 @@ import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
 
-enum BeakerType { classic, laboratory, magicBox, hexagon }
+enum BeakerType { classic, laboratory, magicBox, hexagon, cylinder, round }
 
 class Beaker extends PositionComponent {
   Color currentColor = Colors.white.withValues(alpha: .2);
@@ -87,7 +87,10 @@ class Beaker extends PositionComponent {
       canvas.save();
       canvas.clipPath(beakerPath);
 
-      final liquidTop = size.y * (1 - _activeLevel);
+      // Clamp level to prevent visual overflow glitches
+      // Ensure we don't draw liquid above the rim if level > 1.0 (though logic prevents it usually)
+      final clampedLevel = _activeLevel.clamp(0.0, 1.0);
+      final liquidTop = size.y * (1 - clampedLevel);
       _liquidPaint.color = currentColor;
 
       final liquidPath = Path();
@@ -97,11 +100,11 @@ class Beaker extends PositionComponent {
 
       liquidPath.moveTo(0, liquidTop);
 
+      // Draw top wave curve
       for (double x = 0; x <= size.x; x += 4) {
         final yOffset =
             sin(x / size.x * waveCount * pi + _time * waveSpeed) *
             waveAmplitude;
-        // Float the surface slightly
         liquidPath.lineTo(x, liquidTop + yOffset);
       }
 
@@ -125,29 +128,23 @@ class Beaker extends PositionComponent {
 
       canvas.drawPath(liquidPath, _liquidPaint);
 
-      // Liquid Surface Highlight (Oval rim)
-      final surfaceHighlight = Path();
-      surfaceHighlight.moveTo(0, liquidTop);
+      // Draw Surface Wave Line Only (Better than outlining the whole liquid)
+      final surfacePath = Path();
+      surfacePath.moveTo(0, liquidTop);
       for (double x = 0; x <= size.x; x += 2) {
         final yOffset =
             sin(x / size.x * waveCount * pi + _time * waveSpeed) *
             waveAmplitude;
-        surfaceHighlight.lineTo(x, liquidTop + yOffset);
+        surfacePath.lineTo(x, liquidTop + yOffset);
       }
-      // Close loop for detailed surface rim
-      // Just a simple line for now, maybe an oval?
 
-      // Draw Surface Rim Line
       final surfacePaint = Paint()
-        ..color = Colors.white.withValues(alpha: 0.5)
+        ..color = Colors.white.withValues(alpha: 0.6)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 3;
+        ..strokeWidth = 2.5
+        ..strokeCap = StrokeCap.round;
 
-      canvas.drawPath(
-        liquidPath,
-        surfacePaint,
-      ); // Outlines the whole liquid, maybe too much?
-      // Better: Draw just the top wave
+      canvas.drawPath(surfacePath, surfacePaint);
 
       canvas.restore();
     }
@@ -196,6 +193,37 @@ class Beaker extends PositionComponent {
         path.lineTo(size.x * 0.5, size.y);
         path.lineTo(0, size.y * 0.75);
         path.lineTo(0, size.y * 0.25);
+        path.close();
+        break;
+      case BeakerType.cylinder:
+        // Tall cylinder shape
+        double w = size.x * 0.6;
+        double offsetX = (size.x - w) / 2;
+        path.addRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromLTWH(offsetX, 0, w, size.y),
+            const Radius.circular(8),
+          ),
+        );
+        break;
+      case BeakerType.round:
+        // Round bottom flask (sphere with neck)
+        double neckW = size.x * 0.4;
+        double sphereR = size.x / 2;
+
+        // Neck
+        path.moveTo((size.x - neckW) / 2, 0);
+        path.lineTo((size.x + neckW) / 2, 0);
+        path.lineTo((size.x + neckW) / 2, size.y * 0.4);
+
+        // Sphere body
+        // We draw an arc for the body
+        path.arcToPoint(
+          Offset((size.x - neckW) / 2, size.y * 0.4),
+          radius: Radius.circular(sphereR),
+          largeArc: true,
+          clockwise: true,
+        );
         path.close();
         break;
       case BeakerType.classic:
@@ -272,6 +300,22 @@ class Beaker extends PositionComponent {
         canvas.drawCircle(
           Offset(size.x * 0.8, size.y * 0.3),
           6,
+          _reflectionPaint,
+        );
+        break;
+      case BeakerType.cylinder:
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromLTWH(size.x * 0.25, 20, 6, size.y * 0.6),
+            const Radius.circular(3),
+          ),
+          _reflectionPaint,
+        );
+        break;
+      case BeakerType.round:
+        canvas.drawCircle(
+          Offset(size.x * 0.7, size.y * 0.6),
+          12,
           _reflectionPaint,
         );
         break;
