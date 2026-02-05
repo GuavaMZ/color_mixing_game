@@ -164,7 +164,7 @@ class _BackButton extends StatelessWidget {
     return Container(
       decoration: AppTheme.cosmicGlass(
         borderRadius: 15,
-        borderColor: Colors.white.withOpacity(0.2),
+        borderColor: Colors.white.withValues(alpha: 0.2),
       ),
       child: Material(
         color: Colors.transparent,
@@ -197,7 +197,7 @@ class _ProgressBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: AppTheme.cosmicGlass(
         borderRadius: 20,
-        borderColor: AppTheme.neonMagenta.withOpacity(0.5),
+        borderColor: AppTheme.neonMagenta.withValues(alpha: 0.5),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -294,31 +294,16 @@ class _LevelCardState extends State<_LevelCard>
       child: ScaleTransition(
         scale: _scaleAnimation,
         child: Container(
-          decoration: BoxDecoration(
-            color: isLocked
-                ? Colors.white.withOpacity(0.05)
-                : difficultyColors[0].withOpacity(0.2), // Subtle tint
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: isLocked
-                  ? Colors.white.withOpacity(0.1)
-                  : (isCompleted
-                        ? AppTheme.electricYellow
-                        : difficultyColors[0]),
-              width: 1.5,
-            ),
-            boxShadow: [
-              if (!isLocked)
-                BoxShadow(
-                  color:
-                      (isCompleted
-                              ? AppTheme.electricYellow
-                              : difficultyColors[0])
-                          .withOpacity(0.2),
-                  blurRadius: 10,
-                  spreadRadius: -2,
-                ),
-            ],
+          decoration: AppTheme.cosmicCard(
+            borderRadius: 20,
+            fillColor: isLocked
+                ? Colors.white.withValues(alpha: 0.05)
+                : difficultyColors[0].withValues(alpha: 0.2), // Subtle tint
+            borderColor: isLocked
+                ? Colors.white.withValues(alpha: 0.1)
+                : (isCompleted ? AppTheme.electricYellow : difficultyColors[0]),
+            borderWidth: 1.5,
+            hasGlow: !isLocked,
           ),
           child: Material(
             color: Colors.transparent,
@@ -331,7 +316,7 @@ class _LevelCardState extends State<_LevelCard>
                   if (isLocked) ...[
                     Icon(
                       Icons.lock_rounded,
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       size: 28,
                     ),
                   ] else ...[
@@ -343,7 +328,7 @@ class _LevelCardState extends State<_LevelCard>
                         color: Colors.white,
                         shadows: [
                           Shadow(
-                            color: difficultyColors[0].withOpacity(0.8),
+                            color: difficultyColors[0].withValues(alpha: 0.8),
                             blurRadius: 10,
                           ),
                         ],
@@ -359,13 +344,13 @@ class _LevelCardState extends State<_LevelCard>
                               : Icons.star_border_rounded,
                           color: i < widget.stars
                               ? AppTheme.electricYellow
-                              : Colors.white.withOpacity(0.1),
+                              : Colors.white.withValues(alpha: 0.1),
                           size: 16,
                           shadows: i < widget.stars
                               ? [
                                   Shadow(
-                                    color: AppTheme.electricYellow.withOpacity(
-                                      0.5,
+                                    color: AppTheme.electricYellow.withValues(
+                                      alpha: 0.5,
                                     ),
                                     blurRadius: 5,
                                   ),
@@ -389,24 +374,24 @@ class _LevelCardState extends State<_LevelCard>
     if (difficulty < 0.3) {
       return [
         AppTheme.success,
-        AppTheme.success.withOpacity(0.7),
+        AppTheme.success.withValues(alpha: 0.7),
       ]; // Neon Green
     } else if (difficulty < 0.5) {
       return [
         AppTheme.neonCyan,
-        AppTheme.neonCyan.withOpacity(0.7),
+        AppTheme.neonCyan.withValues(alpha: 0.7),
       ]; // Neon Cyan
     } else if (difficulty < 0.7) {
       return [
         AppTheme.electricYellow,
-        AppTheme.electricYellow.withOpacity(0.7),
+        AppTheme.electricYellow.withValues(alpha: 0.7),
       ]; // Electric Yellow
     } else if (difficulty < 0.9) {
       return [const Color(0xFFFF7F00), const Color(0xFFFF7F00)]; // Neon Orange
     } else {
       return [
         AppTheme.neonMagenta,
-        AppTheme.neonMagenta.withOpacity(0.7),
+        AppTheme.neonMagenta.withValues(alpha: 0.7),
       ]; // Neon Magenta
     }
   }

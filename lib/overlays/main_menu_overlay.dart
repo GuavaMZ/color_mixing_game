@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
@@ -158,7 +157,9 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                                   borderRadius: BorderRadius.circular(2),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.3),
+                                      color: Colors.black.withValues(
+                                        alpha: 0.3,
+                                      ),
                                       offset: const Offset(0, 4),
                                       blurRadius: 0,
                                     ),
@@ -183,9 +184,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                           context,
                         ),
                         icon: Icons.palette_outlined,
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF4facfe), Color(0xFF00f2fe)],
-                        ),
+                        gradient: AppTheme.primaryGradient,
                         onTap: () {
                           AudioManager().playButton();
                           widget.game.currentMode = GameMode.classic;
@@ -205,9 +204,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                           context,
                         ),
                         icon: Icons.timer_outlined,
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFf093fb), Color(0xFFf5576c)],
-                        ),
+                        gradient: AppTheme.secondaryGradient,
                         onTap: () {
                           AudioManager().playButton();
                           widget.game.currentMode = GameMode.timeAttack;
@@ -254,9 +251,11 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
         ),
       ),
       child: Container(
-        decoration: AppTheme.cartoonDecoration(
+        decoration: AppTheme.cosmicCard(
           borderRadius: 24,
-          fillColor: AppTheme.cardColor.withOpacity(0.8),
+          fillColor: AppTheme.primaryMedium.withValues(alpha: 0.6),
+          borderColor: Colors.white.withValues(alpha: 0.1),
+          hasGlow: true,
         ),
         child: Material(
           color: Colors.transparent,
@@ -273,7 +272,13 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                     decoration: BoxDecoration(
                       gradient: gradient,
                       borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: Colors.white, width: 2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: gradient.colors.first.withValues(alpha: 0.4),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: Icon(
                       icon,
@@ -323,10 +328,11 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
     required VoidCallback onTap,
   }) {
     return Container(
-      decoration: AppTheme.cartoonDecoration(
+      decoration: AppTheme.cosmicCard(
         borderRadius: 15,
-        borderWidth: 3,
-        fillColor: Colors.white.withOpacity(0.1),
+        borderWidth: 1.5,
+        fillColor: Colors.white.withValues(alpha: 0.05),
+        borderColor: Colors.white.withValues(alpha: 0.1),
       ),
       child: Material(
         color: Colors.transparent,
@@ -404,9 +410,9 @@ class _FloatingBubbleState extends State<_FloatingBubble>
               gradient: RadialGradient(
                 colors: [
                   Colors.primaries[widget.index % Colors.primaries.length]
-                      .withOpacity(_opacity * 3),
+                      .withValues(alpha: _opacity * 3),
                   Colors.primaries[widget.index % Colors.primaries.length]
-                      .withOpacity(0),
+                      .withValues(alpha: 0),
                 ],
               ),
             ),

@@ -100,12 +100,13 @@ class LevelManager {
         attempts++;
         if (i <= 3) {
           // Phase 1: Pure Primaries (Only 3 possible unique ratios)
-          if (i == 1)
+          if (i == 1) {
             r = 3;
-          else if (i == 2)
+          } else if (i == 2) {
             g = 3;
-          else
+          } else {
             b = 3;
+          }
           maxDrops = 8;
         } else if (i <= 12) {
           // Phase 2: Fundamental Binary Mixes (Yellow, Cyan, Magenta)
@@ -160,12 +161,13 @@ class LevelManager {
           b = rng.nextInt(6) + 2;
           // Force one to be the "contaminant" (very low)
           final weak = rng.nextInt(3);
-          if (weak == 0)
+          if (weak == 0) {
             r = 1;
-          else if (weak == 1)
+          } else if (weak == 1) {
             g = 1;
-          else
+          } else {
             b = 1;
+          }
           maxDrops = 15;
         } else {
           // Phase 5: Complex RGB Master Levels
@@ -188,6 +190,7 @@ class LevelManager {
           recipe: {'red': r, 'green': g, 'blue': b},
           maxDrops: maxDrops,
           difficulty: difficulty,
+          isBlindMode: i > 4 && i % 5 == 0,
         ),
       );
     }
@@ -252,6 +255,7 @@ class LevelManager {
     required Map<String, int> recipe,
     required int maxDrops,
     required double difficulty,
+    bool isBlindMode = false,
   }) {
     final int r = recipe['red'] ?? 0;
     final int g = recipe['green'] ?? 0;
@@ -267,6 +271,7 @@ class LevelManager {
       targetColor: targetColor,
       recipe: recipe,
       hint: _generateSmartHint(r, g, b),
+      isBlindMode: isBlindMode,
     );
   }
 

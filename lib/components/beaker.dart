@@ -14,6 +14,7 @@ class Beaker extends PositionComponent {
   double _time = 0.0;
   double _shakeLevel = 0.0;
   BeakerType type = BeakerType.classic;
+  bool isBlindMode = false;
 
   // Cached Paints
   final Paint _liquidPaint = Paint()..style = PaintingStyle.fill;
@@ -91,7 +92,10 @@ class Beaker extends PositionComponent {
       // Ensure we don't draw liquid above the rim if level > 1.0 (though logic prevents it usually)
       final clampedLevel = _activeLevel.clamp(0.0, 1.0);
       final liquidTop = size.y * (1 - clampedLevel);
-      _liquidPaint.color = currentColor;
+
+      // Blind Mode: Hide actual color
+      final displayColor = isBlindMode ? const Color(0xFF222222) : currentColor;
+      _liquidPaint.color = displayColor;
 
       final liquidPath = Path();
       const waveCount = 1.5;
@@ -117,8 +121,8 @@ class Beaker extends PositionComponent {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          currentColor,
-          Color.lerp(currentColor, Colors.black, 0.2)!, // Proper darkening
+          displayColor,
+          Color.lerp(displayColor, Colors.black, 0.4)!, // Proper darkening
         ],
       ).createShader(Rect.fromLTWH(0, 0, size.x, size.y));
 
@@ -153,6 +157,34 @@ class Beaker extends PositionComponent {
 
     // 3. Realistic Highlights (Gloss)
     _drawHighlights(canvas);
+
+    // 4. Blind Mode Indicator (?)
+    if (isBlindMode && _activeLevel > 0.1) {
+      final textSpan = TextSpan(
+        text: '?',
+        style: TextStyle(
+          color: Colors.cyanAccent.withValues(alpha: 0.8),
+          fontSize: 80,
+          fontWeight: FontWeight.bold,
+          shadows: [
+            BoxShadow(color: Colors.blue, blurRadius: 20, spreadRadius: 5),
+            BoxShadow(color: Colors.purple, blurRadius: 10),
+          ],
+        ),
+      );
+      final textPainter = TextPainter(
+        text: textSpan,
+        textDirection: TextDirection.ltr,
+      );
+      textPainter.layout();
+      textPainter.paint(
+        canvas,
+        Offset(
+          (size.x - textPainter.width) / 2,
+          (size.y - textPainter.height) / 2 + 10,
+        ),
+      );
+    }
   }
 
   Path _getBeakerPath(Vector2 size) {

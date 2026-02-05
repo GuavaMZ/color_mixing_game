@@ -1,14 +1,13 @@
-import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
-class BackgroundGradient extends PositionComponent with HasGameRef {
+class BackgroundGradient extends PositionComponent with HasGameReference {
   @override
   void render(Canvas canvas) {
     super.render(canvas);
 
     // Cosmic Gradient
-    final rect = Rect.fromLTWH(0, 0, gameRef.size.x, gameRef.size.y);
+    final rect = Rect.fromLTWH(0, 0, game.size.x, game.size.y);
     final paint = Paint()
       ..shader = const LinearGradient(
         begin: Alignment.topLeft,
@@ -26,8 +25,8 @@ class BackgroundGradient extends PositionComponent with HasGameRef {
     // Ambient Glow (Corner)
     final glowPaint = Paint()
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 100)
-      ..color = const Color(0xFF00F0FF).withOpacity(0.05); // Cyan glow
+      ..color = const Color(0xFF00F0FF).withValues(alpha: 0.05); // Cyan glow
 
-    canvas.drawCircle(Offset(gameRef.size.x, 0), 200, glowPaint);
+    canvas.drawCircle(Offset(game.size.x, 0), 200, glowPaint);
   }
 }

@@ -38,16 +38,16 @@ class ControlsOverlay extends StatelessWidget {
                 AudioManager().playButton();
                 game.overlays.add('PauseMenu'); // Open new menu
               },
-              child: Icon(
-                Icons.menu_rounded, // Changed icon
-                color: AppTheme.neonCyan,
-                size: 24,
-              ),
               width: 50,
               height: 50,
               color: AppTheme.cardColor.withValues(alpha: 0.5),
               borderColor: AppTheme.neonCyan.withValues(alpha: 0.5),
               borderRadius: 14,
+              child: Icon(
+                Icons.menu_rounded, // Changed icon
+                color: AppTheme.neonCyan,
+                size: 24,
+              ),
             ),
           ),
 
@@ -60,6 +60,13 @@ class ControlsOverlay extends StatelessWidget {
               left: ResponsiveHelper.spacing(context, 16),
               child: _TimeAttackTimer(game: game),
             ),
+
+          // Power-up Dock (Right Side) - Vertical Layout
+          Positioned(
+            right: ResponsiveHelper.spacing(context, 16),
+            top: MediaQuery.of(context).size.height * 0.35,
+            child: _buildPowerUpDock(context),
+          ),
 
           // Bottom controls area (Compact)
           Align(
@@ -137,20 +144,11 @@ class ControlsOverlay extends StatelessWidget {
             // Level info header (Neon Badge)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-              decoration: BoxDecoration(
-                color: AppTheme.primaryDark.withValues(alpha: 0.8),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: AppTheme.neonCyan.withValues(alpha: 0.6),
-                  width: 1.5,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppTheme.neonCyan.withValues(alpha: 0.2),
-                    blurRadius: 10,
-                    spreadRadius: -2,
-                  ),
-                ],
+              decoration: AppTheme.cosmicCard(
+                borderRadius: 20,
+                fillColor: AppTheme.primaryDark.withValues(alpha: 0.8),
+                borderColor: AppTheme.neonCyan.withValues(alpha: 0.6),
+                hasGlow: true,
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -311,13 +309,12 @@ class ControlsOverlay extends StatelessWidget {
 
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-          decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.4),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: statusColor.withValues(alpha: 0.5),
-              width: 1,
-            ),
+          decoration: AppTheme.cosmicCard(
+            borderRadius: 12,
+            fillColor: Colors.black.withValues(alpha: 0.4),
+            borderColor: statusColor.withValues(alpha: 0.5),
+            borderWidth: 1,
+            hasGlow: isFull || isLow,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -351,13 +348,11 @@ class ControlsOverlay extends StatelessWidget {
       constraints: BoxConstraints(
         maxWidth: ResponsiveHelper.screenWidth(context) * 0.7,
       ),
-      decoration: BoxDecoration(
-        color: AppTheme.cosmicPurple.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppTheme.cosmicPurple.withValues(alpha: 0.5),
-          width: 1,
-        ),
+      decoration: AppTheme.cosmicCard(
+        borderRadius: 12,
+        fillColor: AppTheme.cosmicPurple.withValues(alpha: 0.2),
+        borderColor: AppTheme.cosmicPurple.withValues(alpha: 0.5),
+        borderWidth: 1,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -384,48 +379,60 @@ class ControlsOverlay extends StatelessWidget {
   }
 
   Widget _buildControlsRow(BuildContext context) {
-    final currentLevel = game.levelManager.currentLevel;
+    // Fixed 5-button palette: Black, Red, Green, Blue, White
+    final palette = [
+      {'color': Colors.black, 'type': 'black'},
+      {'color': Colors.red, 'type': 'red'},
+      {'color': Colors.green, 'type': 'green'},
+      {'color': Colors.blue, 'type': 'blue'},
+      {'color': Colors.white, 'type': 'white'},
+    ];
 
     return ValueListenableBuilder<bool>(
       valueListenable: game.dropsLimitReached,
       builder: (context, isLimitReached, _) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: currentLevel.availableColors.map((color) {
-            String type = "";
-            if (color == Colors.red) {
-              type = "red";
-            } else if (color == Colors.green) {
-              type = "green";
-            } else if (color == Colors.blue) {
-              type = "blue";
-            }
+          children: palette.map((item) {
+            final color = item['color'] as Color;
+            final type = item['type'] as String;
 
             // Reduced button sizes
             final buttonSize = ResponsiveHelper.responsive<double>(
               context,
               mobile: 56.0,
-              tablet: 64.0,
-              desktop: 72.0,
+              tablet: 60.0, // Slightly smaller to fit 5 items
+              desktop: 64.0,
             );
 
             return Padding(
               padding: EdgeInsets.symmetric(
-                horizontal: ResponsiveHelper.spacing(context, 8),
+                horizontal: ResponsiveHelper.spacing(
+                  context,
+                  6,
+                ), // tighter spacing
               ),
               child: Opacity(
                 opacity: isLimitReached ? 0.4 : 1.0,
                 child: _CosmicButton(
                   onTap: isLimitReached ? null : () => game.addDrop(type),
-                  width: buttonSize,
-                  height: buttonSize,
+                  width: buttonSize - 8,
+                  height: buttonSize - 8,
                   borderRadius: buttonSize / 2,
                   color: color,
+                  borderColor: color == Colors.black ? Colors.grey[800] : null,
                   isCircular: true,
                   disableDepthConfig: true,
                   child: Icon(
                     Icons.water_drop,
-                    color: Colors.white,
+                    color:
+                        color == Colors.white ||
+                            color == Colors.green ||
+                            color ==
+                                Colors
+                                    .cyan // bright bg
+                        ? Colors.black.withValues(alpha: 0.5)
+                        : Colors.white,
                     size: buttonSize * 0.45,
                   ),
                 ),
@@ -434,6 +441,56 @@ class ControlsOverlay extends StatelessWidget {
           }).toList(),
         );
       },
+    );
+  }
+
+  Widget _buildPowerUpDock(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: AppTheme.cosmicGlass(
+        borderRadius: 16,
+        borderColor: Colors.white.withValues(alpha: 0.15),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Undo Button
+          _CosmicButton(
+            onTap: () => game.undoLastDrop(),
+            width: 48,
+            height: 48,
+            color: AppTheme.primaryColor.withValues(alpha: 0.5),
+            borderColor: AppTheme.neonCyan.withValues(alpha: 0.3),
+            borderRadius: 12,
+            child: Icon(Icons.undo_rounded, color: AppTheme.neonCyan, size: 24),
+          ),
+          const SizedBox(height: 12),
+          // Reveal Button (Analyzer)
+          ValueListenableBuilder<double>(
+            valueListenable: game
+                .matchPercentage, // Just to rebuild if needed, or use a better notifier
+            builder: (context, _, __) {
+              bool isBlind = game.isBlindMode;
+              return Opacity(
+                opacity: isBlind ? 1.0 : 0.3,
+                child: _CosmicButton(
+                  onTap: isBlind ? () => game.revealHiddenColor() : null,
+                  width: 48,
+                  height: 48,
+                  color: AppTheme.cosmicPurple.withValues(alpha: 0.5),
+                  borderColor: AppTheme.neonMagenta.withValues(alpha: 0.3),
+                  borderRadius: 12,
+                  child: Icon(
+                    Icons.visibility_outlined,
+                    color: AppTheme.neonMagenta,
+                    size: 24,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }

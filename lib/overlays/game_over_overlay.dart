@@ -12,15 +12,16 @@ class GameOverOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black.withOpacity(0.8),
+      backgroundColor: Colors.black.withValues(alpha: 0.8),
       body: Center(
         child: Container(
           padding: const EdgeInsets.all(32),
           margin: const EdgeInsets.symmetric(horizontal: 24),
-          decoration: AppTheme.cartoonDecoration(
+          decoration: AppTheme.cosmicCard(
             borderRadius: 32,
-            fillColor: AppTheme.cardColor,
-            borderColor: AppTheme.primaryColor,
+            fillColor: AppTheme.primaryDark,
+            borderColor: AppTheme.neonCyan,
+            hasGlow: true,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -56,7 +57,7 @@ class GameOverOverlay extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: AppTheme.bodyMedium(
                   context,
-                ).copyWith(color: Colors.white.withOpacity(0.7)),
+                ).copyWith(color: Colors.white.withValues(alpha: 0.7)),
               ),
               const SizedBox(height: 32),
 
@@ -106,10 +107,11 @@ class GameOverOverlay extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     return Container(
-      decoration: AppTheme.cartoonDecoration(
+      decoration: AppTheme.cosmicCard(
         borderRadius: 16,
-        fillColor: color,
-        borderWidth: 3,
+        fillColor: color.withValues(alpha: 0.2), // Glassy button
+        borderColor: color.withValues(alpha: 0.5),
+        borderWidth: 1.5,
       ),
       child: Material(
         color: Colors.transparent,

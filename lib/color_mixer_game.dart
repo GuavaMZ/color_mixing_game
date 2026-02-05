@@ -18,6 +18,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   late Color targetColor;
   bool _hasWon = false;
   int rDrops = 0, gDrops = 0, bDrops = 0;
+  int whiteDrops = 0, blackDrops = 0;
+  bool isBlindMode = false;
   int maxDrops = 20;
   final LevelManager levelManager = LevelManager();
   final AudioManager _audio = AudioManager();
@@ -148,14 +150,17 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     notifyListeners();
   }
 
+  List<String> dropHistory = [];
+
   void addDrop(String colorType) {
     if (_hasWon) return;
-    if (rDrops + gDrops + bDrops >= maxDrops) {
+    if (rDrops + gDrops + bDrops + whiteDrops + blackDrops >= maxDrops) {
       dropsLimitReached.value = true;
       return;
     }
 
     _audio.playDrop();
+    dropHistory.add(colorType);
 
     // Map colorType to actual Color
     Color dropColor;
@@ -165,9 +170,16 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     } else if (colorType == 'green') {
       dropColor = Colors.green;
       gDrops++;
-    } else {
+    } else if (colorType == 'blue') {
       dropColor = Colors.blue;
       bDrops++;
+    } else if (colorType == 'white') {
+      dropColor = Colors.white;
+      whiteDrops++;
+    } else {
+      // Black
+      dropColor = Colors.black;
+      blackDrops++;
     }
 
     // Add pouring effect
@@ -176,16 +188,14 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     final double beakerTop = beakerY - beakerHeight / 2;
 
     // Calculate current liquid level height
-    final double currentDropsRatio = (rDrops + gDrops + bDrops) / maxDrops;
+    final double currentDropsRatio =
+        (rDrops + gDrops + bDrops + whiteDrops + blackDrops) / maxDrops;
     // Don't go above 1.0 logic-wise for targetY calculation
     final double effectiveRatio = currentDropsRatio > 1.0
         ? 1.0
         : currentDropsRatio;
 
     // Target Y is where the liquid surface is
-    // When empty (ratio 0), targetY = beakerBottom (beakerY + beakerHeight/2)
-    // When full (ratio 1), targetY = beakerTop (beakerY - beakerHeight/2)
-    // Wait, let's just use linear interpolation from bottom to top
     final double beakerBottom = beakerY + beakerHeight / 2;
     final double targetY = beakerBottom - (effectiveRatio * beakerHeight);
 
@@ -198,17 +208,66 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       ),
     );
 
+    _updateGameState();
+  }
+
+  void undoLastDrop() {
+    if (dropHistory.isEmpty || _hasWon) return;
+
+    final lastDrop = dropHistory.removeLast();
+    if (lastDrop == 'red') {
+      rDrops--;
+    } else if (lastDrop == 'green') {
+      gDrops--;
+    } else if (lastDrop == 'blue') {
+      bDrops--;
+    } else if (lastDrop == 'white') {
+      whiteDrops--;
+    } else if (lastDrop == 'black') {
+      blackDrops--;
+    }
+
+    // Play sound?
+    _audio.playDrop(); // Reuse drop sound or specific undo sound
+
+    dropsLimitReached.value = false;
+    _updateGameState();
+  }
+
+  /// Temporarily reveal the color in blind mode
+  void revealHiddenColor() {
+    if (!isBlindMode) return;
+
+    beaker.isBlindMode = false;
+    // Trigger visual update
+    beaker.updateVisuals(beaker.currentColor, beaker.liquidLevel);
+
+    Future.delayed(const Duration(seconds: 2), () {
+      if (!isMounted) return;
+      beaker.isBlindMode = true;
+      beaker.updateVisuals(beaker.currentColor, beaker.liquidLevel);
+    });
+  }
+
+  void _updateGameState() {
     // Calculate new color based on drops
-    Color newColor = ColorLogic.createMixedColor(rDrops, gDrops, bDrops);
+    Color newColor = ColorLogic.createMixedColor(
+      rDrops,
+      gDrops,
+      bDrops,
+      whiteDrops: whiteDrops,
+      blackDrops: blackDrops,
+    );
 
     // Calculate level (liquid amount relative to max)
-    double level = (rDrops + gDrops + bDrops) / maxDrops;
+    double level =
+        (rDrops + gDrops + bDrops + whiteDrops + blackDrops) / maxDrops;
 
     // Update beaker visuals
     beaker.updateVisuals(newColor, level);
 
     // Update observers for UI
-    totalDrops.value = rDrops + gDrops + bDrops;
+    totalDrops.value = rDrops + gDrops + bDrops + whiteDrops + blackDrops;
     matchPercentage.value = ColorLogic.checkMatch(newColor, targetColor);
 
     // Auto-win if 100% match
@@ -234,9 +293,12 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     rDrops = 0;
     gDrops = 0;
     bDrops = 0;
+    whiteDrops = 0;
+    blackDrops = 0;
     totalDrops.value = 0;
     matchPercentage.value = 0.0;
     dropsLimitReached.value = false;
+    dropHistory.clear();
     beaker.clearContents();
   }
 
@@ -249,6 +311,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     rDrops = 0;
     gDrops = 0;
     bDrops = 0;
+    whiteDrops = 0;
+    blackDrops = 0;
     totalDrops.value = 0;
     matchPercentage.value = 0;
     dropsLimitReached.value = false;
@@ -256,6 +320,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     _lastBeakerColor = Colors.transparent;
 
     // Reset beaker visuals immediately
+    isBlindMode = level.isBlindMode;
+    beaker.isBlindMode = isBlindMode;
     beaker.clearContents();
     beaker.currentColor = Colors.white.withValues(alpha: .2);
 

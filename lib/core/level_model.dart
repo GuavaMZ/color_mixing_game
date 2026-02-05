@@ -9,6 +9,7 @@ class LevelModel {
   final Map<String, int>
   recipe; // The solution recipe (e.g., {'red': 2, 'green': 1})
   final String hint; // Optional hint for the player
+  final bool isBlindMode; // If true, beaker content is hidden
 
   LevelModel({
     required this.id,
@@ -18,6 +19,7 @@ class LevelModel {
     required this.targetColor,
     required this.recipe,
     this.hint = '',
+    this.isBlindMode = false,
   });
 
   /// Get the minimum number of drops needed to solve this level

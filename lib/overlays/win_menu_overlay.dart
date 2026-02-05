@@ -80,10 +80,11 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
                 horizontal: ResponsiveHelper.spacing(context, 24),
               ),
               padding: EdgeInsets.all(ResponsiveHelper.spacing(context, 24)),
-              decoration: AppTheme.cartoonDecoration(
+              decoration: AppTheme.cosmicCard(
                 borderRadius: 35,
-                fillColor: AppTheme.cardColor,
-                borderWidth: 4,
+                fillColor: AppTheme.primaryDark,
+                borderColor: AppTheme.electricYellow,
+                hasGlow: true,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -213,10 +214,10 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
                       horizontal: 24,
                       vertical: 14,
                     ),
-                    decoration: AppTheme.cartoonDecoration(
+                    decoration: AppTheme.cosmicCard(
                       borderRadius: 16,
-                      fillColor: Colors.white.withOpacity(0.1),
-                      borderWidth: 3,
+                      fillColor: Colors.white.withValues(alpha: 0.05),
+                      borderColor: Colors.white.withValues(alpha: 0.1),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -299,13 +300,16 @@ class _ActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: AppTheme.cartoonDecoration(
+      decoration: AppTheme.cosmicCard(
         borderRadius: 16,
         fillColor: isOutlined
-            ? Colors.white.withOpacity(0.1)
-            : AppTheme.primaryColor,
-        borderWidth: 3,
-        borderColor: Colors.white,
+            ? Colors.transparent
+            : AppTheme.primaryColor.withValues(alpha: 0.3),
+        borderWidth: 1.5,
+        borderColor: isOutlined
+            ? Colors.white.withValues(alpha: 0.3)
+            : AppTheme.neonCyan,
+        hasGlow: !isOutlined,
       ),
       child: Material(
         color: Colors.transparent,
@@ -324,13 +328,17 @@ class _ActionButton extends StatelessWidget {
                   label,
                   style: TextStyle(
                     fontSize: ResponsiveHelper.fontSize(context, 15),
-                    color: Colors.white,
+                    color: isOutlined ? Colors.white : AppTheme.neonCyan,
                     fontWeight: FontWeight.w900,
                     decoration: TextDecoration.none,
                   ),
                 ),
                 const SizedBox(width: 8),
-                Icon(icon, color: Colors.white, size: 20),
+                Icon(
+                  icon,
+                  color: isOutlined ? Colors.white : AppTheme.neonCyan,
+                  size: 20,
+                ),
               ],
             ),
           ),

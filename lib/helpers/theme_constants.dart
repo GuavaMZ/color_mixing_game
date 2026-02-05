@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 
 /// Centralized theme constants for consistent styling across the app
@@ -94,42 +93,44 @@ class AppTheme {
         if (isInteractive)
           BoxShadow(
             color: neonCyan.withValues(alpha: 0.1),
-            blurRadius: 8,
-            spreadRadius: 0,
+            blurRadius: 10,
+            spreadRadius: 1,
           ),
       ],
     );
   }
 
-  // Legacy support - remapping to cosmic style
-  static BoxDecoration cartoonDecoration({
+  // Primary Card Style for Buttons/Containers
+  static BoxDecoration cosmicCard({
     double borderRadius = 24,
     Color? fillColor,
     Color borderColor = Colors.white,
-    double borderWidth = 2,
+    double borderWidth = 1.5,
+    bool hasGlow = false,
   }) {
-    // Transforming "cartoon" requests into "cosmic" style automatically
     return BoxDecoration(
       color:
-          fillColor?.withValues(alpha: 0.8) ?? cardColor.withValues(alpha: 0.8),
+          fillColor?.withValues(alpha: 0.8) ??
+          primaryMedium.withValues(alpha: 0.7),
       borderRadius: BorderRadius.circular(borderRadius),
       border: Border.all(
         color: borderColor == Colors.white
-            ? Colors.white.withValues(alpha: 0.3)
+            ? Colors.white.withValues(alpha: 0.2)
             : borderColor,
         width: borderWidth,
       ),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.3),
-          blurRadius: 10,
-          offset: const Offset(0, 4),
+          color: Colors.black.withValues(alpha: 0.5),
+          blurRadius: 12,
+          offset: const Offset(0, 6),
         ),
-        BoxShadow(
-          color: (fillColor ?? neonCyan).withValues(alpha: 0.2),
-          blurRadius: 15,
-          spreadRadius: -2,
-        ),
+        if (hasGlow)
+          BoxShadow(
+            color: (fillColor ?? neonCyan).withValues(alpha: 0.3),
+            blurRadius: 20,
+            spreadRadius: -2,
+          ),
       ],
     );
   }

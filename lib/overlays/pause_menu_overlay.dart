@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:color_mixing_deductive/helpers/audio_manager.dart';
 import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
@@ -90,7 +89,7 @@ class _PauseMenuOverlayState extends State<PauseMenuOverlay>
             opacity: _fadeAnimation,
             child: GestureDetector(
               onTap: _resume,
-              child: Container(color: Colors.black.withOpacity(0.7)),
+              child: Container(color: Colors.black.withValues(alpha: 0.7)),
             ),
           ),
 
@@ -106,7 +105,7 @@ class _PauseMenuOverlayState extends State<PauseMenuOverlay>
                 padding: const EdgeInsets.all(24),
                 decoration: AppTheme.cosmicGlass(
                   borderRadius: 30,
-                  borderColor: AppTheme.neonCyan.withOpacity(0.4),
+                  borderColor: AppTheme.neonCyan.withValues(alpha: 0.4),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -150,7 +149,7 @@ class _PauseMenuOverlayState extends State<PauseMenuOverlay>
                     ),
                     const SizedBox(height: 24),
 
-                    Divider(color: Colors.white.withOpacity(0.1)),
+                    Divider(color: Colors.white.withValues(alpha: 0.1)),
 
                     const SizedBox(height: 16),
 
@@ -225,16 +224,14 @@ class _MenuButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 14),
-          decoration: BoxDecoration(
-            color: isOutlined ? Colors.transparent : color.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: isOutlined ? color.withOpacity(0.5) : color,
-              width: 1.5,
-            ),
-            boxShadow: !isOutlined
-                ? [BoxShadow(color: color.withOpacity(0.2), blurRadius: 10)]
-                : [],
+          decoration: AppTheme.cosmicCard(
+            borderRadius: 16,
+            fillColor: isOutlined
+                ? Colors.transparent
+                : color.withValues(alpha: 0.2),
+            borderColor: isOutlined ? color.withValues(alpha: 0.5) : color,
+            borderWidth: 1.5,
+            hasGlow: !isOutlined,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -277,14 +274,13 @@ class _AudioToggle extends StatelessWidget {
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: isEnabled ? AppTheme.primaryLight : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isEnabled
-                ? AppTheme.neonCyan
-                : Colors.white.withOpacity(0.2),
-          ),
+        decoration: AppTheme.cosmicCard(
+          borderRadius: 12,
+          fillColor: isEnabled ? AppTheme.primaryLight : Colors.transparent,
+          borderColor: isEnabled
+              ? AppTheme.neonCyan
+              : Colors.white.withValues(alpha: 0.2),
+          hasGlow: isEnabled,
         ),
         child: Icon(
           isEnabled ? icon : Icons.volume_off_rounded,

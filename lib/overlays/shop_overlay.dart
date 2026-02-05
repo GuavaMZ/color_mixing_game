@@ -139,7 +139,7 @@ class _ShopOverlayState extends State<ShopOverlay> {
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: AppTheme.cosmicGlass(
                   borderRadius: 16,
-                  borderColor: AppTheme.neonCyan.withOpacity(0.3),
+                  borderColor: AppTheme.neonCyan.withValues(alpha: 0.3),
                 ),
                 child: Text(
                   AppStrings.shopTitle.getString(context),
@@ -166,7 +166,7 @@ class _ShopOverlayState extends State<ShopOverlay> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: AppTheme.cosmicGlass(
             borderRadius: 16,
-            borderColor: AppTheme.electricYellow.withOpacity(0.5),
+            borderColor: AppTheme.electricYellow.withValues(alpha: 0.5),
           ),
           child: Row(
             children: [
@@ -201,7 +201,7 @@ class _ShopOverlayState extends State<ShopOverlay> {
     return Container(
       decoration: AppTheme.cosmicGlass(
         borderRadius: 15,
-        borderColor: Colors.white.withOpacity(0.2),
+        borderColor: Colors.white.withValues(alpha: 0.2),
         isInteractive: true,
       ),
       child: Material(
@@ -240,14 +240,17 @@ class ShopItemCard extends StatelessWidget {
       onTap: () => _handleTap(context),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
-        decoration: AppTheme.cosmicGlass(
+        decoration: AppTheme.cosmicCard(
           borderRadius: 24,
+          fillColor: isSelected
+              ? AppTheme.neonCyan.withValues(alpha: 0.1)
+              : Colors.white.withValues(alpha: 0.05),
           borderColor: isSelected
               ? AppTheme.neonCyan
               : isUnlocked
-              ? AppTheme.neonMagenta.withOpacity(0.3)
-              : Colors.white.withOpacity(0.1),
-          isInteractive: true,
+              ? AppTheme.neonMagenta.withValues(alpha: 0.3)
+              : Colors.white.withValues(alpha: 0.1),
+          hasGlow: isSelected,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -258,20 +261,20 @@ class ShopItemCard extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: isUnlocked
                     ? (isSelected
-                          ? AppTheme.neonCyan.withOpacity(0.15)
-                          : AppTheme.neonMagenta.withOpacity(0.05))
-                    : Colors.black.withOpacity(0.3),
+                          ? AppTheme.neonCyan.withValues(alpha: 0.15)
+                          : AppTheme.neonMagenta.withValues(alpha: 0.05))
+                    : Colors.black.withValues(alpha: 0.3),
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: AppTheme.neonCyan.withOpacity(0.4),
+                          color: AppTheme.neonCyan.withValues(alpha: 0.4),
                           blurRadius: 20,
                         ),
                       ]
                     : [],
                 border: Border.all(
                   color: isSelected
-                      ? AppTheme.neonCyan.withOpacity(0.5)
+                      ? AppTheme.neonCyan.withValues(alpha: 0.5)
                       : Colors.transparent,
                   width: 2,
                 ),
@@ -307,19 +310,19 @@ class ShopItemCard extends StatelessWidget {
         color: isUnlocked
             ? (isSelected
                   ? AppTheme.neonCyan
-                  : AppTheme.primaryLight.withOpacity(0.5))
+                  : AppTheme.primaryLight.withValues(alpha: 0.5))
             : (canAfford
-                  ? AppTheme.success.withOpacity(0.2)
-                  : Colors.red.withOpacity(0.2)),
+                  ? AppTheme.success.withValues(alpha: 0.2)
+                  : Colors.red.withValues(alpha: 0.2)),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isUnlocked
               ? (isSelected
                     ? AppTheme.neonCyan
-                    : AppTheme.neonMagenta.withOpacity(0.3))
+                    : AppTheme.neonMagenta.withValues(alpha: 0.3))
               : (canAfford
-                    ? AppTheme.success.withOpacity(0.5)
-                    : Colors.red.withOpacity(0.3)),
+                    ? AppTheme.success.withValues(alpha: 0.5)
+                    : Colors.red.withValues(alpha: 0.3)),
         ),
       ),
       child: Text(

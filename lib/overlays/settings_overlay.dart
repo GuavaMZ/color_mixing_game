@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import '../color_mixer_game.dart';
@@ -61,7 +60,7 @@ class _SettingsOverlayState extends State<SettingsOverlay>
     return FadeTransition(
       opacity: _fadeAnimation,
       child: Material(
-        color: Colors.black.withOpacity(0.4),
+        color: Colors.black.withValues(alpha: 0.4),
         child: Center(
           child: ScaleTransition(
             scale: _scaleAnimation,
@@ -78,7 +77,12 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                 ),
               ),
               child: Container(
-                decoration: AppTheme.cartoonDecoration(borderRadius: 30),
+                decoration: AppTheme.cosmicCard(
+                  borderRadius: 30,
+                  fillColor: AppTheme.primaryDark,
+                  borderColor: AppTheme.neonCyan.withValues(alpha: 0.3),
+                  hasGlow: true,
+                ),
                 padding: EdgeInsets.all(ResponsiveHelper.spacing(context, 24)),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -181,19 +185,26 @@ class _SettingsTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.08),
+        color: Colors.white.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.2), width: 2),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.2),
+          width: 2,
+        ),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: Colors.white.withOpacity(0.8), size: 22),
+            child: Icon(
+              icon,
+              color: Colors.white.withValues(alpha: 0.8),
+              size: 22,
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(child: Text(title, style: AppTheme.bodyLarge(context))),
@@ -221,7 +232,7 @@ class _ToggleSwitch extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           gradient: value ? AppTheme.primaryGradient : null,
-          color: value ? null : Colors.white.withOpacity(0.15),
+          color: value ? null : Colors.white.withValues(alpha: 0.15),
           border: Border.all(color: Colors.black, width: 2.5),
         ),
         child: AnimatedAlign(
@@ -237,7 +248,7 @@ class _ToggleSwitch extends StatelessWidget {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -270,7 +281,7 @@ class _LanguageSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
+        color: Colors.white.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -293,7 +304,7 @@ class _LanguageSelector extends StatelessWidget {
               child: Text(
                 entry.value,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(isSelected ? 1.0 : 0.5),
+                  color: Colors.white.withValues(alpha: isSelected ? 1.0 : 0.5),
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                   fontSize: 14,
                 ),
@@ -321,12 +332,12 @@ class _CloseButton extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.1),
+            color: Colors.white.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
             Icons.close_rounded,
-            color: Colors.white.withOpacity(0.7),
+            color: Colors.white.withValues(alpha: 0.7),
             size: 22,
           ),
         ),
@@ -344,16 +355,11 @@ class _GradientButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        gradient: AppTheme.primaryGradient,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            offset: const Offset(0, 4),
-            blurRadius: 0,
-          ),
-        ],
+      decoration: AppTheme.cosmicCard(
+        borderRadius: 16,
+        fillColor: AppTheme.primaryColor.withValues(alpha: 0.2),
+        borderColor: AppTheme.neonCyan,
+        hasGlow: true,
       ),
       child: Material(
         color: Colors.transparent,

@@ -88,9 +88,10 @@ class _TutorialOverlayState extends State<TutorialOverlay>
                 child: Container(
                   width: MediaQuery.of(context).size.width * 0.85,
                   padding: const EdgeInsets.all(24),
-                  decoration: AppTheme.cosmicGlass(
+                  decoration: AppTheme.cosmicCard(
                     borderRadius: 24,
-                    borderColor: AppTheme.neonCyan.withOpacity(0.5),
+                    borderColor: AppTheme.neonCyan.withValues(alpha: 0.5),
+                    hasGlow: true,
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
