@@ -111,6 +111,15 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                             child: Row(
                               children: [
                                 _buildIconButton(
+                                  icon: Icons
+                                      .emoji_events_rounded, // or card_membership
+                                  onTap: () {
+                                    AudioManager().playButton();
+                                    widget.game.overlays.add('Achievements');
+                                  },
+                                ),
+                                const SizedBox(width: 12),
+                                _buildIconButton(
                                   icon: Icons.shopping_basket_rounded,
                                   onTap: () {
                                     AudioManager().playButton();
@@ -283,10 +292,16 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                     child: Icon(
                       icon,
                       color: Colors.white,
-                      size: ResponsiveHelper.iconSize(context, 28),
+                      size: ResponsiveHelper.iconSize(context, 32),
+                      shadows: [
+                        Shadow(
+                          color: gradient.colors.first.withValues(alpha: 0.8),
+                          blurRadius: 15,
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(width: ResponsiveHelper.spacing(context, 16)),
+                  SizedBox(width: ResponsiveHelper.spacing(context, 18)),
                   // Text content
                   Expanded(
                     child: Column(
@@ -294,14 +309,21 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                       children: [
                         Text(
                           title,
-                          style: AppTheme.heading3(context).copyWith(
-                            fontSize: ResponsiveHelper.fontSize(context, 20),
-                          ),
+                          style: AppTheme.buttonText(context, isLarge: true)
+                              .copyWith(
+                                fontSize: ResponsiveHelper.fontSize(
+                                  context,
+                                  22,
+                                ),
+                              ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 6),
                         Text(
                           subtitle,
-                          style: AppTheme.caption(context),
+                          style: AppTheme.bodySmall(context).copyWith(
+                            color: Colors.white.withValues(alpha: 0.6),
+                            fontSize: ResponsiveHelper.fontSize(context, 13),
+                          ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -309,9 +331,9 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                     ),
                   ),
                   // Arrow
-                  const Icon(
+                  Icon(
                     Icons.arrow_forward_ios_rounded,
-                    color: Colors.white,
+                    color: gradient.colors.first.withValues(alpha: 0.8),
                     size: 18,
                   ),
                 ],
@@ -328,11 +350,10 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
     required VoidCallback onTap,
   }) {
     return Container(
-      decoration: AppTheme.cosmicCard(
+      decoration: AppTheme.cosmicGlass(
         borderRadius: 15,
-        borderWidth: 1.5,
-        fillColor: Colors.white.withValues(alpha: 0.05),
         borderColor: Colors.white.withValues(alpha: 0.1),
+        isInteractive: true,
       ),
       child: Material(
         color: Colors.transparent,

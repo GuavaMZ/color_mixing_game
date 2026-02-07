@@ -164,7 +164,7 @@ class _BackButton extends StatelessWidget {
     return Container(
       decoration: AppTheme.cosmicGlass(
         borderRadius: 15,
-        borderColor: Colors.white.withValues(alpha: 0.2),
+        borderColor: Colors.white.withValues(alpha: 0.1),
       ),
       child: Material(
         color: Colors.transparent,
@@ -297,7 +297,7 @@ class _LevelCardState extends State<_LevelCard>
           decoration: AppTheme.cosmicCard(
             borderRadius: 20,
             fillColor: isLocked
-                ? Colors.white.withValues(alpha: 0.05)
+                ? AppTheme.primaryMedium.withValues(alpha: 0.3)
                 : difficultyColors[0].withValues(alpha: 0.2), // Subtle tint
             borderColor: isLocked
                 ? Colors.white.withValues(alpha: 0.1)

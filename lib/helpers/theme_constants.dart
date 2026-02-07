@@ -57,8 +57,8 @@ class AppTheme {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [
-      Color(0x26FFFFFF), // White 15%
-      Color(0x0DFFFFFF), // White 5%
+      Color(0x4015192B), // primaryMedium 25%
+      Color(0x1A15192B), // primaryMedium 10%
     ],
   );
 
@@ -81,20 +81,26 @@ class AppTheme {
       gradient: glassGradient,
       borderRadius: BorderRadius.circular(borderRadius),
       border: Border.all(
-        color: borderColor ?? Colors.white.withValues(alpha: 0.2),
+        color: borderColor ?? Colors.white.withValues(alpha: 0.15),
         width: 1.5,
       ),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.4),
-          blurRadius: 16,
-          offset: const Offset(0, 8),
+          color: Colors.black.withValues(alpha: 0.5),
+          blurRadius: 20,
+          offset: const Offset(0, 10),
+        ),
+        // Subtle inner rim light
+        BoxShadow(
+          color: Colors.white.withValues(alpha: 0.05),
+          blurRadius: 0,
+          spreadRadius: -1.5,
         ),
         if (isInteractive)
           BoxShadow(
-            color: neonCyan.withValues(alpha: 0.1),
-            blurRadius: 10,
-            spreadRadius: 1,
+            color: neonCyan.withValues(alpha: 0.15),
+            blurRadius: 15,
+            spreadRadius: 2,
           ),
       ],
     );
@@ -105,32 +111,38 @@ class AppTheme {
     double borderRadius = 24,
     Color? fillColor,
     Color borderColor = Colors.white,
-    double borderWidth = 1.5,
+    double borderWidth = 1.8,
     bool hasGlow = false,
   }) {
+    final effectiveBorderColor = borderColor == Colors.white
+        ? Colors.white.withValues(alpha: 0.3)
+        : borderColor;
+
     return BoxDecoration(
       color:
-          fillColor?.withValues(alpha: 0.8) ??
-          primaryMedium.withValues(alpha: 0.7),
+          fillColor?.withValues(alpha: 0.9) ??
+          primaryMedium.withValues(alpha: 0.8),
       borderRadius: BorderRadius.circular(borderRadius),
-      border: Border.all(
-        color: borderColor == Colors.white
-            ? Colors.white.withValues(alpha: 0.2)
-            : borderColor,
-        width: borderWidth,
-      ),
+      border: Border.all(color: effectiveBorderColor, width: borderWidth),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.5),
-          blurRadius: 12,
-          offset: const Offset(0, 6),
+          color: Colors.black.withValues(alpha: 0.6),
+          blurRadius: 15,
+          offset: const Offset(0, 8),
         ),
         if (hasGlow)
           BoxShadow(
-            color: (fillColor ?? neonCyan).withValues(alpha: 0.3),
-            blurRadius: 20,
-            spreadRadius: -2,
+            color: (borderColor != Colors.white ? borderColor : neonCyan)
+                .withValues(alpha: 0.4),
+            blurRadius: 25,
+            spreadRadius: -1,
           ),
+        // Inner Glow
+        BoxShadow(
+          color: Colors.white.withValues(alpha: 0.05),
+          offset: const Offset(1, 1),
+          blurRadius: 1,
+        ),
       ],
     );
   }
@@ -141,24 +153,23 @@ class AppTheme {
   static const Curve cosmicCurve = Curves.easeOutQuart;
 
   // --- TEXT STYLES ---
-  // --- TEXT STYLES ---
   static TextStyle heading1(BuildContext context) => TextStyle(
     fontSize: ResponsiveHelper.fontSize(context, 42),
     fontWeight: FontWeight.w900,
     color: Colors.white,
-    letterSpacing: 1.5,
-    decoration: TextDecoration.none, // Fix yellow underlines
-    fontFamily: 'Roboto', // Assuming default or change nicely
+    letterSpacing: 2.0,
+    decoration: TextDecoration.none,
+    fontFamily: 'Roboto',
     shadows: [
       Shadow(
-        color: neonCyan.withValues(alpha: 0.6),
-        blurRadius: 15,
+        color: neonCyan.withValues(alpha: 0.8),
+        blurRadius: 20,
         offset: const Offset(0, 0),
       ),
       Shadow(
-        color: Colors.black.withValues(alpha: 0.5),
+        color: Colors.black.withValues(alpha: 0.6),
         offset: const Offset(2, 2),
-        blurRadius: 4,
+        blurRadius: 6,
       ),
     ],
   );
@@ -167,12 +178,12 @@ class AppTheme {
     fontSize: ResponsiveHelper.fontSize(context, 28),
     fontWeight: FontWeight.w800,
     color: Colors.white,
-    letterSpacing: 1.0,
-    decoration: TextDecoration.none, // Fix yellow underlines
+    letterSpacing: 1.5,
+    decoration: TextDecoration.none,
     shadows: [
       Shadow(
-        color: cosmicPurple.withValues(alpha: 0.6),
-        blurRadius: 12,
+        color: cosmicPurple.withValues(alpha: 0.7),
+        blurRadius: 15,
         offset: const Offset(0, 0),
       ),
     ],
@@ -182,46 +193,65 @@ class AppTheme {
     fontSize: ResponsiveHelper.fontSize(context, 24),
     fontWeight: FontWeight.w700,
     color: Colors.white,
-    letterSpacing: 0.5,
-    decoration: TextDecoration.none, // Fix yellow underlines
+    letterSpacing: 1.0,
+    decoration: TextDecoration.none,
     shadows: [
       Shadow(
         color: cosmicPurple.withValues(alpha: 0.6),
-        blurRadius: 10,
+        blurRadius: 12,
         offset: const Offset(0, 0),
       ),
     ],
   );
 
-  // Modern, clean body text
+  static TextStyle buttonText(
+    BuildContext context, {
+    Color? color,
+    bool isLarge = false,
+  }) => TextStyle(
+    fontSize: ResponsiveHelper.fontSize(context, isLarge ? 18 : 15),
+    fontWeight: FontWeight.w900,
+    color: color ?? Colors.white,
+    letterSpacing: 1.2,
+    decoration: TextDecoration.none,
+    shadows: [
+      Shadow(
+        color: Colors.black.withValues(alpha: 0.4),
+        offset: const Offset(0, 2),
+        blurRadius: 2,
+      ),
+    ],
+  );
+
   static TextStyle bodyLarge(BuildContext context) => TextStyle(
     fontSize: ResponsiveHelper.fontSize(context, 18),
-    fontWeight: FontWeight.w600,
+    fontWeight: FontWeight.w700,
     color: Colors.white.withValues(alpha: 0.95),
-    letterSpacing: 0.5,
-    decoration: TextDecoration.none, // Fix yellow underlines
+    letterSpacing: 0.8,
+    decoration: TextDecoration.none,
   );
 
   static TextStyle bodyMedium(BuildContext context) => TextStyle(
     fontSize: ResponsiveHelper.fontSize(context, 16),
-    fontWeight: FontWeight.w500,
-    color: Colors.white.withValues(alpha: 0.8), // Clean high-readability
-    decoration: TextDecoration.none, // Fix yellow underlines
+    fontWeight: FontWeight.w600,
+    color: Colors.white.withValues(alpha: 0.85),
+    letterSpacing: 0.5,
+    decoration: TextDecoration.none,
   );
 
   static TextStyle bodySmall(BuildContext context) => TextStyle(
     fontSize: ResponsiveHelper.fontSize(context, 14),
-    fontWeight: FontWeight.w400,
-    color: Colors.white.withValues(alpha: 0.6),
-    decoration: TextDecoration.none, // Fix yellow underlines
+    fontWeight: FontWeight.w500,
+    color: Colors.white.withValues(alpha: 0.7),
+    decoration: TextDecoration.none,
   );
 
   static TextStyle caption(BuildContext context) => TextStyle(
     fontSize: ResponsiveHelper.fontSize(context, 12),
-    fontWeight: FontWeight.w500,
-    color: neonCyan.withValues(alpha: 0.7),
-    letterSpacing: 1.0,
-    decoration: TextDecoration.none, // Fix yellow underlines
+    fontWeight: FontWeight.w600,
+    color: neonCyan.withValues(alpha: 0.8),
+    letterSpacing: 1.5,
+    decoration: TextDecoration.none,
   );
 }
 

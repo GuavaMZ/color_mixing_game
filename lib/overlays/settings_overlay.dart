@@ -154,7 +154,7 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                     SizedBox(
                       width: double.infinity,
                       child: _GradientButton(
-                        label: AppStrings.back.getString(context),
+                        label: AppStrings.back.getString(context).toUpperCase(),
                         onTap: _close,
                       ),
                     ),
@@ -185,10 +185,10 @@ class _SettingsTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.08),
+        color: AppTheme.primaryMedium.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.2),
+          color: Colors.white.withValues(alpha: 0.1),
           width: 2,
         ),
       ),
@@ -197,7 +197,7 @@ class _SettingsTile extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.1),
+              color: AppTheme.primaryLight.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -281,7 +281,7 @@ class _LanguageSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.1),
+        color: AppTheme.primaryMedium.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -332,7 +332,7 @@ class _CloseButton extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.1),
+            color: AppTheme.primaryMedium.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
@@ -371,9 +371,7 @@ class _GradientButton extends StatelessWidget {
             child: Center(
               child: Text(
                 label,
-                style: AppTheme.bodyLarge(
-                  context,
-                ).copyWith(fontWeight: FontWeight.bold, color: Colors.white),
+                style: AppTheme.buttonText(context, isLarge: true),
               ),
             ),
           ),

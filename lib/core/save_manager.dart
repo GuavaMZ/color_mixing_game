@@ -47,4 +47,14 @@ class SaveManager {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('purchased_skins', skins);
   }
+
+  static Future<void> saveAchievements(List<String> achievements) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('unlocked_achievements', achievements);
+  }
+
+  static Future<List<String>> loadAchievements() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getStringList('unlocked_achievements') ?? [];
+  }
 }

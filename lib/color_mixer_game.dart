@@ -4,6 +4,7 @@ import 'package:color_mixing_deductive/components/pattern_background.dart';
 import 'package:color_mixing_deductive/components/beaker.dart';
 import 'package:color_mixing_deductive/components/particles.dart';
 import 'package:color_mixing_deductive/components/pouring_effect.dart';
+import 'package:color_mixing_deductive/components/fireworks.dart';
 import 'package:color_mixing_deductive/core/color_logic.dart';
 import 'package:color_mixing_deductive/core/level_manager.dart';
 import 'package:color_mixing_deductive/core/save_manager.dart';
@@ -31,6 +32,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
   late BackgroundGradient backgroundGradient;
   late AmbientParticles ambientParticles;
+  List<String> unlockedAchievements = [];
 
   GameMode currentMode = GameMode.none;
   double timeLeft = 30.0;
@@ -63,6 +65,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     // تحميل التقدم المحفوظ من الهاتف
     await levelManager.initProgress();
     totalStars = await SaveManager.loadTotalStars();
+    unlockedAchievements = await SaveManager.loadAchievements();
 
     // Add background gradient first (rendered first)
     backgroundGradient = BackgroundGradient();
@@ -118,7 +121,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   void showWinEffect() {
     _audio.playWin();
 
-    // Add winning particles
+    // Add winning particles (Explosion)
     final explosionColors = [
       targetColor,
       Colors.lightBlueAccent,
@@ -127,6 +130,16 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       Colors.orangeAccent,
     ];
     add(WinningParticles(position: beaker.position, colors: explosionColors));
+
+    // Add Fireworks Celebration
+    add(Fireworks(size: size));
+
+    // Show Achievement (Mock Trigger)
+    if (!unlockedAchievements.contains('mad_chemist')) {
+      unlockedAchievements.add('mad_chemist');
+      SaveManager.saveAchievements(unlockedAchievements);
+      overlays.add('Achievement');
+    }
 
     Future.delayed(const Duration(milliseconds: 1500), () {
       overlays.add('WinMenu');
@@ -318,6 +331,9 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     dropsLimitReached.value = false;
     _hasWon = false;
     _lastBeakerColor = Colors.transparent;
+
+    // Remove any remaining fireworks
+    children.whereType<Fireworks>().forEach((f) => f.removeFromParent());
 
     // Reset beaker visuals immediately
     isBlindMode = level.isBlindMode;

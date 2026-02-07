@@ -127,10 +127,9 @@ class GameOverOverlay extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(
                   label,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                  ),
+                  style: AppTheme.buttonText(
+                    context,
+                  ).copyWith(color: Colors.white),
                 ),
               ],
             ),

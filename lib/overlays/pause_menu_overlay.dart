@@ -240,11 +240,9 @@ class _MenuButton extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 label,
-                style: TextStyle(
-                  color: isOutlined ? color : Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
+                style: AppTheme.buttonText(
+                  context,
+                ).copyWith(color: isOutlined ? color : Colors.white),
               ),
             ],
           ),

@@ -220,7 +220,9 @@ class ControlsOverlay extends StatelessWidget {
                         return CircularProgressIndicator(
                           value: value,
                           strokeWidth: 4,
-                          backgroundColor: Colors.white.withValues(alpha: 0.05),
+                          backgroundColor: AppTheme.primaryMedium.withValues(
+                            alpha: 0.2,
+                          ),
                           strokeCap: StrokeCap.round,
                           valueColor: AlwaysStoppedAnimation<Color>(
                             Color.lerp(
@@ -767,7 +769,7 @@ class _TimeAttackTimer extends StatelessWidget {
                       strokeWidth: 4,
                       backgroundColor: Colors.transparent,
                       valueColor: AlwaysStoppedAnimation<Color>(
-                        Colors.white.withValues(alpha: 0.05),
+                        AppTheme.primaryMedium.withValues(alpha: 0.2),
                       ),
                     ),
                   ),

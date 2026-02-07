@@ -137,9 +137,11 @@ class _ShopOverlayState extends State<ShopOverlay> {
               tag: 'shop_title',
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: AppTheme.cosmicGlass(
+                decoration: AppTheme.cosmicCard(
                   borderRadius: 16,
+                  fillColor: AppTheme.primaryDark.withValues(alpha: 0.7),
                   borderColor: AppTheme.neonCyan.withValues(alpha: 0.3),
+                  hasGlow: true,
                 ),
                 child: Text(
                   AppStrings.shopTitle.getString(context),
@@ -164,9 +166,11 @@ class _ShopOverlayState extends State<ShopOverlay> {
       builder: (context, child) {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          decoration: AppTheme.cosmicGlass(
+          decoration: AppTheme.cosmicCard(
             borderRadius: 16,
+            fillColor: AppTheme.primaryDark.withValues(alpha: 0.7),
             borderColor: AppTheme.electricYellow.withValues(alpha: 0.5),
+            hasGlow: true,
           ),
           child: Row(
             children: [
@@ -178,12 +182,14 @@ class _ShopOverlayState extends State<ShopOverlay> {
               const SizedBox(width: 8),
               Text(
                 "${widget.game.totalStars}",
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 20,
+                style: AppTheme.buttonText(context, isLarge: true).copyWith(
+                  color: AppTheme.electricYellow,
+                  fontSize: 22,
                   shadows: [
-                    Shadow(color: AppTheme.electricYellow, blurRadius: 10),
+                    Shadow(
+                      color: AppTheme.electricYellow.withValues(alpha: 0.6),
+                      blurRadius: 15,
+                    ),
                   ],
                 ),
               ),
@@ -201,7 +207,7 @@ class _ShopOverlayState extends State<ShopOverlay> {
     return Container(
       decoration: AppTheme.cosmicGlass(
         borderRadius: 15,
-        borderColor: Colors.white.withValues(alpha: 0.2),
+        borderColor: Colors.white.withValues(alpha: 0.1),
         isInteractive: true,
       ),
       child: Material(
@@ -244,7 +250,7 @@ class ShopItemCard extends StatelessWidget {
           borderRadius: 24,
           fillColor: isSelected
               ? AppTheme.neonCyan.withValues(alpha: 0.1)
-              : Colors.white.withValues(alpha: 0.05),
+              : AppTheme.primaryMedium.withValues(alpha: 0.4),
           borderColor: isSelected
               ? AppTheme.neonCyan
               : isUnlocked
@@ -284,9 +290,9 @@ class ShopItemCard extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               item.nameKey.getString(context),
-              style: AppTheme.bodyMedium(context).copyWith(
-                color: isSelected ? AppTheme.neonCyan : Colors.white,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              style: AppTheme.buttonText(context).copyWith(
+                color: isSelected ? AppTheme.neonCyan : Colors.white70,
+                fontSize: 16,
               ),
               textAlign: TextAlign.center,
             ),
@@ -328,15 +334,16 @@ class ShopItemCard extends StatelessWidget {
       child: Text(
         isUnlocked
             ? (isSelected
-                  ? AppStrings.selected.getString(context)
-                  : AppStrings.select.getString(context))
+                  ? AppStrings.selected.getString(context).toUpperCase()
+                  : AppStrings.select.getString(context).toUpperCase())
             : "${item.price} 🌟",
-        style: TextStyle(
+        style: AppTheme.buttonText(context).copyWith(
           color: isUnlocked
               ? (isSelected ? Colors.black : Colors.white)
-              : (canAfford ? AppTheme.success : Colors.redAccent),
-          fontWeight: FontWeight.bold,
-          fontSize: 14,
+              : (canAfford
+                    ? AppTheme.success
+                    : Colors.redAccent.withValues(alpha: 0.8)),
+          fontSize: 12,
         ),
       ),
     );

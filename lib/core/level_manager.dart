@@ -3,6 +3,8 @@ import 'package:color_mixing_deductive/core/color_logic.dart';
 import 'package:color_mixing_deductive/core/level_model.dart';
 import 'package:color_mixing_deductive/core/save_manager.dart';
 import 'package:color_mixing_deductive/helpers/string_manager.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'dart:convert';
 import 'package:flutter/material.dart';
 
 class LevelManager {
@@ -45,12 +47,53 @@ class LevelManager {
     currentLevelIndex = 0;
   }
 
+  Future<void> loadLevels() async {
+    try {
+      final jsonString = await rootBundle.loadString('assets/levels.json');
+      final Map<String, dynamic> data = jsonDecode(jsonString);
+      final List<dynamic> levelsList = data['levels'];
+
+      classicLevels = levelsList.map((levelData) {
+        final Map<String, dynamic> recipe = Map<String, int>.from(
+          levelData['recipe'],
+        );
+
+        return _createLevel(
+          id: levelData['id'],
+          recipe: recipe,
+          maxDrops: levelData['maxDrops'],
+          difficulty: (levelData['difficultyFactor'] as num).toDouble(),
+          isBlindMode:
+              levelData['id'] > 5 &&
+              levelData['id'] % 10 == 0, // Every 10th level
+        );
+      }).toList();
+
+      // Ensure stars map is sized correctly
+      for (var level in classicLevels) {
+        if (!classicLevelStars.containsKey(level.id)) {
+          classicLevelStars[level.id] = level.id == 1 ? 0 : -1;
+        }
+      }
+    } catch (e) {
+      debugPrint("Error loading levels: $e");
+      // Fallback is already generated in constructor
+    }
+  }
+
   Future<void> initProgress() async {
+    await loadLevels();
+
     classicLevelStars = await SaveManager.loadProgress('classic');
     timeAttackLevelStars = await SaveManager.loadProgress('timeAttack');
 
-    if (classicLevelStars.isEmpty || (classicLevelStars[0] ?? -1) == -1) {
-      classicLevelStars[0] = 0;
+    if (classicLevelStars.isEmpty || (classicLevelStars[1] ?? -1) == -1) {
+      classicLevelStars[1] =
+          0; // Level 1 unlocked (using id 1-based indexing from JSON)
+    }
+    // Handle 0-based legacy keys if present
+    if (classicLevelStars.containsKey(0) && !classicLevelStars.containsKey(1)) {
+      classicLevelStars[1] = classicLevelStars[0]!;
     }
     if (timeAttackLevelStars.isEmpty || (timeAttackLevelStars[0] ?? -1) == -1) {
       timeAttackLevelStars[0] = 0;
@@ -252,7 +295,7 @@ class LevelManager {
 
   LevelModel _createLevel({
     required int id,
-    required Map<String, int> recipe,
+    required Map<String, dynamic> recipe,
     required int maxDrops,
     required double difficulty,
     bool isBlindMode = false,
@@ -261,21 +304,41 @@ class LevelManager {
     final int g = recipe['green'] ?? 0;
     final int b = recipe['blue'] ?? 0;
 
-    final Color targetColor = ColorLogic.createMixedColor(r, g, b);
+    final int white = recipe['white'] ?? 0;
+    final int black = recipe['black'] ?? 0;
+
+    final Color targetColor = ColorLogic.createMixedColor(
+      r,
+      g,
+      b,
+      whiteDrops: white,
+      blackDrops: black,
+    );
 
     return LevelModel(
       id: id,
       maxDrops: maxDrops,
       difficultyFactor: difficulty,
-      availableColors: [Colors.red, Colors.green, Colors.blue],
+      availableColors: [
+        Colors.red,
+        Colors.green,
+        Colors.blue,
+        Colors.white,
+        Colors.black,
+      ],
       targetColor: targetColor,
       recipe: recipe,
-      hint: _generateSmartHint(r, g, b),
+      hint: _generateSmartHint(r, g, b, white, black),
       isBlindMode: isBlindMode,
     );
   }
 
-  String _generateSmartHint(int r, int g, int b) {
+  String _generateSmartHint(int r, int g, int b, int w, int k) {
+    if (w > 0 && r == 0 && g == 0 && b == 0 && k == 0) return "Pure White";
+    if (k > 0 && r == 0 && g == 0 && b == 0 && w == 0) return "Pure Black";
+
+    if (w > 0 && w >= r && w >= g && w >= b) return "It looks pale (Add White)";
+    if (k > 0 && k >= r && k >= g && k >= b) return "It looks dark (Add Black)";
     if (r > 0 && g == 0 && b == 0) return AppStrings.hintPureRed;
     if (g > 0 && r == 0 && b == 0) return AppStrings.hintPureGreen;
     if (b > 0 && r == 0 && g == 0) return AppStrings.hintPureBlue;
@@ -307,13 +370,23 @@ class LevelManager {
     return AppStrings.hintObserve;
   }
 
-  void unlockNextLevel(int currentLvlIdx, int stars) {
-    levelStars[currentLvlIdx] = stars;
+  void unlockNextLevel(int currentLevelIndex, int stars) {
+    // Logic handles 1-based IDs from JSON (1..300)
+    // But currentLevelIndex is 0-based list index (0..299)
+    // So level with Index 0 has ID 1.
+    // Stars map uses ID keys?
+    // Let's check _createLevel id parameter. We passed levelData['id'] which is 1-based.
+    // So classicLevelStars keys should be 1-based.
 
-    int nextLvl = currentLvlIdx + 1;
-    if (nextLvl < 100) {
-      if ((levelStars[nextLvl] ?? -1) == -1) {
-        levelStars[nextLvl] = 0;
+    // Update current level star
+    int levelId = levels[currentLevelIndex].id;
+    levelStars[levelId] = stars;
+
+    // Unlock next level
+    if (currentLevelIndex < levels.length - 1) {
+      int nextLevelId = levels[currentLevelIndex + 1].id;
+      if ((levelStars[nextLevelId] ?? -1) == -1) {
+        levelStars[nextLevelId] = 0;
       }
     }
 

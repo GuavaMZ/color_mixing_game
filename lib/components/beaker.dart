@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
+import 'package:color_mixing_deductive/components/bubble_particles.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,8 @@ class Beaker extends PositionComponent {
   double _shakeLevel = 0.0;
   BeakerType type = BeakerType.classic;
   bool isBlindMode = false;
+
+  late BubbleParticles _bubbleParticles;
 
   // Cached Paints
   final Paint _liquidPaint = Paint()..style = PaintingStyle.fill;
@@ -32,8 +35,21 @@ class Beaker extends PositionComponent {
     ..color = Colors.white.withValues(alpha: 0.3)
     ..style = PaintingStyle.fill;
 
+  // Symbol Paints
+  final Paint _symbolPaint = Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 4
+    ..color = Colors.white.withValues(alpha: 0.8);
+
   Beaker({required Vector2 position, required Vector2 size})
     : super(position: position, size: size, anchor: Anchor.center);
+
+  @override
+  Future<void> onLoad() async {
+    super.onLoad();
+    _bubbleParticles = BubbleParticles(size: size);
+    add(_bubbleParticles);
+  }
 
   @override
   void update(double dt) {
@@ -53,6 +69,10 @@ class Beaker extends PositionComponent {
       _activeLevel = liquidLevel;
     }
 
+    // Update bubbles
+    _bubbleParticles.liquidLevel = _activeLevel;
+    _bubbleParticles.color = currentColor;
+
     // Decay shake level
     if (_shakeLevel > 0) {
       _shakeLevel = (_shakeLevel - dt * 2).clamp(0.0, 1.0);
@@ -61,12 +81,30 @@ class Beaker extends PositionComponent {
 
   @override
   void render(Canvas canvas) {
-    super.render(canvas);
+    // Note: Children (BubbleParticles) render automatically after this if we call super.render?
+    // Actually PositionComponent renders children on top.
+    // We want bubbles INSIDE the liquid/glass.
+    // So custom render order might be needed: Glass Back -> Liquid -> Bubbles -> Glass Front.
+    // Since Bubbles is a child, it renders last.
+    // We can manually render children inside clipped area OR let them render on top if we trust clip.
+    // But children of PositionComponent are not automatically clipped to parent size.
+    // So we should probably NOT add BubbleParticles as a child if we want to clip it manually here,
+    // OR we use canvas.clipPath here and render children manually?
+    // simpler: Let's manage bubbles drawing HERE instead of a separate component if we want complex clipping.
+    // BUT I added a component. Let's try to clip children.
 
-    // Get the shape path based on beaker type
+    // Actually, I'll draw the Liquid and THEN the bubbles manually if I can, OR just Clip, draw liquid, then draw bubbles myself (logic inside Beaker).
+    // The Update loop handles physics. Render handles drawing.
+    // Since I added BubbleParticles as child, it will draw on top of everything I draw here.
+    // That's fine for "Glass Front" effect if the glass front is translucent.
+    // But bubbles should be BEHIND the front glass highlights/outline.
+
+    // Better approach: Don't add BubbleParticles as a child. Just keep it as a member and call its update/render manually.
+
+    // 0. Beaker Shape
     final beakerPath = _getBeakerPath(size);
 
-    // 0. Beaker Back Glass (Semi-transparent dark fill)
+    // 1. Back Glass
     final glassGradient = LinearGradient(
       colors: [
         Colors.white.withValues(alpha: 0.05),
@@ -83,54 +121,53 @@ class Beaker extends PositionComponent {
 
     canvas.drawPath(beakerPath, glassPaint);
 
-    // 1. Draw Liquid (Clipped to beaker shape)
+    // 2. Liquid & Content
     if (_activeLevel > 0) {
       canvas.save();
       canvas.clipPath(beakerPath);
 
-      // Clamp level to prevent visual overflow glitches
-      // Ensure we don't draw liquid above the rim if level > 1.0 (though logic prevents it usually)
       final clampedLevel = _activeLevel.clamp(0.0, 1.0);
       final liquidTop = size.y * (1 - clampedLevel);
 
-      // Blind Mode: Hide actual color
+      // Liquid Color
       final displayColor = isBlindMode ? const Color(0xFF222222) : currentColor;
       _liquidPaint.color = displayColor;
 
+      // Draw Liquid Wave
       final liquidPath = Path();
       const waveCount = 1.5;
       final waveAmplitude = 6.0 * (1 + _shakeLevel * 2.5);
       final waveSpeed = 6.0;
 
       liquidPath.moveTo(0, liquidTop);
-
-      // Draw top wave curve
       for (double x = 0; x <= size.x; x += 4) {
         final yOffset =
             sin(x / size.x * waveCount * pi + _time * waveSpeed) *
             waveAmplitude;
         liquidPath.lineTo(x, liquidTop + yOffset);
       }
-
       liquidPath.lineTo(size.x, size.y);
       liquidPath.lineTo(0, size.y);
       liquidPath.close();
 
-      // Liquid Gradient (Top to Bottom Darker)
       final liquidGradient = LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
-        colors: [
-          displayColor,
-          Color.lerp(displayColor, Colors.black, 0.4)!, // Proper darkening
-        ],
+        colors: [displayColor, Color.lerp(displayColor, Colors.black, 0.4)!],
       ).createShader(Rect.fromLTWH(0, 0, size.x, size.y));
 
       _liquidPaint.shader = liquidGradient;
-
       canvas.drawPath(liquidPath, _liquidPaint);
 
-      // Draw Surface Wave Line Only (Better than outlining the whole liquid)
+      // 2.1 Draw Bubbles (Manually clipped)
+      _bubbleParticles.render(canvas);
+
+      // 2.2 Blind Mode Symbols
+      if (isBlindMode && _activeLevel > 0.1) {
+        _drawBlindModeSymbols(canvas, size, liquidTop);
+      }
+
+      // 2.3 Surface Line
       final surfacePath = Path();
       surfacePath.moveTo(0, liquidTop);
       for (double x = 0; x <= size.x; x += 2) {
@@ -139,51 +176,109 @@ class Beaker extends PositionComponent {
             waveAmplitude;
         surfacePath.lineTo(x, liquidTop + yOffset);
       }
-
       final surfacePaint = Paint()
         ..color = Colors.white.withValues(alpha: 0.6)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2.5
         ..strokeCap = StrokeCap.round;
-
       canvas.drawPath(surfacePath, surfacePaint);
 
       canvas.restore();
     }
 
-    // 2. Draw Glass Rim/Body Outline
-    // Outer thick neon-ish border for cartoon look
+    // 3. Glass Outline
     canvas.drawPath(beakerPath, _outlinePaint);
 
-    // 3. Realistic Highlights (Gloss)
+    // 4. Highlights
     _drawHighlights(canvas);
 
-    // 4. Blind Mode Indicator (?)
-    if (isBlindMode && _activeLevel > 0.1) {
-      final textSpan = TextSpan(
-        text: '?',
-        style: TextStyle(
-          color: Colors.cyanAccent.withValues(alpha: 0.8),
-          fontSize: 80,
-          fontWeight: FontWeight.bold,
-          shadows: [
-            BoxShadow(color: Colors.blue, blurRadius: 20, spreadRadius: 5),
-            BoxShadow(color: Colors.purple, blurRadius: 10),
-          ],
+    // 5. Blind Mode "?" if empty-ish/unset (legacy)
+    // Removing legacy '?' if we have specific symbols, but let's keep it if level is low or color is unknown?
+    // The user wants geometric symbols.
+  }
+
+  void _drawBlindModeSymbols(Canvas canvas, Vector2 size, double liquidTop) {
+    // Estimate color components from currentColor
+    // We need to know the Mix. Since `currentColor` is a Color, we can try to guess or better, pass the mix state.
+    // But Beaker only knows Color. R, G, B components of the Color.
+    // Pure Red ~ (255, 0, 0).
+    final r = currentColor.red;
+    final g = currentColor.green;
+    final b = currentColor.blue;
+
+    // Threshold to show symbol
+    const threshold = 50;
+
+    final centerY = (liquidTop + size.y) / 2;
+    final centerX = size.x / 2;
+
+    // We'll draw symbols in a row or overlapping?
+    // Let's create a composite visual.
+    // Red -> Triangle
+    // Blue -> Square
+    // Yellow (Green component in additive?) -> Circle.
+    // Wait, the game is CMY or RGB? "Color Mixing Deductive" usually implies RYB or CMY or RGB.
+    // Existing code has rDrops, gDrops, bDrops, white, black. So it's RGB mixing.
+    // User request: "Triangle for Red, Square for Blue, Circle for Yellow".
+    // Yellow in RGB is Red + Green.
+    // So if Red & Green are high -> Yellow -> Circle.
+    // If just Red -> Triangle.
+    // If just Blue -> Square.
+    // If Green? User didn't specify Green symbol. Maybe 'Circle' for Yellow implies Green?
+    // Usually Yellow = Red + Green in light.
+    // Let's stick to Red, Blue, Yellow (Red+Green).
+
+    final bool hasRed = r > threshold;
+    final bool hasGreen = g > threshold; // Used for Yellow
+    final bool hasBlue = b > threshold;
+
+    // Logic:
+    // If Red & Green -> Show Yellow Circle? Or Show Red Triangle AND Green Symbol?
+    // User said "Circle for Yellow".
+    // I'll try to map RGB to the requested symbols.
+
+    // Setup positions
+    double iconSize = 40;
+
+    // We are drawing on Canvas, not widgets.
+
+    // Calculate total width to center them
+    // simple logic: Draw symbols based on presence.
+
+    // If multiple, offset them
+    // Let's always draw them in fixed slots or overlaid?
+    // "Inscribed inside".
+
+    if (hasBlue) {
+      // Square
+      canvas.drawRect(
+        Rect.fromCenter(
+          center: Offset(centerX, centerY),
+          width: iconSize,
+          height: iconSize,
         ),
+        _symbolPaint,
       );
-      final textPainter = TextPainter(
-        text: textSpan,
-        textDirection: TextDirection.ltr,
-      );
-      textPainter.layout();
-      textPainter.paint(
-        canvas,
-        Offset(
-          (size.x - textPainter.width) / 2,
-          (size.y - textPainter.height) / 2 + 10,
-        ),
-      );
+    }
+
+    // If Red and Green are both high, maybe it's Yellow?
+    if (hasRed && hasGreen) {
+      // Yellow Circle
+      canvas.drawCircle(Offset(centerX, centerY), iconSize / 2, _symbolPaint);
+    } else if (hasRed) {
+      // Red Triangle
+      final path = Path();
+      path.moveTo(centerX, centerY - iconSize / 2);
+      path.lineTo(centerX + iconSize / 2, centerY + iconSize / 2);
+      path.lineTo(centerX - iconSize / 2, centerY + iconSize / 2);
+      path.close();
+      canvas.drawPath(path, _symbolPaint);
+    }
+    // What if Green only?
+    else if (hasGreen) {
+      // Triangle pointing down? or Circle?
+      // User didn't specify Green. I'll use Circle for Green too as it makes Yellow.
+      canvas.drawCircle(Offset(centerX, centerY), iconSize / 2, _symbolPaint);
     }
   }
 

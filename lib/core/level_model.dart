@@ -6,7 +6,7 @@ class LevelModel {
   final double difficultyFactor; // 0 to 1 (determines target color complexity)
   final List<Color> availableColors;
   final Color targetColor; // The color to achieve
-  final Map<String, int>
+  final Map<String, dynamic>
   recipe; // The solution recipe (e.g., {'red': 2, 'green': 1})
   final String hint; // Optional hint for the player
   final bool isBlindMode; // If true, beaker content is hidden
@@ -24,7 +24,7 @@ class LevelModel {
 
   /// Get the minimum number of drops needed to solve this level
   int get minDropsNeeded {
-    return recipe.values.fold(0, (sum, drops) => sum + drops);
+    return recipe.values.fold(0, (sum, drops) => sum + drops as int);
   }
 
   /// Check if this level uses only 2 colors (easier)

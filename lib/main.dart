@@ -9,6 +9,8 @@ import 'package:color_mixing_deductive/overlays/shop_overlay.dart';
 import 'package:color_mixing_deductive/overlays/transition_overlay.dart';
 import 'package:color_mixing_deductive/overlays/win_menu_overlay.dart';
 import 'package:color_mixing_deductive/overlays/pause_menu_overlay.dart';
+import 'package:color_mixing_deductive/overlays/achievement_notification.dart';
+import 'package:color_mixing_deductive/overlays/achievements_overlay.dart';
 import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
@@ -113,6 +115,13 @@ class _MyAppState extends State<MyApp> {
             'Shop': (context, game) => ShopOverlay(game: game),
             'PauseMenu': (context, game) => PauseMenuOverlay(game: game),
             'Tutorial': (context, game) => TutorialOverlay(game: game),
+            'Achievement': (context, game) => AchievementNotification(
+              onDismiss: () => game.overlays.remove('Achievement'),
+              title: "MAD CHEMIST",
+              subtitle: "First successful mixture!",
+              icon: Icons.science_rounded,
+            ),
+            'Achievements': (context, game) => AchievementsOverlay(game: game),
           },
           initialActiveOverlays: const ['MainMenu', 'Transition'],
           loadingBuilder: (context) => Container(

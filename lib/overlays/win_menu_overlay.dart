@@ -230,11 +230,9 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
                         const SizedBox(width: 10),
                         Text(
                           "${AppStrings.dropsUsed.getString(context)}: $drops",
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
+                          style: AppTheme.buttonText(context).copyWith(
+                            color: Colors.white.withValues(alpha: 0.9),
                             fontSize: ResponsiveHelper.fontSize(context, 16),
-                            decoration: TextDecoration.none,
-                            fontWeight: FontWeight.w900,
                           ),
                         ),
                       ],
@@ -326,11 +324,9 @@ class _ActionButton extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: TextStyle(
+                  style: AppTheme.buttonText(context, isLarge: true).copyWith(
                     fontSize: ResponsiveHelper.fontSize(context, 15),
                     color: isOutlined ? Colors.white : AppTheme.neonCyan,
-                    fontWeight: FontWeight.w900,
-                    decoration: TextDecoration.none,
                   ),
                 ),
                 const SizedBox(width: 8),
