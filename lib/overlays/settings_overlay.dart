@@ -147,6 +147,19 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                         },
                       ),
                     ),
+                    const SizedBox(height: 16),
+                    _SettingsTile(
+                      icon: Icons.visibility_off_rounded,
+                      title: AppStrings.blindMode.getString(context),
+                      trailing: _ToggleSwitch(
+                        value: widget.game.globalBlindMode,
+                        onChanged: (value) {
+                          _audio.playButton();
+                          widget.game.toggleBlindMode(value);
+                          setState(() {});
+                        },
+                      ),
+                    ),
 
                     const SizedBox(height: 24),
 

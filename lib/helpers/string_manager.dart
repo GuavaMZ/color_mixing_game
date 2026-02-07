@@ -41,6 +41,7 @@ mixin AppStrings {
   static const String music = "music";
   static const String language = "language";
   static const String vibration = "vibration";
+  static const String blindMode = "blind_mode";
   static const String on = "on";
   static const String off = "off";
 
@@ -142,6 +143,7 @@ mixin AppStrings {
     music: 'Music',
     language: 'Language',
     vibration: 'Vibration',
+    blindMode: 'Blind Mode',
     on: 'On',
     off: 'Off',
 
@@ -246,6 +248,7 @@ mixin AppStrings {
     music: 'الموسيقى',
     language: 'اللغة',
     vibration: 'الاهتزاز',
+    blindMode: 'وضع العمى',
     on: 'تشغيل',
     off: 'إيقاف',
 
@@ -351,6 +354,7 @@ mixin AppStrings {
     music: 'Música',
     language: 'Idioma',
     vibration: 'Vibración',
+    blindMode: 'Modo Ciego',
     on: 'Activado',
     off: 'Desactivado',
 
@@ -458,6 +462,7 @@ mixin AppStrings {
     music: 'Musique',
     language: 'Langue',
     vibration: 'Vibration',
+    blindMode: 'Mode Aveugle',
     on: 'Activé',
     off: 'Désactivé',
 

@@ -27,18 +27,38 @@ class GameOverOverlay extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // Enhanced icon with glow
               Container(
                 padding: const EdgeInsets.all(20),
-                decoration: const BoxDecoration(
-                  color: Colors.white10,
+                decoration: BoxDecoration(
                   shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.neonMagenta.withValues(alpha: 0.4),
+                      blurRadius: 30,
+                      spreadRadius: 5,
+                    ),
+                  ],
                 ),
-                child: Icon(
-                  game.isTimeUp
-                      ? Icons.timer_off_outlined
-                      : Icons.opacity_rounded,
-                  color: AppTheme.primaryColor,
-                  size: 80,
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppTheme.neonMagenta.withValues(alpha: 0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    game.isTimeUp
+                        ? Icons.timer_off_outlined
+                        : Icons.opacity_rounded,
+                    color: AppTheme.neonMagenta,
+                    size: 64,
+                    shadows: [
+                      Shadow(
+                        color: AppTheme.neonMagenta.withValues(alpha: 0.8),
+                        blurRadius: 20,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -91,7 +111,11 @@ class GameOverOverlay extends StatelessWidget {
                       onTap: () {
                         AudioManager().playButton();
                         game.overlays.remove('GameOver');
-                        game.overlays.add('LevelMap');
+                        if (game.currentMode == GameMode.colorEcho) {
+                          game.transitionTo('ColorEchoHUD', 'MainMenu');
+                        } else {
+                          game.overlays.add('LevelMap');
+                        }
                       },
                     ),
                   ),
@@ -112,29 +136,55 @@ class GameOverOverlay extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     return Container(
-      decoration: AppTheme.cosmicCard(
-        borderRadius: 16,
-        fillColor: color.withValues(alpha: 0.2), // Glassy button
-        borderColor: color.withValues(alpha: 0.5),
-        borderWidth: 1.5,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          colors: [color.withValues(alpha: 0.2), color.withValues(alpha: 0.1)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(width: 2, color: color.withValues(alpha: 0.5)),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.25),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(16),
+          splashColor: color.withValues(alpha: 0.3),
+          highlightColor: color.withValues(alpha: 0.15),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(icon, color: Colors.white, size: 20),
+                Icon(
+                  icon,
+                  color: Colors.white,
+                  size: 22,
+                  shadows: [
+                    Shadow(color: color.withValues(alpha: 0.6), blurRadius: 8),
+                  ],
+                ),
                 const SizedBox(width: 8),
                 Text(
                   label,
-                  style: AppTheme.buttonText(
-                    context,
-                  ).copyWith(color: Colors.white),
+                  style: AppTheme.buttonText(context).copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
+                  ),
                 ),
               ],
             ),

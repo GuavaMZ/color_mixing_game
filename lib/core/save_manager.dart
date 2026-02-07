@@ -43,6 +43,16 @@ class SaveManager {
     return prefs.getInt('total_stars') ?? 0;
   }
 
+  static Future<void> saveTotalCoins(int coins) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('total_coins', coins);
+  }
+
+  static Future<int> loadTotalCoins() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt('total_coins') ?? 0;
+  }
+
   static Future<void> savePurchasedSkins(List<String> skins) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList('purchased_skins', skins);
@@ -56,5 +66,15 @@ class SaveManager {
   static Future<List<String>> loadAchievements() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getStringList('unlocked_achievements') ?? [];
+  }
+
+  static Future<void> saveBlindMode(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('blind_mode_enabled', enabled);
+  }
+
+  static Future<bool> loadBlindMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('blind_mode_enabled') ?? false;
   }
 }

@@ -59,9 +59,10 @@ class _PauseMenuOverlayState extends State<PauseMenuOverlay>
   void _quit() {
     AudioManager().playButton();
     LivesManager().consumeLife();
+    final bool isEcho = widget.game.currentMode == GameMode.colorEcho;
     widget.game.currentMode = GameMode.none; // Stop timer
     widget.game.overlays.remove('PauseMenu');
-    widget.game.transitionTo('Controls', 'MainMenu');
+    widget.game.transitionTo(isEcho ? 'ColorEchoHUD' : 'Controls', 'MainMenu');
   }
 
   void _giveUp() {
@@ -76,9 +77,14 @@ class _PauseMenuOverlayState extends State<PauseMenuOverlay>
     // Confirm Give Up -> Exit to Map
     _audio.playButton();
     LivesManager().consumeLife();
+    final bool isEcho = widget.game.currentMode == GameMode.colorEcho;
     widget.game.currentMode = GameMode.none; // Stop timer
     widget.game.overlays.remove('PauseMenu');
-    widget.game.transitionTo('Controls', 'LevelMap');
+    if (isEcho) {
+      widget.game.transitionTo('ColorEchoHUD', 'MainMenu');
+    } else {
+      widget.game.transitionTo('Controls', 'LevelMap');
+    }
   }
 
   @override

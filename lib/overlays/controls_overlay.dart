@@ -68,54 +68,64 @@ class ControlsOverlay extends StatelessWidget {
             child: _buildPowerUpDock(context),
           ),
 
-          // Bottom controls area (Compact)
+          // Bottom controls area (Control Panel)
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              margin: const EdgeInsets.symmetric(
-                horizontal:
-                    24, // Increased horizontal margin to make container smaller width-wise
-                vertical: 8,
-              ),
+              // margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              margin: EdgeInsets.only(bottom: 32),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), // Less blur
-                  child: Container(
-                    padding: EdgeInsets.only(
-                      bottom: ResponsiveHelper.safePadding(context).bottom + 8,
-                      top: 8,
-                      left: 12,
-                      right: 12,
-                    ),
-                    decoration: AppTheme.cosmicGlass(
-                      borderRadius: 20,
-                      borderColor: Colors.white.withValues(alpha: 0.1),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Match percentage display - Scaled down
-                        ValueListenableBuilder<double>(
-                          valueListenable: game.matchPercentage,
-                          builder: (context, value, child) => Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: Transform.scale(
-                              scale: 0.8, // Make percentage smaller
-                              child: _MatchPercentageDisplay(
-                                value: value,
-                                context: context,
-                              ),
-                            ),
+                borderRadius: BorderRadius.circular(24),
+                child: Container(
+                  padding: EdgeInsets.only(
+                    bottom: ResponsiveHelper.safePadding(context).bottom + 8,
+                    top: 12,
+                    left: 12,
+                    right: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    // color: Colors.black.withValues(alpha: 0.7),
+                    borderRadius: BorderRadius.circular(20),
+                    // border: Border.all(
+                    //   color: Colors.white.withValues(alpha: 0.1),
+                    //   width: 1,
+                    // ),
+                    // gradient: LinearGradient(
+                    //   begin: Alignment.topCenter,
+                    //   end: Alignment.bottomCenter,
+                    //   colors: [
+                    //     Colors.black.withValues(alpha: 0.6),
+                    //     Colors.black.withValues(alpha: 0.8),
+                    //   ],
+                    // ),
+                    // boxShadow: [
+                    //   BoxShadow(
+                    //     color: AppTheme.neonCyan.withValues(alpha: 0.1),
+                    //     blurRadius: 15,
+                    //     spreadRadius: -5,
+                    //   ),
+                    // ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Match percentage display - Integrated & Compact
+                      ValueListenableBuilder<double>(
+                        valueListenable: game.matchPercentage,
+                        builder: (context, value, child) => Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: _MatchPercentageDisplay(
+                            value: value,
+                            context: context,
                           ),
                         ),
+                      ),
 
-                        // Color buttons row
-                        _buildControlsRow(context),
+                      // Color buttons row
+                      _buildControlsRow(context),
 
-                        const SizedBox(height: 16), // Placeholder space
-                      ],
-                    ),
+                      const SizedBox(height: 4),
+                    ],
                   ),
                 ),
               ),
@@ -130,9 +140,9 @@ class ControlsOverlay extends StatelessWidget {
     final currentLevel = game.levelManager.currentLevel;
     final circleSize = ResponsiveHelper.responsive<double>(
       context,
-      mobile: 110.0,
-      tablet: 130.0,
-      desktop: 150.0,
+      mobile: 90.0,
+      tablet: 110.0,
+      desktop: 130.0,
     );
 
     return ValueListenableBuilder<double>(
@@ -399,44 +409,24 @@ class ControlsOverlay extends StatelessWidget {
             final color = item['color'] as Color;
             final type = item['type'] as String;
 
-            // Reduced button sizes
+            // Reduced button sizes (Minimal)
             final buttonSize = ResponsiveHelper.responsive<double>(
               context,
-              mobile: 56.0,
-              tablet: 60.0, // Slightly smaller to fit 5 items
-              desktop: 64.0,
+              mobile: 48.0,
+              tablet: 54.0,
+              desktop: 60.0,
             );
 
             return Padding(
               padding: EdgeInsets.symmetric(
-                horizontal: ResponsiveHelper.spacing(
-                  context,
-                  6,
-                ), // tighter spacing
+                horizontal: ResponsiveHelper.spacing(context, 5),
               ),
               child: Opacity(
                 opacity: isLimitReached ? 0.4 : 1.0,
-                child: _CosmicButton(
+                child: _EnhancedDropButton(
                   onTap: isLimitReached ? null : () => game.addDrop(type),
-                  width: buttonSize - 8,
-                  height: buttonSize - 8,
-                  borderRadius: buttonSize / 2,
+                  size: buttonSize,
                   color: color,
-                  borderColor: color == Colors.black ? Colors.grey[800] : null,
-                  isCircular: true,
-                  disableDepthConfig: true,
-                  child: Icon(
-                    Icons.water_drop,
-                    color:
-                        color == Colors.white ||
-                            color == Colors.green ||
-                            color ==
-                                Colors
-                                    .cyan // bright bg
-                        ? Colors.black.withValues(alpha: 0.5)
-                        : Colors.white,
-                    size: buttonSize * 0.45,
-                  ),
                 ),
               ),
             );
@@ -448,44 +438,81 @@ class ControlsOverlay extends StatelessWidget {
 
   Widget _buildPowerUpDock(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
       decoration: AppTheme.cosmicGlass(
         borderRadius: 16,
-        borderColor: Colors.white.withValues(alpha: 0.15),
+        borderColor: Colors.white.withValues(alpha: 0.1),
+        isInteractive: true,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Undo Button
+          // 1. Undo (Cyan)
           _CosmicButton(
             onTap: () => game.undoLastDrop(),
-            width: 48,
-            height: 48,
-            color: AppTheme.primaryColor.withValues(alpha: 0.5),
-            borderColor: AppTheme.neonCyan.withValues(alpha: 0.3),
+            width: 40,
+            height: 40,
+            color: AppTheme.neonCyan.withValues(alpha: 0.15),
+            borderColor: AppTheme.neonCyan.withValues(alpha: 0.5),
             borderRadius: 12,
-            child: Icon(Icons.undo_rounded, color: AppTheme.neonCyan, size: 24),
+            child: Icon(Icons.undo_rounded, color: AppTheme.neonCyan, size: 20),
           ),
-          const SizedBox(height: 12),
-          // Reveal Button (Analyzer)
+          const SizedBox(height: 8),
+
+          // 2. Extra Drops (Magenta)
+          _CosmicButton(
+            onTap: () {
+              game.addExtraDrops();
+            },
+            width: 40,
+            height: 40,
+            color: AppTheme.neonMagenta.withValues(alpha: 0.15),
+            borderColor: AppTheme.neonMagenta.withValues(alpha: 0.5),
+            borderRadius: 12,
+            child: Icon(
+              Icons.add_circle_outline,
+              color: AppTheme.neonMagenta,
+              size: 20,
+            ),
+          ),
+          const SizedBox(height: 8),
+
+          // 3. Drop Color (Green)
+          _CosmicButton(
+            onTap: () {
+              game.addHelpDrop();
+            },
+            width: 40,
+            height: 40,
+            color: AppTheme.success.withValues(alpha: 0.15),
+            borderColor: AppTheme.success.withValues(alpha: 0.5),
+            borderRadius: 12,
+            child: Icon(
+              Icons.water_drop_outlined,
+              color: AppTheme.success,
+              size: 20,
+            ),
+          ),
+          const SizedBox(height: 8),
+
+          // 4. Reveal (Yellow)
           ValueListenableBuilder<double>(
-            valueListenable: game
-                .matchPercentage, // Just to rebuild if needed, or use a better notifier
+            valueListenable: game.matchPercentage,
             builder: (context, _, __) {
               bool isBlind = game.isBlindMode;
               return Opacity(
                 opacity: isBlind ? 1.0 : 0.3,
                 child: _CosmicButton(
                   onTap: isBlind ? () => game.revealHiddenColor() : null,
-                  width: 48,
-                  height: 48,
-                  color: AppTheme.cosmicPurple.withValues(alpha: 0.5),
-                  borderColor: AppTheme.neonMagenta.withValues(alpha: 0.3),
+                  width: 40,
+                  height: 40,
+                  color: AppTheme.electricYellow.withValues(alpha: 0.15),
+                  borderColor: AppTheme.electricYellow.withValues(alpha: 0.5),
                   borderRadius: 12,
                   child: Icon(
                     Icons.visibility_outlined,
-                    color: AppTheme.neonMagenta,
-                    size: 24,
+                    color: AppTheme.electricYellow,
+                    size: 20,
                   ),
                 ),
               );
@@ -673,7 +700,7 @@ class _MatchPercentageDisplay extends StatelessWidget {
             Text(
               "${animatedValue.toStringAsFixed(0)}%",
               style: TextStyle(
-                fontSize: ResponsiveHelper.fontSize(context, 48),
+                fontSize: ResponsiveHelper.fontSize(context, 32),
                 color: color,
                 fontWeight: FontWeight.w900,
                 decoration: TextDecoration.none,
@@ -862,6 +889,130 @@ class _TimeAttackTimer extends StatelessWidget {
           },
         );
       },
+    );
+  }
+}
+
+// Enhanced Drop Button with Premium Styling
+class _EnhancedDropButton extends StatefulWidget {
+  final VoidCallback? onTap;
+  final double size;
+  final Color color;
+
+  const _EnhancedDropButton({
+    required this.onTap,
+    required this.size,
+    required this.color,
+  });
+
+  @override
+  State<_EnhancedDropButton> createState() => _EnhancedDropButtonState();
+}
+
+class _EnhancedDropButtonState extends State<_EnhancedDropButton> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final isLight =
+        widget.color == Colors.white ||
+        widget.color == Colors.green ||
+        widget.color == Colors.cyan;
+    final iconColor = isLight
+        ? Colors.black.withValues(alpha: 0.6)
+        : Colors.white;
+
+    return GestureDetector(
+      onTapDown: widget.onTap != null
+          ? (_) => setState(() => _isPressed = true)
+          : null,
+      onTapUp: widget.onTap != null
+          ? (_) {
+              setState(() => _isPressed = false);
+              widget.onTap!();
+              AudioManager().playDrop();
+            }
+          : null,
+      onTapCancel: () => setState(() => _isPressed = false),
+      child: AnimatedScale(
+        scale: _isPressed ? 0.92 : 1.0,
+        duration: const Duration(milliseconds: 100),
+        child: Container(
+          width: widget.size,
+          height: widget.size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: RadialGradient(
+              colors: [
+                widget.color.withValues(alpha: 0.9),
+                widget.color,
+                Color.lerp(widget.color, Colors.black, 0.3)!,
+              ],
+              stops: const [0.0, 0.6, 1.0],
+              center: Alignment.topLeft,
+            ),
+            border: Border.all(
+              width: 2.5,
+              color: widget.color == Colors.black
+                  ? Colors.grey.shade700
+                  : Colors.white.withValues(alpha: 0.4),
+            ),
+            boxShadow: [
+              // Colored glow
+              BoxShadow(
+                color: widget.color.withValues(alpha: 0.4),
+                blurRadius: 15,
+                spreadRadius: 2,
+                offset: const Offset(0, 2),
+              ),
+              // Dark shadow for depth
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.4),
+                blurRadius: 10,
+                offset: const Offset(0, 6),
+              ),
+              // Inner highlight
+              BoxShadow(
+                color: Colors.white.withValues(alpha: 0.2),
+                blurRadius: 0,
+                spreadRadius: -2,
+                offset: const Offset(0, -2),
+              ),
+            ],
+          ),
+          child: Stack(
+            children: [
+              // Glossy shine
+              Positioned(
+                top: widget.size * 0.15,
+                left: widget.size * 0.15,
+                child: Container(
+                  width: widget.size * 0.35,
+                  height: widget.size * 0.2,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(widget.size),
+                  ),
+                ),
+              ),
+              // Water drop icon
+              Center(
+                child: Icon(
+                  Icons.water_drop,
+                  color: iconColor,
+                  size: widget.size * 0.5,
+                  shadows: [
+                    Shadow(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      blurRadius: 4,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

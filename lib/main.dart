@@ -11,6 +11,7 @@ import 'package:color_mixing_deductive/overlays/win_menu_overlay.dart';
 import 'package:color_mixing_deductive/overlays/pause_menu_overlay.dart';
 import 'package:color_mixing_deductive/overlays/achievement_notification.dart';
 import 'package:color_mixing_deductive/overlays/achievements_overlay.dart';
+import 'package:color_mixing_deductive/overlays/color_echo_hud.dart';
 import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
@@ -113,6 +114,7 @@ class _MyAppState extends State<MyApp> {
             'Transition': (context, game) => TransitionOverlay(game: game),
             'GameOver': (context, game) => GameOverOverlay(game: game),
             'Shop': (context, game) => ShopOverlay(game: game),
+            'ColorEchoHUD': (context, game) => ColorEchoHUD(game: game),
             'PauseMenu': (context, game) => PauseMenuOverlay(game: game),
             'Tutorial': (context, game) => TutorialOverlay(game: game),
             'Achievement': (context, game) => AchievementNotification(

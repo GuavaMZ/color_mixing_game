@@ -5,15 +5,19 @@ import 'package:color_mixing_deductive/components/beaker.dart';
 import 'package:color_mixing_deductive/components/particles.dart';
 import 'package:color_mixing_deductive/components/pouring_effect.dart';
 import 'package:color_mixing_deductive/components/fireworks.dart';
+import 'package:color_mixing_deductive/components/holographic_radar.dart';
+import 'package:color_mixing_deductive/components/spectral_target.dart';
+import 'package:color_mixing_deductive/components/echo_particles.dart';
 import 'package:color_mixing_deductive/core/color_logic.dart';
 import 'package:color_mixing_deductive/core/level_manager.dart';
 import 'package:color_mixing_deductive/core/save_manager.dart';
 import 'package:color_mixing_deductive/core/lives_manager.dart';
 import 'package:color_mixing_deductive/helpers/audio_manager.dart';
+import 'dart:math';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
-enum GameMode { classic, timeAttack, none }
+enum GameMode { classic, timeAttack, colorEcho, none }
 
 class ColorMixerGame extends FlameGame with ChangeNotifier {
   late Beaker beaker;
@@ -30,10 +34,12 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   final ValueNotifier<double> matchPercentage = ValueNotifier<double>(0.0);
   final ValueNotifier<int> totalDrops = ValueNotifier<int>(0);
   final ValueNotifier<bool> dropsLimitReached = ValueNotifier<bool>(false);
+  final ValueNotifier<int> totalCoins = ValueNotifier<int>(0);
 
   late BackgroundGradient backgroundGradient;
   late AmbientParticles ambientParticles;
   List<String> unlockedAchievements = [];
+  bool globalBlindMode = false;
 
   GameMode currentMode = GameMode.none;
   double timeLeft = 30.0;
@@ -68,6 +74,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     await LivesManager().init();
     totalStars = await SaveManager.loadTotalStars();
     unlockedAchievements = await SaveManager.loadAchievements();
+    globalBlindMode = await SaveManager.loadBlindMode();
 
     // Add background gradient first (rendered first)
     backgroundGradient = BackgroundGradient();
@@ -223,6 +230,15 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       ),
     );
 
+    if (currentMode == GameMode.colorEcho) {
+      add(
+        EchoParticles(
+          position: beaker.position + Vector2(0, -50),
+          color: dropColor,
+        ),
+      );
+    }
+
     _updateGameState();
   }
 
@@ -247,6 +263,58 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
     dropsLimitReached.value = false;
     _updateGameState();
+  }
+
+  void addExtraDrops() {
+    if (_hasWon) return;
+    maxDrops += 5;
+    dropsLimitReached.value = false;
+    notifyListeners();
+    _audio.playDrop(); // Or a specific powerup sound
+  }
+
+  void addHelpDrop() {
+    if (_hasWon) return;
+
+    final level = levelManager.currentLevel;
+    final recipe =
+        level.recipe; // Map<String, dynamic> {'red': 1, 'green': 2...}
+
+    // Check which color is missing based on the recipe
+    // We compare what we have dropped vs what is required
+    // NOTE: This logic assumes the user is trying to match the EXACT recipe.
+    // If they have already over-dropped a color, we might need to be smart,
+    // but for now, let's just find the first deficient color.
+
+    String? colorToDrop;
+
+    // Helper to get deficiency
+    int needed(String color, int current) {
+      int required = (recipe[color] as int?) ?? 0;
+      return (current < required) ? 1 : 0;
+    }
+
+    if (needed('red', rDrops) > 0)
+      colorToDrop = 'red';
+    else if (needed('green', gDrops) > 0)
+      colorToDrop = 'green';
+    else if (needed('blue', bDrops) > 0)
+      colorToDrop = 'blue';
+    else if (needed('white', whiteDrops) > 0)
+      colorToDrop = 'white';
+    else if (needed('black', blackDrops) > 0)
+      colorToDrop = 'black';
+
+    if (colorToDrop != null) {
+      addDrop(colorToDrop);
+    } else {
+      // Recipe is effectively fulfilled by current counts (or over-fulfilled).
+      // If we are not winning, maybe we have extra drops of other colors?
+      // In that case, we can't really "help" by adding a needed drop because nothing is "needed" count-wise.
+      // Maybe give a hint? or just do nothing.
+      // For now, let's just return.
+      debugPrint("Help Helper: No drops needed according to recipe counts.");
+    }
   }
 
   /// Temporarily reveal the color in blind mode
@@ -318,9 +386,21 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   }
 
   void startLevel() {
-    final level = levelManager.currentLevel;
-    targetColor = level.targetColor;
-    maxDrops = level.maxDrops;
+    if (currentMode == GameMode.colorEcho) {
+      targetColor = ColorLogic.generateRandomHardColor();
+      maxDrops = 15;
+      isBlindMode = Random().nextBool(); // 50% chance of blind mode in echo
+    } else {
+      final level = levelManager.currentLevel;
+      targetColor = level.targetColor;
+      maxDrops = level.maxDrops;
+      isBlindMode = level.isBlindMode;
+    }
+
+    // Master override: Blind Mode must be enabled in settings to be active in-game
+    if (!globalBlindMode) {
+      isBlindMode = false;
+    }
 
     // Thoroughly reset game state
     rDrops = 0;
@@ -338,20 +418,47 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     children.whereType<Fireworks>().forEach((f) => f.removeFromParent());
 
     // Reset beaker visuals immediately
-    isBlindMode = level.isBlindMode;
     beaker.isBlindMode = isBlindMode;
     beaker.clearContents();
     beaker.currentColor = Colors.white.withValues(alpha: .2);
 
     if (currentMode == GameMode.timeAttack) {
+      final level = levelManager.currentLevel;
       // Base time scales with difficulty
       maxTime = 30.0 - (level.difficultyFactor * 10);
       maxTime = maxTime.clamp(10, 30);
       timeLeft = maxTime;
       isTimeUp = false;
+    } else if (currentMode == GameMode.colorEcho) {
+      // Echo mode also has time attack? Or unlimited?
+      // User said "random hard target color", let's give it a generous but decreasing time if needed?
+      // For now, let's make it unlimited time or a fixed 20s.
+      timeLeft = 25.0;
+      maxTime = 25.0;
+      isTimeUp = false;
     } else {
       timeLeft = 0;
       isTimeUp = false;
+    }
+
+    // Clear any existing radar or spectral target
+    children.whereType<HolographicRadar>().forEach((r) => r.removeFromParent());
+    children.whereType<SpectralGhostTarget>().forEach(
+      (s) => s.removeFromParent(),
+    );
+
+    if (currentMode == GameMode.colorEcho) {
+      add(HolographicRadar(position: beaker.position, radius: 130));
+      add(
+        SpectralGhostTarget(
+          position: Vector2(size.x / 2, 120),
+          targetColor: targetColor,
+        ),
+      );
+      overlays.add('ColorEchoHUD');
+      overlays.remove('Controls');
+    } else {
+      overlays.remove('ColorEchoHUD');
     }
 
     notifyListeners();
@@ -359,6 +466,13 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
   void goToNextLevel() {
     int stars = calculateStars();
+
+    if (currentMode == GameMode.colorEcho) {
+      overlays.remove('WinMenu');
+      startLevel();
+      notifyListeners();
+      return;
+    }
 
     // Save progress
     levelManager.unlockNextLevel(levelManager.currentLevelIndex, stars);
@@ -380,7 +494,9 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
   int calculateStars() {
     int drops = totalDrops.value;
-    int minDrops = levelManager.currentLevel.minDropsNeeded;
+    int minDrops = (currentMode == GameMode.colorEcho)
+        ? 7 // Arbitrary target for stars in random mode
+        : levelManager.currentLevel.minDropsNeeded;
 
     // 3 stars: within 2 drops of optimal
     // 2 stars: within 5 drops of optimal
@@ -416,16 +532,33 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   int totalStars = 0;
   List<BeakerType> unlockedSkins = [BeakerType.classic];
 
+  void addCoins(int amount) {
+    totalCoins.value += amount;
+    SaveManager.saveTotalCoins(totalCoins.value);
+    notifyListeners();
+  }
+
   void buyOrSelectSkin(BeakerType type, int price) {
     if (unlockedSkins.contains(type)) {
-      beaker.type = type; // اختيار الشكل
-    } else if (totalStars >= price) {
-      totalStars -= price;
+      beaker.type = type; // Select skin
+    } else if (totalCoins.value >= price) {
+      totalCoins.value -= price;
       unlockedSkins.add(type);
       beaker.type = type;
-      // حفظ البيانات الجديدة في الذاكرة
-      SaveManager.saveTotalStars(totalStars);
+
+      // Save new state
+      SaveManager.saveTotalCoins(totalCoins.value);
+      List<String> skinNames = unlockedSkins.map((e) => e.toString()).toList();
+      SaveManager.savePurchasedSkins(skinNames);
+
+      _audio.playUnlock();
     }
+    notifyListeners();
+  }
+
+  Future<void> toggleBlindMode(bool enabled) async {
+    globalBlindMode = enabled;
+    await SaveManager.saveBlindMode(enabled);
     notifyListeners();
   }
 }

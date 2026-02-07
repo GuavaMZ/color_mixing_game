@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 
 class ColorLogic {
@@ -73,5 +74,15 @@ class ColorLogic {
     // تحويل الفرق لنسبة مئوية (0 هي تطابق تام)
     double totalDiff = (rDiff + gDiff + bDiff) / (255 * 3);
     return (1 - totalDiff) * 100;
+  }
+
+  static Color generateRandomHardColor() {
+    final random = Random();
+    // A hard color usually has mixed values across R, G, B
+    // We avoid primary/secondary by giving each channel a decent range
+    int r = 40 + random.nextInt(170);
+    int g = 40 + random.nextInt(170);
+    int b = 40 + random.nextInt(170);
+    return Color.fromARGB(255, r, g, b);
   }
 }

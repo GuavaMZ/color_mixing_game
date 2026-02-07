@@ -39,31 +39,31 @@ class _ShopOverlayState extends State<ShopOverlay> {
     ),
     ShopItemData(
       nameKey: AppStrings.beakerFlask,
-      price: 5,
+      price: 250,
       type: BeakerType.laboratory,
       icon: Icons.science_rounded,
     ),
     ShopItemData(
       nameKey: AppStrings.beakerMagic,
-      price: 15,
+      price: 500,
       type: BeakerType.magicBox,
       icon: Icons.inventory_2_rounded,
     ),
     ShopItemData(
       nameKey: AppStrings.beakerHex,
-      price: 25,
+      price: 1000,
       type: BeakerType.hexagon,
       icon: Icons.hexagon_rounded,
     ),
     ShopItemData(
       nameKey: AppStrings.beakerCylinder,
-      price: 40,
+      price: 1500,
       type: BeakerType.cylinder,
       icon: Icons.view_agenda_rounded,
     ),
     ShopItemData(
       nameKey: AppStrings.beakerRound,
-      price: 60,
+      price: 2500,
       type: BeakerType.round,
       icon: Icons.circle_outlined,
     ),
@@ -75,12 +75,13 @@ class _ShopOverlayState extends State<ShopOverlay> {
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          // Blur background
           Positioned.fill(
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
               child: Container(
-                decoration: BoxDecoration(gradient: AppTheme.cosmicBackground),
+                decoration: const BoxDecoration(
+                  gradient: AppTheme.backgroundGradient,
+                ),
               ),
             ),
           ),
@@ -136,64 +137,144 @@ class _ShopOverlayState extends State<ShopOverlay> {
             child: Hero(
               tag: 'shop_title',
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: AppTheme.cosmicCard(
-                  borderRadius: 16,
-                  fillColor: AppTheme.primaryDark.withValues(alpha: 0.7),
-                  borderColor: AppTheme.neonCyan.withValues(alpha: 0.3),
-                  hasGlow: true,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  gradient: LinearGradient(
+                    colors: [
+                      AppTheme.primaryGradient.colors.first.withValues(
+                        alpha: 0.08,
+                      ),
+                      AppTheme.primaryGradient.colors.last.withValues(
+                        alpha: 0.08,
+                      ),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  border: Border.all(
+                    width: 2,
+                    color: Colors.white.withValues(alpha: 0.15),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.primaryGradient.colors.first.withValues(
+                        alpha: 0.2,
+                      ),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      blurRadius: 15,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                child: Text(
-                  AppStrings.shopTitle.getString(context),
-                  textAlign: TextAlign.center,
-                  style: AppTheme.heading2(
-                    context,
-                  ).copyWith(fontSize: 24, color: AppTheme.neonCyan),
+                child: Container(
+                  decoration: AppTheme.cosmicCard(
+                    borderRadius: 16,
+                    fillColor: AppTheme.primaryMedium.withValues(alpha: 0.5),
+                    borderColor: Colors.transparent,
+                    hasGlow: false,
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Text(
+                    AppStrings.shopTitle.getString(context),
+                    textAlign: TextAlign.center,
+                    style: AppTheme.heading2(context).copyWith(
+                      fontSize: 24,
+                      color: Colors.white,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black.withValues(alpha: 0.5),
+                          blurRadius: 8,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
           const SizedBox(width: 16),
-          _buildStarsDisplay(),
+          _buildCoinsDisplay(),
         ],
       ),
     );
   }
 
-  Widget _buildStarsDisplay() {
+  Widget _buildCoinsDisplay() {
     return AnimatedBuilder(
-      animation: widget.game,
+      animation: widget.game.totalCoins,
       builder: (context, child) {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          decoration: AppTheme.cosmicCard(
-            borderRadius: 16,
-            fillColor: AppTheme.primaryDark.withValues(alpha: 0.7),
-            borderColor: AppTheme.electricYellow.withValues(alpha: 0.5),
-            hasGlow: true,
-          ),
-          child: Row(
-            children: [
-              const Icon(
-                Icons.star_rounded,
-                color: AppTheme.electricYellow,
-                size: 24,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: LinearGradient(
+              colors: [
+                AppTheme.secondaryGradient.colors.first.withValues(alpha: 0.08),
+                AppTheme.secondaryGradient.colors.last.withValues(alpha: 0.08),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            border: Border.all(
+              width: 2,
+              color: Colors.white.withValues(alpha: 0.15),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppTheme.secondaryGradient.colors.first.withValues(
+                  alpha: 0.2,
+                ),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
               ),
-              const SizedBox(width: 8),
-              Text(
-                "${widget.game.totalStars}",
-                style: AppTheme.buttonText(context, isLarge: true).copyWith(
-                  color: AppTheme.electricYellow,
-                  fontSize: 22,
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.3),
+                blurRadius: 15,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Container(
+            decoration: AppTheme.cosmicCard(
+              borderRadius: 16,
+              fillColor: AppTheme.primaryMedium.withValues(alpha: 0.5),
+              borderColor: Colors.transparent,
+              hasGlow: false,
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.monetization_on_rounded, // Coin icon
+                  color: Colors.amber,
+                  size: 24,
                   shadows: [
                     Shadow(
-                      color: AppTheme.electricYellow.withValues(alpha: 0.6),
-                      blurRadius: 15,
+                      color: Colors.amber.withValues(alpha: 0.6),
+                      blurRadius: 10,
                     ),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(width: 8),
+                Text(
+                  "${widget.game.totalCoins.value}",
+                  style: AppTheme.buttonText(context, isLarge: true).copyWith(
+                    color: Colors.white,
+                    fontSize: 22,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black.withValues(alpha: 0.5),
+                        blurRadius: 8,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -205,19 +286,48 @@ class _ShopOverlayState extends State<ShopOverlay> {
     required VoidCallback onTap,
   }) {
     return Container(
-      decoration: AppTheme.cosmicGlass(
-        borderRadius: 15,
-        borderColor: Colors.white.withValues(alpha: 0.1),
-        isInteractive: true,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          colors: [
+            Colors.white.withValues(alpha: 0.12),
+            Colors.white.withValues(alpha: 0.05),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(
+          width: 1.5,
+          color: Colors.white.withValues(alpha: 0.2),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(16),
+          splashColor: Colors.white.withValues(alpha: 0.2),
+          highlightColor: Colors.white.withValues(alpha: 0.1),
           child: Padding(
             padding: const EdgeInsets.all(12),
-            child: Icon(icon, color: Colors.white, size: 24),
+            child: Icon(
+              icon,
+              color: Colors.white,
+              size: 24,
+              shadows: [
+                Shadow(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  blurRadius: 4,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -235,70 +345,116 @@ class ShopItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isUnlocked = game.unlockedSkins.contains(item.type);
     final bool isSelected = game.beaker.type == item.type;
-    final bool canAfford = game.totalStars >= item.price;
+    final bool canAfford = game.totalCoins.value >= item.price;
     final Color itemColor = isSelected
         ? AppTheme.neonCyan
         : isUnlocked
-        ? AppTheme.neonMagenta
-        : Colors.grey;
+        ? Colors.greenAccent
+        : Colors.white.withValues(alpha: 0.5);
 
     return GestureDetector(
       onTap: () => _handleTap(context),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
-        decoration: AppTheme.cosmicCard(
-          borderRadius: 24,
-          fillColor: isSelected
-              ? AppTheme.neonCyan.withValues(alpha: 0.1)
-              : AppTheme.primaryMedium.withValues(alpha: 0.4),
-          borderColor: isSelected
-              ? AppTheme.neonCyan
-              : isUnlocked
-              ? AppTheme.neonMagenta.withValues(alpha: 0.3)
-              : Colors.white.withValues(alpha: 0.1),
-          hasGlow: isSelected,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          gradient: LinearGradient(
+            colors: [
+              (isSelected
+                      ? AppTheme.neonCyan
+                      : AppTheme.primaryGradient.colors.first)
+                  .withValues(alpha: 0.08),
+              (isSelected
+                      ? AppTheme.neonCyan
+                      : AppTheme.primaryGradient.colors.last)
+                  .withValues(alpha: 0.08),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          border: Border.all(
+            width: 2,
+            color: isSelected
+                ? AppTheme.neonCyan
+                : isUnlocked
+                ? Colors.greenAccent.withValues(alpha: 0.5)
+                : Colors.white.withValues(alpha: 0.15),
+          ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppTheme.neonCyan.withValues(alpha: 0.3),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ]
+              : [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isUnlocked
-                    ? (isSelected
-                          ? AppTheme.neonCyan.withValues(alpha: 0.15)
-                          : AppTheme.neonMagenta.withValues(alpha: 0.05))
-                    : Colors.black.withValues(alpha: 0.3),
-                boxShadow: isSelected
-                    ? [
-                        BoxShadow(
-                          color: AppTheme.neonCyan.withValues(alpha: 0.4),
-                          blurRadius: 20,
-                        ),
-                      ]
-                    : [],
-                border: Border.all(
-                  color: isSelected
-                      ? AppTheme.neonCyan.withValues(alpha: 0.5)
-                      : Colors.transparent,
-                  width: 2,
+        child: Container(
+          decoration: AppTheme.cosmicCard(
+            borderRadius: 24,
+            fillColor: isSelected
+                ? AppTheme.neonCyan.withValues(alpha: 0.15)
+                : isUnlocked
+                ? Colors.greenAccent.withValues(alpha: 0.08)
+                : AppTheme.primaryMedium.withValues(alpha: 0.5),
+            borderColor: Colors.transparent,
+            hasGlow: isSelected,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: isUnlocked
+                      ? (isSelected
+                            ? AppTheme.neonCyan.withValues(alpha: 0.2)
+                            : Colors.greenAccent.withValues(alpha: 0.1))
+                      : Colors.black.withValues(alpha: 0.4),
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: AppTheme.neonCyan.withValues(alpha: 0.4),
+                            blurRadius: 20,
+                          ),
+                        ]
+                      : [],
+                  border: Border.all(
+                    color: isSelected
+                        ? AppTheme.neonCyan.withValues(alpha: 0.5)
+                        : Colors.transparent,
+                    width: 2,
+                  ),
                 ),
+                child: Icon(item.icon, size: 40, color: itemColor),
               ),
-              child: Icon(item.icon, size: 40, color: itemColor),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              item.nameKey.getString(context),
-              style: AppTheme.buttonText(context).copyWith(
-                color: isSelected ? AppTheme.neonCyan : Colors.white70,
-                fontSize: 16,
+              const SizedBox(height: 16),
+              Text(
+                item.nameKey.getString(context),
+                style: AppTheme.buttonText(context).copyWith(
+                  color: Colors.white,
+                  fontSize: 16,
+                  shadows: [
+                    Shadow(
+                      color: Colors.black.withValues(alpha: 0.5),
+                      blurRadius: 4,
+                    ),
+                  ],
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            _buildActionLabel(context, isUnlocked, canAfford, isSelected),
-          ],
+              const SizedBox(height: 16),
+              _buildActionLabel(context, isUnlocked, canAfford, isSelected),
+            ],
+          ),
         ),
       ),
     );
@@ -315,35 +471,31 @@ class ShopItemCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: isUnlocked
             ? (isSelected
-                  ? AppTheme.neonCyan
-                  : AppTheme.primaryLight.withValues(alpha: 0.5))
+                  ? AppTheme.neonCyan.withValues(alpha: 0.3)
+                  : Colors.greenAccent.withValues(alpha: 0.15))
             : (canAfford
-                  ? AppTheme.success.withValues(alpha: 0.2)
-                  : Colors.red.withValues(alpha: 0.2)),
+                  ? AppTheme.success.withValues(alpha: 0.15)
+                  : Colors.red.withValues(alpha: 0.15)),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isUnlocked
               ? (isSelected
                     ? AppTheme.neonCyan
-                    : AppTheme.neonMagenta.withValues(alpha: 0.3))
+                    : Colors.greenAccent.withValues(alpha: 0.6))
               : (canAfford
-                    ? AppTheme.success.withValues(alpha: 0.5)
-                    : Colors.red.withValues(alpha: 0.3)),
+                    ? AppTheme.success.withValues(alpha: 0.4)
+                    : Colors.red.withValues(alpha: 0.4)),
         ),
       ),
       child: Text(
         isUnlocked
-            ? (isSelected
-                  ? AppStrings.selected.getString(context).toUpperCase()
-                  : AppStrings.select.getString(context).toUpperCase())
-            : "${item.price} 🌟",
+            ? (isSelected ? "SELECTED" : "SELECT")
+            : "${item.price} COINS",
         style: AppTheme.buttonText(context).copyWith(
-          color: isUnlocked
-              ? (isSelected ? Colors.black : Colors.white)
-              : (canAfford
-                    ? AppTheme.success
-                    : Colors.redAccent.withValues(alpha: 0.8)),
           fontSize: 12,
+          color: isUnlocked
+              ? (isSelected ? AppTheme.neonCyan : Colors.greenAccent)
+              : (canAfford ? AppTheme.success : Colors.redAccent),
         ),
       ),
     );
@@ -353,7 +505,7 @@ class ShopItemCard extends StatelessWidget {
     AudioManager().playButton();
     final bool isUnlocked = game.unlockedSkins.contains(item.type);
     final bool isSelected = game.beaker.type == item.type;
-    final bool canAfford = game.totalStars >= item.price;
+    final bool canAfford = game.totalCoins.value >= item.price;
 
     if (isUnlocked) {
       if (!isSelected) {
@@ -376,7 +528,7 @@ class ShopItemCard extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              'Not enough stars! Win more levels.',
+              'Not enough coins! Win more levels.',
               style: TextStyle(color: Colors.white),
             ),
             backgroundColor: Colors.redAccent,
