@@ -4,6 +4,7 @@ import 'package:color_mixing_deductive/helpers/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import '../color_mixer_game.dart';
+import '../core/lives_manager.dart';
 
 class PauseMenuOverlay extends StatefulWidget {
   final ColorMixerGame game;
@@ -56,7 +57,8 @@ class _PauseMenuOverlayState extends State<PauseMenuOverlay>
   }
 
   void _quit() {
-    _audio.playButton();
+    AudioManager().playButton();
+    LivesManager().consumeLife();
     widget.game.currentMode = GameMode.none; // Stop timer
     widget.game.overlays.remove('PauseMenu');
     widget.game.transitionTo('Controls', 'MainMenu');
@@ -73,6 +75,7 @@ class _PauseMenuOverlayState extends State<PauseMenuOverlay>
 
     // Confirm Give Up -> Exit to Map
     _audio.playButton();
+    LivesManager().consumeLife();
     widget.game.currentMode = GameMode.none; // Stop timer
     widget.game.overlays.remove('PauseMenu');
     widget.game.transitionTo('Controls', 'LevelMap');

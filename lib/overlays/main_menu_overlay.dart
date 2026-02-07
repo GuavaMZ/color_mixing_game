@@ -4,6 +4,7 @@ import 'package:flutter_localization/flutter_localization.dart';
 import '../color_mixer_game.dart';
 import '../helpers/string_manager.dart';
 import '../helpers/theme_constants.dart';
+import '../core/lives_manager.dart';
 import '../helpers/audio_manager.dart';
 
 class MainMenuOverlay extends StatefulWidget {
@@ -110,9 +111,10 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                             opacity: _fadeIn,
                             child: Row(
                               children: [
+                                _buildLivesDisplay(),
+                                const SizedBox(width: 12),
                                 _buildIconButton(
-                                  icon: Icons
-                                      .emoji_events_rounded, // or card_membership
+                                  icon: Icons.emoji_events_rounded,
                                   onTap: () {
                                     AudioManager().playButton();
                                     widget.game.overlays.add('Achievements');
@@ -366,6 +368,71 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildLivesDisplay() {
+    // Wrap with AnimatedBuilder to listen to LivesManager
+    return AnimatedBuilder(
+      animation: LivesManager(),
+      builder: (context, child) {
+        final lives = LivesManager().lives;
+        final isFull = lives >= LivesManager.maxLives;
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: AppTheme.cosmicGlass(
+            borderRadius: 20,
+            borderColor: Colors.redAccent.withValues(alpha: 0.3),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.favorite_rounded,
+                color: Colors.redAccent,
+                size: 22,
+              ),
+              const SizedBox(width: 10),
+              if (isFull)
+                Text(
+                  "$lives",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 18,
+                  ),
+                )
+              else
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "$lives",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 14,
+                        height: 1.0,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      LivesManager().timeUntilNextLife,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w500,
+                        height: 1.0,
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

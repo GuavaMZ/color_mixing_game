@@ -4,6 +4,7 @@ import 'package:color_mixing_deductive/helpers/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import '../color_mixer_game.dart';
+import '../core/lives_manager.dart';
 
 class GameOverOverlay extends StatelessWidget {
   final ColorMixerGame game;
@@ -70,6 +71,10 @@ class GameOverOverlay extends StatelessWidget {
                       icon: Icons.replay_rounded,
                       color: AppTheme.primaryColor,
                       onTap: () {
+                        if (LivesManager().lives <= 0) {
+                          _showNoLivesDialog(context);
+                          return;
+                        }
                         AudioManager().playButton();
                         game.overlays.remove('GameOver');
                         game.startLevel();
@@ -135,6 +140,68 @@ class GameOverOverlay extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  void _showNoLivesDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.primaryDark.withValues(alpha: 0.95),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: const BorderSide(color: AppTheme.neonMagenta, width: 2),
+        ),
+        title: const Text(
+          "Out of Lives!",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.2,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.favorite_rounded,
+              color: AppTheme.neonMagenta,
+              size: 64,
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              "You need at least 1 life to play. Take a short break or wait for recharge.",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white70),
+            ),
+            const SizedBox(height: 20),
+            AnimatedBuilder(
+              animation: LivesManager(),
+              builder: (context, _) => Text(
+                "Next life in: ${LivesManager().timeUntilNextLife}",
+                style: const TextStyle(
+                  color: AppTheme.neonCyan,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              "OK",
+              style: TextStyle(
+                color: AppTheme.neonCyan,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

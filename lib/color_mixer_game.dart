@@ -8,6 +8,7 @@ import 'package:color_mixing_deductive/components/fireworks.dart';
 import 'package:color_mixing_deductive/core/color_logic.dart';
 import 'package:color_mixing_deductive/core/level_manager.dart';
 import 'package:color_mixing_deductive/core/save_manager.dart';
+import 'package:color_mixing_deductive/core/lives_manager.dart';
 import 'package:color_mixing_deductive/helpers/audio_manager.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
@@ -64,6 +65,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     // تحميل التقدم المحفوظ من الهاتف
     // تحميل التقدم المحفوظ من الهاتف
     await levelManager.initProgress();
+    await LivesManager().init();
     totalStars = await SaveManager.loadTotalStars();
     unlockedAchievements = await SaveManager.loadAchievements();
 
@@ -408,6 +410,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     _audio.playGameOver();
 
     overlays.add('GameOver');
+    LivesManager().consumeLife();
   }
 
   int totalStars = 0;

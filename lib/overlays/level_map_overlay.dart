@@ -4,6 +4,7 @@ import '../color_mixer_game.dart';
 import '../helpers/string_manager.dart';
 import '../helpers/theme_constants.dart';
 import '../helpers/audio_manager.dart';
+import '../core/lives_manager.dart';
 
 class LevelMapOverlay extends StatefulWidget {
   final ColorMixerGame game;
@@ -49,10 +50,77 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
     final status = widget.game.levelManager.levelStars[index] ?? -1;
     if (status == -1) return; // Locked
 
+    if (LivesManager().lives <= 0) {
+      _showNoLivesDialog();
+      return;
+    }
+
     AudioManager().playButton();
     widget.game.levelManager.currentLevelIndex = index;
     widget.game.startLevel();
     widget.game.transitionTo('LevelMap', 'Controls');
+  }
+
+  void _showNoLivesDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.primaryDark.withValues(alpha: 0.95),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: const BorderSide(color: AppTheme.neonMagenta, width: 2),
+        ),
+        title: const Text(
+          "Out of Lives!",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 1.2,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.favorite_rounded,
+              color: AppTheme.neonMagenta,
+              size: 64,
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              "You need at least 1 life to play. Take a short break or wait for recharge.",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white70),
+            ),
+            const SizedBox(height: 20),
+            AnimatedBuilder(
+              animation: LivesManager(),
+              builder: (context, _) => Text(
+                "Next life in: ${LivesManager().timeUntilNextLife}",
+                style: const TextStyle(
+                  color: AppTheme.neonCyan,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              "OK",
+              style: TextStyle(
+                color: AppTheme.neonCyan,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -106,6 +174,10 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
                           ],
                         ),
                       ),
+                      const SizedBox(width: 8),
+                      // Lives display
+                      _buildLivesDisplay(),
+                      const SizedBox(width: 8),
                       // Progress indicator
                       _ProgressBadge(
                         completed: widget.game.levelManager.levelStars.values
@@ -150,6 +222,69 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildLivesDisplay() {
+    return AnimatedBuilder(
+      animation: LivesManager(),
+      builder: (context, child) {
+        final livesCount = LivesManager().lives;
+        final isFull = livesCount >= LivesManager.maxLives;
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          decoration: AppTheme.cosmicGlass(
+            borderRadius: 15,
+            borderColor: Colors.redAccent.withValues(alpha: 0.3),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.favorite_rounded,
+                color: Colors.redAccent,
+                size: 18,
+              ),
+              const SizedBox(width: 6),
+              if (isFull)
+                Text(
+                  "$livesCount",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 14,
+                  ),
+                )
+              else
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "$livesCount",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 12,
+                        height: 1.0,
+                      ),
+                    ),
+                    Text(
+                      LivesManager().timeUntilNextLife,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 8,
+                        fontWeight: FontWeight.w500,
+                        height: 1.0,
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
