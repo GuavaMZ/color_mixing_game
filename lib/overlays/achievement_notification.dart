@@ -1,3 +1,5 @@
+import 'package:color_mixing_deductive/helpers/string_manager.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
 import 'package:flutter/material.dart';
 
@@ -102,7 +104,7 @@ class _AchievementNotificationState extends State<AchievementNotification>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "ACHIEVEMENT UNLOCKED",
+                        AppStrings.achievementUnlockedTitle.getString(context),
                         style: TextStyle(
                           color: AppTheme.electricYellow,
                           fontSize: 10,

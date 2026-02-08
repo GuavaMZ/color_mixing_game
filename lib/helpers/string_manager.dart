@@ -40,6 +40,14 @@ mixin AppStrings {
   static const String soundEffects = "sound_effects";
   static const String music = "music";
   static const String language = "language";
+  static const String tutorial = "tutorial";
+  static const String tutorialStep1 = "tutorial_step_1";
+  static const String tutorialStep2 = "tutorial_step_2";
+  static const String tutorialStep3 = "tutorial_step_3";
+  static const String tutorialStep4 = "tutorial_step_4";
+  static const String skip = "skip";
+  static const String start = "start";
+  static const String next = "next";
   static const String vibration = "vibration";
   static const String blindMode = "blind_mode";
   static const String on = "on";
@@ -95,6 +103,37 @@ mixin AppStrings {
   static const String select = "select";
   static const String selected = "selected";
   static const String price = "price";
+  static const String active = "active";
+  static const String unlocked = "unlocked";
+  static const String insufficientCredits = "insufficient_credits";
+  static const String itemActivated = "item_activated";
+
+  // Lives Dialog
+  static const String outOfLives = "out_of_lives_title";
+  static const String noLivesDesc = "out_of_lives_desc";
+  static const String nextLifeIn = "next_life_in";
+  static const String ok = "ok_text";
+
+  // More Game Modes
+  static const String colorEcho = "color_echo_title";
+  static const String colorEchoSubtitle = "color_echo_subtitle";
+
+  // Achievements
+  static const String achievementsTitle = "achievements_title";
+  static const String achievementUnlockedTitle = "achievement_unlocked_banner";
+  static const String achievement1Title = "achievement_1_title";
+  static const String achievement1Desc = "achievement_1_desc";
+  static const String achievement2Title = "achievement_2_title";
+  static const String achievement2Desc = "achievement_2_desc";
+  static const String achievement3Title = "achievement_3_title";
+  static const String achievement3Desc = "achievement_3_desc";
+  static const String achievement4Title = "achievement_4_title";
+  static const String achievement4Desc = "achievement_4_desc";
+  static const String achievement5Title = "achievement_5_title";
+  static const String achievement5Desc = "achievement_5_desc";
+
+  // Coins earned template
+  static const String coinsEarned = "coins_earned_text";
 
   // Pause Menu
   static const String menu = "menu";
@@ -136,7 +175,7 @@ mixin AppStrings {
     timeAttackMode: 'TIME ATTACK',
     timeAttackModeSubtitle: 'Mix fast against the clock',
     levelMap: 'Level Map',
-    back: 'Back',
+    back: 'BACK',
 
     // Settings
     soundEffects: 'Sound Effects',
@@ -174,6 +213,10 @@ mixin AppStrings {
     select: 'Select',
     selected: 'Selected',
     price: 'Price',
+    active: 'ACTIVE',
+    unlocked: 'UNLOCKED',
+    insufficientCredits: 'Insufficient laboratory credits.',
+    itemActivated: 'Item Activated!',
 
     // Pause Menu
     menu: 'Menu',
@@ -185,6 +228,45 @@ mixin AppStrings {
     quitGame: 'Quit Game',
     areYouSureQuit: 'Are you sure you want to quit?',
     cancel: 'Cancel',
+
+    // Lives Dialog
+    outOfLives: 'Out of Lives!',
+    noLivesDesc:
+        'You need at least 1 life to play. Take a short break or wait for recharge.',
+    nextLifeIn: 'Next life in: ',
+    ok: 'OK',
+
+    // Modes
+    colorEcho: 'COLOR ECHO',
+    colorEchoSubtitle: 'Sync the spectral ghost to the laboratory core.',
+
+    // Achievements
+    achievementsTitle: 'ACHIEVEMENTS',
+    achievementUnlockedTitle: 'ACHIEVEMENT UNLOCKED',
+    achievement1Title: 'Mad Chemist',
+    achievement1Desc: 'First successful mixture!',
+    achievement2Title: 'Speed Runner',
+    achievement2Desc: 'Complete a level in under 5 seconds.',
+    achievement3Title: 'Star Collector',
+    achievement3Desc: 'Collect 50 stars in total.',
+    achievement4Title: 'Perfectionist',
+    achievement4Desc: 'Get 3 stars on any level.',
+    achievement5Title: 'Veteran',
+    achievement5Desc: 'Complete 10 levels in the game.',
+    coinsEarned: '+%s Coins',
+
+    // Tutorial
+    tutorial: 'Tutorial',
+    tutorialStep1:
+        'Welcome to Color Lab! 🧪\nYour goal is to mix colors to match the target.',
+    tutorialStep2:
+        'Tap the Red, Green, and Blue buttons to add drops into the beaker. 🔴🟢🔵',
+    tutorialStep3: "Watch the 'Match %' indicator.\nReach 100% to win! 🏆",
+    tutorialStep4:
+        'Be careful not to overflow! You have a limited number of drops per level. 💧',
+    skip: 'Skip',
+    start: 'Start',
+    next: 'Next',
 
     // Hints
     hintPureRed: "Think red. Just red.",
@@ -241,7 +323,7 @@ mixin AppStrings {
     timeAttackModeSubtitle: 'امزج بسرعة ضد الوقت',
     levelMap: 'خريطة المستويات',
     locked: 'مقفل',
-    back: 'رجوع',
+    back: 'العودة',
 
     // Settings
     soundEffects: 'المؤثرات الصوتية',
@@ -281,6 +363,10 @@ mixin AppStrings {
     select: 'اختيار',
     selected: 'مختار',
     price: 'السعر',
+    active: 'مفعل',
+    unlocked: 'مفتوح',
+    insufficientCredits: 'رصيد الكريديت غير كافٍ.',
+    itemActivated: 'تم تفعيل العنصر!',
 
     // Pause Menu
     menu: 'القائمة',
@@ -292,6 +378,44 @@ mixin AppStrings {
     quitGame: 'الخروج من اللعبة',
     areYouSureQuit: 'هل أنت متأكد أنك تريد الخروج؟',
     cancel: 'إلغاء',
+
+    // Lives Dialog
+    outOfLives: 'نفدت الأرواح!',
+    noLivesDesc:
+        'تحتاج إلى حياة واحدة على الأقل للعب. خذ استراحة قصيرة أو انتظر الشحن.',
+    nextLifeIn: 'الحياة التالية في: ',
+    ok: 'حسناً',
+
+    // Modes
+    colorEcho: 'صدى الألوان',
+    colorEchoSubtitle: 'قم بمزامنة الشبح الطيفي مع قلب المختبر.',
+
+    // Achievements
+    achievementsTitle: 'الإنجازات',
+    achievementUnlockedTitle: 'تم فتح الإنجاز',
+    achievement1Title: 'كيميائي مجنون',
+    achievement1Desc: 'أول خليط ناجح!',
+    achievement2Title: 'عداء سريع',
+    achievement2Desc: 'أكمل المستوى في أقل من 5 ثوانٍ.',
+    achievement3Title: 'جامع النجوم',
+    achievement3Desc: 'اجمع 50 نجمة في المجموع.',
+    achievement4Title: 'الباحث عن الكمال',
+    achievement4Desc: 'احصل على 3 نجوم في أي مستوى.',
+    achievement5Title: 'مخضرم',
+    achievement5Desc: 'أكمل 10 مستويات في اللعبة.',
+    coinsEarned: '+%s عملات',
+
+    // Tutorial
+    tutorial: 'التعليمات',
+    tutorialStep1:
+        'مرحباً بك في مختبر الألوان! 🧪\nهدفك هو مزج الألوان للوصول للهدف.',
+    tutorialStep2:
+        'اضغط على أزرار الأحمر والأخضر والأزرق لإضافة قطرات في الكأس. 🔴🟢🔵',
+    tutorialStep3: 'راقب مؤشر "التطابق %".\nصل إلى 100% للفوز! 🏆',
+    tutorialStep4: 'احذر من الفيضان! لديك عدد محدود من القطرات في كل مستوى. 💧',
+    skip: 'تخطٍ',
+    start: 'ابدأ',
+    next: 'التالي',
 
     // hints
     hintPureRed: "فكر بالأحمر. الأحمر فقط.",
@@ -347,7 +471,7 @@ mixin AppStrings {
     timeAttackMode: 'ATAQUE DE TIEMPO',
     timeAttackModeSubtitle: 'Mezcla rápido contra el reloj',
     levelMap: 'Mapa de Niveles',
-    back: 'Volver',
+    back: 'VOLVER',
 
     // Settings
     soundEffects: 'Efectos de Sonido',
@@ -388,6 +512,10 @@ mixin AppStrings {
     select: 'Seleccionar',
     selected: 'Seleccionado',
     price: 'Precio',
+    active: 'ACTIVO',
+    unlocked: 'DESBLOQUEADO',
+    insufficientCredits: 'Créditos de laboratorio insuficientes.',
+    itemActivated: '¡Elemento Activado!',
 
     // Pause Menu
     menu: 'Menú',
@@ -399,6 +527,47 @@ mixin AppStrings {
     quitGame: 'Salir del Juego',
     areYouSureQuit: '¿Estás seguro de que quieres salir?',
     cancel: 'Cancelar',
+
+    // Lives Dialog
+    outOfLives: '¡Sin Vidas!',
+    noLivesDesc:
+        'Necesitas al menos 1 vida para jugar. Tómate un pequeño descanso o espera la recarga.',
+    nextLifeIn: 'Siguiente vida en: ',
+    ok: 'Aceptar',
+
+    // Modes
+    colorEcho: 'ECO DE COLOR',
+    colorEchoSubtitle:
+        'Sincroniza el fantasma espectral con el núcleo del laboratorio.',
+
+    // Achievements
+    achievementsTitle: 'LOGROS',
+    achievementUnlockedTitle: 'LOGRO DESBLOQUEADO',
+    achievement1Title: 'Químico Loco',
+    achievement1Desc: '¡Primera mezcla exitosa!',
+    achievement2Title: 'Corredor Rápido',
+    achievement2Desc: 'Completa un nivel en menos de 5 segundos.',
+    achievement3Title: 'Colector de Estrellas',
+    achievement3Desc: 'Colecciona 50 estrellas en total.',
+    achievement4Title: 'Perfeccionista',
+    achievement4Desc: 'Consigue 3 estrellas en cualquier nivel.',
+    achievement5Title: 'Veterano',
+    achievement5Desc: 'Completa 10 niveles en el juego.',
+    coinsEarned: '+%s Monedas',
+
+    // Tutorial
+    tutorial: 'Tutorial',
+    tutorialStep1:
+        '¡Bienvenido a Color Lab! 🧪\nTu objetivo es mezclar colores para alcanzar el objetivo.',
+    tutorialStep2:
+        'Toca los botones Rojo, Verde y Azul para añadir gotas al vaso. 🔴🟢🔵',
+    tutorialStep3:
+        "Vigila el indicador de '% de Coincidencia'.\n¡Llega al 100% para ganar! 🏆",
+    tutorialStep4:
+        '¡Ten cuidado de no desbordar! Tienes un número limitado de gotas por nivel. 💧',
+    skip: 'Saltar',
+    start: 'Comenzar',
+    next: 'Siguiente',
 
     // Hints
     hintPureRed: "Piensa en rojo. Solo rojo.",
@@ -455,7 +624,7 @@ mixin AppStrings {
     timeAttackModeSubtitle: 'Mélangez vite contre la montre',
     levelMap: 'Carte des Niveaux',
     locked: 'Verrouillé',
-    back: 'Retour',
+    back: 'RETOUR',
 
     // Settings
     soundEffects: 'Effets Sonores',
@@ -495,6 +664,10 @@ mixin AppStrings {
     select: 'Sélectionner',
     selected: 'Sélectionné',
     price: 'Prix',
+    active: 'ACTIF',
+    unlocked: 'DÉBLOQUÉ',
+    insufficientCredits: 'Crédits de laboratoire insuffisants.',
+    itemActivated: 'Élément Activé !',
 
     // Pause Menu
     menu: 'Menu',
@@ -506,6 +679,47 @@ mixin AppStrings {
     quitGame: 'Quitter le Jeu',
     areYouSureQuit: 'Êtes-vous sûr de vouloir quitter ?',
     cancel: 'Annuler',
+
+    // Lives Dialog
+    outOfLives: 'Plus de Vies !',
+    noLivesDesc:
+        'Tu as besoin d\'au moins 1 vie pour jouer. Fais une petite pause ou attends la recharge.',
+    nextLifeIn: 'Prochaine vie dans : ',
+    ok: 'OK',
+
+    // Modes
+    colorEcho: 'ÉCHO DE COULEUR',
+    colorEchoSubtitle:
+        'Synchronisez le fantôme spectral avec le noyau du laboratoire.',
+
+    // Achievements
+    achievementsTitle: 'SUCCÈS',
+    achievementUnlockedTitle: 'SUCCÈS DÉBLOQUÉ',
+    achievement1Title: 'Chimiste Fou',
+    achievement1Desc: 'Premier mélange réussi !',
+    achievement2Title: 'Speed Runner',
+    achievement2Desc: 'Terminez un niveau en moins de 5 secondes.',
+    achievement3Title: 'Collecteur d\'Étoiles',
+    achievement3Desc: 'Collectez 50 étoiles au total.',
+    achievement4Title: 'Perfectionniste',
+    achievement4Desc: 'Obtenez 3 étoiles sur n\'importe quel niveau.',
+    achievement5Title: 'Vétéran',
+    achievement5Desc: 'Terminez 10 niveaux dans le jeu.',
+    coinsEarned: '+%s Pièces',
+
+    // Tutorial
+    tutorial: 'Tutoriel',
+    tutorialStep1:
+        'Bienvenue dans Color Lab ! 🧪\nVotre objectif est de mélanger les couleurs pour atteindre la cible.',
+    tutorialStep2:
+        'Appuyez sur les boutons Rouge, Vert et Bleu pour ajouter des gouttes dans le bécher. 🔴🟢🔵',
+    tutorialStep3:
+        "Observez l'indicateur '% de Correspondance'.\nAtteignez 100% pour gagner ! 🏆",
+    tutorialStep4:
+        "Attention au débordement ! Vous avez un nombre limité de gouttes par niveau. 💧",
+    skip: 'Passer',
+    start: 'Commencer',
+    next: 'Suivant',
 
     // Hints
     hintPureRed: "Pense au rouge. Juste au rouge.",

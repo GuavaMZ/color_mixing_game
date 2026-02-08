@@ -73,8 +73,23 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     await levelManager.initProgress();
     await LivesManager().init();
     totalStars = await SaveManager.loadTotalStars();
+    totalCoins.value = await SaveManager.loadTotalCoins();
     unlockedAchievements = await SaveManager.loadAchievements();
     globalBlindMode = await SaveManager.loadBlindMode();
+
+    // Load skins
+    final savedSkins = await SaveManager.loadPurchasedSkins();
+    if (savedSkins.isNotEmpty) {
+      unlockedSkins = savedSkins.map((s) {
+        return BeakerType.values.firstWhere(
+          (e) => e.toString() == s,
+          orElse: () => BeakerType.classic,
+        );
+      }).toList();
+    }
+    if (!unlockedSkins.contains(BeakerType.classic)) {
+      unlockedSkins.add(BeakerType.classic);
+    }
 
     // Add background gradient first (rendered first)
     backgroundGradient = BackgroundGradient();

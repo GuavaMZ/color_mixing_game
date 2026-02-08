@@ -1,8 +1,10 @@
 import 'dart:ui';
 import 'package:color_mixing_deductive/color_mixer_game.dart';
 import 'package:color_mixing_deductive/helpers/audio_manager.dart';
+import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 
 class TutorialOverlay extends StatefulWidget {
   final ColorMixerGame game;
@@ -68,6 +70,13 @@ class _TutorialOverlayState extends State<TutorialOverlay>
 
   @override
   Widget build(BuildContext context) {
+    final List<String> instructions = [
+      AppStrings.tutorialStep1.getString(context),
+      AppStrings.tutorialStep2.getString(context),
+      AppStrings.tutorialStep3.getString(context),
+      AppStrings.tutorialStep4.getString(context),
+    ];
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Stack(
@@ -76,7 +85,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           Positioned.fill(
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-              child: Container(color: Colors.black.withOpacity(0.4)),
+              child: Container(color: Colors.black.withValues(alpha: 0.4)),
             ),
           ),
 
@@ -102,12 +111,15 @@ class _TutorialOverlayState extends State<TutorialOverlay>
                         color: AppTheme.electricYellow,
                       ),
                       const SizedBox(height: 16),
-                      Text("Tutorial", style: AppTheme.heading2(context)),
+                      Text(
+                        AppStrings.tutorial.getString(context),
+                        style: AppTheme.heading2(context),
+                      ),
                       const SizedBox(height: 16),
                       AnimatedSwitcher(
                         duration: const Duration(milliseconds: 300),
                         child: Text(
-                          _instructions[_step],
+                          instructions[_step],
                           key: ValueKey(_step),
                           textAlign: TextAlign.center,
                           style: AppTheme.bodyLarge(
@@ -119,35 +131,24 @@ class _TutorialOverlayState extends State<TutorialOverlay>
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          if (_step < _instructions.length - 1)
+                          if (_step < instructions.length - 1)
                             TextButton(
                               onPressed: _close,
                               child: Text(
-                                "Skip",
+                                AppStrings.skip.getString(context),
                                 style: TextStyle(
-                                  color: Colors.white.withOpacity(0.5),
+                                  color: Colors.white.withValues(alpha: 0.5),
                                 ),
                               ),
                             ),
                           const Spacer(),
-                          ElevatedButton(
-                            onPressed: _nextStep,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppTheme.neonCyan,
-                              foregroundColor: Colors.black,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                                vertical: 12,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: Text(
-                              _step == _instructions.length - 1
-                                  ? "Start"
-                                  : "Next",
-                            ),
+                          _StepButton(
+                            label:
+                                (_step == instructions.length - 1
+                                        ? AppStrings.start
+                                        : AppStrings.next)
+                                    .getString(context),
+                            onTap: _nextStep,
                           ),
                         ],
                       ),
@@ -159,6 +160,27 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           ),
         ],
       ),
+    );
+  }
+}
+
+class _StepButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+
+  const _StepButton({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: onTap,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppTheme.neonCyan,
+        foregroundColor: Colors.black,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      child: Text(label),
     );
   }
 }

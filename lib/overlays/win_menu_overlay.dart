@@ -416,7 +416,9 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
           Icon(Icons.monetization_on_rounded, color: Colors.amber, size: 24),
           const SizedBox(width: 8),
           Text(
-            "+$coins Coins",
+            AppStrings.coinsEarned
+                .getString(context)
+                .replaceFirst('%s', coins.toString()),
             style: AppTheme.buttonText(context).copyWith(
               color: Colors.amberAccent,
               fontSize: 18,

@@ -70,9 +70,9 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
           borderRadius: BorderRadius.circular(24),
           side: const BorderSide(color: AppTheme.neonMagenta, width: 2),
         ),
-        title: const Text(
-          "Out of Lives!",
-          style: TextStyle(
+        title: Text(
+          AppStrings.outOfLives.getString(context),
+          style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w900,
             letterSpacing: 1.2,
@@ -88,16 +88,16 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
               size: 64,
             ),
             const SizedBox(height: 16),
-            const Text(
-              "You need at least 1 life to play. Take a short break or wait for recharge.",
+            Text(
+              AppStrings.noLivesDesc.getString(context),
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white70),
+              style: const TextStyle(color: Colors.white70),
             ),
             const SizedBox(height: 20),
             AnimatedBuilder(
               animation: LivesManager(),
               builder: (context, _) => Text(
-                "Next life in: ${LivesManager().timeUntilNextLife}",
+                "${AppStrings.nextLifeIn.getString(context)}${LivesManager().timeUntilNextLife}",
                 style: const TextStyle(
                   color: AppTheme.neonCyan,
                   fontWeight: FontWeight.bold,
@@ -110,9 +110,9 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(
-              "OK",
-              style: TextStyle(
+            child: Text(
+              AppStrings.ok.getString(context),
+              style: const TextStyle(
                 color: AppTheme.neonCyan,
                 fontWeight: FontWeight.w900,
               ),

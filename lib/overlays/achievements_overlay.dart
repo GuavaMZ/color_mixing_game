@@ -1,5 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:color_mixing_deductive/helpers/string_manager.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import '../color_mixer_game.dart';
 import '../helpers/theme_constants.dart';
 import '../helpers/audio_manager.dart';
@@ -26,35 +28,35 @@ class AchievementsOverlay extends StatelessWidget {
   static const List<AchievementData> allAchievements = [
     AchievementData(
       id: 'mad_chemist',
-      title: "Mad Chemist",
-      description: "First successful mixture!",
+      title: AppStrings.achievement1Title,
+      description: AppStrings.achievement1Desc,
       icon: Icons.science_rounded,
     ),
     AchievementData(
       id: 'speed_runner',
-      title: "Speed Runner",
-      description: "Complete a level in under 5 seconds.",
+      title: AppStrings.achievement2Title,
+      description: AppStrings.achievement2Desc,
       icon: Icons.bolt_rounded,
       color: Colors.cyanAccent,
     ),
     AchievementData(
       id: 'star_collector',
-      title: "Star Collector",
-      description: "Collect 50 stars in total.",
+      title: AppStrings.achievement3Title,
+      description: AppStrings.achievement3Desc,
       icon: Icons.auto_awesome_rounded,
       color: Colors.amber,
     ),
     AchievementData(
       id: 'perfectionist',
-      title: "Perfectionist",
-      description: "Get 3 stars on any level.",
+      title: AppStrings.achievement4Title,
+      description: AppStrings.achievement4Desc,
       icon: Icons.emoji_events_rounded,
       color: Colors.orangeAccent,
     ),
     AchievementData(
       id: 'veteran',
-      title: "Veteran",
-      description: "Complete 10 levels in the game.",
+      title: AppStrings.achievement5Title,
+      description: AppStrings.achievement5Desc,
       icon: Icons.military_tech_rounded,
       color: Colors.purpleAccent,
     ),
@@ -141,10 +143,10 @@ class AchievementsOverlay extends StatelessWidget {
                 borderColor: AppTheme.neonCyan.withValues(alpha: 0.3),
                 hasGlow: true,
               ),
-              child: const Text(
-                "ACHIEVEMENTS",
+              child: Text(
+                AppStrings.achievementsTitle.getString(context),
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   color: AppTheme.neonCyan,
                   fontSize: 24,
                   fontWeight: FontWeight.w900,
@@ -215,7 +217,7 @@ class AchievementsOverlay extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    achievement.title,
+                    achievement.title.getString(context),
                     style: AppTheme.buttonText(context, isLarge: true).copyWith(
                       color: isUnlocked ? Colors.white : Colors.white38,
                       fontSize: 18,
@@ -223,7 +225,7 @@ class AchievementsOverlay extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    achievement.description,
+                    achievement.description.getString(context),
                     style: TextStyle(
                       color: isUnlocked ? Colors.white70 : Colors.white24,
                       fontSize: 13,

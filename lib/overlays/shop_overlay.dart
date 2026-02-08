@@ -132,71 +132,34 @@ class _ShopOverlayState extends State<ShopOverlay> {
               widget.game.overlays.remove('Shop');
             },
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 12),
           Expanded(
             child: Hero(
               tag: 'shop_title',
               child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                  gradient: LinearGradient(
-                    colors: [
-                      AppTheme.primaryGradient.colors.first.withValues(
-                        alpha: 0.08,
-                      ),
-                      AppTheme.primaryGradient.colors.last.withValues(
-                        alpha: 0.08,
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: AppTheme.cosmicGlass(
+                  borderRadius: 16,
+                  borderColor: AppTheme.neonCyan.withValues(alpha: 0.3),
+                ),
+                child: Text(
+                  AppStrings.shopTitle.getString(context),
+                  textAlign: TextAlign.center,
+                  style: AppTheme.heading3(context).copyWith(
+                    fontSize: 22,
+                    letterSpacing: 2,
+                    shadows: [
+                      Shadow(
+                        color: AppTheme.neonCyan.withValues(alpha: 0.5),
+                        blurRadius: 10,
                       ),
                     ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  border: Border.all(
-                    width: 2,
-                    color: Colors.white.withValues(alpha: 0.15),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppTheme.primaryGradient.colors.first.withValues(
-                        alpha: 0.2,
-                      ),
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
-                    ),
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.3),
-                      blurRadius: 15,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Container(
-                  decoration: AppTheme.cosmicCard(
-                    borderRadius: 16,
-                    fillColor: AppTheme.primaryMedium.withValues(alpha: 0.5),
-                    borderColor: Colors.transparent,
-                    hasGlow: false,
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Text(
-                    AppStrings.shopTitle.getString(context),
-                    textAlign: TextAlign.center,
-                    style: AppTheme.heading2(context).copyWith(
-                      fontSize: 24,
-                      color: Colors.white,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black.withValues(alpha: 0.5),
-                          blurRadius: 8,
-                        ),
-                      ],
-                    ),
                   ),
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 12),
           _buildCoinsDisplay(),
         ],
       ),
@@ -208,73 +171,27 @@ class _ShopOverlayState extends State<ShopOverlay> {
       animation: widget.game.totalCoins,
       builder: (context, child) {
         return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            gradient: LinearGradient(
-              colors: [
-                AppTheme.secondaryGradient.colors.first.withValues(alpha: 0.08),
-                AppTheme.secondaryGradient.colors.last.withValues(alpha: 0.08),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            border: Border.all(
-              width: 2,
-              color: Colors.white.withValues(alpha: 0.15),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppTheme.secondaryGradient.colors.first.withValues(
-                  alpha: 0.2,
-                ),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: AppTheme.cosmicGlass(
+            borderRadius: 16,
+            borderColor: Colors.amber.withValues(alpha: 0.3),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.monetization_on_rounded,
+                color: Colors.amber,
+                size: 20,
               ),
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.3),
-                blurRadius: 15,
-                offset: const Offset(0, 4),
+              const SizedBox(width: 6),
+              Text(
+                "${widget.game.totalCoins.value}",
+                style: AppTheme.buttonText(
+                  context,
+                ).copyWith(color: Colors.white, fontSize: 18),
               ),
             ],
-          ),
-          child: Container(
-            decoration: AppTheme.cosmicCard(
-              borderRadius: 16,
-              fillColor: AppTheme.primaryMedium.withValues(alpha: 0.5),
-              borderColor: Colors.transparent,
-              hasGlow: false,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.monetization_on_rounded, // Coin icon
-                  color: Colors.amber,
-                  size: 24,
-                  shadows: [
-                    Shadow(
-                      color: Colors.amber.withValues(alpha: 0.6),
-                      blurRadius: 10,
-                    ),
-                  ],
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  "${widget.game.totalCoins.value}",
-                  style: AppTheme.buttonText(context, isLarge: true).copyWith(
-                    color: Colors.white,
-                    fontSize: 22,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black.withValues(alpha: 0.5),
-                        blurRadius: 8,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
           ),
         );
       },
@@ -335,127 +252,165 @@ class _ShopOverlayState extends State<ShopOverlay> {
   }
 }
 
-class ShopItemCard extends StatelessWidget {
+class ShopItemCard extends StatefulWidget {
   final ColorMixerGame game;
   final ShopItemData item;
 
   const ShopItemCard({super.key, required this.game, required this.item});
 
   @override
+  State<ShopItemCard> createState() => _ShopItemCardState();
+}
+
+class _ShopItemCardState extends State<ShopItemCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _glowController;
+  late Animation<double> _glowAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _glowController = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    );
+    _glowAnimation = Tween<double>(begin: 0.2, end: 0.6).animate(
+      CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
+    );
+    _glowController.repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _glowController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final bool isUnlocked = game.unlockedSkins.contains(item.type);
-    final bool isSelected = game.beaker.type == item.type;
-    final bool canAfford = game.totalCoins.value >= item.price;
-    final Color itemColor = isSelected
+    final bool isUnlocked = widget.game.unlockedSkins.contains(
+      widget.item.type,
+    );
+    final bool isSelected = widget.game.beaker.type == widget.item.type;
+    final bool canAfford = widget.game.totalCoins.value >= widget.item.price;
+
+    final Color statusColor = isSelected
         ? AppTheme.neonCyan
         : isUnlocked
-        ? Colors.greenAccent
-        : Colors.white.withValues(alpha: 0.5);
+        ? AppTheme.success
+        : AppTheme.neonMagenta;
 
     return GestureDetector(
       onTap: () => _handleTap(context),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          gradient: LinearGradient(
-            colors: [
-              (isSelected
-                      ? AppTheme.neonCyan
-                      : AppTheme.primaryGradient.colors.first)
-                  .withValues(alpha: 0.08),
-              (isSelected
-                      ? AppTheme.neonCyan
-                      : AppTheme.primaryGradient.colors.last)
-                  .withValues(alpha: 0.08),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          border: Border.all(
-            width: 2,
-            color: isSelected
-                ? AppTheme.neonCyan
-                : isUnlocked
-                ? Colors.greenAccent.withValues(alpha: 0.5)
-                : Colors.white.withValues(alpha: 0.15),
-          ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: AppTheme.neonCyan.withValues(alpha: 0.3),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
-                  ),
-                ]
-              : [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.3),
-                    blurRadius: 15,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-        ),
-        child: Container(
-          decoration: AppTheme.cosmicCard(
-            borderRadius: 24,
-            fillColor: isSelected
-                ? AppTheme.neonCyan.withValues(alpha: 0.15)
-                : isUnlocked
-                ? Colors.greenAccent.withValues(alpha: 0.08)
-                : AppTheme.primaryMedium.withValues(alpha: 0.5),
-            borderColor: Colors.transparent,
-            hasGlow: isSelected,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isUnlocked
-                      ? (isSelected
-                            ? AppTheme.neonCyan.withValues(alpha: 0.2)
-                            : Colors.greenAccent.withValues(alpha: 0.1))
-                      : Colors.black.withValues(alpha: 0.4),
-                  boxShadow: isSelected
-                      ? [
-                          BoxShadow(
-                            color: AppTheme.neonCyan.withValues(alpha: 0.4),
-                            blurRadius: 20,
+      child: AnimatedBuilder(
+        animation: _glowAnimation,
+        builder: (context, child) {
+          return Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: AppTheme.neonCyan.withValues(
+                          alpha: _glowAnimation.value,
+                        ),
+                        blurRadius: 20,
+                        spreadRadius: 2,
+                      ),
+                    ]
+                  : isUnlocked
+                  ? [
+                      BoxShadow(
+                        color: AppTheme.success.withValues(alpha: 0.1),
+                        blurRadius: 10,
+                      ),
+                    ]
+                  : [],
+            ),
+            child: Container(
+              decoration: AppTheme.cosmicGlass(
+                borderRadius: 24,
+                borderColor: isSelected
+                    ? AppTheme.neonCyan
+                    : isUnlocked
+                    ? AppTheme.success.withValues(alpha: 0.4)
+                    : Colors.white.withValues(alpha: 0.1),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: Stack(
+                children: [
+                  // Item Content
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Icon with Background Glow
+                          Container(
+                            width: 70,
+                            height: 70,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: RadialGradient(
+                                colors: [
+                                  statusColor.withValues(alpha: 0.2),
+                                  statusColor.withValues(alpha: 0.0),
+                                ],
+                              ),
+                            ),
+                            child: Icon(
+                              widget.item.icon,
+                              size: 40,
+                              color: isUnlocked
+                                  ? statusColor
+                                  : Colors.white.withValues(alpha: 0.4),
+                            ),
                           ),
-                        ]
-                      : [],
-                  border: Border.all(
-                    color: isSelected
-                        ? AppTheme.neonCyan.withValues(alpha: 0.5)
-                        : Colors.transparent,
-                    width: 2,
-                  ),
-                ),
-                child: Icon(item.icon, size: 40, color: itemColor),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                item.nameKey.getString(context),
-                style: AppTheme.buttonText(context).copyWith(
-                  color: Colors.white,
-                  fontSize: 16,
-                  shadows: [
-                    Shadow(
-                      color: Colors.black.withValues(alpha: 0.5),
-                      blurRadius: 4,
+                          const SizedBox(height: 12),
+                          Text(
+                            widget.item.nameKey.getString(context),
+                            style: AppTheme.bodyLarge(context).copyWith(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 1,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 12),
+                          _buildActionLabel(
+                            context,
+                            isUnlocked,
+                            canAfford,
+                            isSelected,
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-                textAlign: TextAlign.center,
+                  ),
+
+                  // "Locked" overlay effect
+                  if (!isUnlocked)
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Colors.black.withValues(alpha: 0.2),
+                              Colors.transparent,
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
-              const SizedBox(height: 16),
-              _buildActionLabel(context, isUnlocked, canAfford, isSelected),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -466,73 +421,79 @@ class ShopItemCard extends StatelessWidget {
     bool canAfford,
     bool isSelected,
   ) {
+    Color labelColor = isSelected
+        ? AppTheme.neonCyan
+        : isUnlocked
+        ? AppTheme.success
+        : (canAfford
+              ? AppTheme.electricYellow
+              : Colors.white.withValues(alpha: 0.5));
+
+    String label = isSelected
+        ? AppStrings.active.getString(context)
+        : isUnlocked
+        ? AppStrings.unlocked.getString(context)
+        : (canAfford
+              ? AppStrings.price.getString(context)
+              : AppStrings.insufficientCredits
+                    .getString(context)
+                    .toUpperCase());
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: isUnlocked
-            ? (isSelected
-                  ? AppTheme.neonCyan.withValues(alpha: 0.3)
-                  : Colors.greenAccent.withValues(alpha: 0.15))
-            : (canAfford
-                  ? AppTheme.success.withValues(alpha: 0.15)
-                  : Colors.red.withValues(alpha: 0.15)),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isUnlocked
-              ? (isSelected
-                    ? AppTheme.neonCyan
-                    : Colors.greenAccent.withValues(alpha: 0.6))
-              : (canAfford
-                    ? AppTheme.success.withValues(alpha: 0.4)
-                    : Colors.red.withValues(alpha: 0.4)),
-        ),
+        color: labelColor.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: labelColor.withValues(alpha: 0.3), width: 1),
       ),
-      child: Text(
-        isUnlocked
-            ? (isSelected ? "SELECTED" : "SELECT")
-            : "${item.price} COINS",
-        style: AppTheme.buttonText(context).copyWith(
-          fontSize: 12,
-          color: isUnlocked
-              ? (isSelected ? AppTheme.neonCyan : Colors.greenAccent)
-              : (canAfford ? AppTheme.success : Colors.redAccent),
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (!isUnlocked) ...[
+            Icon(Icons.monetization_on_rounded, size: 14, color: labelColor),
+            const SizedBox(width: 4),
+          ],
+          Text(
+            label,
+            style: AppTheme.buttonText(
+              context,
+            ).copyWith(fontSize: 12, color: labelColor, letterSpacing: 1),
+          ),
+        ],
       ),
     );
   }
 
   void _handleTap(BuildContext context) {
     AudioManager().playButton();
-    final bool isUnlocked = game.unlockedSkins.contains(item.type);
-    final bool isSelected = game.beaker.type == item.type;
-    final bool canAfford = game.totalCoins.value >= item.price;
+    final bool isUnlocked = widget.game.unlockedSkins.contains(
+      widget.item.type,
+    );
+    final bool isSelected = widget.game.beaker.type == widget.item.type;
+    final bool canAfford = widget.game.totalCoins.value >= widget.item.price;
 
     if (isUnlocked) {
       if (!isSelected) {
-        game.buyOrSelectSkin(item.type, item.price);
+        widget.game.buyOrSelectSkin(widget.item.type, widget.item.price);
       }
     } else {
       if (canAfford) {
-        game.buyOrSelectSkin(item.type, item.price);
+        widget.game.buyOrSelectSkin(widget.item.type, widget.item.price);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              'Unlocked ${item.nameKey.getString(context)}!',
-              style: const TextStyle(color: Colors.black),
-            ),
-            backgroundColor: AppTheme.neonCyan,
+            content: Text(AppStrings.itemActivated.getString(context)),
+            backgroundColor: AppTheme.neonCyan.withValues(alpha: 0.8),
             duration: const Duration(milliseconds: 1500),
+            behavior: SnackBarBehavior.floating,
           ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Not enough coins! Win more levels.',
-              style: TextStyle(color: Colors.white),
-            ),
-            backgroundColor: Colors.redAccent,
-            duration: Duration(milliseconds: 1500),
+          SnackBar(
+            content: Text(AppStrings.insufficientCredits.getString(context)),
+            backgroundColor: AppTheme.neonMagenta,
+            duration: const Duration(milliseconds: 1500),
+            behavior: SnackBarBehavior.floating,
           ),
         );
       }

@@ -284,9 +284,10 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                       position: _echoSlide,
                       child: _buildModeButton(
                         context: context,
-                        title: "COLOR ECHO",
-                        subtitle:
-                            "Sync the spectral ghost to the laboratory core.",
+                        title: AppStrings.colorEcho.getString(context),
+                        subtitle: AppStrings.colorEchoSubtitle.getString(
+                          context,
+                        ),
                         icon: Icons.graphic_eq_rounded,
                         gradient: const LinearGradient(
                           colors: [Color(0xFFCCFF00), Color(0xFFFF007F)],
@@ -550,105 +551,86 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
         final lives = LivesManager().lives;
         final isFull = lives >= LivesManager.maxLives;
 
-        return TweenAnimationBuilder<double>(
-          duration: const Duration(milliseconds: 800),
-          tween: Tween(begin: 1.0, end: isFull ? 1.0 : 1.05),
-          curve: Curves.easeInOut,
-          builder: (context, scale, child) {
-            return Transform.scale(
-              scale: scale,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.white.withValues(alpha: 0.12),
-                      Colors.white.withValues(alpha: 0.05),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  border: Border.all(
-                    width: 1.5,
-                    color: Colors.redAccent.withValues(alpha: 0.3),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.redAccent.withValues(
-                        alpha: isFull ? 0.15 : 0.25,
-                      ),
-                      blurRadius: isFull ? 8 : 12,
-                      offset: const Offset(0, 4),
-                    ),
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.2),
-                      blurRadius: 8,
-                      offset: const Offset(0, 4),
-                    ),
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Heart with Count inside
+            Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.white.withValues(alpha: 0.1),
+                    Colors.white.withValues(alpha: 0.05),
                   ],
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.favorite_rounded,
-                      color: Colors.redAccent,
-                      size: 18,
+                border: Border.all(
+                  color: Colors.redAccent.withValues(alpha: 0.3),
+                  width: 1.5,
+                ),
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Icon(
+                    Icons.favorite_rounded,
+                    color: Colors.redAccent.withValues(
+                      alpha: isFull ? 0.9 : 0.6,
+                    ),
+                    size: 28,
+                    shadows: [
+                      Shadow(
+                        color: Colors.redAccent.withValues(alpha: 0.5),
+                        blurRadius: 10,
+                      ),
+                    ],
+                  ),
+                  Text(
+                    "$lives",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 14,
                       shadows: [
                         Shadow(
-                          color: Colors.redAccent.withValues(alpha: 0.5),
-                          blurRadius: 8,
+                          color: Colors.black.withValues(alpha: 0.8),
+                          blurRadius: 4,
                         ),
                       ],
                     ),
-                    const SizedBox(width: 6),
-                    if (isFull)
-                      Text(
-                        "$lives",
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 16,
-                          shadows: [
-                            Shadow(color: Colors.black26, blurRadius: 4),
-                          ],
-                        ),
-                      )
-                    else
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "$lives",
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                              fontSize: 14,
-                              height: 1.0,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            LivesManager().timeUntilNextLife,
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                              height: 1.0,
-                            ),
-                          ),
-                        ],
-                      ),
-                  ],
+                  ),
+                ],
+              ),
+            ),
+
+            if (!isFull) ...[
+              const SizedBox(width: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: AppTheme.primaryMedium.withValues(alpha: 0.6),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.15),
+                    width: 1,
+                  ),
+                ),
+                child: Text(
+                  LivesManager().timeUntilNextLife,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: 'Courier', // Tech feel
+                  ),
                 ),
               ),
-            );
-          },
+            ],
+          ],
         );
       },
     );
@@ -715,9 +697,9 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
           borderRadius: BorderRadius.circular(24),
           side: const BorderSide(color: AppTheme.neonMagenta, width: 2),
         ),
-        title: const Text(
-          "Out of Lives!",
-          style: TextStyle(
+        title: Text(
+          AppStrings.outOfLives.getString(context),
+          style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.w900,
             letterSpacing: 1.2,
@@ -733,16 +715,16 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
               size: 64,
             ),
             const SizedBox(height: 16),
-            const Text(
-              "You need at least 1 life to play. Take a short break or wait for recharge.",
+            Text(
+              AppStrings.noLivesDesc.getString(context),
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white70),
+              style: const TextStyle(color: Colors.white70),
             ),
             const SizedBox(height: 20),
             AnimatedBuilder(
               animation: LivesManager(),
               builder: (context, _) => Text(
-                "Next life in: ${LivesManager().timeUntilNextLife}",
+                "${AppStrings.nextLifeIn.getString(context)}${LivesManager().timeUntilNextLife}",
                 style: const TextStyle(
                   color: AppTheme.neonCyan,
                   fontWeight: FontWeight.bold,
@@ -755,9 +737,9 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(
-              "OK",
-              style: TextStyle(
+            child: Text(
+              AppStrings.ok.getString(context),
+              style: const TextStyle(
                 color: AppTheme.neonCyan,
                 fontWeight: FontWeight.w900,
               ),
