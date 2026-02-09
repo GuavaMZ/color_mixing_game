@@ -555,19 +555,13 @@ class _ShopItemCardState extends State<ShopItemCard>
         ? AppTheme.neonCyan
         : isUnlocked
         ? AppTheme.success
-        : (canAfford
-              ? AppTheme.electricYellow
-              : Colors.white.withValues(alpha: 0.5));
+        : (canAfford ? Colors.white : Colors.redAccent);
 
     String label = isSelected
         ? AppStrings.active.getString(context)
         : isUnlocked
         ? AppStrings.unlocked.getString(context)
-        : (canAfford
-              ? AppStrings.price.getString(context)
-              : AppStrings.insufficientCredits
-                    .getString(context)
-                    .toUpperCase());
+        : widget.item.price.toString();
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -696,11 +690,12 @@ class HelperItemCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: (canAfford ? Colors.amber : AppTheme.neonMagenta)
-                    .withValues(alpha: 0.1),
+                color: (canAfford ? Colors.white : Colors.redAccent).withValues(
+                  alpha: 0.1,
+                ),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
-                  color: (canAfford ? Colors.amber : AppTheme.neonMagenta)
+                  color: (canAfford ? Colors.white : Colors.redAccent)
                       .withValues(alpha: 0.3),
                   width: 1,
                 ),
@@ -711,14 +706,14 @@ class HelperItemCard extends StatelessWidget {
                   Icon(
                     Icons.monetization_on_rounded,
                     size: 12,
-                    color: canAfford ? Colors.amber : AppTheme.neonMagenta,
+                    color: canAfford ? Colors.white : Colors.redAccent,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     "${item.price}",
                     style: AppTheme.buttonText(context).copyWith(
                       fontSize: 12,
-                      color: canAfford ? Colors.amber : AppTheme.neonMagenta,
+                      color: canAfford ? Colors.white : Colors.redAccent,
                     ),
                   ),
                 ],

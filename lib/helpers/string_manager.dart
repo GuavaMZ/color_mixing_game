@@ -143,6 +143,23 @@ mixin AppStrings {
   static const String achievement4Desc = "achievement_4_desc";
   static const String achievement5Title = "achievement_5_title";
   static const String achievement5Desc = "achievement_5_desc";
+  static const String achievement6Title = "achievement_6_title";
+  static const String achievement6Desc = "achievement_6_desc";
+  static const String achievement7Title = "achievement_7_title";
+  static const String achievement7Desc = "achievement_7_desc";
+  static const String achievement8Title = "achievement_8_title";
+  static const String achievement8Desc = "achievement_8_desc";
+  static const String achievement9Title = "achievement_9_title";
+  static const String achievement9Desc = "achievement_9_desc";
+  static const String achievement10Title = "achievement_10_title";
+  static const String achievement10Desc = "achievement_10_desc";
+  static const String achievement11Title = "achievement_11_title";
+  static const String achievement11Desc = "achievement_11_desc";
+  static const String achievement12Title = "achievement_12_title";
+  static const String achievement12Desc = "achievement_12_desc";
+
+  // Chaos Lab Events
+  static const String anomalyDetected = "anomaly_detected";
 
   // Coins earned template
   static const String coinsEarned = "coins_earned_text";
@@ -265,6 +282,21 @@ mixin AppStrings {
     achievement4Desc: 'Get 3 stars on any level.',
     achievement5Title: 'Veteran',
     achievement5Desc: 'Complete 10 levels in the game.',
+    achievement6Title: 'Combo King',
+    achievement6Desc: 'Maintain a 10 perfect match combo.',
+    achievement7Title: 'Lab Survivor',
+    achievement7Desc: 'Complete 5 levels in Chaos Lab mode.',
+    achievement8Title: 'Spectral Sync',
+    achievement8Desc: 'Reach 100% match in Color Echo mode.',
+    achievement9Title: 'Master Chemist',
+    achievement9Desc: 'Reach level 50 in Classic mode.',
+    achievement10Title: 'Blind Master',
+    achievement10Desc: 'Complete a level with 3 stars in Blind Mode.',
+    achievement11Title: 'Shopaholic',
+    achievement11Desc: 'Unlock all available beaker skins.',
+    achievement12Title: 'Stability Expert',
+    achievement12Desc: 'Complete a level using exactly one Stability Matrix.',
+    anomalyDetected: 'ANOMALY DETECTED',
     coinsEarned: '+%s Coins',
 
     // Tutorial
@@ -427,6 +459,21 @@ mixin AppStrings {
     achievement4Desc: 'احصل على 3 نجوم في أي مستوى.',
     achievement5Title: 'مخضرم',
     achievement5Desc: 'أكمل 10 مستويات في اللعبة.',
+    achievement6Title: 'ملك الكومبو',
+    achievement6Desc: 'حافظ على كومبو من 10 تطابقات مثالية.',
+    achievement7Title: 'الناجي من المختبر',
+    achievement7Desc: 'أكمل 5 مستويات في وضع مختبر الفوضى.',
+    achievement8Title: 'المزامنة الطيفية',
+    achievement8Desc: 'صل إلى تطابق 100% في وضع صدى الألوان.',
+    achievement9Title: 'كبير الكيميائيين',
+    achievement9Desc: 'صل إلى المستوى 50 في الوضع الكلاسيكي.',
+    achievement10Title: 'سيد العمى',
+    achievement10Desc: 'أكمل مستوى بـ 3 نجوم في وضع العمى.',
+    achievement11Title: 'محبو التسوق',
+    achievement11Desc: 'افتح جميع أشكال الكؤوس المتاحة.',
+    achievement12Title: 'خبير الاستقرار',
+    achievement12Desc: 'أكمل مستوى باستخدام مصفوفة استقرار واحدة بالضبط.',
+    anomalyDetected: 'تم رصد خلل!',
     coinsEarned: '+%s عملات',
 
     // Tutorial
@@ -589,6 +636,23 @@ mixin AppStrings {
     achievement4Desc: 'Consigue 3 estrellas en cualquier nivel.',
     achievement5Title: 'Veterano',
     achievement5Desc: 'Completa 10 niveles en el juego.',
+    achievement6Title: 'Rey del Combo',
+    achievement6Desc: 'Mantén un combo de 10 aciertos perfectos.',
+    achievement7Title: 'Superviviente del Lab',
+    achievement7Desc: 'Completa 5 niveles en el modo Chaos Lab.',
+    achievement8Title: 'Sincronización Espectral',
+    achievement8Desc:
+        'Alcanza el 100% de coincidencia en el modo Eco de Color.',
+    achievement9Title: 'Maestro Químico',
+    achievement9Desc: 'Llega al nivel 50 en el modo Clásico.',
+    achievement10Title: 'Maestro Ciego',
+    achievement10Desc: 'Completa un nivel con 3 estrellas en el modo Ciego.',
+    achievement11Title: 'Comprador Compulsivo',
+    achievement11Desc: 'Desbloquea todos los diseños de vasos disponibles.',
+    achievement12Title: 'Experto en Estabilidad',
+    achievement12Desc:
+        'Completa un nivel usando exactamente una Matriz de Estabilidad.',
+    anomalyDetected: '¡ANOMALÍA DETECTADA!',
     coinsEarned: '+%s Monedas',
 
     // Tutorial
@@ -753,6 +817,23 @@ mixin AppStrings {
     achievement4Desc: 'Obtenez 3 étoiles sur n\'importe quel niveau.',
     achievement5Title: 'Vétéran',
     achievement5Desc: 'Terminez 10 niveaux dans le jeu.',
+    achievement6Title: 'Roi du Combo',
+    achievement6Desc: 'Maintenez un combo de 10 correspondances parfaites.',
+    achievement7Title: 'Survivant du Labo',
+    achievement7Desc: 'Terminez 5 niveaux dans le mode Chaos Lab.',
+    achievement8Title: 'Sync Spectrale',
+    achievement8Desc:
+        'Atteignez 100% de correspondance en mode Écho de Couleur.',
+    achievement9Title: 'Maître Chimiste',
+    achievement9Desc: 'Atteignez le niveau 50 en mode Classique.',
+    achievement10Title: 'Maître Aveugle',
+    achievement10Desc: 'Terminez un niveau avec 3 étoiles en mode Aveugle.',
+    achievement11Title: 'Accro au Shopping',
+    achievement11Desc: 'Débloquez tous les modèles de béchers disponibles.',
+    achievement12Title: 'Expert en Stabilité',
+    achievement12Desc:
+        'Terminez un niveau en utilisant exactement une Matrice de Stabilité.',
+    anomalyDetected: 'ANOMALIE DÉTECTÉE !',
     coinsEarned: '+%s Pièces',
 
     // Tutorial

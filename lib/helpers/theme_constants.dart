@@ -10,6 +10,7 @@ class AppTheme {
   static const Color neonCyan = Color(0xFF00F0FF); // Electric Cyan
   static const Color neonMagenta = Color(0xFFFF0099); // Electric Magenta
   static const Color electricYellow = Color(0xFFFAFF00); // Voltage Yellow
+  static const Color neonPurple = Color(0xFFBF00FF); // Electric Purple
   static const Color cosmicPurple = Color(0xFF7000FF); // Deep Purple
   static const Color success = Color(0xFF00FF94); // Neon Green
 

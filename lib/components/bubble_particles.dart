@@ -2,8 +2,10 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import 'package:color_mixing_deductive/color_mixer_game.dart';
 
-class BubbleParticles extends PositionComponent {
+class BubbleParticles extends PositionComponent
+    with HasGameRef<ColorMixerGame> {
   final Random _rnd = Random();
   final List<_Bubble> _bubbles = [];
   double _spawnTimer = 0.0;
@@ -18,7 +20,6 @@ class BubbleParticles extends PositionComponent {
 
     if (liquidLevel > 0.05) {
       _spawnTimer += dt;
-      // Spawn rate based on liquid level? Or constant.
       if (_spawnTimer > 0.1) {
         _spawnTimer = 0;
         if (_bubbles.length < 50) {
@@ -30,8 +31,13 @@ class BubbleParticles extends PositionComponent {
     // Update bubbles
     for (var i = _bubbles.length - 1; i >= 0; i--) {
       final bubble = _bubbles[i];
-      bubble.y -= bubble.speed * dt;
-      bubble.x += sin(bubble.y * 0.1 + bubble.offset) * 20 * dt; // Wiggle
+
+      double speedMultiplier = gameRef.isGravityFlux ? 3.5 : 1.0;
+      double wiggleMultiplier = gameRef.isGravityFlux ? 4.0 : 1.0;
+
+      bubble.y -= bubble.speed * speedMultiplier * dt;
+      bubble.x +=
+          sin(bubble.y * 0.1 + bubble.offset) * 20 * wiggleMultiplier * dt;
       bubble.life -= dt;
 
       // Pop at surface

@@ -126,51 +126,86 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                   children: [
                     // Top bar with settings
                     Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      padding: const EdgeInsets.only(top: 12),
+                      child: Column(
                         children: [
+                          // Status Row (Lives & Coins)
                           FadeTransition(
                             opacity: _fadeIn,
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 _buildLivesDisplay(),
-                                const SizedBox(width: 6),
-                                _buildIconButton(
-                                  icon: Icons.emoji_events_rounded,
-                                  onTap: () {
-                                    AudioManager().playButton();
-                                    widget.game.overlays.add('Achievements');
-                                  },
-                                ),
-                                const SizedBox(width: 6),
                                 _buildCoinsDisplay(),
-                                const SizedBox(width: 6),
-                                _buildIconButton(
-                                  icon: Icons.shopping_basket_rounded,
-                                  onTap: () {
-                                    AudioManager().playButton();
-                                    widget.game.overlays.add('Shop');
-                                  },
-                                ),
-                                const SizedBox(width: 6),
-                                _buildIconButton(
-                                  icon: Icons.settings_rounded,
-                                  onTap: () {
-                                    AudioManager().playButton();
-                                    widget.game.overlays.add('Settings');
-                                  },
-                                ),
-                                const SizedBox(width: 6),
-                                _buildIconButton(
-                                  icon: Icons.auto_stories_rounded,
-                                  onTap: () {
-                                    AudioManager().playButton();
-                                    widget.game.overlays.add('Gallery');
-                                  },
-                                ),
                               ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          // Utility Row (Action Buttons)
+                          FadeTransition(
+                            opacity: _fadeIn,
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  _buildIconButton(
+                                    icon: Icons.emoji_events_rounded,
+                                    tooltip: 'Achievements',
+                                    onTap: () {
+                                      AudioManager().playButton();
+                                      widget.game.overlays.add('Achievements');
+                                    },
+                                  ),
+                                  const SizedBox(width: 10),
+                                  _buildIconButton(
+                                    icon: Icons.bar_chart_rounded,
+                                    tooltip: 'Statistics',
+                                    onTap: () {
+                                      AudioManager().playButton();
+                                      widget.game.overlays.add('Statistics');
+                                    },
+                                  ),
+                                  const SizedBox(width: 10),
+                                  _buildIconButton(
+                                    icon: Icons.event_available_rounded,
+                                    tooltip: 'Daily Challenge',
+                                    onTap: () {
+                                      AudioManager().playButton();
+                                      widget.game.overlays.add(
+                                        'DailyChallenge',
+                                      );
+                                    },
+                                  ),
+                                  const SizedBox(width: 10),
+                                  _buildIconButton(
+                                    icon: Icons.shopping_basket_rounded,
+                                    tooltip: 'Shop',
+                                    onTap: () {
+                                      AudioManager().playButton();
+                                      widget.game.overlays.add('Shop');
+                                    },
+                                  ),
+                                  const SizedBox(width: 10),
+                                  _buildIconButton(
+                                    icon: Icons.auto_stories_rounded,
+                                    tooltip: 'Gallery',
+                                    onTap: () {
+                                      AudioManager().playButton();
+                                      widget.game.overlays.add('Gallery');
+                                    },
+                                  ),
+                                  const SizedBox(width: 10),
+                                  _buildIconButton(
+                                    icon: Icons.settings_rounded,
+                                    tooltip: 'Settings',
+                                    onTap: () {
+                                      AudioManager().playButton();
+                                      widget.game.overlays.add('Settings');
+                                    },
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],
@@ -531,8 +566,9 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
   Widget _buildIconButton({
     required IconData icon,
     required VoidCallback onTap,
+    String? tooltip,
   }) {
-    return Container(
+    Widget button = Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         gradient: LinearGradient(
@@ -579,6 +615,22 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
         ),
       ),
     );
+
+    if (tooltip != null) {
+      return Tooltip(
+        message: tooltip,
+        preferBelow: true,
+        decoration: BoxDecoration(
+          color: AppTheme.primaryDark.withValues(alpha: 0.9),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppTheme.neonCyan.withValues(alpha: 0.3)),
+        ),
+        textStyle: const TextStyle(color: Colors.white, fontSize: 12),
+        child: button,
+      );
+    }
+
+    return button;
   }
 
   Widget _buildLivesDisplay() {

@@ -60,6 +60,55 @@ class AchievementsOverlay extends StatelessWidget {
       icon: Icons.military_tech_rounded,
       color: Colors.purpleAccent,
     ),
+    AchievementData(
+      id: 'combo_king',
+      title: AppStrings.achievement6Title,
+      description: AppStrings.achievement6Desc,
+      icon: Icons.workspace_premium_rounded,
+      color: Colors.orange,
+    ),
+    AchievementData(
+      id: 'lab_survivor',
+      title: AppStrings.achievement7Title,
+      description: AppStrings.achievement7Desc,
+      icon: Icons.science_rounded,
+      color: Colors.lightGreenAccent,
+    ),
+    AchievementData(
+      id: 'spectral_sync',
+      title: AppStrings.achievement8Title,
+      description: AppStrings.achievement8Desc,
+      icon: Icons.sync_rounded,
+      color: Colors.blueAccent,
+    ),
+    AchievementData(
+      id: 'master_chemist',
+      title: AppStrings.achievement9Title,
+      description: AppStrings.achievement9Desc,
+      icon: Icons.auto_awesome_rounded,
+      color: Colors.yellowAccent,
+    ),
+    AchievementData(
+      id: 'blind_master',
+      title: AppStrings.achievement10Title,
+      description: AppStrings.achievement10Desc,
+      icon: Icons.visibility_off_rounded,
+      color: Colors.grey,
+    ),
+    AchievementData(
+      id: 'shopaholic',
+      title: AppStrings.achievement11Title,
+      description: AppStrings.achievement11Desc,
+      icon: Icons.shopping_bag_rounded,
+      color: Colors.pinkAccent,
+    ),
+    AchievementData(
+      id: 'stability_expert',
+      title: AppStrings.achievement12Title,
+      description: AppStrings.achievement12Desc,
+      icon: Icons.vertical_align_center_rounded,
+      color: Colors.tealAccent,
+    ),
   ];
 
   const AchievementsOverlay({super.key, required this.game});

@@ -19,6 +19,10 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:color_mixing_deductive/overlays/tutorial_overlay.dart';
+import 'package:color_mixing_deductive/overlays/loading_overlay.dart';
+import 'package:color_mixing_deductive/overlays/statistics_overlay.dart';
+import 'package:color_mixing_deductive/overlays/daily_challenge_overlay.dart';
+import 'package:color_mixing_deductive/overlays/blackout_overlay.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 
 void main() async {
@@ -128,6 +132,11 @@ class _MyAppState extends State<MyApp> {
             ),
             'Achievements': (context, game) => AchievementsOverlay(game: game),
             'Gallery': (context, game) => GalleryOverlay(game: game),
+            'Loading': (context, game) => const LoadingOverlay(),
+            'Statistics': (context, game) => StatisticsOverlay(game: game),
+            'DailyChallenge': (context, game) =>
+                DailyChallengeOverlay(game: game),
+            'Blackout': (context, game) => BlackoutOverlay(game: game),
           },
           initialActiveOverlays: const ['MainMenu', 'Transition'],
           loadingBuilder: (context) => Container(

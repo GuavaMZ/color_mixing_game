@@ -21,16 +21,10 @@ class Beaker extends PositionComponent {
 
   // Cached Paints
   final Paint _liquidPaint = Paint()..style = PaintingStyle.fill;
-  final Paint _glassPaint = Paint()
-    ..color = Colors.white.withValues(alpha: 0.1)
-    ..style = PaintingStyle.fill;
   final Paint _outlinePaint = Paint()
     ..color = Colors.black
     ..style = PaintingStyle.stroke
     ..strokeWidth = 3;
-  final Paint _highlightPaint = Paint()
-    ..color = Colors.white.withValues(alpha: 0.25)
-    ..style = PaintingStyle.fill;
   final Paint _reflectionPaint = Paint()
     ..color = Colors.white.withValues(alpha: 0.3)
     ..style = PaintingStyle.fill;
@@ -352,7 +346,6 @@ class Beaker extends PositionComponent {
         path.close();
         break;
       case BeakerType.classic:
-      default:
         // Realistic Beaker Shape
         // Straight sides, rounded corners at bottom
         double r = 15.0; // Bottom radius

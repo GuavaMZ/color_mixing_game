@@ -16,125 +16,159 @@ class ControlsOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListenableBuilder(
       listenable: game,
-      builder: (context, child) => Stack(
-        children: [
-          // Top section - Target color
-          Positioned(
-            top:
-                ResponsiveHelper.safePadding(context).top +
-                ResponsiveHelper.spacing(context, 16),
-            left: 0,
-            right: 0,
-            child: Center(child: _buildTargetColorDisplay(context)),
-          ),
+      builder: (context, child) {
+        // Earthquake and Glitch Jitter Logic
+        Offset uiOffset = Offset.zero;
+        if (game.isEarthquake) {
+          uiOffset = Offset(game.earthquakeOffset.x, game.earthquakeOffset.y);
+        } else if (game.isUiGlitching) {
+          // Add some random jitter for glitchy UI
+          final random = Random();
+          uiOffset = Offset(
+            (random.nextDouble() - 0.5) * 15,
+            (random.nextDouble() - 0.5) * 15,
+          );
+        }
 
-          // Pause button (Cosmic Style)
-          Positioned(
-            top:
-                ResponsiveHelper.safePadding(context).top +
-                ResponsiveHelper.spacing(context, 16),
-            right: ResponsiveHelper.spacing(context, 16),
-            child: _CosmicButton(
-              onTap: () {
-                AudioManager().playButton();
-                game.overlays.add('PauseMenu'); // Open new menu
-              },
-              width: 50,
-              height: 50,
-              color: AppTheme.cardColor.withValues(alpha: 0.5),
-              borderColor: AppTheme.neonCyan.withValues(alpha: 0.5),
-              borderRadius: 14,
-              child: Icon(
-                Icons.menu_rounded, // Changed icon
-                color: AppTheme.neonCyan,
-                size: 24,
+        return Transform.translate(
+          offset: uiOffset,
+          child: Stack(
+            children: [
+              // Top section - Target color
+              Positioned(
+                top:
+                    ResponsiveHelper.safePadding(context).top +
+                    ResponsiveHelper.spacing(context, 16),
+                left: 0,
+                right: 0,
+                child: Center(child: _buildTargetColorDisplay(context)),
               ),
-            ),
-          ),
 
-          // Time Attack Timer (Conditional)
-          if (game.currentMode == GameMode.timeAttack)
-            Positioned(
-              top:
-                  ResponsiveHelper.safePadding(context).top +
-                  ResponsiveHelper.spacing(context, 16),
-              left: ResponsiveHelper.spacing(context, 16),
-              child: _TimeAttackTimer(game: game),
-            ),
-
-          // Power-up Dock (Right Side) - Vertical Layout
-          Positioned(
-            right: ResponsiveHelper.spacing(context, 16),
-            top: MediaQuery.of(context).size.height * 0.35,
-            child: _buildPowerUpDock(context),
-          ),
-
-          // Bottom controls area (Control Panel)
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              // margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              margin: EdgeInsets.only(bottom: 32),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(24),
-                child: Container(
-                  padding: EdgeInsets.only(
-                    bottom: ResponsiveHelper.safePadding(context).bottom + 8,
-                    top: 12,
-                    left: 12,
-                    right: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    // color: Colors.black.withValues(alpha: 0.7),
-                    borderRadius: BorderRadius.circular(20),
-                    // border: Border.all(
-                    //   color: Colors.white.withValues(alpha: 0.1),
-                    //   width: 1,
-                    // ),
-                    // gradient: LinearGradient(
-                    //   begin: Alignment.topCenter,
-                    //   end: Alignment.bottomCenter,
-                    //   colors: [
-                    //     Colors.black.withValues(alpha: 0.6),
-                    //     Colors.black.withValues(alpha: 0.8),
-                    //   ],
-                    // ),
-                    // boxShadow: [
-                    //   BoxShadow(
-                    //     color: AppTheme.neonCyan.withValues(alpha: 0.1),
-                    //     blurRadius: 15,
-                    //     spreadRadius: -5,
-                    //   ),
-                    // ],
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Match percentage display - Integrated & Compact
-                      ValueListenableBuilder<double>(
-                        valueListenable: game.matchPercentage,
-                        builder: (context, value, child) => Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: _MatchPercentageDisplay(
-                            value: value,
-                            context: context,
-                            game: game,
-                          ),
-                        ),
-                      ),
-
-                      // Color buttons row
-                      _buildControlsRow(context),
-
-                      const SizedBox(height: 4),
-                    ],
+              // Pause button (Cosmic Style)
+              Positioned(
+                top:
+                    ResponsiveHelper.safePadding(context).top +
+                    ResponsiveHelper.spacing(context, 16),
+                right: ResponsiveHelper.spacing(context, 16),
+                child: _CosmicButton(
+                  onTap: () {
+                    AudioManager().playButton();
+                    game.overlays.add('PauseMenu'); // Open new menu
+                  },
+                  width: 50,
+                  height: 50,
+                  color: AppTheme.cardColor.withValues(alpha: 0.5),
+                  borderColor: AppTheme.neonCyan.withValues(alpha: 0.5),
+                  borderRadius: 14,
+                  child: Icon(
+                    Icons.menu_rounded, // Changed icon
+                    color: AppTheme.neonCyan,
+                    size: 24,
                   ),
                 ),
               ),
-            ),
+
+              // Time Attack Timer (Conditional)
+              if (game.currentMode == GameMode.timeAttack)
+                Positioned(
+                  top:
+                      ResponsiveHelper.safePadding(context).top +
+                      ResponsiveHelper.spacing(context, 16),
+                  left: ResponsiveHelper.spacing(context, 16),
+                  child: _TimeAttackTimer(game: game),
+                ),
+
+              // Combo Counter
+              ValueListenableBuilder<int>(
+                valueListenable: game.comboCount,
+                builder: (context, combo, child) {
+                  if (combo < 3) return const SizedBox.shrink();
+                  return Positioned(
+                    top:
+                        ResponsiveHelper.safePadding(context).top +
+                        ResponsiveHelper.spacing(context, 80),
+                    left: ResponsiveHelper.spacing(context, 16),
+                    child: _ComboDisplay(combo: combo),
+                  );
+                },
+              ),
+
+              // Power-up Dock (Right Side) - Vertical Layout
+              Positioned(
+                right: ResponsiveHelper.spacing(context, 16),
+                top: MediaQuery.of(context).size.height * 0.35,
+                child: _buildPowerUpDock(context),
+              ),
+
+              // Bottom controls area (Control Panel)
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  // margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  margin: EdgeInsets.only(bottom: 32),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: Container(
+                      padding: EdgeInsets.only(
+                        bottom:
+                            ResponsiveHelper.safePadding(context).bottom + 8,
+                        top: 12,
+                        left: 12,
+                        right: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        // color: Colors.black.withValues(alpha: 0.7),
+                        borderRadius: BorderRadius.circular(20),
+                        // border: Border.all(
+                        //   color: Colors.white.withValues(alpha: 0.1),
+                        //   width: 1,
+                        // ),
+                        // gradient: LinearGradient(
+                        //   begin: Alignment.topCenter,
+                        //   end: Alignment.bottomCenter,
+                        //   colors: [
+                        //     Colors.black.withValues(alpha: 0.6),
+                        //     Colors.black.withValues(alpha: 0.8),
+                        //   ],
+                        // ),
+                        // boxShadow: [
+                        //   BoxShadow(
+                        //     color: AppTheme.neonCyan.withValues(alpha: 0.1),
+                        //     blurRadius: 15,
+                        //     spreadRadius: -5,
+                        //   ),
+                        // ],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Match percentage display - Integrated & Compact
+                          ValueListenableBuilder<double>(
+                            valueListenable: game.matchPercentage,
+                            builder: (context, value, child) => Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: _MatchPercentageDisplay(
+                                value: value,
+                                context: context,
+                                game: game,
+                              ),
+                            ),
+                          ),
+
+                          // Color buttons row
+                          _buildControlsRow(context),
+
+                          const SizedBox(height: 4),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -580,7 +614,6 @@ class _CosmicButton extends StatefulWidget {
   final Color color;
   final Color? borderColor;
   final double borderRadius;
-  final bool disableDepthConfig; // For complex shapes
 
   const _CosmicButton({
     required this.onTap,
@@ -590,7 +623,6 @@ class _CosmicButton extends StatefulWidget {
     required this.color,
     this.borderColor,
     this.borderRadius = 16,
-    this.disableDepthConfig = false,
   });
 
   @override
@@ -628,25 +660,24 @@ class _CosmicButtonState extends State<_CosmicButton>
       onTap: widget.onTap,
       child: Container(
         width: widget.width,
-        height: widget.height + (widget.disableDepthConfig ? 0 : shadowHeight),
+        height: widget.height + shadowHeight,
         // alignment: Alignment.topCenter,
         child: Stack(
           alignment: Alignment.topCenter,
           children: [
             // Shadow Layer (Bottom) - Only if not pressed fully
-            if (!widget.disableDepthConfig)
-              Positioned(
-                left: 2,
-                right: 2,
-                top: shadowHeight,
-                bottom: 0,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(widget.borderRadius),
-                  ),
+            Positioned(
+              left: 2,
+              right: 2,
+              top: shadowHeight,
+              bottom: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(widget.borderRadius),
                 ),
               ),
+            ),
 
             // Button Face (Top)
             AnimatedContainer(
@@ -1068,6 +1099,70 @@ class _EnhancedDropButtonState extends State<_EnhancedDropButton> {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+// Combo Display Widget
+class _ComboDisplay extends StatelessWidget {
+  final int combo;
+
+  const _ComboDisplay({required this.combo});
+
+  @override
+  Widget build(BuildContext context) {
+    Color comboColor = AppTheme.neonCyan;
+    if (combo >= 10) {
+      comboColor = AppTheme.neonMagenta;
+    } else if (combo >= 5) {
+      comboColor = AppTheme.neonPurple;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            comboColor.withValues(alpha: 0.3),
+            comboColor.withValues(alpha: 0.1),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: comboColor.withValues(alpha: 0.6), width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: comboColor.withValues(alpha: 0.4),
+            blurRadius: 12,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.local_fire_department_rounded,
+            color: comboColor,
+            size: 24,
+            shadows: [
+              Shadow(color: comboColor.withValues(alpha: 0.8), blurRadius: 8),
+            ],
+          ),
+          const SizedBox(width: 8),
+          Text(
+            '${combo}x COMBO',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+              shadows: [
+                Shadow(color: comboColor.withValues(alpha: 0.8), blurRadius: 8),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
