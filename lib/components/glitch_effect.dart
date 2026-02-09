@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import '../helpers/audio_manager.dart';
 import '../color_mixer_game.dart';
 
 /// Glitch effect overlay for Chaos Lab Mode
@@ -32,6 +33,7 @@ class GlitchEffect extends Component with HasGameRef<ColorMixerGame> {
       }
     } else if (_glitchTimer >= _nextGlitchTime) {
       _isGlitching = true;
+      AudioManager().playGlitch();
       _glitchDuration = 0.1 + _random.nextDouble() * 0.2;
     }
   }

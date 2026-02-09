@@ -96,11 +96,7 @@ class GameOverOverlay extends StatelessWidget {
                           return;
                         }
                         AudioManager().playButton();
-                        if (game.currentMode == GameMode.colorEcho) {
-                          game.returnToMainMenu();
-                        } else {
-                          game.transitionTo('Controls', 'LevelMap');
-                        }
+                        game.resetGame();
                       },
                     ),
                   ),

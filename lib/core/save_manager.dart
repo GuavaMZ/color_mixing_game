@@ -98,4 +98,14 @@ class SaveManager {
     }
     return {'extra_drops': 3, 'help_drop': 3, 'reveal_color': 3, 'undo': 5};
   }
+
+  static Future<void> saveRandomEvents(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('random_events_enabled', enabled);
+  }
+
+  static Future<bool> loadRandomEvents() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('random_events_enabled') ?? false;
+  }
 }

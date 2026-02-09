@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import '../color_mixer_game.dart';
@@ -5,6 +6,7 @@ import '../helpers/string_manager.dart';
 import '../helpers/theme_constants.dart';
 import '../helpers/audio_manager.dart';
 import '../core/lives_manager.dart';
+import '../core/save_manager.dart';
 
 class LevelMapOverlay extends StatefulWidget {
   final ColorMixerGame game;
@@ -59,6 +61,14 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
     widget.game.levelManager.currentLevelIndex = index;
     widget.game.startLevel();
     widget.game.transitionTo('LevelMap', 'Controls');
+  }
+
+  void _toggleRandomEvents(bool value) {
+    AudioManager().playButton();
+    setState(() {
+      widget.game.randomEventsEnabled = value;
+    });
+    SaveManager.saveRandomEvents(value);
   }
 
   void _showNoLivesDialog() {
@@ -134,91 +144,170 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
         backgroundColor: Colors.transparent,
         body: Container(
           decoration: const BoxDecoration(gradient: AppTheme.cosmicBackground),
-          child: SafeArea(
-            child: Column(
-              children: [
-                // Header
-                Padding(
-                  padding: EdgeInsets.all(
-                    ResponsiveHelper.spacing(context, 16),
-                  ),
-                  child: Row(
-                    children: [
-                      // Back button
-                      _BackButton(onTap: _goBack),
-                      const SizedBox(width: 16),
-                      // Title
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              AppStrings.levelMap.getString(context),
-                              style: AppTheme.heading2(context),
+          child: Stack(
+            children: [
+              const _AtmosphericBackground(),
+              SafeArea(
+                child: Column(
+                  children: [
+                    // Header
+                    Padding(
+                      padding: EdgeInsets.all(
+                        ResponsiveHelper.spacing(context, 16),
+                      ),
+                      child: Row(
+                        children: [
+                          // Back button
+                          _BackButton(onTap: _goBack),
+                          const SizedBox(width: 16),
+                          // Title
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  AppStrings.levelMap.getString(context),
+                                  style: AppTheme.heading2(context),
+                                ),
+                                Text(
+                                  widget.game.currentMode == GameMode.timeAttack
+                                      ? AppStrings.timeAttackMode.getString(
+                                          context,
+                                        )
+                                      : AppStrings.classicMode.getString(
+                                          context,
+                                        ),
+                                  style: TextStyle(
+                                    color:
+                                        widget.game.currentMode ==
+                                            GameMode.timeAttack
+                                        ? AppTheme.neonMagenta
+                                        : AppTheme.neonCyan,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                              ],
                             ),
-                            Text(
-                              widget.game.currentMode == GameMode.timeAttack
-                                  ? AppStrings.timeAttackMode.getString(context)
-                                  : AppStrings.classicMode.getString(context),
-                              style: TextStyle(
-                                color:
-                                    widget.game.currentMode ==
-                                        GameMode.timeAttack
-                                    ? AppTheme.neonMagenta
-                                    : AppTheme.neonCyan,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                                letterSpacing: 1.2,
+                          ),
+                          const SizedBox(width: 8),
+                          // Lives display
+                          _buildLivesDisplay(),
+                          const SizedBox(width: 8),
+                          // Progress indicator
+                          _ProgressBadge(
+                            completed: widget
+                                .game
+                                .levelManager
+                                .levelStars
+                                .values
+                                .where((s) => s > 0)
+                                .length,
+                            total: levels.length,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Random Events Toggle Row
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: ResponsiveHelper.spacing(context, 16),
+                      ),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                        decoration: AppTheme.cosmicGlass(
+                          borderRadius: 20,
+                          borderColor: widget.game.randomEventsEnabled
+                              ? AppTheme.neonMagenta.withValues(alpha: 0.5)
+                              : Colors.white.withValues(alpha: 0.1),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.auto_fix_high_rounded,
+                              color: AppTheme.neonMagenta,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 12),
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "RANDOM EVENTS",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 14,
+                                      letterSpacing: 1.2,
+                                    ),
+                                  ),
+                                  Text(
+                                    "CHAOTIC ANOMALIES EVERY 15s",
+                                    style: TextStyle(
+                                      color: Colors.white54,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
+                            ),
+                            Switch(
+                              value: widget.game.randomEventsEnabled,
+                              onChanged: _toggleRandomEvents,
+                              activeColor: AppTheme.neonMagenta,
+                              activeTrackColor: AppTheme.neonMagenta.withValues(
+                                alpha: 0.3,
+                              ),
+                              inactiveThumbColor: Colors.white24,
+                              inactiveTrackColor: Colors.black26,
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      // Lives display
-                      _buildLivesDisplay(),
-                      const SizedBox(width: 8),
-                      // Progress indicator
-                      _ProgressBadge(
-                        completed: widget.game.levelManager.levelStars.values
-                            .where((s) => s > 0)
-                            .length,
-                        total: levels.length,
-                      ),
-                    ],
-                  ),
-                ),
+                    ),
+                    const SizedBox(height: 16),
 
-                // Level grid
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: ResponsiveHelper.spacing(context, 16),
-                    ),
-                    child: GridView.builder(
-                      padding: const EdgeInsets.only(bottom: 24),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: columns,
-                        mainAxisSpacing: 12,
-                        crossAxisSpacing: 12,
-                        childAspectRatio: 1.0,
+                    // Level grid
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: ResponsiveHelper.spacing(context, 16),
+                        ),
+                        child: GridView.builder(
+                          padding: const EdgeInsets.only(bottom: 24),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: columns,
+                                mainAxisSpacing: 12,
+                                crossAxisSpacing: 12,
+                                childAspectRatio: 1.0,
+                              ),
+                          itemCount: levels.length,
+                          itemBuilder: (context, index) {
+                            return _LevelCard(
+                              index: index,
+                              level: levels[index],
+                              stars:
+                                  widget.game.levelManager.levelStars[index] ??
+                                  -1,
+                              onTap: () => _selectLevel(index),
+                              delay: index * 50,
+                            );
+                          },
+                        ),
                       ),
-                      itemCount: levels.length,
-                      itemBuilder: (context, index) {
-                        return _LevelCard(
-                          index: index,
-                          level: levels[index],
-                          stars:
-                              widget.game.levelManager.levelStars[index] ?? -1,
-                          onTap: () => _selectLevel(index),
-                          delay: index * 50,
-                        );
-                      },
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -430,14 +519,18 @@ class _LevelCardState extends State<_LevelCard>
         scale: _scaleAnimation,
         child: Container(
           decoration: AppTheme.cosmicCard(
-            borderRadius: 20,
+            borderRadius: 24,
             fillColor: isLocked
-                ? AppTheme.primaryMedium.withValues(alpha: 0.3)
-                : difficultyColors[0].withValues(alpha: 0.2), // Subtle tint
+                ? AppTheme.primaryDark.withValues(alpha: 0.5)
+                : isCompleted
+                ? difficultyColors[0].withValues(alpha: 0.25)
+                : difficultyColors[0].withValues(alpha: 0.15),
             borderColor: isLocked
                 ? Colors.white.withValues(alpha: 0.1)
-                : (isCompleted ? AppTheme.electricYellow : difficultyColors[0]),
-            borderWidth: 1.5,
+                : isCompleted
+                ? AppTheme.electricYellow
+                : difficultyColors[0].withValues(alpha: 0.8),
+            borderWidth: isCompleted ? 2.5 : 1.5,
             hasGlow: !isLocked,
           ),
           child: Material(
@@ -463,8 +556,10 @@ class _LevelCardState extends State<_LevelCard>
                         color: Colors.white,
                         shadows: [
                           Shadow(
-                            color: difficultyColors[0].withValues(alpha: 0.8),
-                            blurRadius: 10,
+                            color: isLocked
+                                ? Colors.transparent
+                                : difficultyColors[0].withValues(alpha: 0.8),
+                            blurRadius: isCompleted ? 15 : 8,
                           ),
                         ],
                       ),
@@ -529,5 +624,40 @@ class _LevelCardState extends State<_LevelCard>
         AppTheme.neonMagenta.withValues(alpha: 0.7),
       ]; // Neon Magenta
     }
+  }
+}
+
+class _AtmosphericBackground extends StatelessWidget {
+  const _AtmosphericBackground();
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: List.generate(15, (i) {
+        final random = Random();
+        final size = 20.0 + random.nextDouble() * 100;
+        final top = random.nextDouble() * 800;
+        final left = random.nextDouble() * 400;
+        final opacity = 0.05 + random.nextDouble() * 0.1;
+
+        return Positioned(
+          top: top,
+          left: left,
+          child: Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  Colors.white.withValues(alpha: opacity),
+                  Colors.white.withValues(alpha: 0),
+                ],
+              ),
+            ),
+          ),
+        );
+      }),
+    );
   }
 }

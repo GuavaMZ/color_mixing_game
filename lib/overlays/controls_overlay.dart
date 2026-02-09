@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'dart:math';
 import 'package:color_mixing_deductive/color_mixer_game.dart';
 import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
@@ -117,6 +118,7 @@ class ControlsOverlay extends StatelessWidget {
                           child: _MatchPercentageDisplay(
                             value: value,
                             context: context,
+                            game: game,
                           ),
                         ),
                       ),
@@ -144,6 +146,11 @@ class ControlsOverlay extends StatelessWidget {
       tablet: 110.0,
       desktop: 130.0,
     );
+
+    // Blackout Mode: Hide target color
+    if (game.isBlackout) {
+      return SizedBox(height: circleSize); // Keep layout space but hide content
+    }
 
     return ValueListenableBuilder<double>(
       valueListenable: game.matchPercentage,
@@ -424,7 +431,20 @@ class ControlsOverlay extends StatelessWidget {
               child: Opacity(
                 opacity: isLimitReached ? 0.4 : 1.0,
                 child: _EnhancedDropButton(
-                  onTap: isLimitReached ? null : () => game.addDrop(type),
+                  onTap: isLimitReached
+                      ? null
+                      : () {
+                          String effectiveType = type;
+                          // Inverse Controls Logic
+                          if (game.isControlsInverted) {
+                            if (type == 'red')
+                              effectiveType = 'blue';
+                            else if (type == 'blue')
+                              effectiveType = 'red';
+                            // Add feedback for inverse? Maybe only on result visually
+                          }
+                          game.addDrop(effectiveType);
+                        },
                   size: buttonSize,
                   color: color,
                 ),
@@ -560,7 +580,6 @@ class _CosmicButton extends StatefulWidget {
   final Color color;
   final Color? borderColor;
   final double borderRadius;
-  final bool isCircular;
   final bool disableDepthConfig; // For complex shapes
 
   const _CosmicButton({
@@ -571,7 +590,6 @@ class _CosmicButton extends StatefulWidget {
     required this.color,
     this.borderColor,
     this.borderRadius = 16,
-    this.isCircular = false,
     this.disableDepthConfig = false,
   });
 
@@ -705,8 +723,13 @@ class _CosmicButtonState extends State<_CosmicButton>
 class _MatchPercentageDisplay extends StatelessWidget {
   final double value;
   final BuildContext context;
+  final ColorMixerGame game; // Add game instance
 
-  const _MatchPercentageDisplay({required this.value, required this.context});
+  const _MatchPercentageDisplay({
+    required this.value,
+    required this.context,
+    required this.game,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -726,7 +749,12 @@ class _MatchPercentageDisplay extends StatelessWidget {
           children: [
             // Shadowed Text for Neon effect
             Text(
-              "${animatedValue.toStringAsFixed(0)}%",
+              // Glitchy UI Logic
+              game.isUiGlitching
+                  ? "${(Random().nextInt(99) + 1)}%"
+                  : (game.isBlackout
+                        ? "??%"
+                        : "${animatedValue.toStringAsFixed(0)}%"),
               style: TextStyle(
                 fontSize: ResponsiveHelper.fontSize(context, 32),
                 color: color,

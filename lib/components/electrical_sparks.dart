@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import '../helpers/audio_manager.dart';
 import '../color_mixer_game.dart';
 
 /// Individual spark particle
@@ -52,6 +53,7 @@ class ElectricalSparks extends Component with HasGameRef<ColorMixerGame> {
     // Create spark bursts
     if (_burstTimer >= _nextBurstTime) {
       _createSparkBurst();
+      AudioManager().playSpark();
       _burstTimer = 0;
       _nextBurstTime = 0.8 + _random.nextDouble() * 2.0;
     }

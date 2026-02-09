@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import '../helpers/audio_manager.dart';
 import '../color_mixer_game.dart';
 
 /// Individual steam particle
@@ -46,6 +47,12 @@ class SteamEffect extends Component with HasGameRef<ColorMixerGame> {
 
   final Paint _steamPaint = Paint()
     ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 15);
+
+  @override
+  void onMount() {
+    super.onMount();
+    AudioManager().playSteam();
+  }
 
   @override
   void update(double dt) {

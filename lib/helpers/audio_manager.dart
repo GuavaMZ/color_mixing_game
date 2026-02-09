@@ -1,6 +1,7 @@
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:math';
 
 /// Centralized audio management with caching and volume controls
 class AudioManager {
@@ -22,6 +23,16 @@ class AudioManager {
   static const String starSound = 'star.mp3';
   static const String unlockSound = 'unlock.mp3';
   static const String gameOverSound = 'game_over.mp3';
+  static const String crackSound = 'crack.mp3';
+  static const List<String> glitchSounds = [
+    'glitch1.mp3',
+    'glitch2.mp3',
+    'glitch3.mp3',
+    'glitch4.mp3',
+  ];
+  static const String sparkSound = 'spark.mp3';
+  static const String alarmSound = 'alarm.mp3';
+  static const String steamSound = 'steam.mp3';
 
   // BGM files
   static const String bgmClassic = 'bgm_classic.ogg';
@@ -55,6 +66,11 @@ class AudioManager {
         starSound,
         unlockSound,
         gameOverSound,
+        crackSound,
+        ...glitchSounds,
+        sparkSound,
+        alarmSound,
+        steamSound,
       ];
 
       for (final sound in soundsToLoad) {
@@ -117,11 +133,33 @@ class AudioManager {
   /// Play game over sound
   void playGameOver() => playSfx(gameOverSound, volume: 0.5);
 
-  /// Start background music for a specific mode
-  Future<void> playMusicForMode(String mode) async {
+  /// Play glass crack sound
+  void playCrack() => playSfx(crackSound, volume: 0.6);
+
+  /// Play glitch sound
+  void playGlitch() =>
+      playSfx(glitchSounds[Random().nextInt(glitchSounds.length)], volume: 0.5);
+
+  /// Play electrical spark sound
+  void playSpark() => playSfx(sparkSound, volume: 0.4);
+
+  /// Play alarm sound
+  void playAlarm() => playSfx(alarmSound, volume: 0.3);
+
+  /// Play steam hiss sound
+  void playSteam() => playSfx(steamSound, volume: 0.5);
+
+  /// Play background music for the Main Menu and Level Map
+  Future<void> playMenuMusic() async {
+    await playMusic(bgmClassic);
+  }
+
+  /// Play background music for the specific Game Mode loop
+  Future<void> playGameMusic(String mode) async {
     String track;
     switch (mode) {
       case 'timeAttack':
+      case 'chaosLab': // Use intense music for chaos
         track = bgmTime;
         break;
       case 'colorEcho':

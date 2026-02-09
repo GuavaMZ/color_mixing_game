@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import '../helpers/audio_manager.dart';
 import '../color_mixer_game.dart';
 
 /// Cracked glass overlay for Chaos Lab Mode
@@ -11,6 +12,7 @@ class CrackedGlassOverlay extends Component with HasGameRef<ColorMixerGame> {
   @override
   void onMount() {
     super.onMount();
+    AudioManager().playCrack();
     _generateCracks();
   }
 

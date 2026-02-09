@@ -13,6 +13,7 @@ import 'package:color_mixing_deductive/components/steam_effect.dart';
 import 'package:color_mixing_deductive/components/glitch_effect.dart';
 import 'package:color_mixing_deductive/components/cracked_glass_overlay.dart';
 import 'package:color_mixing_deductive/components/electrical_sparks.dart';
+import 'package:color_mixing_deductive/components/blackout_effect.dart';
 import 'package:color_mixing_deductive/components/unstable_beaker_effect.dart';
 import 'package:color_mixing_deductive/core/color_logic.dart';
 import 'package:color_mixing_deductive/core/level_manager.dart';
@@ -21,6 +22,7 @@ import 'package:color_mixing_deductive/core/lives_manager.dart';
 import 'package:color_mixing_deductive/helpers/audio_manager.dart';
 import 'dart:math';
 import 'package:flame/game.dart';
+import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 
 enum GameMode { classic, timeAttack, colorEcho, chaosLab, none }
@@ -53,6 +55,17 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   double timeLeft = 30.0;
   double maxTime = 30.0; // Added for progress calculation
   bool isTimeUp = false;
+  bool randomEventsEnabled = false;
+  double _eventTimer = 0;
+
+  // Random Event States
+  bool isBlackout = false;
+  bool isEvaporating = false;
+  bool isControlsInverted = false;
+  bool isUiGlitching = false;
+  double _evaporationVisualOffset = 0.0; // Visual level to subtract
+
+  final Random _random = Random();
 
   void Function(VoidCallback)? _transitionCallback;
 
@@ -84,6 +97,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     totalCoins.value = await SaveManager.loadTotalCoins();
     unlockedAchievements = await SaveManager.loadAchievements();
     globalBlindMode = await SaveManager.loadBlindMode();
+    randomEventsEnabled = await SaveManager.loadRandomEvents();
 
     // Load helpers
     final savedHelpers = await SaveManager.loadHelpers();
@@ -121,8 +135,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     );
     add(beaker);
 
-    // Start music for Main Menu (Classic)
-    _audio.playMusicForMode('classic');
+    // Start music for Main Menu (Classic/Menu BGM)
+    _audio.playMenuMusic();
 
     startLevel();
   }
@@ -139,6 +153,47 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
         _handleGameOver();
       }
       notifyListeners();
+    }
+
+    // Evaporation Logic (Smooth Visual)
+    if (isEvaporating && !_hasWon) {
+      final double evaporationRate = 0.5; // (Drops per second)
+      _evaporationVisualOffset += dt * evaporationRate;
+
+      // When offset reaches one full drop's volume, remove a logical drop
+      if (_evaporationVisualOffset >= 1.0) {
+        _evaporationVisualOffset -= 1.0;
+        if (totalDrops.value > 0) {
+          if (rDrops > 0)
+            rDrops--;
+          else if (gDrops > 0)
+            gDrops--;
+          else if (bDrops > 0)
+            bDrops--;
+          else if (whiteDrops > 0)
+            whiteDrops--;
+          else if (blackDrops > 0)
+            blackDrops--;
+
+          _audio.playSteam(); // Sound effect
+          if (totalDrops.value == 0) {
+            _handleGameOver();
+          }
+        }
+      }
+      _updateGameState(); // Update visuals every frame during evaporation
+    }
+
+    // Random Events Logic
+    if (randomEventsEnabled &&
+        !_hasWon &&
+        (currentMode == GameMode.classic ||
+            currentMode == GameMode.timeAttack)) {
+      _eventTimer -= dt;
+      if (_eventTimer <= 0) {
+        _triggerRandomEvent();
+        _eventTimer = 10.0 + _random.nextDouble() * 5.0; // 10-15 seconds
+      }
     }
 
     // Check win condition ONLY if color changed
@@ -187,8 +242,10 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
   void resetGame() {
     _hasWon = false;
-    // Remove WinMenu overlay if it exists (for replay from win screen)
+    // Remove overlays if they exist
     overlays.remove('WinMenu');
+    overlays.remove('GameOver');
+    _evaporationVisualOffset = 0.0;
 
     // Removed levelManager.reset() as it resets currentLevelIndex to 0
     beaker.clearContents();
@@ -381,7 +438,14 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
     // Calculate level (liquid amount relative to max)
     double level =
-        (rDrops + gDrops + bDrops + whiteDrops + blackDrops) / maxDrops;
+        (rDrops +
+            gDrops +
+            bDrops +
+            whiteDrops +
+            blackDrops -
+            _evaporationVisualOffset) /
+        maxDrops;
+    level = level.clamp(0.0, 1.0);
 
     // Update beaker visuals
     beaker.updateVisuals(newColor, level);
@@ -423,6 +487,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   }
 
   void startLevel() {
+    _startLevelBgm(); // Start gameplay music
+
     if (currentMode == GameMode.colorEcho) {
       targetColor = ColorLogic.generateRandomHardColor();
       maxDrops = 15;
@@ -454,6 +520,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     matchPercentage.value = 0;
     dropsLimitReached.value = false;
     _hasWon = false;
+    _evaporationVisualOffset = 0.0;
     _lastBeakerColor = Colors.transparent;
 
     // Remove any remaining fireworks
@@ -538,6 +605,18 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     notifyListeners();
   }
 
+  void _startLevelBgm() {
+    String musicMode = 'classic';
+    if (currentMode == GameMode.timeAttack) {
+      musicMode = 'timeAttack';
+    } else if (currentMode == GameMode.colorEcho) {
+      musicMode = 'colorEcho';
+    } else if (currentMode == GameMode.chaosLab) {
+      musicMode = 'chaosLab'; // Will map to timeAttack in manager
+    }
+    _audio.playGameMusic(musicMode);
+  }
+
   void goToNextLevel() {
     int stars = calculateStars();
 
@@ -586,17 +665,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
         ? 'classic'
         : 'timeAttack';
 
-    String musicMode = 'classic';
-    if (mode == GameMode.timeAttack) {
-      timeLeft = 30.0;
-      musicMode = 'timeAttack';
-    } else if (mode == GameMode.colorEcho) {
-      musicMode = 'colorEcho';
-    } else if (mode == GameMode.chaosLab) {
-      musicMode = 'timeAttack'; // Use intense music for chaos mode
-    }
-
-    _audio.playMusicForMode(musicMode);
+    // Keep playing Menu music on Level Map for a "planning" phase
+    _audio.playMenuMusic();
 
     if (mode == GameMode.timeAttack) {
       timeLeft = 30.0;
@@ -663,7 +733,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
   void returnToMainMenu() {
     currentMode = GameMode.none;
-    _audio.playMusicForMode('classic');
+    _audio.playMenuMusic();
 
     // Clear any temporary game overlays
     overlays.remove('PauseMenu');
@@ -683,5 +753,176 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     helperCounts.value = newCounts;
     SaveManager.saveHelpers(newCounts);
     notifyListeners();
+  }
+
+  void _triggerRandomEvent() {
+    // Prevent stacking
+    if (isBlackout || isEvaporating || isControlsInverted || isUiGlitching)
+      return;
+
+    // Check for existing visual effects
+    bool isEffectActive =
+        children.whereType<EmergencyLights>().isNotEmpty ||
+        children.whereType<SteamEffect>().isNotEmpty ||
+        children.whereType<GlitchEffect>().isNotEmpty ||
+        children.whereType<CrackedGlassOverlay>().isNotEmpty ||
+        children.whereType<ElectricalSparks>().isNotEmpty ||
+        beaker.children.whereType<UnstableBeakerEffect>().isNotEmpty;
+
+    if (isEffectActive) return;
+
+    // Show visual warning
+    add(AnomalyWarning());
+
+    // Delay actual effect slightly
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      if (currentMode != GameMode.classic &&
+          currentMode != GameMode.timeAttack) {
+        return;
+      }
+
+      // Select Event Type
+      // 0-5: Visual Effects (Old)
+      // 6: Blackout
+      // 7: Evaporation
+      // 8: Inverse Controls
+      // 9: Glitchy UI
+
+      int eventType = _random.nextInt(10);
+      double duration = 8.0 + _random.nextDouble() * 4.0; // 8-12 seconds
+
+      switch (eventType) {
+        case 6: // Blackout
+          isBlackout = true;
+          add(BlackoutEffect());
+          _audio.playAlarm(); // Or specific power down sound
+          break;
+        case 7: // Evaporation
+          isEvaporating = true;
+          add(SteamEffect()); // Reuse visual
+          _audio.playSteam();
+          break;
+        case 8: // Inverse Controls
+          isControlsInverted = true;
+          add(GlitchEffect()); // Visual indicator on screen too
+          _audio.playGlitch();
+          break;
+        case 9: // Glitchy UI
+          isUiGlitching = true;
+          add(GlitchEffect());
+          _audio.playGlitch();
+          break;
+        default: // Visual Effects (Old)
+          final effects = [
+            () => add(EmergencyLights()),
+            () => add(SteamEffect()),
+            () => add(GlitchEffect()),
+            () => add(CrackedGlassOverlay()),
+            () => add(ElectricalSparks()),
+            () => beaker.add(UnstableBeakerEffect()),
+          ];
+          effects[eventType]();
+          break;
+      }
+
+      notifyListeners(); // Update UI for flags
+
+      // Auto-remove effect
+      Future.delayed(Duration(milliseconds: (duration * 1000).toInt()), () {
+        // Reset Logic Flags
+        isBlackout = false;
+        isEvaporating = false;
+        _evaporationVisualOffset = 0.0;
+        isControlsInverted = false;
+        isUiGlitching = false;
+
+        notifyListeners();
+
+        if (currentMode != GameMode.chaosLab) {
+          // Cleanup Components
+          children.whereType<BlackoutEffect>().forEach(
+            (e) => e.removeFromParent(),
+          );
+          children.whereType<EmergencyLights>().forEach(
+            (e) => e.removeFromParent(),
+          );
+          children.whereType<SteamEffect>().forEach(
+            (s) => s.removeFromParent(),
+          );
+          children.whereType<GlitchEffect>().forEach(
+            (g) => g.removeFromParent(),
+          );
+          children.whereType<CrackedGlassOverlay>().forEach(
+            (c) => c.removeFromParent(),
+          );
+          children.whereType<ElectricalSparks>().forEach(
+            (e) => e.removeFromParent(),
+          );
+          beaker.children.whereType<UnstableBeakerEffect>().forEach(
+            (u) => u.removeFromParent(),
+          );
+        }
+      });
+    });
+  }
+}
+
+class AnomalyWarning extends PositionComponent with HasGameRef<ColorMixerGame> {
+  late TextComponent _text;
+  double _timer = 0;
+
+  @override
+  Future<void> onLoad() async {
+    super.onLoad();
+    position = Vector2(gameRef.size.x / 2, gameRef.size.y * 0.2);
+    anchor = Anchor.center;
+
+    _text = TextComponent(
+      text: 'ANOMALY DETECTED',
+      textRenderer: TextPaint(
+        style: const TextStyle(
+          color: Colors.redAccent,
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 4.0,
+          shadows: [
+            Shadow(color: Colors.red, blurRadius: 10, offset: Offset(0, 0)),
+          ],
+        ),
+      ),
+      anchor: Anchor.center,
+    );
+
+    add(_text);
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    _timer += dt;
+
+    // Pulse effect
+    _text.scale = Vector2.all(1.0 + sin(_timer * 10) * 0.1);
+    _text.textRenderer = TextPaint(
+      style:
+          const TextStyle(
+            color: Colors.redAccent,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 4.0,
+            shadows: [
+              Shadow(color: Colors.red, blurRadius: 10, offset: Offset(0, 0)),
+            ],
+          ).copyWith(
+            color: Colors.redAccent.withValues(
+              alpha: (sin(_timer * 15) + 1) / 2,
+            ),
+          ),
+    );
+
+    // Remove after 2 seconds
+    if (_timer >= 2.0) {
+      removeFromParent();
+    }
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import '../helpers/audio_manager.dart';
 import '../color_mixer_game.dart';
 
 /// Emergency alarm lights that flicker in the corners during Chaos Lab Mode
@@ -14,6 +15,12 @@ class EmergencyLights extends Component with HasGameRef<ColorMixerGame> {
   final Paint _lightPaint = Paint()
     ..color = Colors.red.withValues(alpha: 0.3)
     ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 40);
+
+  @override
+  void onMount() {
+    super.onMount();
+    AudioManager().playAlarm();
+  }
 
   @override
   void update(double dt) {
