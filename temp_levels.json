@@ -1,0 +1,242 @@
+[
+  {
+    "recipe": {
+      "red": 0,
+      "green": 0,
+      "blue": 2,
+      "white": 0,
+      "black": 0
+    },
+    "id": 1,
+    "maxDrops": 5,
+    "difficultyFactor": 0.0
+  },
+  {
+    "recipe": {
+      "red": 0,
+      "green": 2,
+      "blue": 0,
+      "white": 0,
+      "black": 0
+    },
+    "id": 2,
+    "maxDrops": 5,
+    "difficultyFactor": 0.0033333333333333335
+  },
+  {
+    "recipe": {
+      "red": 2,
+      "green": 0,
+      "blue": 0,
+      "white": 0,
+      "black": 0
+    },
+    "id": 3,
+    "maxDrops": 5,
+    "difficultyFactor": 0.006666666666666667
+  },
+  {
+    "recipe": {
+      "red": 0,
+      "green": 1,
+      "blue": 1,
+      "white": 0,
+      "black": 0
+    },
+    "id": 4,
+    "maxDrops": 5,
+    "difficultyFactor": 0.01
+  },
+  {
+    "recipe": {
+      "red": 1,
+      "green": 0,
+      "blue": 1,
+      "white": 0,
+      "black": 0
+    },
+    "id": 5,
+    "maxDrops": 5,
+    "difficultyFactor": 0.013333333333333334
+  },
+  {
+    "recipe": {
+      "red": 1,
+      "green": 1,
+      "blue": 0,
+      "white": 0,
+      "black": 0
+    },
+    "id": 6,
+    "maxDrops": 5,
+    "difficultyFactor": 0.016666666666666666
+  },
+  {
+    "recipe": {
+      "red": 0,
+      "green": 1,
+      "blue": 2,
+      "white": 0,
+      "black": 0
+    },
+    "id": 7,
+    "maxDrops": 6,
+    "difficultyFactor": 0.02
+  },
+  {
+    "recipe": {
+      "red": 0,
+      "green": 2,
+      "blue": 1,
+      "white": 0,
+      "black": 0
+    },
+    "id": 8,
+    "maxDrops": 6,
+    "difficultyFactor": 0.023333333333333334
+  },
+  {
+    "recipe": {
+      "red": 1,
+      "green": 0,
+      "blue": 2,
+      "white": 0,
+      "black": 0
+    },
+    "id": 9,
+    "maxDrops": 6,
+    "difficultyFactor": 0.02666666666666667
+  },
+  {
+    "recipe": {
+      "red": 1,
+      "green": 2,
+      "blue": 0,
+      "white": 0,
+      "black": 0
+    },
+    "id": 10,
+    "maxDrops": 6,
+    "difficultyFactor": 0.03
+  },
+  {
+    "recipe": {
+      "red": 2,
+      "green": 0,
+      "blue": 1,
+      "white": 0,
+      "black": 0
+    },
+    "id": 11,
+    "maxDrops": 6,
+    "difficultyFactor": 0.03333333333333333
+  },
+  {
+    "recipe": {
+      "red": 2,
+      "green": 1,
+      "blue": 0,
+      "white": 0,
+      "black": 0
+    },
+    "id": 12,
+    "maxDrops": 6,
+    "difficultyFactor": 0.03666666666666667
+  },
+  {
+    "recipe": {
+      "red": 0,
+      "green": 0,
+      "blue": 0,
+      "white": 2,
+      "black": 0
+    },
+    "id": 13,
+    "maxDrops": 5,
+    "difficultyFactor": 0.04
+  },
+  {
+    "recipe": {
+      "red": 0,
+      "green": 0,
+      "blue": 0,
+      "white": 0,
+      "black": 2
+    },
+    "id": 14,
+    "maxDrops": 5,
+    "difficultyFactor": 0.043333333333333335
+  },
+  {
+    "recipe": {
+      "red": 3,
+      "green": 1,
+      "blue": 0,
+      "white": 0,
+      "black": 0
+    },
+    "id": 15,
+    "maxDrops": 7,
+    "difficultyFactor": 0.04666666666666667
+  },
+  {
+    "recipe": {
+      "red": 0,
+      "green": 1,
+      "blue": 3,
+      "white": 0,
+      "black": 0
+    },
+    "id": 16,
+    "maxDrops": 7,
+    "difficultyFactor": 0.05
+  },
+  {
+    "recipe": {
+      "red": 0,
+      "green": 3,
+      "blue": 1,
+      "white": 0,
+      "black": 0
+    },
+    "id": 17,
+    "maxDrops": 7,
+    "difficultyFactor": 0.05333333333333334
+  },
+  {
+    "recipe": {
+      "red": 1,
+      "green": 0,
+      "blue": 3,
+      "white": 0,
+      "black": 0
+    },
+    "id": 18,
+    "maxDrops": 7,
+    "difficultyFactor": 0.056666666666666664
+  },
+  {
+    "recipe": {
+      "red": 1,
+      "green": 3,
+      "blue": 0,
+      "white": 0,
+      "black": 0
+    },
+    "id": 19,
+    "maxDrops": 7,
+    "difficultyFactor": 0.06
+  },
+  {
+    "recipe": {
+      "red": 3,
+      "green": 0,
+      "blue": 1,
+      "white": 0,
+      "black": 0
+    },
+    "id": 20,
+    "maxDrops": 7,
+    "difficultyFactor": 0.06333333333333334
+  }
+]

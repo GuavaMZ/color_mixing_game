@@ -11,7 +11,9 @@ import 'package:color_mixing_deductive/overlays/win_menu_overlay.dart';
 import 'package:color_mixing_deductive/overlays/pause_menu_overlay.dart';
 import 'package:color_mixing_deductive/overlays/achievement_notification.dart';
 import 'package:color_mixing_deductive/overlays/achievements_overlay.dart';
+import 'package:color_mixing_deductive/overlays/gallery_overlay.dart';
 import 'package:color_mixing_deductive/overlays/color_echo_hud.dart';
+import 'package:color_mixing_deductive/overlays/chaos_lab_hud.dart';
 import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
@@ -115,6 +117,7 @@ class _MyAppState extends State<MyApp> {
             'GameOver': (context, game) => GameOverOverlay(game: game),
             'Shop': (context, game) => ShopOverlay(game: game),
             'ColorEchoHUD': (context, game) => ColorEchoHUD(game: game),
+            'ChaosLabHUD': (context, game) => ChaosLabHUD(game: game),
             'PauseMenu': (context, game) => PauseMenuOverlay(game: game),
             'Tutorial': (context, game) => TutorialOverlay(game: game),
             'Achievement': (context, game) => AchievementNotification(
@@ -124,6 +127,7 @@ class _MyAppState extends State<MyApp> {
               icon: Icons.science_rounded,
             ),
             'Achievements': (context, game) => AchievementsOverlay(game: game),
+            'Gallery': (context, game) => GalleryOverlay(game: game),
           },
           initialActiveOverlays: const ['MainMenu', 'Transition'],
           loadingBuilder: (context) => Container(

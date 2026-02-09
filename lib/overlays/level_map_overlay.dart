@@ -43,7 +43,7 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
 
   void _goBack() {
     AudioManager().playButton();
-    widget.game.transitionTo('LevelMap', 'MainMenu');
+    widget.game.returnToMainMenu();
   }
 
   void _selectLevel(int index) {

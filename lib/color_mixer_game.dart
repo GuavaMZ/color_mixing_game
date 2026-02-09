@@ -8,6 +8,12 @@ import 'package:color_mixing_deductive/components/fireworks.dart';
 import 'package:color_mixing_deductive/components/holographic_radar.dart';
 import 'package:color_mixing_deductive/components/spectral_target.dart';
 import 'package:color_mixing_deductive/components/echo_particles.dart';
+import 'package:color_mixing_deductive/components/emergency_lights.dart';
+import 'package:color_mixing_deductive/components/steam_effect.dart';
+import 'package:color_mixing_deductive/components/glitch_effect.dart';
+import 'package:color_mixing_deductive/components/cracked_glass_overlay.dart';
+import 'package:color_mixing_deductive/components/electrical_sparks.dart';
+import 'package:color_mixing_deductive/components/unstable_beaker_effect.dart';
 import 'package:color_mixing_deductive/core/color_logic.dart';
 import 'package:color_mixing_deductive/core/level_manager.dart';
 import 'package:color_mixing_deductive/core/save_manager.dart';
@@ -17,7 +23,7 @@ import 'dart:math';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 
-enum GameMode { classic, timeAttack, colorEcho, none }
+enum GameMode { classic, timeAttack, colorEcho, chaosLab, none }
 
 class ColorMixerGame extends FlameGame with ChangeNotifier {
   late Beaker beaker;
@@ -35,6 +41,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   final ValueNotifier<int> totalDrops = ValueNotifier<int>(0);
   final ValueNotifier<bool> dropsLimitReached = ValueNotifier<bool>(false);
   final ValueNotifier<int> totalCoins = ValueNotifier<int>(0);
+  final ValueNotifier<Map<String, int>> helperCounts =
+      ValueNotifier<Map<String, int>>({});
 
   late BackgroundGradient backgroundGradient;
   late AmbientParticles ambientParticles;
@@ -77,6 +85,10 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     unlockedAchievements = await SaveManager.loadAchievements();
     globalBlindMode = await SaveManager.loadBlindMode();
 
+    // Load helpers
+    final savedHelpers = await SaveManager.loadHelpers();
+    helperCounts.value = Map<String, int>.from(savedHelpers);
+
     // Load skins
     final savedSkins = await SaveManager.loadPurchasedSkins();
     if (savedSkins.isNotEmpty) {
@@ -108,6 +120,9 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       size: Vector2(180, 250),
     );
     add(beaker);
+
+    // Start music for Main Menu (Classic)
+    _audio.playMusicForMode('classic');
 
     startLevel();
   }
@@ -260,6 +275,9 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   void undoLastDrop() {
     if (dropHistory.isEmpty || _hasWon) return;
 
+    // Undo is now a consumable helper
+    if (!useHelper('undo')) return;
+
     final lastDrop = dropHistory.removeLast();
     if (lastDrop == 'red') {
       rDrops--;
@@ -282,6 +300,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
   void addExtraDrops() {
     if (_hasWon) return;
+    if (!useHelper('extra_drops')) return;
+
     maxDrops += 5;
     dropsLimitReached.value = false;
     notifyListeners();
@@ -321,6 +341,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       colorToDrop = 'black';
 
     if (colorToDrop != null) {
+      if (!useHelper('help_drop')) return;
       addDrop(colorToDrop);
     } else {
       // Recipe is effectively fulfilled by current counts (or over-fulfilled).
@@ -335,6 +356,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   /// Temporarily reveal the color in blind mode
   void revealHiddenColor() {
     if (!isBlindMode) return;
+    if (!useHelper('reveal_color')) return;
 
     beaker.isBlindMode = false;
     // Trigger visual update
@@ -405,6 +427,11 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       targetColor = ColorLogic.generateRandomHardColor();
       maxDrops = 15;
       isBlindMode = Random().nextBool(); // 50% chance of blind mode in echo
+    } else if (currentMode == GameMode.chaosLab) {
+      // Chaos Lab Mode: Unstable, random target colors
+      targetColor = ColorLogic.generateRandomHardColor();
+      maxDrops = 18;
+      isBlindMode = false; // No blind mode in chaos - too chaotic already!
     } else {
       final level = levelManager.currentLevel;
       targetColor = level.targetColor;
@@ -462,6 +489,20 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       (s) => s.removeFromParent(),
     );
 
+    // Clear any existing chaos effects
+    children.whereType<EmergencyLights>().forEach((e) => e.removeFromParent());
+    children.whereType<SteamEffect>().forEach((s) => s.removeFromParent());
+    children.whereType<GlitchEffect>().forEach((g) => g.removeFromParent());
+    children.whereType<CrackedGlassOverlay>().forEach(
+      (c) => c.removeFromParent(),
+    );
+    children.whereType<ElectricalSparks>().forEach((e) => e.removeFromParent());
+
+    // Check beaker for unstable effect
+    beaker.children.whereType<UnstableBeakerEffect>().forEach(
+      (u) => u.removeFromParent(),
+    );
+
     if (currentMode == GameMode.colorEcho) {
       add(HolographicRadar(position: beaker.position, radius: 130));
       add(
@@ -472,8 +513,26 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       );
       overlays.add('ColorEchoHUD');
       overlays.remove('Controls');
+    } else if (currentMode == GameMode.chaosLab) {
+      // Add all chaos effects
+      add(EmergencyLights());
+      add(SteamEffect());
+      add(GlitchEffect());
+      add(CrackedGlassOverlay());
+      add(ElectricalSparks());
+      beaker.add(UnstableBeakerEffect());
+
+      // Set chaos timer
+      timeLeft = 40.0;
+      maxTime = 40.0;
+      isTimeUp = false;
+
+      overlays.add('ChaosLabHUD');
+      overlays.remove('Controls');
+      overlays.remove('ColorEchoHUD');
     } else {
       overlays.remove('ColorEchoHUD');
+      overlays.remove('ChaosLabHUD');
     }
 
     notifyListeners();
@@ -527,6 +586,18 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
         ? 'classic'
         : 'timeAttack';
 
+    String musicMode = 'classic';
+    if (mode == GameMode.timeAttack) {
+      timeLeft = 30.0;
+      musicMode = 'timeAttack';
+    } else if (mode == GameMode.colorEcho) {
+      musicMode = 'colorEcho';
+    } else if (mode == GameMode.chaosLab) {
+      musicMode = 'timeAttack'; // Use intense music for chaos mode
+    }
+
+    _audio.playMusicForMode(musicMode);
+
     if (mode == GameMode.timeAttack) {
       timeLeft = 30.0;
     }
@@ -574,6 +645,43 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   Future<void> toggleBlindMode(bool enabled) async {
     globalBlindMode = enabled;
     await SaveManager.saveBlindMode(enabled);
+    notifyListeners();
+  }
+
+  bool useHelper(String helperId) {
+    final current = helperCounts.value[helperId] ?? 0;
+    if (current > 0) {
+      Map<String, int> newCounts = Map<String, int>.from(helperCounts.value);
+      newCounts[helperId] = current - 1;
+      helperCounts.value = newCounts;
+      SaveManager.saveHelpers(newCounts);
+      notifyListeners();
+      return true;
+    }
+    return false;
+  }
+
+  void returnToMainMenu() {
+    currentMode = GameMode.none;
+    _audio.playMusicForMode('classic');
+
+    // Clear any temporary game overlays
+    overlays.remove('PauseMenu');
+    overlays.remove('GameOver');
+    overlays.remove('WinMenu');
+    overlays.remove('Controls');
+    overlays.remove('LevelMap');
+    overlays.remove('ColorEchoHUD');
+
+    overlays.add('MainMenu');
+    notifyListeners();
+  }
+
+  void addHelper(String helperId, int amount) {
+    Map<String, int> newCounts = Map<String, int>.from(helperCounts.value);
+    newCounts[helperId] = (newCounts[helperId] ?? 0) + amount;
+    helperCounts.value = newCounts;
+    SaveManager.saveHelpers(newCounts);
     notifyListeners();
   }
 }

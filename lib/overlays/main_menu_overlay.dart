@@ -162,6 +162,14 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                                     widget.game.overlays.add('Settings');
                                   },
                                 ),
+                                const SizedBox(width: 6),
+                                _buildIconButton(
+                                  icon: Icons.auto_stories_rounded,
+                                  onTap: () {
+                                    AudioManager().playButton();
+                                    widget.game.overlays.add('Gallery');
+                                  },
+                                ),
                               ],
                             ),
                           ),
@@ -324,6 +332,35 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                           widget.game.currentMode = GameMode.timeAttack;
                           widget.game.timeLeft = 30.0;
                           widget.game.transitionTo('MainMenu', 'LevelMap');
+                        },
+                      ),
+                    ),
+
+                    SizedBox(height: ResponsiveHelper.spacing(context, 14)),
+
+                    // Chaos Lab Mode - Emergency themed
+                    SlideTransition(
+                      position: _timeSlide,
+                      child: _buildModeButton(
+                        context: context,
+                        title: 'CHAOS LAB',
+                        subtitle:
+                            'Unstable reactions! Emergency protocols active!',
+                        icon: Icons.warning_amber_rounded,
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFFF0000), Color(0xFFFF8800)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        onTap: () {
+                          if (LivesManager().lives <= 0) {
+                            _showNoLivesDialog(context);
+                            return;
+                          }
+                          AudioManager().playButton();
+                          widget.game.currentMode = GameMode.chaosLab;
+                          widget.game.startLevel();
+                          widget.game.transitionTo('MainMenu', 'ChaosLabHUD');
                         },
                       ),
                     ),

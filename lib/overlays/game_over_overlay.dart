@@ -96,8 +96,11 @@ class GameOverOverlay extends StatelessWidget {
                           return;
                         }
                         AudioManager().playButton();
-                        game.overlays.remove('GameOver');
-                        game.startLevel();
+                        if (game.currentMode == GameMode.colorEcho) {
+                          game.returnToMainMenu();
+                        } else {
+                          game.transitionTo('Controls', 'LevelMap');
+                        }
                       },
                     ),
                   ),
@@ -112,7 +115,7 @@ class GameOverOverlay extends StatelessWidget {
                         AudioManager().playButton();
                         game.overlays.remove('GameOver');
                         if (game.currentMode == GameMode.colorEcho) {
-                          game.transitionTo('ColorEchoHUD', 'MainMenu');
+                          game.returnToMainMenu();
                         } else {
                           game.overlays.add('LevelMap');
                         }

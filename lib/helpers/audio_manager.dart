@@ -22,13 +22,19 @@ class AudioManager {
   static const String starSound = 'star.mp3';
   static const String unlockSound = 'unlock.mp3';
   static const String gameOverSound = 'game_over.mp3';
-  static const String ambientMusic = 'ambient.mp3';
+
+  // BGM files
+  static const String bgmClassic = 'bgm_classic.ogg';
+  static const String bgmTime = 'bgm_time.ogg';
+  static const String bgmEcho = 'bgm_echo.ogg';
 
   // Persistence keys
   static const String _sfxKey = 'sfx_enabled';
   static const String _musicKey = 'music_enabled';
 
   final Set<String> _loadedSounds = {};
+
+  String? _currentBgm;
 
   /// Initialize audio system and preload sounds
   Future<void> initialize() async {
@@ -66,9 +72,7 @@ class AudioManager {
         'AudioManager: Initialized with ${_loadedSounds.length} sounds',
       );
 
-      if (_musicEnabled) {
-        startMusic();
-      }
+      // Don't auto-start music here, let the game controller decide which track
     } catch (e) {
       debugPrint('AudioManager: Critical initialization failure - $e');
       // Even if cache fails, we mark initialized to allow settings to work
@@ -113,22 +117,48 @@ class AudioManager {
   /// Play game over sound
   void playGameOver() => playSfx(gameOverSound, volume: 0.5);
 
-  /// Start background music
-  Future<void> startMusic() async {
+  /// Start background music for a specific mode
+  Future<void> playMusicForMode(String mode) async {
+    String track;
+    switch (mode) {
+      case 'timeAttack':
+        track = bgmTime;
+        break;
+      case 'colorEcho':
+        track = bgmEcho;
+        break;
+      case 'classic':
+      default:
+        track = bgmClassic;
+        break;
+    }
+
+    await playMusic(track);
+  }
+
+  /// play specific music track
+  Future<void> playMusic(String track) async {
     if (!_musicEnabled || !_initialized) return;
 
+    if (_currentBgm == track && FlameAudio.bgm.isPlaying) return;
+
     try {
-      if (!FlameAudio.bgm.isPlaying) {
-        await FlameAudio.bgm.play(ambientMusic, volume: _musicVolume);
+      // If a different track is playing, stop it first
+      if (FlameAudio.bgm.isPlaying) {
+        FlameAudio.bgm.stop();
       }
+
+      _currentBgm = track;
+      await FlameAudio.bgm.play(track, volume: _musicVolume);
     } catch (e) {
-      debugPrint('AudioManager: Failed to start music - $e');
+      debugPrint('AudioManager: Failed to start music $track - $e');
     }
   }
 
   /// Stop background music
   void stopMusic() {
     FlameAudio.bgm.stop();
+    _currentBgm = null;
   }
 
   /// Pause background music
@@ -138,7 +168,7 @@ class AudioManager {
 
   /// Resume background music
   void resumeMusic() {
-    if (_musicEnabled) {
+    if (_musicEnabled && _currentBgm != null) {
       FlameAudio.bgm.resume();
     }
   }
@@ -157,8 +187,8 @@ class AudioManager {
     _saveSettings();
     if (!value) {
       stopMusic();
-    } else if (_initialized) {
-      startMusic();
+    } else if (_initialized && _currentBgm != null) {
+      playMusic(_currentBgm!);
     }
   }
 

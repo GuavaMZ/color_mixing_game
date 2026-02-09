@@ -444,81 +444,109 @@ class ControlsOverlay extends StatelessWidget {
         borderColor: Colors.white.withValues(alpha: 0.1),
         isInteractive: true,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // 1. Undo (Cyan)
-          _CosmicButton(
-            onTap: () => game.undoLastDrop(),
-            width: 40,
-            height: 40,
-            color: AppTheme.neonCyan.withValues(alpha: 0.15),
-            borderColor: AppTheme.neonCyan.withValues(alpha: 0.5),
-            borderRadius: 12,
-            child: Icon(Icons.undo_rounded, color: AppTheme.neonCyan, size: 20),
-          ),
-          const SizedBox(height: 8),
+      child: ValueListenableBuilder<Map<String, int>>(
+        valueListenable: game.helperCounts,
+        builder: (context, counts, child) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // 1. Undo (Cyan)
+              _buildHelperButton(
+                id: 'undo',
+                icon: Icons.undo_rounded,
+                color: AppTheme.neonCyan,
+                count: counts['undo'] ?? 0,
+                onTap: () => game.undoLastDrop(),
+              ),
+              const SizedBox(height: 8),
 
-          // 2. Extra Drops (Magenta)
-          _CosmicButton(
-            onTap: () {
-              game.addExtraDrops();
-            },
-            width: 40,
-            height: 40,
-            color: AppTheme.neonMagenta.withValues(alpha: 0.15),
-            borderColor: AppTheme.neonMagenta.withValues(alpha: 0.5),
-            borderRadius: 12,
-            child: Icon(
-              Icons.add_circle_outline,
-              color: AppTheme.neonMagenta,
-              size: 20,
+              // 2. Extra Drops (Magenta)
+              _buildHelperButton(
+                id: 'extra_drops',
+                icon: Icons.add_circle_outline,
+                color: AppTheme.neonMagenta,
+                count: counts['extra_drops'] ?? 0,
+                onTap: () => game.addExtraDrops(),
+              ),
+              const SizedBox(height: 8),
+
+              // 3. Drop Color (Green)
+              _buildHelperButton(
+                id: 'help_drop',
+                icon: Icons.water_drop_outlined,
+                color: AppTheme.success,
+                count: counts['help_drop'] ?? 0,
+                onTap: () => game.addHelpDrop(),
+              ),
+              const SizedBox(height: 8),
+
+              // 4. Reveal (Yellow)
+              _buildHelperButton(
+                id: 'reveal_color',
+                icon: Icons.visibility_outlined,
+                color: AppTheme.electricYellow,
+                count: counts['reveal_color'] ?? 0,
+                onTap: game.isBlindMode ? () => game.revealHiddenColor() : null,
+                isVisible: game.isBlindMode,
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildHelperButton({
+    required String id,
+    required IconData icon,
+    required Color color,
+    required int count,
+    required VoidCallback? onTap,
+    bool isVisible = true,
+  }) {
+    final bool hasCount = count > 0;
+
+    return Opacity(
+      opacity: isVisible ? (hasCount ? 1.0 : 0.3) : 0.0,
+      child: IgnorePointer(
+        ignoring: !isVisible || !hasCount,
+        child: Stack(
+          alignment: Alignment.topRight,
+          children: [
+            _CosmicButton(
+              onTap: onTap,
+              width: 40,
+              height: 40,
+              color: color.withValues(alpha: 0.15),
+              borderColor: color.withValues(alpha: 0.5),
+              borderRadius: 12,
+              child: Icon(icon, color: color, size: 20),
             ),
-          ),
-          const SizedBox(height: 8),
-
-          // 3. Drop Color (Green)
-          _CosmicButton(
-            onTap: () {
-              game.addHelpDrop();
-            },
-            width: 40,
-            height: 40,
-            color: AppTheme.success.withValues(alpha: 0.15),
-            borderColor: AppTheme.success.withValues(alpha: 0.5),
-            borderRadius: 12,
-            child: Icon(
-              Icons.water_drop_outlined,
-              color: AppTheme.success,
-              size: 20,
-            ),
-          ),
-          const SizedBox(height: 8),
-
-          // 4. Reveal (Yellow)
-          ValueListenableBuilder<double>(
-            valueListenable: game.matchPercentage,
-            builder: (context, _, __) {
-              bool isBlind = game.isBlindMode;
-              return Opacity(
-                opacity: isBlind ? 1.0 : 0.3,
-                child: _CosmicButton(
-                  onTap: isBlind ? () => game.revealHiddenColor() : null,
-                  width: 40,
-                  height: 40,
-                  color: AppTheme.electricYellow.withValues(alpha: 0.15),
-                  borderColor: AppTheme.electricYellow.withValues(alpha: 0.5),
-                  borderRadius: 12,
-                  child: Icon(
-                    Icons.visibility_outlined,
-                    color: AppTheme.electricYellow,
-                    size: 20,
+            if (isVisible)
+              Transform.translate(
+                offset: const Offset(4, -4),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: color,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    count.toString(),
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 8,
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.none,
+                    ),
                   ),
                 ),
-              );
-            },
-          ),
-        ],
+              ),
+          ],
+        ),
       ),
     );
   }

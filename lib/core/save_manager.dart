@@ -82,4 +82,20 @@ class SaveManager {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool('blind_mode_enabled') ?? false;
   }
+
+  static Future<void> saveHelpers(Map<String, int> helpers) async {
+    final prefs = await SharedPreferences.getInstance();
+    String encodedData = jsonEncode(helpers);
+    await prefs.setString('helper_counts', encodedData);
+  }
+
+  static Future<Map<String, int>> loadHelpers() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? data = prefs.getString('helper_counts');
+    if (data != null) {
+      Map<String, dynamic> decoded = jsonDecode(data);
+      return decoded.map((key, value) => MapEntry(key, value as int));
+    }
+    return {'extra_drops': 3, 'help_drop': 3, 'reveal_color': 3, 'undo': 5};
+  }
 }

@@ -48,6 +48,18 @@ mixin AppStrings {
   static const String skip = "skip";
   static const String start = "start";
   static const String next = "next";
+
+  // Helpers Shop
+  static const String helpersTitle = "helpers_title";
+  static const String undoTitle = "undo_title";
+  static const String undoDesc = "undo_desc";
+  static const String extraDropsTitle = "extra_drops_title";
+  static const String extraDropsDesc = "extra_drops_desc";
+  static const String helpDropTitle = "help_drop_title";
+  static const String helpDropDesc = "help_drop_desc";
+  static const String revealColorTitle = "reveal_color_title";
+  static const String revealColorDesc = "reveal_color_desc";
+  static const String helperPurchased = "helper_purchased";
   static const String vibration = "vibration";
   static const String blindMode = "blind_mode";
   static const String on = "on";
@@ -268,6 +280,18 @@ mixin AppStrings {
     start: 'Start',
     next: 'Next',
 
+    // Helpers Shop
+    helpersTitle: 'Power-ups & Lab Kits',
+    undoTitle: 'Rewind',
+    undoDesc: 'Undo the last chemical drop',
+    extraDropsTitle: 'Stability Matrix',
+    extraDropsDesc: 'Add 5 extra drops to current beaker',
+    helpDropTitle: 'Precision Drop',
+    helpDropDesc: 'Add one drop of the correct color',
+    revealColorTitle: 'Spectral Scanner',
+    revealColorDesc: 'Temporarily see true beaker color',
+    helperPurchased: 'Lab kit acquired!',
+
     // Hints
     hintPureRed: "Think red. Just red.",
     hintPureGreen: "Go with pure green energy.",
@@ -416,6 +440,18 @@ mixin AppStrings {
     skip: 'تخطٍ',
     start: 'ابدأ',
     next: 'التالي',
+
+    // Helpers Shop
+    helpersTitle: 'المعدات والمختبرات',
+    undoTitle: 'تراجع',
+    undoDesc: 'التراجع عن آخر قطرة مضافة',
+    extraDropsTitle: 'مصفوفة الاستقرار',
+    extraDropsDesc: 'إضافة 5 قطرات إضافية للكأس',
+    helpDropTitle: 'قطرة الدقة',
+    helpDropDesc: 'إضافة قطرة واحدة من اللون الصحيح',
+    revealColorTitle: 'الماسح الطيفي',
+    revealColorDesc: 'رؤية لون الكأس الحقيقي مؤقتاً',
+    helperPurchased: 'تم الحصول على المعدات!',
 
     // hints
     hintPureRed: "فكر بالأحمر. الأحمر فقط.",
@@ -569,6 +605,18 @@ mixin AppStrings {
     start: 'Comenzar',
     next: 'Siguiente',
 
+    // Helpers Shop
+    helpersTitle: 'Potenciadores y Kits',
+    undoTitle: 'Retroceder',
+    undoDesc: 'Deshace la última gota química',
+    extraDropsTitle: 'Matriz de Estabilidad',
+    extraDropsDesc: 'Añade 5 gotas extra al vaso actual',
+    helpDropTitle: 'Gota de Precisión',
+    helpDropDesc: 'Añade una gota del color correcto',
+    revealColorTitle: 'Escáner Espectral',
+    revealColorDesc: 'Ver temporalmente el color real del vaso',
+    helperPurchased: '¡Kit de laboratorio adquirido!',
+
     // Hints
     hintPureRed: "Piensa en rojo. Solo rojo.",
     hintPureGreen: "Ve con energía verde pura.",
@@ -720,6 +768,18 @@ mixin AppStrings {
     skip: 'Passer',
     start: 'Commencer',
     next: 'Suivant',
+
+    // Helpers Shop
+    helpersTitle: 'Boosters & Équipements',
+    undoTitle: 'Retour',
+    undoDesc: 'Annuler la dernière goutte chimique',
+    extraDropsTitle: 'Matrice de Stabilité',
+    extraDropsDesc: 'Ajouter 5 gouttes au bécher actuel',
+    helpDropTitle: 'Goutte de Précision',
+    helpDropDesc: 'Ajouter une goutte de la bonne couleur',
+    revealColorTitle: 'Scanner Spectral',
+    revealColorDesc: 'Voir temporairement la couleur réelle',
+    helperPurchased: 'Équipement de labo acquis !',
 
     // Hints
     hintPureRed: "Pense au rouge. Juste au rouge.",

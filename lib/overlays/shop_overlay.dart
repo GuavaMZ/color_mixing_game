@@ -21,6 +21,26 @@ class ShopItemData {
   });
 }
 
+class HelperItemData {
+  final String id;
+  final String nameKey;
+  final String descKey;
+  final int price;
+  final int amount;
+  final IconData icon;
+  final Color color;
+
+  const HelperItemData({
+    required this.id,
+    required this.nameKey,
+    required this.descKey,
+    required this.price,
+    required this.amount,
+    required this.icon,
+    required this.color,
+  });
+}
+
 class ShopOverlay extends StatefulWidget {
   final ColorMixerGame game;
   const ShopOverlay({super.key, required this.game});
@@ -69,6 +89,45 @@ class _ShopOverlayState extends State<ShopOverlay> {
     ),
   ];
 
+  static const List<HelperItemData> _helperItems = [
+    HelperItemData(
+      id: 'undo',
+      nameKey: AppStrings.undoTitle,
+      descKey: AppStrings.undoDesc,
+      price: 50,
+      amount: 5,
+      icon: Icons.undo_rounded,
+      color: AppTheme.neonCyan,
+    ),
+    HelperItemData(
+      id: 'extra_drops',
+      nameKey: AppStrings.extraDropsTitle,
+      descKey: AppStrings.extraDropsDesc,
+      price: 150,
+      amount: 3,
+      icon: Icons.add_circle_outline,
+      color: AppTheme.neonMagenta,
+    ),
+    HelperItemData(
+      id: 'help_drop',
+      nameKey: AppStrings.helpDropTitle,
+      descKey: AppStrings.helpDropDesc,
+      price: 200,
+      amount: 3,
+      icon: Icons.water_drop_outlined,
+      color: AppTheme.success,
+    ),
+    HelperItemData(
+      id: 'reveal_color',
+      nameKey: AppStrings.revealColorTitle,
+      descKey: AppStrings.revealColorDesc,
+      price: 300,
+      amount: 2,
+      icon: Icons.visibility_outlined,
+      color: AppTheme.electricYellow,
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,20 +153,60 @@ class _ShopOverlayState extends State<ShopOverlay> {
                   child: AnimatedBuilder(
                     animation: widget.game,
                     builder: (context, child) {
-                      return GridView.builder(
+                      return ListView(
                         padding: const EdgeInsets.all(20),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              mainAxisSpacing: 20,
-                              crossAxisSpacing: 20,
-                              childAspectRatio: 0.8,
-                            ),
-                        itemCount: _shopItems.length,
-                        itemBuilder: (context, index) {
-                          final item = _shopItems[index];
-                          return ShopItemCard(game: widget.game, item: item);
-                        },
+                        children: [
+                          _buildSectionTitle(
+                            context,
+                            AppStrings.helpersTitle.getString(context),
+                            Icons.auto_awesome,
+                          ),
+                          const SizedBox(height: 16),
+                          GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  mainAxisSpacing: 16,
+                                  crossAxisSpacing: 16,
+                                  childAspectRatio: 0.9,
+                                ),
+                            itemCount: _helperItems.length,
+                            itemBuilder: (context, index) {
+                              return HelperItemCard(
+                                game: widget.game,
+                                item: _helperItems[index],
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 32),
+                          _buildSectionTitle(
+                            context,
+                            AppStrings.shopTitle.getString(context),
+                            Icons.science_outlined,
+                          ),
+                          const SizedBox(height: 16),
+                          GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  mainAxisSpacing: 16,
+                                  crossAxisSpacing: 16,
+                                  childAspectRatio: 0.85,
+                                ),
+                            itemCount: _shopItems.length,
+                            itemBuilder: (context, index) {
+                              final item = _shopItems[index];
+                              return ShopItemCard(
+                                game: widget.game,
+                                item: item,
+                              );
+                            },
+                          ),
+                        ],
                       );
                     },
                   ),
@@ -195,6 +294,37 @@ class _ShopOverlayState extends State<ShopOverlay> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildSectionTitle(BuildContext context, String title, IconData icon) {
+    return Row(
+      children: [
+        Icon(icon, color: AppTheme.neonCyan, size: 24),
+        const SizedBox(width: 12),
+        Text(
+          title.toUpperCase(),
+          style: AppTheme.heading3(context).copyWith(
+            fontSize: 16,
+            letterSpacing: 2,
+            color: Colors.white.withValues(alpha: 0.9),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Container(
+            height: 1,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppTheme.neonCyan.withValues(alpha: 0.5),
+                  AppTheme.neonCyan.withValues(alpha: 0.0),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -497,6 +627,132 @@ class _ShopItemCardState extends State<ShopItemCard>
           ),
         );
       }
+    }
+  }
+}
+
+class HelperItemCard extends StatelessWidget {
+  final ColorMixerGame game;
+  final HelperItemData item;
+
+  const HelperItemCard({super.key, required this.game, required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    final bool canAfford = game.totalCoins.value >= item.price;
+
+    return GestureDetector(
+      onTap: () => _handlePurchase(context),
+      child: Container(
+        decoration: AppTheme.cosmicGlass(
+          borderRadius: 24,
+          borderColor: item.color.withValues(alpha: 0.3),
+        ),
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Stack(
+              alignment: Alignment.topRight,
+              children: [
+                Container(
+                  width: 45,
+                  height: 45,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: item.color.withValues(alpha: 0.1),
+                  ),
+                  child: Icon(item.icon, color: item.color, size: 24),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: item.color,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    "x${item.amount}",
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              item.nameKey.getString(context),
+              style: AppTheme.bodyLarge(
+                context,
+              ).copyWith(fontSize: 13, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: (canAfford ? Colors.amber : AppTheme.neonMagenta)
+                    .withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: (canAfford ? Colors.amber : AppTheme.neonMagenta)
+                      .withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.monetization_on_rounded,
+                    size: 12,
+                    color: canAfford ? Colors.amber : AppTheme.neonMagenta,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    "${item.price}",
+                    style: AppTheme.buttonText(context).copyWith(
+                      fontSize: 12,
+                      color: canAfford ? Colors.amber : AppTheme.neonMagenta,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _handlePurchase(BuildContext context) {
+    AudioManager().playButton();
+    if (game.totalCoins.value >= item.price) {
+      game.addCoins(-item.price);
+      game.addHelper(item.id, item.amount);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppStrings.helperPurchased.getString(context)),
+          backgroundColor: AppTheme.success.withValues(alpha: 0.8),
+          duration: const Duration(milliseconds: 1500),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppStrings.insufficientCredits.getString(context)),
+          backgroundColor: AppTheme.neonMagenta,
+          duration: const Duration(milliseconds: 1500),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     }
   }
 }
