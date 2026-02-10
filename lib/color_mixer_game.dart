@@ -158,6 +158,16 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       position: Vector2(size.x / 2, size.y * 0.54),
       size: Vector2(180, 250),
     );
+
+    // Load persisted skin
+    final selectedSkinName = await SaveManager.loadSelectedSkin();
+    if (selectedSkinName != null) {
+      beaker.type = BeakerType.values.firstWhere(
+        (e) => e.toString() == selectedSkinName,
+        orElse: () => BeakerType.classic,
+      );
+    }
+
     add(beaker);
 
     // Start music for Main Menu (Classic/Menu BGM)
@@ -838,10 +848,12 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   void buyOrSelectSkin(BeakerType type, int price) {
     if (unlockedSkins.contains(type)) {
       beaker.type = type; // Select skin
+      SaveManager.saveSelectedSkin(type.toString());
     } else if (totalCoins.value >= price) {
       totalCoins.value -= price;
       unlockedSkins.add(type);
       beaker.type = type;
+      SaveManager.saveSelectedSkin(type.toString());
 
       // Save new state
       SaveManager.saveTotalCoins(totalCoins.value);

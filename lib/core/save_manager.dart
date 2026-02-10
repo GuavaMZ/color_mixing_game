@@ -108,4 +108,14 @@ class SaveManager {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool('random_events_enabled') ?? false;
   }
+
+  static Future<void> saveSelectedSkin(String skinName) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selected_beaker_skin', skinName);
+  }
+
+  static Future<String?> loadSelectedSkin() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('selected_beaker_skin');
+  }
 }
