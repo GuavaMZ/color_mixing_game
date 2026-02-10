@@ -1,22 +1,29 @@
-import 'package:color_mixing_deductive/components/ambient_particles.dart';
-import 'package:color_mixing_deductive/components/background_gradient.dart';
-import 'package:color_mixing_deductive/components/pattern_background.dart';
-import 'package:color_mixing_deductive/components/beaker.dart';
-import 'package:color_mixing_deductive/components/mix_particles.dart';
-import 'package:color_mixing_deductive/components/particles.dart';
-import 'package:color_mixing_deductive/components/pouring_effect.dart';
-import 'package:color_mixing_deductive/components/fireworks.dart';
-import 'package:color_mixing_deductive/components/holographic_radar.dart';
-import 'package:color_mixing_deductive/components/spectral_target.dart';
-import 'package:color_mixing_deductive/components/echo_particles.dart';
-import 'package:color_mixing_deductive/components/glitch_effect.dart';
-import 'package:color_mixing_deductive/components/blackout_effect.dart';
-import 'package:color_mixing_deductive/components/unstable_beaker_effect.dart';
-import 'package:color_mixing_deductive/components/acid_splatter.dart';
-import 'package:color_mixing_deductive/components/surface_steam.dart';
-import 'package:color_mixing_deductive/components/gravity_flux_effect.dart';
-import 'package:color_mixing_deductive/components/inverted_controls_effect.dart';
-import 'package:color_mixing_deductive/components/earthquake_visual_effect.dart';
+import 'package:color_mixing_deductive/components/particles/ambient_particles.dart';
+import 'package:color_mixing_deductive/components/environment/background_gradient.dart';
+import 'package:color_mixing_deductive/components/environment/pattern_background.dart';
+import 'package:color_mixing_deductive/components/gameplay/beaker.dart';
+import 'package:color_mixing_deductive/components/particles/mix_particles.dart';
+import 'package:color_mixing_deductive/components/particles/particles.dart';
+import 'package:color_mixing_deductive/components/gameplay/pouring_effect.dart';
+import 'package:color_mixing_deductive/components/effects/fireworks.dart';
+import 'package:color_mixing_deductive/components/gameplay/holographic_radar.dart';
+import 'package:color_mixing_deductive/components/gameplay/spectral_target.dart';
+import 'package:color_mixing_deductive/components/particles/echo_particles.dart';
+import 'package:color_mixing_deductive/components/effects/glitch_effect.dart';
+import 'package:color_mixing_deductive/components/effects/blackout_effect.dart';
+import 'package:color_mixing_deductive/components/effects/unstable_beaker_effect.dart';
+import 'package:color_mixing_deductive/components/effects/acid_splatter.dart';
+import 'package:color_mixing_deductive/components/environment/surface_steam.dart';
+import 'package:color_mixing_deductive/components/effects/gravity_flux_effect.dart';
+import 'package:color_mixing_deductive/components/effects/inverted_controls_effect.dart';
+import 'package:color_mixing_deductive/components/effects/earthquake_visual_effect.dart';
+import 'package:color_mixing_deductive/components/effects/mirror_distortion_effect.dart';
+import 'package:color_mixing_deductive/components/effects/wind_force_effect.dart';
+import 'package:color_mixing_deductive/components/effects/leaking_beaker_effect.dart';
+import 'package:color_mixing_deductive/components/effects/chromatic_aberration_effect.dart';
+import 'package:color_mixing_deductive/components/effects/electrical_sparks.dart';
+import 'package:color_mixing_deductive/components/effects/emergency_lights.dart';
+import 'package:color_mixing_deductive/components/effects/cracked_glass_overlay.dart';
 import 'package:color_mixing_deductive/core/color_logic.dart';
 import 'package:color_mixing_deductive/core/level_manager.dart';
 import 'package:color_mixing_deductive/core/save_manager.dart';
@@ -42,6 +49,23 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   int rDrops = 0, gDrops = 0, bDrops = 0;
   int whiteDrops = 0, blackDrops = 0;
   bool isBlindMode = false;
+
+  // Disaster State
+  bool isMirrored = false;
+  bool hasWind = false;
+  double windForce = 0;
+  double chaosStability = 1.0;
+  bool isLeaking = false;
+  bool isBlackout = false;
+  bool isEvaporating = false;
+  bool isControlsInverted = false;
+  bool isUiGlitching = false;
+  bool isEarthquake = false;
+  bool isColorBlindEvent = false;
+  bool isGravityFlux = false;
+  final Random _random = Random();
+  Random get random => _random;
+
   int maxDrops = 20;
   final LevelManager levelManager = LevelManager();
   final AudioManager _audio = AudioManager();
@@ -77,20 +101,11 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   double _eventTimer = 0;
 
   // Random Event States
-  bool isBlackout = false;
-  bool isEvaporating = false;
-  bool isControlsInverted = false;
-  bool isUiGlitching = false;
-  bool isEarthquake = false; // New earthquake flag
-  bool isColorBlindEvent = false; // New color blind event flag
-  bool isGravityFlux = false; // New gravity flux flag
   double _evaporationVisualOffset = 0.0; // Visual level to subtract
 
   // Earthquake shake offset
   Vector2 _earthquakeOffset = Vector2.zero();
   Vector2 get earthquakeOffset => _earthquakeOffset;
-
-  final Random _random = Random();
 
   void Function(VoidCallback)? _transitionCallback;
 
@@ -184,6 +199,13 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
             currentMode == GameMode.chaosLab) &&
         !_hasWon) {
       timeLeft -= dt;
+
+      // Chaos Stability Decay
+      if (currentMode == GameMode.chaosLab) {
+        chaosStability -= 0.005 * dt; // Slow decay
+        if (chaosStability < 0) chaosStability = 0;
+      }
+
       if (timeLeft <= 0) {
         timeLeft = 0;
         isTimeUp = true;
@@ -234,21 +256,21 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     }
 
     helpersUsedInLevel.clear();
-    // Random Events Logic
-    if ((randomEventsEnabled && currentMode == GameMode.classic) ||
-        currentMode == GameMode.chaosLab) {
-      if (!_hasWon) {
-        _eventTimer -= dt;
-        if (_eventTimer <= 0) {
-          _triggerRandomEvent();
-          // Reset timer based on mode
-          if (currentMode == GameMode.chaosLab) {
-            _eventTimer = 20.0; // Fixed 20s for Chaos Lab
-          } else {
-            _eventTimer =
-                10.0 + _random.nextDouble() * 5.0; // 10-15s for Classic
-          }
-        }
+    // Random Events Logic (Chaos Director)
+    if (currentMode == GameMode.chaosLab && !_hasWon) {
+      _eventTimer -= dt;
+      if (_eventTimer <= 0) {
+        _triggerChaosMeltdown();
+        // Stability based frequency: more events as stability drops
+        _eventTimer = 5.0 + (chaosStability * 15.0);
+      }
+    } else if (randomEventsEnabled &&
+        currentMode == GameMode.classic &&
+        !_hasWon) {
+      _eventTimer -= dt;
+      if (_eventTimer <= 0) {
+        _triggerRandomEvent();
+        _eventTimer = 10.0 + _random.nextDouble() * 5.0;
       }
     }
 
@@ -627,6 +649,24 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     beaker.clearContents();
   }
 
+  void drainLiquid(double amount) {
+    if (beaker.liquidLevel > 0) {
+      // Logic: subtract from counts? Or just visual?
+      // For "Professional Disaster", it should be structural.
+      // We reduce the counts proportionally or just the total.
+      // Let's just reduce the visual level if we want it to be simple,
+      // but for "Next Level", it should actually set the player back.
+      double factor = amount / beaker.liquidLevel;
+      rDrops = (rDrops * (1 - factor)).toInt();
+      gDrops = (gDrops * (1 - factor)).toInt();
+      bDrops = (bDrops * (1 - factor)).toInt();
+      whiteDrops = (whiteDrops * (1 - factor)).toInt();
+      blackDrops = (blackDrops * (1 - factor)).toInt();
+
+      _updateGameState();
+    }
+  }
+
   void startLevel() {
     _startLevelBgm(); // Start gameplay music
 
@@ -664,6 +704,14 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     isColorBlindEvent = false;
     _evaporationVisualOffset = 0.0;
     _lastBeakerColor = Colors.transparent;
+
+    // Reset Chaos State
+    chaosStability = 1.0;
+    isMirrored = false;
+    hasWind = false;
+    windForce = 0;
+    isLeaking = false;
+    camera.viewfinder.transform.scale = Vector2.all(1.0);
 
     // Remove any remaining fireworks
     children.whereType<Fireworks>().forEach((f) => f.removeFromParent());
@@ -711,14 +759,31 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       (e) => e.removeFromParent(),
     ); // Remove Acid
 
+    // Chaos Mode Reset (Detailed)
+    children.whereType<MirrorDistortionEffect>().forEach(
+      (e) => e.removeFromParent(),
+    );
+    children.whereType<WindForceEffect>().forEach((e) => e.removeFromParent());
+    children.whereType<LeakingBeakerEffect>().forEach(
+      (e) => e.removeFromParent(),
+    );
+    children.whereType<ChromaticAberrationEffect>().forEach(
+      (e) => e.removeFromParent(),
+    );
+    children.whereType<ElectricalSparks>().forEach((e) => e.removeFromParent());
+    children.whereType<EmergencyLights>().forEach((e) => e.removeFromParent());
+    children.whereType<CrackedGlassOverlay>().forEach(
+      (e) => e.removeFromParent(),
+    );
+
     // Check beaker for unstable effect and steam
-    beaker.children.whereType<UnstableBeakerEffect>().forEach(
+    beaker.children.whereType<UnstableBeakerEffect>().toList().forEach(
       (u) => u.removeFromParent(),
     );
-    beaker.children.whereType<SurfaceSteam>().forEach(
+    beaker.children.whereType<SurfaceSteam>().toList().forEach(
       (s) => s.removeFromParent(),
     );
-    beaker.children.whereType<GravityFluxEffect>().forEach(
+    beaker.children.whereType<GravityFluxEffect>().toList().forEach(
       (g) => g.removeFromParent(),
     );
 
@@ -960,6 +1025,46 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     }
   }
 
+  void _triggerChaosMeltdown() {
+    // Escalate based on stability
+    if (chaosStability > 0.7) {
+      // Level 1: Initial anomalies
+      _triggerRandomEvent();
+    } else if (chaosStability > 0.4) {
+      // Level 2: Multiple overlapping events
+      _triggerRandomEvent();
+      Future.delayed(const Duration(seconds: 2), () => _triggerRandomEvent());
+
+      if (!children.any((c) => c is EmergencyLights)) {
+        add(EmergencyLights());
+      }
+    } else {
+      // Level 3: FULL MELTDOWN
+      _triggerRandomEvent();
+      Future.delayed(const Duration(seconds: 1), () => _triggerRandomEvent());
+      Future.delayed(const Duration(seconds: 3), () => _triggerRandomEvent());
+
+      if (!children.any((c) => c is ElectricalSparks)) {
+        add(ElectricalSparks());
+      }
+      if (!children.any((c) => c is EmergencyLights)) {
+        add(EmergencyLights());
+      }
+      if (!children.any((c) => c is CrackedGlassOverlay)) {
+        add(CrackedGlassOverlay());
+      }
+      if (!children.any((c) => c is ChromaticAberrationEffect)) {
+        add(ChromaticAberrationEffect());
+      }
+
+      // Force severe events
+      if (!isMirrored && _random.nextBool()) add(MirrorDistortionEffect());
+      if (!hasWind && _random.nextBool()) add(WindForceEffect());
+    }
+
+    notifyListeners();
+  }
+
   void _triggerRandomEvent() {
     // Prevent stacking
     if (isBlackout || isEvaporating || isControlsInverted || isUiGlitching)
@@ -997,17 +1102,29 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       // 11: Color Blindness (NEW)
       // 12: Gravity Flux (NEW)
 
-      int eventType = _random.nextInt(13);
+      int eventType = _random.nextInt(16);
 
       // Determine duration based on mode
       double duration;
       if (currentMode == GameMode.chaosLab) {
-        duration = 6.0 + _random.nextDouble() * 4.0; // 6-10 seconds
+        duration =
+            5.0 + _random.nextDouble() * 3.0; // Shorter but more frequent
       } else {
-        duration = 8.0 + _random.nextDouble() * 4.0; // 8-12 seconds
+        duration = 8.0 + _random.nextDouble() * 4.0;
       }
 
       switch (eventType) {
+        case 13: // Mirror Distortion
+          if (!isMirrored) add(MirrorDistortionEffect());
+          break;
+        case 14: // Wind Force
+          if (!hasWind) add(WindForceEffect());
+          break;
+        case 15: // Leaking Beaker
+          if (!children.any((c) => c is LeakingBeakerEffect)) {
+            add(LeakingBeakerEffect());
+          }
+          break;
         case 6: // Blackout
           isBlackout = true;
           add(BlackoutEffect());
@@ -1078,22 +1195,22 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
           children.whereType<GlitchEffect>().forEach(
             (g) => g.removeFromParent(),
           );
-          children.whereType<InvertedControlsEffect>().forEach(
+          children.whereType<InvertedControlsEffect>().toList().forEach(
             (i) => i.removeFromParent(),
           );
-          children.whereType<EarthquakeVisualEffect>().forEach(
+          children.whereType<EarthquakeVisualEffect>().toList().forEach(
             (e) => e.removeFromParent(),
           );
-          children.whereType<AcidSplatter>().forEach(
+          children.whereType<AcidSplatter>().toList().forEach(
             (e) => e.removeFromParent(),
           );
-          beaker.children.whereType<SurfaceSteam>().forEach(
+          beaker.children.whereType<SurfaceSteam>().toList().forEach(
             (s) => s.removeFromParent(),
           );
-          beaker.children.whereType<GravityFluxEffect>().forEach(
+          beaker.children.whereType<GravityFluxEffect>().toList().forEach(
             (g) => g.removeFromParent(),
           );
-          beaker.children.whereType<UnstableBeakerEffect>().forEach(
+          beaker.children.whereType<UnstableBeakerEffect>().toList().forEach(
             (u) => u.removeFromParent(),
           );
         }
