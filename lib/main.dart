@@ -14,6 +14,7 @@ import 'package:color_mixing_deductive/overlays/system/achievements_overlay.dart
 import 'package:color_mixing_deductive/overlays/navigation/gallery_overlay.dart';
 import 'package:color_mixing_deductive/overlays/hud/color_echo_hud.dart';
 import 'package:color_mixing_deductive/overlays/hud/chaos_lab_hud.dart';
+import 'package:color_mixing_deductive/overlays/menus/lab_upgrade_hub.dart';
 import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
@@ -137,6 +138,7 @@ class _MyAppState extends State<MyApp> {
             'DailyChallenge': (context, game) =>
                 DailyChallengeOverlay(game: game),
             'Blackout': (context, game) => BlackoutOverlay(game: game),
+            'LabUpgrade': (context, game) => LabUpgradeHub(game: game),
           },
           initialActiveOverlays: const ['MainMenu', 'Transition'],
           loadingBuilder: (context) => Container(

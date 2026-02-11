@@ -204,6 +204,15 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                                       widget.game.overlays.add('Settings');
                                     },
                                   ),
+                                  const SizedBox(width: 10),
+                                  _buildIconButton(
+                                    icon: Icons.science_outlined,
+                                    tooltip: 'Lab Upgrade',
+                                    onTap: () {
+                                      AudioManager().playButton();
+                                      widget.game.overlays.add('LabUpgrade');
+                                    },
+                                  ),
                                 ],
                               ),
                             ),

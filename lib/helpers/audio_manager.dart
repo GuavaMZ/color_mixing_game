@@ -33,6 +33,7 @@ class AudioManager {
   static const String sparkSound = 'spark.mp3';
   static const String alarmSound = 'alarm.mp3';
   static const String steamSound = 'steam.mp3';
+  static const String errorSound = 'error.mp3';
 
   // BGM files
   static const String bgmClassic = 'bgm_classic.ogg';
@@ -148,6 +149,12 @@ class AudioManager {
 
   /// Play steam hiss sound
   void playSteam() => playSfx(steamSound, volume: 0.5);
+
+  /// Play level unlock sound (alternative/duplicate for specific use cases)
+  void playUnlockSound() => playSfx(unlockSound, volume: 0.6);
+
+  /// Play an error sound
+  void playError() => playSfx(errorSound, volume: 0.7);
 
   /// Play background music for the Main Menu and Level Map
   Future<void> playMenuMusic() async {

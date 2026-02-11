@@ -59,31 +59,31 @@ class _ShopOverlayState extends State<ShopOverlay> {
     ),
     ShopItemData(
       nameKey: AppStrings.beakerFlask,
-      price: 250,
+      price: 300, // Adjusted from 250
       type: BeakerType.laboratory,
       icon: Icons.science_rounded,
     ),
     ShopItemData(
       nameKey: AppStrings.beakerMagic,
-      price: 500,
+      price: 400, // Adjusted from 500
       type: BeakerType.magicBox,
       icon: Icons.inventory_2_rounded,
     ),
     ShopItemData(
       nameKey: AppStrings.beakerHex,
-      price: 1000,
+      price: 800, // Adjusted from 1000
       type: BeakerType.hexagon,
       icon: Icons.hexagon_rounded,
     ),
     ShopItemData(
       nameKey: AppStrings.beakerCylinder,
-      price: 1500,
+      price: 900, // Adjusted from 1500
       type: BeakerType.cylinder,
       icon: Icons.view_agenda_rounded,
     ),
     ShopItemData(
       nameKey: AppStrings.beakerRound,
-      price: 2500,
+      price: 1500, // Adjusted from 2500
       type: BeakerType.round,
       icon: Icons.circle_outlined,
     ),
@@ -94,7 +94,7 @@ class _ShopOverlayState extends State<ShopOverlay> {
       id: 'undo',
       nameKey: AppStrings.undoTitle,
       descKey: AppStrings.undoDesc,
-      price: 50,
+      price: 75, // Adjusted from 50
       amount: 5,
       icon: Icons.undo_rounded,
       color: AppTheme.neonCyan,
@@ -103,7 +103,7 @@ class _ShopOverlayState extends State<ShopOverlay> {
       id: 'extra_drops',
       nameKey: AppStrings.extraDropsTitle,
       descKey: AppStrings.extraDropsDesc,
-      price: 150,
+      price: 200, // Adjusted from 150
       amount: 3,
       icon: Icons.add_circle_outline,
       color: AppTheme.neonMagenta,
@@ -112,7 +112,7 @@ class _ShopOverlayState extends State<ShopOverlay> {
       id: 'help_drop',
       nameKey: AppStrings.helpDropTitle,
       descKey: AppStrings.helpDropDesc,
-      price: 200,
+      price: 350, // Adjusted from 200
       amount: 3,
       icon: Icons.water_drop_outlined,
       color: AppTheme.success,
@@ -121,7 +121,7 @@ class _ShopOverlayState extends State<ShopOverlay> {
       id: 'reveal_color',
       nameKey: AppStrings.revealColorTitle,
       descKey: AppStrings.revealColorDesc,
-      price: 300,
+      price: 500, // Adjusted from 300
       amount: 2,
       icon: Icons.visibility_outlined,
       color: AppTheme.electricYellow,

@@ -3,6 +3,8 @@ import 'dart:convert';
 
 class SaveManager {
   static const String _levelKey = 'player_progress';
+  static const String _labConfigKey = 'lab_configuration';
+  static const String _unlockedLabItemsKey = 'unlocked_lab_items';
 
   // حفظ خريطة المستويات والنجوم
   // البيانات تخزن بصيغة: {"0": 3, "1": 2} (رقم الليفل: عدد النجوم)
@@ -117,5 +119,41 @@ class SaveManager {
   static Future<String?> loadSelectedSkin() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('selected_beaker_skin');
+  }
+
+  // Lab Upgrade Methods
+
+  static Future<void> saveLabConfig(Map<String, String> config) async {
+    final prefs = await SharedPreferences.getInstance();
+    String encoded = jsonEncode(config);
+    await prefs.setString(_labConfigKey, encoded);
+  }
+
+  static Future<Map<String, String>> loadLabConfig() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? data = prefs.getString(_labConfigKey);
+    if (data != null) {
+      Map<String, dynamic> decoded = jsonDecode(data);
+      return decoded.map((key, value) => MapEntry(key, value as String));
+    }
+    // Default Configuration
+    return {
+      'surface': 'surface_steel',
+      'lighting': 'light_basic',
+      'background': 'bg_default',
+      'stand': 'stand_basic',
+    };
+  }
+
+  static Future<void> saveUnlockedLabItems(List<String> items) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(_unlockedLabItemsKey, items);
+  }
+
+  static Future<List<String>> loadUnlockedLabItems() async {
+    final prefs = await SharedPreferences.getInstance();
+    // Default Unlocked Items - includes new stand category
+    return prefs.getStringList(_unlockedLabItemsKey) ??
+        ['surface_steel', 'light_basic', 'bg_default', 'stand_basic'];
   }
 }
