@@ -15,6 +15,8 @@ import 'package:color_mixing_deductive/components/effects/unstable_beaker_effect
 import 'package:color_mixing_deductive/components/effects/acid_splatter.dart';
 import 'package:color_mixing_deductive/components/environment/surface_steam.dart';
 import 'package:color_mixing_deductive/components/effects/gravity_flux_effect.dart';
+import 'package:color_mixing_deductive/core/lab_catalog.dart';
+import 'package:color_mixing_deductive/components/environment/beaker_stand.dart';
 import 'package:color_mixing_deductive/components/effects/inverted_controls_effect.dart';
 import 'package:color_mixing_deductive/components/effects/earthquake_visual_effect.dart';
 import 'package:color_mixing_deductive/components/effects/mirror_distortion_effect.dart';
@@ -163,22 +165,61 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       unlockedSkins.add(BeakerType.classic);
     }
 
+    // Load Lab Configuration
+    final labConfig = await SaveManager.loadLabConfig();
+
+    // Get Lab Items
+    final bgItem = LabCatalog.getItemByCategory(
+      'background',
+      labConfig['background'] ?? 'bg_default',
+    );
+    final lightItem = LabCatalog.getItemByCategory(
+      'lighting',
+      labConfig['lighting'] ?? 'light_basic',
+    );
+    final surfaceItem = LabCatalog.getItemByCategory(
+      'surface',
+      labConfig['surface'] ?? 'surface_steel',
+    );
+    final standItem = LabCatalog.getItemByCategory(
+      'stand',
+      labConfig['stand'] ?? 'stand_basic',
+    );
+
     // Add background gradient first (rendered first)
-    backgroundGradient = BackgroundGradient();
+    backgroundGradient = BackgroundGradient(
+      configColors: bgItem?.gradientColors,
+    );
     add(backgroundGradient);
 
     // Add pattern overlay
-    add(PatternBackground());
+    add(PatternBackground(config: surfaceItem));
 
     // Add ambient particles for atmosphere
-    ambientParticles = AmbientParticles();
+    ambientParticles = AmbientParticles(
+      configColors: lightItem?.gradientColors,
+    );
     add(ambientParticles);
 
     // Position Beaker slightly above center to make room for bottom controls
-    beaker = Beaker(
-      position: Vector2(size.x / 2, size.y * 0.54),
-      size: Vector2(180, 250),
-    );
+    final beakerPos = Vector2(size.x / 2, size.y * 0.54);
+
+    // Add Beaker Stand (Behind Beaker)
+    if (standItem != null) {
+      add(
+        BeakerStand(
+          position: Vector2(
+            beakerPos.x,
+            beakerPos.y + 110,
+          ), // Offset to be under beaker
+          size: Vector2(200, 60),
+          config: standItem,
+        ),
+      );
+    }
+
+    // Position Beaker slightly above center to make room for bottom controls
+    beaker = Beaker(position: beakerPos, size: Vector2(180, 250));
 
     // Load persisted skin
     final selectedSkinName = await SaveManager.loadSelectedSkin();

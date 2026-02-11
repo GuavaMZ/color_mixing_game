@@ -8,6 +8,9 @@ class AmbientParticles extends Component with HasGameReference<ColorMixerGame> {
   final List<FloatingBubble> bubbles = [];
   final Random random = Random();
   final int particleCount = 15;
+  final List<Color>? configColors;
+
+  AmbientParticles({this.configColors});
 
   @override
   Future<void> onLoad() async {
@@ -23,6 +26,9 @@ class AmbientParticles extends Component with HasGameReference<ColorMixerGame> {
           ),
           size: 5 + random.nextDouble() * 15,
           speed: 10 + random.nextDouble() * 30,
+          color: configColors != null && configColors!.isNotEmpty
+              ? configColors![random.nextInt(configColors!.length)]
+              : null,
         ),
       );
     }
@@ -53,11 +59,13 @@ class FloatingBubble {
   double speed;
   double opacity;
   double phase;
+  final Color? color;
 
   FloatingBubble({
     required this.position,
     required this.size,
     required this.speed,
+    this.color,
   }) : opacity = 0.1 + Random().nextDouble() * 0.2,
        phase = Random().nextDouble() * pi * 2,
        _highlightPaint = Paint()..style = PaintingStyle.fill,
@@ -85,12 +93,15 @@ class FloatingBubble {
   }
 
   void render(Canvas canvas) {
+    // Determine color base
+    final baseColor = color ?? Colors.white;
+
     // Draw bubble with gradient
     final gradient = RadialGradient(
       colors: [
-        Colors.white.withValues(alpha: opacity * 0.8),
-        Colors.white.withValues(alpha: opacity * 0.3),
-        Colors.white.withValues(alpha: 0),
+        baseColor.withValues(alpha: opacity * 0.8),
+        baseColor.withValues(alpha: opacity * 0.3),
+        baseColor.withValues(alpha: 0),
       ],
       stops: const [0.0, 0.7, 1.0],
     );
