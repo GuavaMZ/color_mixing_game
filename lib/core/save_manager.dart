@@ -156,4 +156,26 @@ class SaveManager {
     return prefs.getStringList(_unlockedLabItemsKey) ??
         ['surface_steel', 'light_basic', 'bg_default', 'stand_basic'];
   }
+
+  // Gallery Color Discovery Methods
+  static const String _discoveredColorsKey = 'discovered_colors';
+
+  static Future<Set<int>> loadDiscoveredColors() async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String>? colorIds = prefs.getStringList(_discoveredColorsKey);
+    if (colorIds == null) return {};
+    return colorIds.map((id) => int.parse(id)).toSet();
+  }
+
+  static Future<void> saveDiscoveredColor(int colorId) async {
+    final discovered = await loadDiscoveredColors();
+    discovered.add(colorId);
+    await saveDiscoveredColors(discovered);
+  }
+
+  static Future<void> saveDiscoveredColors(Set<int> colorIds) async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> stringIds = colorIds.map((id) => id.toString()).toList();
+    await prefs.setStringList(_discoveredColorsKey, stringIds);
+  }
 }
