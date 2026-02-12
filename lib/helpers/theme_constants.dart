@@ -295,16 +295,35 @@ class AppTheme {
 
 /// Helper class for responsive design
 class ResponsiveHelper {
+  // === BREAKPOINTS ===
+  static const double breakpointSmall = 360.0;
+  static const double breakpointMobile = 600.0;
+  static const double breakpointTablet = 1024.0;
+
+  // === TOUCH TARGETS ===
+  static const double minTouchTarget = 48.0; // Material Design minimum
+  static const double recommendedTouchTarget =
+      56.0; // Recommended for primary actions
+  static const double minTouchSpacing = 8.0; // Minimum spacing between targets
+
+  // === GRID SYSTEM ===
+  static const double baseGridUnit = 8.0; // 8dp grid system
+
   static double screenWidth(BuildContext context) =>
       MediaQuery.of(context).size.width;
 
   static double screenHeight(BuildContext context) =>
       MediaQuery.of(context).size.height;
 
-  static bool isMobile(BuildContext context) => screenWidth(context) < 600;
+  static bool isSmallPhone(BuildContext context) =>
+      screenWidth(context) < breakpointSmall;
+  static bool isMobile(BuildContext context) =>
+      screenWidth(context) < breakpointMobile;
   static bool isTablet(BuildContext context) =>
-      screenWidth(context) >= 600 && screenWidth(context) < 1024;
-  static bool isDesktop(BuildContext context) => screenWidth(context) >= 1024;
+      screenWidth(context) >= breakpointMobile &&
+      screenWidth(context) < breakpointTablet;
+  static bool isDesktop(BuildContext context) =>
+      screenWidth(context) >= breakpointTablet;
 
   /// Get responsive value based on screen size
   static T responsive<T>(
@@ -324,19 +343,19 @@ class ResponsiveHelper {
     double scale = 1.0;
 
     if (width < 360) {
-      scale = 0.85;
+      scale = 0.85; // Small phones
     } else if (width < 400) {
-      scale = 0.92;
-    } else if (width > 600) {
-      scale = 1.1;
-    } else if (width > 900) {
-      scale = 1.2;
+      scale = 0.92; // Budget phones
+    } else if (width >= 600 && width < 900) {
+      scale = 1.1; // Tablets
+    } else if (width >= 900) {
+      scale = 1.2; // Large tablets
     }
 
     return baseSize * scale;
   }
 
-  /// Responsive spacing
+  /// Responsive spacing based on grid system
   static double spacing(BuildContext context, double baseSpacing) {
     return responsive(
       context,
@@ -344,6 +363,11 @@ class ResponsiveHelper {
       tablet: baseSpacing * 1.25,
       desktop: baseSpacing * 1.5,
     );
+  }
+
+  /// Grid-based spacing (multiples of 8dp)
+  static double gridSpacing(BuildContext context, int units) {
+    return spacing(context, baseGridUnit * units);
   }
 
   /// Responsive icon size
@@ -356,6 +380,12 @@ class ResponsiveHelper {
     );
   }
 
+  /// Ensure minimum touch target size
+  static double touchTarget(BuildContext context, {double? size}) {
+    final baseSize = size ?? recommendedTouchTarget;
+    return baseSize < minTouchTarget ? minTouchTarget : baseSize;
+  }
+
   /// Get safe padding considering notches and system UI
   static EdgeInsets safePadding(BuildContext context) {
     return MediaQuery.of(context).padding;
@@ -363,7 +393,12 @@ class ResponsiveHelper {
 
   /// Responsive button height
   static double buttonHeight(BuildContext context) {
-    return responsive(context, mobile: 50.0, tablet: 56.0, desktop: 60.0);
+    return responsive(
+      context,
+      mobile: recommendedTouchTarget,
+      tablet: 60.0,
+      desktop: 64.0,
+    );
   }
 
   /// Responsive card width for level map
@@ -372,11 +407,105 @@ class ResponsiveHelper {
     if (width < 360) return 65;
     if (width < 400) return 72;
     if (width < 600) return 80;
-    return 100;
+    if (width < 900) return 100;
+    return 120;
   }
 
   /// Number of columns for level grid
   static int levelGridColumns(BuildContext context) {
-    return responsive(context, mobile: 4, tablet: 5, desktop: 6);
+    final width = screenWidth(context);
+    if (width < 360) return 3; // Very small phones
+    if (width < 600) return 4; // Standard phones
+    if (width < 900) return 5; // Large phones/small tablets
+    return 6; // Tablets
+  }
+
+  /// Adaptive padding for containers
+  static EdgeInsets containerPadding(BuildContext context) {
+    return EdgeInsets.all(gridSpacing(context, 2)); // 16dp base
+  }
+
+  /// Adaptive margin for cards
+  static EdgeInsets cardMargin(BuildContext context) {
+    return EdgeInsets.all(gridSpacing(context, 1)); // 8dp base
+  }
+
+  /// Responsive border radius
+  static double borderRadius(BuildContext context, double baseRadius) {
+    return responsive(
+      context,
+      mobile: baseRadius,
+      tablet: baseRadius * 1.2,
+      desktop: baseRadius * 1.4,
+    );
+  }
+
+  /// Get optimal number of columns for a grid
+  static int gridColumns(
+    BuildContext context, {
+    int mobileColumns = 2,
+    int tabletColumns = 3,
+    int desktopColumns = 4,
+  }) {
+    return responsive(
+      context,
+      mobile: mobileColumns,
+      tablet: tabletColumns,
+      desktop: desktopColumns,
+    );
+  }
+
+  /// Calculate item width for grid with spacing
+  static double gridItemWidth(
+    BuildContext context,
+    int columns,
+    double spacing,
+  ) {
+    final screenW = screenWidth(context);
+    final totalSpacing = spacing * (columns + 1);
+    return (screenW - totalSpacing) / columns;
+  }
+
+  /// Responsive dialog width
+  static double dialogWidth(BuildContext context) {
+    final width = screenWidth(context);
+    if (width < 360) return width * 0.9;
+    if (width < 600) return width * 0.85;
+    if (width < 900) return 500;
+    return 600;
+  }
+
+  /// Check if text will overflow and needs scaling
+  static bool willTextOverflow(String text, TextStyle style, double maxWidth) {
+    final textPainter = TextPainter(
+      text: TextSpan(text: text, style: style),
+      maxLines: 1,
+      textDirection: TextDirection.ltr,
+    )..layout();
+    return textPainter.width > maxWidth;
+  }
+
+  /// Get scaled text style to fit width
+  static TextStyle fitTextToWidth(
+    BuildContext context,
+    String text,
+    TextStyle baseStyle,
+    double maxWidth,
+  ) {
+    if (!willTextOverflow(text, baseStyle, maxWidth)) {
+      return baseStyle;
+    }
+
+    // Scale down font size until it fits
+    double fontSize = baseStyle.fontSize ?? 14.0;
+    while (fontSize > 10.0) {
+      fontSize -= 0.5;
+      final scaledStyle = baseStyle.copyWith(fontSize: fontSize);
+      if (!willTextOverflow(text, scaledStyle, maxWidth)) {
+        return scaledStyle;
+      }
+    }
+
+    return baseStyle.copyWith(fontSize: 10.0);
   }
 }
