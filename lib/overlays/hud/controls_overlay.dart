@@ -1,9 +1,11 @@
 import 'dart:ui';
 import 'dart:math';
-import 'package:color_mixing_deductive/color_mixer_game.dart';
-import 'package:color_mixing_deductive/helpers/string_manager.dart';
-import 'package:color_mixing_deductive/helpers/theme_constants.dart';
-import 'package:color_mixing_deductive/helpers/audio_manager.dart';
+import '../../../color_mixer_game.dart';
+import '../../helpers/string_manager.dart';
+import '../../helpers/theme_constants.dart';
+import '../../helpers/audio_manager.dart';
+import '../../helpers/visual_effects.dart';
+import '../../components/ui/responsive_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 
@@ -22,7 +24,6 @@ class ControlsOverlay extends StatelessWidget {
         if (game.isEarthquake) {
           uiOffset = Offset(game.earthquakeOffset.x, game.earthquakeOffset.y);
         } else if (game.isUiGlitching) {
-          // Add some random jitter for glitchy UI
           final random = Random();
           uiOffset = Offset(
             (random.nextDouble() - 0.5) * 15,
@@ -44,27 +45,22 @@ class ControlsOverlay extends StatelessWidget {
                 child: Center(child: _buildTargetColorDisplay(context)),
               ),
 
-              // Pause button (Cosmic Style)
+              // Pause button using ResponsiveIconButton for consistency
               Positioned(
                 top:
                     ResponsiveHelper.safePadding(context).top +
                     ResponsiveHelper.spacing(context, 16),
                 right: ResponsiveHelper.spacing(context, 16),
-                child: _CosmicButton(
-                  onTap: () {
+                child: ResponsiveIconButton(
+                  onPressed: () {
                     AudioManager().playButton();
-                    game.overlays.add('PauseMenu'); // Open new menu
+                    game.overlays.add('PauseMenu');
                   },
-                  width: 50,
-                  height: 50,
-                  color: AppTheme.cardColor.withValues(alpha: 0.5),
+                  icon: Icons.menu_rounded,
+                  color: AppTheme.neonCyan,
+                  size: 24,
+                  backgroundColor: AppTheme.cardColor.withValues(alpha: 0.5),
                   borderColor: AppTheme.neonCyan.withValues(alpha: 0.5),
-                  borderRadius: 14,
-                  child: Icon(
-                    Icons.menu_rounded, // Changed icon
-                    color: AppTheme.neonCyan,
-                    size: 24,
-                  ),
                 ),
               ),
 
@@ -104,8 +100,7 @@ class ControlsOverlay extends StatelessWidget {
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(
-                  // margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  margin: EdgeInsets.only(bottom: 32),
+                  margin: const EdgeInsets.only(bottom: 32),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(24),
                     child: Container(
@@ -116,33 +111,10 @@ class ControlsOverlay extends StatelessWidget {
                         left: 12,
                         right: 12,
                       ),
-                      decoration: BoxDecoration(
-                        // color: Colors.black.withValues(alpha: 0.7),
-                        borderRadius: BorderRadius.circular(20),
-                        // border: Border.all(
-                        //   color: Colors.white.withValues(alpha: 0.1),
-                        //   width: 1,
-                        // ),
-                        // gradient: LinearGradient(
-                        //   begin: Alignment.topCenter,
-                        //   end: Alignment.bottomCenter,
-                        //   colors: [
-                        //     Colors.black.withValues(alpha: 0.6),
-                        //     Colors.black.withValues(alpha: 0.8),
-                        //   ],
-                        // ),
-                        // boxShadow: [
-                        //   BoxShadow(
-                        //     color: AppTheme.neonCyan.withValues(alpha: 0.1),
-                        //     blurRadius: 15,
-                        //     spreadRadius: -5,
-                        //   ),
-                        // ],
-                      ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          // Match percentage display - Integrated & Compact
+                          // Match percentage display
                           ValueListenableBuilder<double>(
                             valueListenable: game.matchPercentage,
                             builder: (context, value, child) => Padding(
@@ -176,14 +148,13 @@ class ControlsOverlay extends StatelessWidget {
     final currentLevel = game.levelManager.currentLevel;
     final circleSize = ResponsiveHelper.responsive<double>(
       context,
-      mobile: 90.0,
-      tablet: 110.0,
-      desktop: 130.0,
+      mobile: 100.0,
+      tablet: 120.0,
+      desktop: 140.0,
     );
 
-    // Blackout Mode: Hide target color
     if (game.isBlackout) {
-      return SizedBox(height: circleSize); // Keep layout space but hide content
+      return SizedBox(height: circleSize);
     }
 
     return ValueListenableBuilder<double>(
@@ -192,7 +163,7 @@ class ControlsOverlay extends StatelessWidget {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Level info header (Neon Badge)
+            // Level info header
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
               decoration: AppTheme.cosmicCard(
@@ -204,7 +175,6 @@ class ControlsOverlay extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Level number
                   Text(
                     "${AppStrings.levelText.getString(context)} ${currentLevel.id}",
                     style: TextStyle(
@@ -216,7 +186,6 @@ class ControlsOverlay extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  // Difficulty stars
                   ...List.generate(
                     currentLevel.difficultyStars,
                     (index) => Icon(
@@ -237,7 +206,7 @@ class ControlsOverlay extends StatelessWidget {
 
             SizedBox(height: ResponsiveHelper.spacing(context, 20)),
 
-            // Circular progress indicator around target color
+            // Liquid Target Display
             SizedBox(
               width: circleSize,
               height: circleSize,
@@ -245,24 +214,70 @@ class ControlsOverlay extends StatelessWidget {
                 alignment: Alignment.center,
                 children: [
                   // Glow Layer
+                  ShimmerEffect(
+                    baseColor: game.targetColor.withValues(alpha: 0.2),
+                    highlightColor: game.targetColor.withValues(alpha: 0.5),
+                    child: Container(
+                      width: circleSize,
+                      height: circleSize,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: game.targetColor.withValues(alpha: 0.2),
+                      ),
+                    ),
+                  ),
+
+                  // Container Border
                   Container(
                     width: circleSize,
                     height: circleSize,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        width: 2,
+                      ),
                       boxShadow: [
                         BoxShadow(
                           color: game.targetColor.withValues(alpha: 0.4),
-                          blurRadius: 30,
-                          spreadRadius: 5,
+                          blurRadius: 20,
+                          spreadRadius: 2,
                         ),
                       ],
                     ),
+                    child: ClipOval(
+                      child: Stack(
+                        children: [
+                          // Background base
+                          Container(color: Colors.black.withValues(alpha: 0.3)),
+
+                          // Liquid Fill Animation
+                          LiquidFill(
+                            value: matchValue / 100, // Fill based on match %
+                            color: game.targetColor,
+                          ),
+
+                          // Inner Shadow for depth
+                          Container(
+                            decoration: BoxDecoration(
+                              gradient: RadialGradient(
+                                colors: [
+                                  Colors.transparent,
+                                  Colors.black.withValues(alpha: 0.4),
+                                ],
+                                stops: const [0.7, 1.0],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
+
                   // Progress circle
                   SizedBox(
-                    width: circleSize,
-                    height: circleSize,
+                    width: circleSize + 8,
+                    height: circleSize + 8,
                     child: TweenAnimationBuilder<double>(
                       duration: AppTheme.animationNormal,
                       curve: Curves.easeOutCubic,
@@ -286,58 +301,16 @@ class ControlsOverlay extends StatelessWidget {
                       },
                     ),
                   ),
-
-                  // Target color circle with complex border
-                  Container(
-                    width: circleSize * 0.85,
-                    height: circleSize * 0.85,
-                    decoration: BoxDecoration(
-                      color: game.targetColor,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        width: 1,
-                      ),
-                      gradient: RadialGradient(
-                        colors: [
-                          game.targetColor.withValues(alpha: 0.7),
-                          game.targetColor,
-                        ],
-                        center: Alignment.topLeft,
-                        radius: 1.2,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.5),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Glossy Reflection
-                  Positioned(
-                    top: circleSize * 0.15,
-                    right: circleSize * 0.2,
-                    child: Container(
-                      width: circleSize * 0.2,
-                      height: circleSize * 0.1,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.3),
-                        borderRadius: BorderRadius.all(Radius.circular(50)),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
 
             SizedBox(height: ResponsiveHelper.spacing(context, 12)),
 
-            // Drops counter (Integrated)
+            // Drops counter
             _buildDropsCounter(context),
 
-            // Hint display (if available)
+            // Hint display
             if (currentLevel.hint.isNotEmpty) ...[
               SizedBox(height: ResponsiveHelper.spacing(context, 10)),
               _buildHintDisplay(context, currentLevel.hint),
@@ -360,38 +333,50 @@ class ControlsOverlay extends StatelessWidget {
         if (isLow) statusColor = AppTheme.electricYellow;
         if (isFull) statusColor = AppTheme.neonMagenta;
 
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-          decoration: AppTheme.cosmicCard(
-            borderRadius: 12,
-            fillColor: Colors.black.withValues(alpha: 0.4),
-            borderColor: statusColor.withValues(alpha: 0.5),
-            borderWidth: 1,
-            hasGlow: isFull || isLow,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                isFull ? Icons.do_not_disturb_on : Icons.science,
-                color: statusColor,
-                size: 16,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                "$drops / ${game.maxDrops}",
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.9),
-                  fontSize: ResponsiveHelper.fontSize(context, 14),
-                  fontWeight: FontWeight.w600,
-                  decoration: TextDecoration.none,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ],
-          ),
+        return _buildCapsule(
+          context,
+          statusColor,
+          isFull ? Icons.do_not_disturb_on : Icons.science,
+          "$drops / ${game.maxDrops}",
+          hasGlow: isFull || isLow,
         );
       },
+    );
+  }
+
+  Widget _buildCapsule(
+    BuildContext context,
+    Color color,
+    IconData icon,
+    String text, {
+    bool hasGlow = false,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      decoration: AppTheme.cosmicCard(
+        borderRadius: 12,
+        fillColor: Colors.black.withValues(alpha: 0.4),
+        borderColor: color.withValues(alpha: 0.5),
+        borderWidth: 1,
+        hasGlow: hasGlow,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: color, size: 16),
+          const SizedBox(width: 8),
+          Text(
+            text,
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.9),
+              fontSize: ResponsiveHelper.fontSize(context, 14),
+              fontWeight: FontWeight.w600,
+              decoration: TextDecoration.none,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -432,7 +417,6 @@ class ControlsOverlay extends StatelessWidget {
   }
 
   Widget _buildControlsRow(BuildContext context) {
-    // Fixed 5-button palette: Black, Red, Green, Blue, White
     final palette = [
       {'color': Colors.black, 'type': 'black'},
       {'color': Colors.red, 'type': 'red'},
@@ -450,17 +434,16 @@ class ControlsOverlay extends StatelessWidget {
             final color = item['color'] as Color;
             final type = item['type'] as String;
 
-            // Reduced button sizes (Minimal)
             final buttonSize = ResponsiveHelper.responsive<double>(
               context,
-              mobile: 48.0,
-              tablet: 54.0,
-              desktop: 60.0,
+              mobile: 52.0, // Slightly larger
+              tablet: 60.0,
+              desktop: 68.0,
             );
 
             return Padding(
               padding: EdgeInsets.symmetric(
-                horizontal: ResponsiveHelper.spacing(context, 5),
+                horizontal: ResponsiveHelper.spacing(context, 6),
               ),
               child: Opacity(
                 opacity: isLimitReached ? 0.4 : 1.0,
@@ -469,13 +452,11 @@ class ControlsOverlay extends StatelessWidget {
                       ? null
                       : () {
                           String effectiveType = type;
-                          // Inverse Controls Logic
                           if (game.isControlsInverted) {
                             if (type == 'red')
                               effectiveType = 'blue';
                             else if (type == 'blue')
                               effectiveType = 'red';
-                            // Add feedback for inverse? Maybe only on result visually
                           }
                           game.addDrop(effectiveType);
                         },
@@ -504,7 +485,6 @@ class ControlsOverlay extends StatelessWidget {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // 1. Undo (Cyan)
               _buildHelperButton(
                 id: 'undo',
                 icon: Icons.undo_rounded,
@@ -513,8 +493,6 @@ class ControlsOverlay extends StatelessWidget {
                 onTap: () => game.undoLastDrop(),
               ),
               const SizedBox(height: 8),
-
-              // 2. Extra Drops (Magenta)
               _buildHelperButton(
                 id: 'extra_drops',
                 icon: Icons.add_circle_outline,
@@ -523,8 +501,6 @@ class ControlsOverlay extends StatelessWidget {
                 onTap: () => game.addExtraDrops(),
               ),
               const SizedBox(height: 8),
-
-              // 3. Drop Color (Green)
               _buildHelperButton(
                 id: 'help_drop',
                 icon: Icons.water_drop_outlined,
@@ -533,8 +509,6 @@ class ControlsOverlay extends StatelessWidget {
                 onTap: () => game.addHelpDrop(),
               ),
               const SizedBox(height: 8),
-
-              // 4. Reveal (Yellow)
               _buildHelperButton(
                 id: 'reveal_color',
                 icon: Icons.visibility_outlined,
@@ -561,38 +535,46 @@ class ControlsOverlay extends StatelessWidget {
     final bool hasCount = count > 0;
 
     return Opacity(
-      opacity: isVisible ? (hasCount ? 1.0 : 0.3) : 0.0,
+      opacity: isVisible ? (hasCount ? 1.0 : 0.4) : 0.0,
       child: IgnorePointer(
         ignoring: !isVisible || !hasCount,
         child: Stack(
           alignment: Alignment.topRight,
+          clipBehavior: Clip.none,
           children: [
-            _CosmicButton(
-              onTap: onTap,
-              width: 40,
-              height: 40,
-              color: color.withValues(alpha: 0.15),
+            ResponsiveIconButton(
+              onPressed: onTap,
+              icon: icon,
+              size: 20,
+              padding: 10,
+              color: color,
+              backgroundColor: color.withValues(alpha: 0.1),
               borderColor: color.withValues(alpha: 0.5),
-              borderRadius: 12,
-              child: Icon(icon, color: color, size: 20),
             ),
             if (isVisible)
-              Transform.translate(
-                offset: const Offset(4, -4),
+              Positioned(
+                right: -4,
+                top: -4,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 4,
+                    horizontal: 5,
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
                     color: color,
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: color.withValues(alpha: 0.5),
+                        blurRadius: 4,
+                      ),
+                    ],
                   ),
                   child: Text(
                     count.toString(),
                     style: const TextStyle(
                       color: Colors.black,
-                      fontSize: 8,
+                      fontSize: 10,
                       fontWeight: FontWeight.bold,
                       decoration: TextDecoration.none,
                     ),
@@ -606,155 +588,10 @@ class ControlsOverlay extends StatelessWidget {
   }
 }
 
-class _CosmicButton extends StatefulWidget {
-  final VoidCallback? onTap;
-  final Widget child;
-  final double width;
-  final double height;
-  final Color color;
-  final Color? borderColor;
-  final double borderRadius;
-
-  const _CosmicButton({
-    required this.onTap,
-    required this.child,
-    required this.width,
-    required this.height,
-    required this.color,
-    this.borderColor,
-    this.borderRadius = 16,
-  });
-
-  @override
-  State<_CosmicButton> createState() => _CosmicButtonState();
-}
-
-class _CosmicButtonState extends State<_CosmicButton>
-    with SingleTickerProviderStateMixin {
-  bool _isPressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final shadowHeight = 4.0;
-
-    // Gradient Logic
-    LinearGradient fillGradient = LinearGradient(
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-      colors: [
-        widget.color.withValues(alpha: 0.9), // Lighter top
-        widget.color, // Normal
-        Color.lerp(widget.color, Colors.black, 0.3)!, // Proper darkening
-      ],
-      stops: [0.0, 0.5, 1.0],
-    );
-
-    return GestureDetector(
-      onTapDown: widget.onTap != null
-          ? (_) => setState(() => _isPressed = true)
-          : null,
-      onTapUp: widget.onTap != null
-          ? (_) => setState(() => _isPressed = false)
-          : null,
-      onTapCancel: () => setState(() => _isPressed = false),
-      onTap: widget.onTap,
-      child: Container(
-        width: widget.width,
-        height: widget.height + shadowHeight,
-        // alignment: Alignment.topCenter,
-        child: Stack(
-          alignment: Alignment.topCenter,
-          children: [
-            // Shadow Layer (Bottom) - Only if not pressed fully
-            Positioned(
-              left: 2,
-              right: 2,
-              top: shadowHeight,
-              bottom: 0,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(widget.borderRadius),
-                ),
-              ),
-            ),
-
-            // Button Face (Top)
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 60),
-              curve: Curves.easeInOut,
-              margin: EdgeInsets.only(
-                top: _isPressed ? shadowHeight : 0,
-                bottom: _isPressed ? 0 : shadowHeight,
-              ),
-              width: widget.width,
-              height: widget.height,
-              decoration: BoxDecoration(
-                gradient: fillGradient,
-                borderRadius: BorderRadius.circular(widget.borderRadius),
-                border: Border.all(
-                  color:
-                      widget.borderColor ?? Colors.white.withValues(alpha: 0.4),
-                  width: 1.5,
-                ),
-                boxShadow: [
-                  // Inner Glow (Top Edge)
-                  BoxShadow(
-                    color: Colors.white.withValues(alpha: 0.3),
-                    offset: Offset(0, 1),
-                    blurRadius: 0,
-                    spreadRadius: 0, // Inset feel simulated
-                  ),
-                  // Outer Glow (Neon)
-                  if (!_isPressed && widget.onTap != null)
-                    BoxShadow(
-                      color: (widget.borderColor ?? widget.color).withValues(
-                        alpha: 0.3,
-                      ),
-                      offset: Offset(0, 2),
-                      blurRadius: 10,
-                    ),
-                ],
-              ),
-              child: Stack(
-                children: [
-                  // Glossy Shine
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: widget.height * 0.4,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.white.withValues(alpha: 0.2),
-                            Colors.white.withValues(alpha: 0.0),
-                          ],
-                        ),
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(widget.borderRadius),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Center(child: widget.child),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _MatchPercentageDisplay extends StatelessWidget {
   final double value;
   final BuildContext context;
-  final ColorMixerGame game; // Add game instance
+  final ColorMixerGame game;
 
   const _MatchPercentageDisplay({
     required this.value,
@@ -778,9 +615,7 @@ class _MatchPercentageDisplay extends StatelessWidget {
       builder: (context, animatedValue, child) {
         return Column(
           children: [
-            // Shadowed Text for Neon effect
             Text(
-              // Glitchy UI Logic
               game.isUiGlitching
                   ? "${(Random().nextInt(99) + 1)}%"
                   : (game.isBlackout
@@ -791,13 +626,9 @@ class _MatchPercentageDisplay extends StatelessWidget {
                 color: color,
                 fontWeight: FontWeight.w900,
                 decoration: TextDecoration.none,
-                fontFamily: 'Segoe UI', // Clean rounded
+                fontFamily: 'Segoe UI',
                 shadows: [
-                  Shadow(
-                    color: color.withValues(alpha: 0.6),
-                    offset: const Offset(0, 0),
-                    blurRadius: 15,
-                  ),
+                  Shadow(color: color.withValues(alpha: 0.6), blurRadius: 15),
                 ],
               ),
             ),
@@ -844,7 +675,6 @@ class _TimeAttackTimer extends StatelessWidget {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  // Outer Ambient Glow
                   Container(
                     width: size + 20,
                     height: size + 20,
@@ -860,7 +690,6 @@ class _TimeAttackTimer extends StatelessWidget {
                     ),
                   ),
 
-                  // Glass Background for Timer
                   Container(
                     width: size,
                     height: size,
@@ -874,7 +703,6 @@ class _TimeAttackTimer extends StatelessWidget {
                     ),
                   ),
 
-                  // Background ring (track)
                   SizedBox(
                     width: size - 4,
                     height: size - 4,
@@ -888,7 +716,6 @@ class _TimeAttackTimer extends StatelessWidget {
                     ),
                   ),
 
-                  // Progress ring (Neon)
                   SizedBox(
                     width: size - 4,
                     height: size - 4,
@@ -901,44 +728,6 @@ class _TimeAttackTimer extends StatelessWidget {
                     ),
                   ),
 
-                  // The "Clock Hand" Dot
-                  // Rotate it based on progress
-                  Transform.rotate(
-                    angle: (1.0 - progress) * 2 * 3.14159,
-                    child: SizedBox(
-                      width: size - 4,
-                      height: size - 4,
-                      child: Stack(
-                        children: [
-                          Align(
-                            alignment: Alignment.topCenter,
-                            child: Container(
-                              margin: const EdgeInsets.only(top: 0),
-                              width: 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: color,
-                                    blurRadius: 8,
-                                    spreadRadius: 2,
-                                  ),
-                                  BoxShadow(
-                                    color: Colors.white.withValues(alpha: 0.8),
-                                    blurRadius: 2,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  // Countdown Text
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -980,7 +769,6 @@ class _TimeAttackTimer extends StatelessWidget {
   }
 }
 
-// Enhanced Drop Button with Premium Styling
 class _EnhancedDropButton extends StatefulWidget {
   final VoidCallback? onTap;
   final double size;
@@ -1022,7 +810,7 @@ class _EnhancedDropButtonState extends State<_EnhancedDropButton> {
           : null,
       onTapCancel: () => setState(() => _isPressed = false),
       child: AnimatedScale(
-        scale: _isPressed ? 0.92 : 1.0,
+        scale: _isPressed ? 0.9 : 1.0,
         duration: const Duration(milliseconds: 100),
         child: Container(
           width: widget.size,
@@ -1033,43 +821,39 @@ class _EnhancedDropButtonState extends State<_EnhancedDropButton> {
               colors: [
                 widget.color.withValues(alpha: 0.9),
                 widget.color,
-                Color.lerp(widget.color, Colors.black, 0.3)!,
+                Color.lerp(widget.color, Colors.black, 0.4)!,
               ],
               stops: const [0.0, 0.6, 1.0],
               center: Alignment.topLeft,
             ),
             border: Border.all(
-              width: 2.5,
-              color: widget.color == Colors.black
-                  ? Colors.grey.shade700
-                  : Colors.white.withValues(alpha: 0.4),
+              width: 2,
+              color: Colors.white.withValues(alpha: 0.5),
             ),
             boxShadow: [
-              // Colored glow
               BoxShadow(
-                color: widget.color.withValues(alpha: 0.4),
-                blurRadius: 15,
+                color: widget.color.withValues(alpha: 0.6),
+                blurRadius: 20,
                 spreadRadius: 2,
-                offset: const Offset(0, 2),
+                offset: const Offset(0, 4),
               ),
-              // Dark shadow for depth
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.4),
+                color: Colors.black.withValues(alpha: 0.5),
                 blurRadius: 10,
-                offset: const Offset(0, 6),
+                offset: const Offset(0, 8),
               ),
-              // Inner highlight
-              BoxShadow(
-                color: Colors.white.withValues(alpha: 0.2),
-                blurRadius: 0,
-                spreadRadius: -2,
-                offset: const Offset(0, -2),
-              ),
+              if (!_isPressed)
+                BoxShadow(
+                  color: Colors.white.withValues(alpha: 0.3),
+                  blurRadius: 5,
+                  spreadRadius: -2,
+                  offset: const Offset(0, -2),
+                ),
             ],
           ),
           child: Stack(
             children: [
-              // Glossy shine
+              // Shine
               Positioned(
                 top: widget.size * 0.15,
                 left: widget.size * 0.15,
@@ -1077,12 +861,12 @@ class _EnhancedDropButtonState extends State<_EnhancedDropButton> {
                   width: widget.size * 0.35,
                   height: widget.size * 0.2,
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.3),
+                    color: Colors.white.withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(widget.size),
                   ),
                 ),
               ),
-              // Water drop icon
+
               Center(
                 child: Icon(
                   Icons.water_drop,
@@ -1104,7 +888,6 @@ class _EnhancedDropButtonState extends State<_EnhancedDropButton> {
   }
 }
 
-// Combo Display Widget
 class _ComboDisplay extends StatelessWidget {
   final int combo;
 
@@ -1119,50 +902,43 @@ class _ComboDisplay extends StatelessWidget {
       comboColor = AppTheme.neonPurple;
     }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            comboColor.withValues(alpha: 0.3),
-            comboColor.withValues(alpha: 0.1),
+    return ShimmerEffect(
+      baseColor: comboColor.withValues(alpha: 0.8),
+      highlightColor: Colors.white,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: Colors.black.withValues(alpha: 0.5),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: comboColor, width: 2),
+          boxShadow: [
+            BoxShadow(
+              color: comboColor.withValues(alpha: 0.4),
+              blurRadius: 12,
+              spreadRadius: 2,
+            ),
           ],
         ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: comboColor.withValues(alpha: 0.6), width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: comboColor.withValues(alpha: 0.4),
-            blurRadius: 12,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.local_fire_department_rounded,
-            color: comboColor,
-            size: 24,
-            shadows: [
-              Shadow(color: comboColor.withValues(alpha: 0.8), blurRadius: 8),
-            ],
-          ),
-          const SizedBox(width: 8),
-          Text(
-            '${combo}x COMBO',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1.2,
-              shadows: [
-                Shadow(color: comboColor.withValues(alpha: 0.8), blurRadius: 8),
-              ],
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.local_fire_department_rounded,
+              color: comboColor,
+              size: 24,
             ),
-          ),
-        ],
+            const SizedBox(width: 8),
+            Text(
+              '${combo}x COMBO',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

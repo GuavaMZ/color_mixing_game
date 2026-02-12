@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
 
@@ -117,7 +118,9 @@ class ResponsiveIconButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final Color? color;
   final Color? backgroundColor;
+  final Color? borderColor;
   final double? size;
+  final double? padding;
   final String? tooltip;
 
   const ResponsiveIconButton({
@@ -126,7 +129,9 @@ class ResponsiveIconButton extends StatelessWidget {
     this.onPressed,
     this.color,
     this.backgroundColor,
+    this.borderColor,
     this.size,
+    this.padding,
     this.tooltip,
   });
 
@@ -135,23 +140,32 @@ class ResponsiveIconButton extends StatelessWidget {
     final touchSize = ResponsiveHelper.touchTarget(context, size: size);
     final iconColor = color ?? AppTheme.neonCyan;
 
+    // Calculate size including padding if touchSize isn't forcing it
+    final containerSize = size != null && padding != null
+        ? size! + (padding! * 2)
+        : touchSize;
+    final effectiveSize = max(touchSize, containerSize);
+
     final button = Container(
-      width: touchSize,
-      height: touchSize,
+      width: effectiveSize,
+      height: effectiveSize,
       decoration: AppTheme.cosmicGlass(
-        borderRadius: touchSize / 4,
-        borderColor: iconColor.withValues(alpha: 0.3),
+        borderRadius: effectiveSize / 4,
+        borderColor: borderColor ?? iconColor.withValues(alpha: 0.3),
       ),
       child: Material(
         color: backgroundColor ?? Colors.transparent,
-        borderRadius: BorderRadius.circular(touchSize / 4),
+        borderRadius: BorderRadius.circular(effectiveSize / 4),
         child: InkWell(
           onTap: onPressed,
-          borderRadius: BorderRadius.circular(touchSize / 4),
-          child: Icon(
-            icon,
-            color: iconColor,
-            size: ResponsiveHelper.iconSize(context, size ?? 24),
+          borderRadius: BorderRadius.circular(effectiveSize / 4),
+          child: Padding(
+            padding: EdgeInsets.all(padding ?? 0),
+            child: Icon(
+              icon,
+              color: iconColor,
+              size: ResponsiveHelper.iconSize(context, size ?? 24),
+            ),
           ),
         ),
       ),

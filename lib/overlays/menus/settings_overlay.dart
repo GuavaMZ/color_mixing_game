@@ -1,9 +1,12 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import '../../../color_mixer_game.dart';
 import '../../helpers/string_manager.dart';
 import '../../helpers/theme_constants.dart';
 import '../../helpers/audio_manager.dart';
+import '../../helpers/visual_effects.dart';
+import '../../components/ui/responsive_components.dart';
 
 class SettingsOverlay extends StatefulWidget {
   final ColorMixerGame game;
@@ -30,7 +33,7 @@ class _SettingsOverlayState extends State<SettingsOverlay>
     );
 
     _scaleAnimation = Tween<double>(
-      begin: 0.8,
+      begin: 0.9, // Slightly larger start
       end: 1.0,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
@@ -59,193 +62,231 @@ class _SettingsOverlayState extends State<SettingsOverlay>
   Widget build(BuildContext context) {
     return FadeTransition(
       opacity: _fadeAnimation,
-      child: Material(
-        color: Colors.black.withValues(alpha: 0.4),
-        child: Center(
-          child: ScaleTransition(
-            scale: _scaleAnimation,
-            child: Container(
-              margin: EdgeInsets.symmetric(
-                horizontal: ResponsiveHelper.spacing(context, 24),
-              ),
-              constraints: BoxConstraints(
-                maxWidth: ResponsiveHelper.responsive(
-                  context,
-                  mobile: 340.0,
-                  tablet: 420.0,
-                  desktop: 480.0,
-                ),
-              ),
+      child: Stack(
+        children: [
+          // Backdrop with Blur
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+              child: Container(color: Colors.black.withValues(alpha: 0.5)),
+            ),
+          ),
+
+          // Content
+          Center(
+            child: ScaleTransition(
+              scale: _scaleAnimation,
               child: Container(
-                decoration: AppTheme.cosmicCard(
-                  borderRadius: 30,
-                  fillColor: AppTheme.primaryDark,
-                  borderColor: AppTheme.neonCyan.withValues(alpha: 0.3),
-                  hasGlow: true,
+                margin: EdgeInsets.symmetric(
+                  horizontal: ResponsiveHelper.spacing(context, 24),
                 ),
-                padding: EdgeInsets.all(ResponsiveHelper.spacing(context, 24)),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Header
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          AppStrings.settings.getString(context),
-                          style: AppTheme.heading2(context),
-                        ),
-                        _CloseButton(onTap: _close),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Sound Effects toggle
-                    _SettingsTile(
-                      icon: Icons.volume_up_rounded,
-                      title: AppStrings.soundEffects.getString(context),
-                      trailing: _ToggleSwitch(
-                        value: _audio.sfxEnabled,
-                        onChanged: (value) {
-                          setState(() {
-                            _audio.sfxEnabled = value;
-                          });
-                          if (value) _audio.playButton();
-                        },
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Music toggle
-                    _SettingsTile(
-                      icon: Icons.music_note_rounded,
-                      title: AppStrings.music.getString(context),
-                      trailing: _ToggleSwitch(
-                        value: _audio.musicEnabled,
-                        onChanged: (value) {
-                          _audio.playButton();
-                          setState(() {
-                            _audio.musicEnabled = value;
-                          });
-                        },
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Language selector
-                    _SettingsTile(
-                      icon: Icons.language_rounded,
-                      title: AppStrings.language.getString(context),
-                      trailing: _LanguageSelector(
-                        currentLocale:
-                            _localization.currentLocale?.languageCode ?? 'en',
-                        onChanged: (code) {
-                          _audio.playButton();
-                          _localization.translate(code);
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    _SettingsTile(
-                      icon: Icons.visibility_off_rounded,
-                      title: AppStrings.blindMode.getString(context),
-                      trailing: _ToggleSwitch(
-                        value: widget.game.globalBlindMode,
-                        onChanged: (value) {
-                          _audio.playButton();
-                          widget.game.toggleBlindMode(value);
-                          setState(() {});
-                        },
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Accessibility Section Header
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: Row(
+                constraints: BoxConstraints(
+                  maxWidth: ResponsiveHelper.responsive(
+                    context,
+                    mobile: 360.0,
+                    tablet: 450.0,
+                    desktop: 500.0,
+                  ),
+                  maxHeight: MediaQuery.of(context).size.height * 0.85,
+                ),
+                child: Container(
+                  decoration: AppTheme.cosmicCard(
+                    borderRadius: 30,
+                    fillColor: AppTheme.primaryDark.withValues(alpha: 0.9),
+                    borderColor: AppTheme.neonCyan.withValues(alpha: 0.3),
+                    hasGlow: true,
+                  ),
+                  padding: EdgeInsets.all(
+                    ResponsiveHelper.spacing(context, 24),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Header
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Icon(
-                            Icons.accessibility_new_rounded,
-                            color: AppTheme.neonCyan,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Accessibility',
-                            style: AppTheme.bodyLarge(context).copyWith(
-                              color: AppTheme.neonCyan,
-                              fontWeight: FontWeight.bold,
+                          ShimmerEffect(
+                            baseColor: Colors.white,
+                            highlightColor: AppTheme.neonCyan,
+                            child: Text(
+                              AppStrings.settings.getString(context),
+                              style: AppTheme.heading2(context),
                             ),
+                          ),
+                          ResponsiveIconButton(
+                            onPressed: _close,
+                            icon: Icons.close_rounded,
+                            color: Colors.white.withValues(alpha: 0.7),
+                            backgroundColor: AppTheme.primaryMedium.withValues(
+                              alpha: 0.3,
+                            ),
+                            size: 22,
                           ),
                         ],
                       ),
-                    ),
+                      const SizedBox(height: 24),
 
-                    // High Contrast Mode
-                    _SettingsTile(
-                      icon: Icons.contrast_rounded,
-                      title: 'High Contrast',
-                      trailing: _ToggleSwitch(
-                        value: false, // TODO: Connect to AccessibilityManager
-                        onChanged: (value) {
-                          _audio.playButton();
-                          // TODO: Implement high contrast toggle
-                          setState(() {});
-                        },
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              // Sound Effects toggle
+                              _SettingsTile(
+                                icon: Icons.volume_up_rounded,
+                                title: AppStrings.soundEffects.getString(
+                                  context,
+                                ),
+                                trailing: _ToggleSwitch(
+                                  value: _audio.sfxEnabled,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _audio.sfxEnabled = value;
+                                    });
+                                    if (value) _audio.playButton();
+                                  },
+                                ),
+                              ),
+
+                              const SizedBox(height: 16),
+
+                              // Music toggle
+                              _SettingsTile(
+                                icon: Icons.music_note_rounded,
+                                title: AppStrings.music.getString(context),
+                                trailing: _ToggleSwitch(
+                                  value: _audio.musicEnabled,
+                                  onChanged: (value) {
+                                    _audio.playButton();
+                                    setState(() {
+                                      _audio.musicEnabled = value;
+                                    });
+                                  },
+                                ),
+                              ),
+
+                              const SizedBox(height: 16),
+
+                              // Language selector
+                              _SettingsTile(
+                                icon: Icons.language_rounded,
+                                title: AppStrings.language.getString(context),
+                                trailing: _LanguageSelector(
+                                  currentLocale:
+                                      _localization
+                                          .currentLocale
+                                          ?.languageCode ??
+                                      'en',
+                                  onChanged: (code) {
+                                    _audio.playButton();
+                                    _localization.translate(code);
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+
+                              // Blind Mode
+                              _SettingsTile(
+                                icon: Icons.visibility_off_rounded,
+                                title: AppStrings.blindMode.getString(context),
+                                trailing: _ToggleSwitch(
+                                  value: widget.game.globalBlindMode,
+                                  onChanged: (value) {
+                                    _audio.playButton();
+                                    widget.game.toggleBlindMode(value);
+                                    setState(() {});
+                                  },
+                                ),
+                              ),
+
+                              const SizedBox(height: 24),
+
+                              // Accessibility Section Header
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.accessibility_new_rounded,
+                                      color: AppTheme.neonCyan,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Accessibility',
+                                      style: AppTheme.bodyLarge(context)
+                                          .copyWith(
+                                            color: AppTheme.neonCyan,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              // Placeholder for Accessibility features - visual improvements
+                              _SettingsTile(
+                                icon: Icons.contrast_rounded,
+                                title: 'High Contrast',
+                                trailing: _ToggleSwitch(
+                                  value: false, // Wire up later
+                                  onChanged: (value) {
+                                    _audio.playButton();
+                                    setState(() {});
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              _SettingsTile(
+                                icon: Icons.motion_photos_off_rounded,
+                                title: 'Reduced Motion',
+                                trailing: _ToggleSwitch(
+                                  value: false, // Wire up later
+                                  onChanged: (value) {
+                                    _audio.playButton();
+                                    setState(() {});
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
 
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 24),
 
-                    // Reduced Motion
-                    _SettingsTile(
-                      icon: Icons.motion_photos_off_rounded,
-                      title: 'Reduced Motion',
-                      trailing: _ToggleSwitch(
-                        value: false, // TODO: Connect to AccessibilityManager
-                        onChanged: (value) {
-                          _audio.playButton();
-                          // TODO: Implement reduced motion toggle
-                          setState(() {});
-                        },
+                      // Tutorial Button
+                      SizedBox(
+                        width: double.infinity,
+                        child: _GradientButton(
+                          label: 'REPLAY TUTORIAL',
+                          onTap: () {
+                            _audio.playButton();
+                            widget.game.overlays.remove('Settings');
+                            widget.game.overlays.add('Tutorial');
+                          },
+                        ),
                       ),
-                    ),
 
-                    const SizedBox(height: 24),
+                      const SizedBox(height: 12),
 
-                    // Tutorial Button
-                    SizedBox(
-                      width: double.infinity,
-                      child: _GradientButton(
-                        label: 'REPLAY TUTORIAL',
-                        onTap: () {
-                          _audio.playButton();
-                          widget.game.overlays.remove('Settings');
-                          widget.game.overlays.add('Tutorial');
-                        },
+                      // Close button
+                      SizedBox(
+                        width: double.infinity,
+                        child: _GradientButton(
+                          label: AppStrings.back
+                              .getString(context)
+                              .toUpperCase(),
+                          onTap: _close,
+                        ),
                       ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // Close button
-                    SizedBox(
-                      width: double.infinity,
-                      child: _GradientButton(
-                        label: AppStrings.back.getString(context).toUpperCase(),
-                        onTap: _close,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -266,13 +307,9 @@ class _SettingsTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: AppTheme.primaryMedium.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.1),
-          width: 2,
-        ),
+      decoration: AppTheme.cosmicGlass(
+        borderRadius: 16,
+        borderColor: Colors.white.withValues(alpha: 0.1),
       ),
       child: Row(
         children: [
@@ -281,10 +318,11 @@ class _SettingsTile extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppTheme.primaryLight.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
             ),
             child: Icon(
               icon,
-              color: Colors.white.withValues(alpha: 0.8),
+              color: Colors.white.withValues(alpha: 0.9),
               size: 22,
             ),
           ),
@@ -314,29 +352,45 @@ class _ToggleSwitch extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           gradient: value ? AppTheme.primaryGradient : null,
-          color: value ? null : Colors.white.withValues(alpha: 0.15),
-          border: Border.all(color: Colors.black, width: 2.5),
-        ),
-        child: AnimatedAlign(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOutBack,
-          alignment: value ? Alignment.centerRight : Alignment.centerLeft,
-          child: Container(
-            margin: const EdgeInsets.all(3),
-            width: 26,
-            height: 26,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.2),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
+          color: value ? null : Colors.white.withValues(alpha: 0.1),
+          border: Border.all(
+            color: value ? AppTheme.neonCyan : Colors.white24,
+            width: 2.0,
           ),
+          boxShadow: value
+              ? [
+                  BoxShadow(
+                    color: AppTheme.neonCyan.withValues(alpha: 0.4),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                  ),
+                ]
+              : [],
+        ),
+        child: Stack(
+          children: [
+            AnimatedAlign(
+              duration: const Duration(milliseconds: 200),
+              curve: Curves.easeOutBack,
+              alignment: value ? Alignment.centerRight : Alignment.centerLeft,
+              child: Container(
+                margin: const EdgeInsets.all(3),
+                width: 26,
+                height: 26,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -354,7 +408,7 @@ class _LanguageSelector extends StatelessWidget {
 
   static const Map<String, String> _languages = {
     'en': 'EN',
-    'ar': 'عر',
+    'ar': 'AR',
     'es': 'ES',
     'fr': 'FR',
   };
@@ -365,6 +419,7 @@ class _LanguageSelector extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppTheme.primaryMedium.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -377,11 +432,16 @@ class _LanguageSelector extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 gradient: isSelected ? AppTheme.secondaryGradient : null,
-                border: Border.all(
-                  color: isSelected ? Colors.black : Colors.transparent,
-                  width: 2,
-                ),
+                color: isSelected ? null : Colors.transparent,
                 borderRadius: BorderRadius.circular(10),
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: AppTheme.neonMagenta.withValues(alpha: 0.3),
+                          blurRadius: 6,
+                        ),
+                      ]
+                    : [],
               ),
               child: Text(
                 entry.value,
@@ -394,35 +454,6 @@ class _LanguageSelector extends StatelessWidget {
             ),
           );
         }).toList(),
-      ),
-    );
-  }
-}
-
-class _CloseButton extends StatelessWidget {
-  final VoidCallback onTap;
-
-  const _CloseButton({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: AppTheme.primaryMedium.withValues(alpha: 0.3),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(
-            Icons.close_rounded,
-            color: Colors.white.withValues(alpha: 0.7),
-            size: 22,
-          ),
-        ),
       ),
     );
   }
@@ -448,6 +479,8 @@ class _GradientButton extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(16),
+          splashColor: AppTheme.neonCyan.withValues(alpha: 0.3),
+          highlightColor: AppTheme.neonCyan.withValues(alpha: 0.1),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),
             child: Center(

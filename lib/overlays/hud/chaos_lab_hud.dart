@@ -2,6 +2,8 @@ import 'dart:ui';
 import 'package:color_mixing_deductive/color_mixer_game.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
 import 'package:color_mixing_deductive/helpers/audio_manager.dart';
+import 'package:color_mixing_deductive/helpers/visual_effects.dart'; // ShimmerEffect
+import 'package:color_mixing_deductive/components/ui/responsive_components.dart'; // ResponsiveHelper
 import 'package:flutter/material.dart';
 
 class ChaosLabHUD extends StatefulWidget {
@@ -26,7 +28,7 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
       vsync: this,
     )..repeat(reverse: true);
 
-    _pulseAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
+    _pulseAnimation = Tween<double>(begin: 0.9, end: 1.1).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
   }
@@ -60,13 +62,23 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
               child: _buildWarningPanel(context),
             ),
 
-            // Pause button
+            // Pause button using ResponsiveIconButton
             Positioned(
               top:
                   ResponsiveHelper.safePadding(context).top +
                   ResponsiveHelper.spacing(context, 16),
               right: ResponsiveHelper.spacing(context, 16),
-              child: _buildPauseButton(context),
+              child: ResponsiveIconButton(
+                onPressed: () {
+                  AudioManager().playButton();
+                  widget.game.overlays.add('PauseMenu');
+                },
+                icon: Icons.menu_rounded,
+                color: Colors.redAccent,
+                backgroundColor: Colors.red.withValues(alpha: 0.2),
+                borderColor: Colors.red.withValues(alpha: 0.6),
+                size: 24,
+              ),
             ),
 
             // Chaos Timer - Top Left
@@ -108,6 +120,12 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
                       left: 12,
                       right: 12,
                     ),
+                    decoration: AppTheme.cosmicGlass(
+                      borderRadius: 24,
+                      borderColor: Colors.red.withValues(
+                        alpha: 0.3 * (1 - stability),
+                      ), // Red glow when unstable
+                    ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -133,6 +151,13 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
   }
 
   Widget _buildWarningPanel(BuildContext context) {
+    if (widget.game.chaosStability >= 0.5 &&
+        !widget.game.isBlackout &&
+        !widget.game.isMirrored &&
+        !widget.game.hasWind) {
+      return const SizedBox.shrink(); // Hide if stable and no disasters
+    }
+
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 500),
       tween: Tween(begin: 0.0, end: 1.0),
@@ -140,111 +165,98 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
       builder: (context, value, child) {
         return Transform.scale(
           scale: value,
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.red.withValues(alpha: 0.9),
-                  Colors.orange.withValues(alpha: 0.9),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.yellow, width: 2),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.red.withValues(alpha: 0.6),
-                  blurRadius: 20,
-                  spreadRadius: 2,
+          child: Center(
+            child: ShimmerEffect(
+              baseColor: Colors.red,
+              highlightColor: Colors.yellow,
+              period: const Duration(milliseconds: 1000),
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
                 ),
-              ],
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Warning icon (animated)
-                AnimatedBuilder(
-                  animation: _pulseAnimation,
-                  builder: (context, child) {
-                    return Transform.scale(
-                      scale: _pulseAnimation.value,
-                      child: const Icon(
-                        Icons.warning_amber_rounded,
-                        color: Colors.yellow,
-                        size: 32,
-                        shadows: [Shadow(color: Colors.black, blurRadius: 4)],
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(width: 12),
-                // Warning text
-                Flexible(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        widget.game.chaosStability < 0.3
-                            ? 'CRITICAL SYSTEM FAILURE'
-                            : 'SYSTEM FAILURE',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: ResponsiveHelper.fontSize(context, 16),
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 1.5,
-                          decoration: TextDecoration.none,
-                          shadows: const [
-                            Shadow(color: Colors.black, blurRadius: 4),
-                          ],
-                        ),
-                      ),
-                      Text(
-                        _getCurrentDisasterText(),
-                        style: TextStyle(
-                          color: widget.game.chaosStability < 0.3
-                              ? Colors.redAccent
-                              : Colors.yellow,
-                          fontSize: ResponsiveHelper.fontSize(context, 12),
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 1.2,
-                          decoration: TextDecoration.none,
-                        ),
-                      ),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.red.withValues(alpha: 0.8),
+                      Colors.orange.withValues(alpha: 0.8),
                     ],
                   ),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.yellow, width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.red.withValues(alpha: 0.6),
+                      blurRadius: 20,
+                      spreadRadius: 2,
+                    ),
+                  ],
                 ),
-              ],
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Warning icon (animated)
+                    AnimatedBuilder(
+                      animation: _pulseAnimation,
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: _pulseAnimation.value,
+                          child: const Icon(
+                            Icons.warning_amber_rounded,
+                            color: Colors.yellow,
+                            size: 32,
+                            shadows: [
+                              Shadow(color: Colors.black, blurRadius: 4),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(width: 12),
+                    // Warning text
+                    Flexible(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            widget.game.chaosStability < 0.3
+                                ? 'CRITICAL SYSTEM FAILURE'
+                                : 'SYSTEM INSTABILITY',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: ResponsiveHelper.fontSize(context, 16),
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.5,
+                              decoration: TextDecoration.none,
+                              shadows: const [
+                                Shadow(color: Colors.black, blurRadius: 4),
+                              ],
+                            ),
+                          ),
+                          Text(
+                            _getCurrentDisasterText(),
+                            style: TextStyle(
+                              color: widget.game.chaosStability < 0.3
+                                  ? Colors.redAccent
+                                  : Colors.yellowAccent,
+                              fontSize: ResponsiveHelper.fontSize(context, 12),
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1.2,
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         );
       },
-    );
-  }
-
-  Widget _buildPauseButton(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        AudioManager().playButton();
-        widget.game.overlays.add('PauseMenu');
-      },
-      child: Container(
-        width: 50,
-        height: 50,
-        decoration: BoxDecoration(
-          color: Colors.red.withValues(alpha: 0.3),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: Colors.red.withValues(alpha: 0.6),
-            width: 2,
-          ),
-          boxShadow: [
-            BoxShadow(color: Colors.red.withValues(alpha: 0.4), blurRadius: 15),
-          ],
-        ),
-        child: const Icon(Icons.menu_rounded, color: Colors.red, size: 24),
-      ),
     );
   }
 
@@ -255,21 +267,13 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
         final isLow = time <= 10;
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.7),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isLow ? Colors.red : Colors.orange,
-              width: 2,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: (isLow ? Colors.red : Colors.orange).withValues(
-                  alpha: 0.4,
-                ),
-                blurRadius: 15,
-              ),
-            ],
+          decoration: AppTheme.cosmicCard(
+            borderRadius: 12,
+            fillColor: Colors.black.withValues(alpha: 0.7),
+            borderColor: isLow ? Colors.red : Colors.orange,
+            borderWidth: 2,
+            hasGlow: true,
+            glowColor: isLow ? Colors.red : Colors.orange,
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
@@ -280,15 +284,30 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
                 size: 20,
               ),
               const SizedBox(width: 8),
-              Text(
-                '${time}s',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: ResponsiveHelper.fontSize(context, 18),
-                  fontWeight: FontWeight.w900,
-                  decoration: TextDecoration.none,
+              if (isLow)
+                ShimmerEffect(
+                  baseColor: Colors.red,
+                  highlightColor: Colors.white,
+                  child: Text(
+                    '${time}s',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: ResponsiveHelper.fontSize(context, 18),
+                      fontWeight: FontWeight.w900,
+                      decoration: TextDecoration.none,
+                    ),
+                  ),
+                )
+              else
+                Text(
+                  '${time}s',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: ResponsiveHelper.fontSize(context, 18),
+                    fontWeight: FontWeight.w900,
+                    decoration: TextDecoration.none,
+                  ),
                 ),
-              ),
             ],
           ),
         );
@@ -302,19 +321,13 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.black.withValues(alpha: 0.7),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: _getIntensityColor(intensity).withValues(alpha: 0.6),
-          width: 2,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: _getIntensityColor(intensity).withValues(alpha: 0.4),
-            blurRadius: 15,
-          ),
-        ],
+      decoration: AppTheme.cosmicCard(
+        borderRadius: 12,
+        fillColor: Colors.black.withValues(alpha: 0.7),
+        borderColor: _getIntensityColor(intensity).withValues(alpha: 0.6),
+        borderWidth: 2,
+        hasGlow: true,
+        glowColor: _getIntensityColor(intensity),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -338,7 +351,9 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
                 animation: _pulseAnimation,
                 builder: (context, child) {
                   return Icon(
-                    isActive ? Icons.star : Icons.star_border,
+                    isActive
+                        ? Icons.flash_on_rounded
+                        : Icons.flash_off_rounded, // Improved icon
                     color: isActive
                         ? _getIntensityColor(intensity)
                         : Colors.grey.withValues(alpha: 0.3),
@@ -388,33 +403,22 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
           width: 50,
           height: 200,
           padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.7),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Colors.red.withValues(
-                alpha: stability < 0.3
-                    ? 0.5 + _pulseAnimation.value * 0.3
-                    : 0.5,
-              ),
-              width: stability < 0.3 ? 3 : 2,
-            ),
-            boxShadow: stability < 0.3
-                ? [
-                    BoxShadow(
-                      color: Colors.red.withValues(
-                        alpha: _pulseAnimation.value * 0.5,
-                      ),
-                      blurRadius: 20,
-                      spreadRadius: 3,
-                    ),
-                  ]
-                : [],
+          decoration: AppTheme.cosmicCard(
+            borderRadius: 12,
+            fillColor: Colors.black.withValues(alpha: 0.7),
+            borderColor: stability < 0.3
+                ? Colors.red.withValues(
+                    alpha: 0.5 + _pulseAnimation.value * 0.3,
+                  )
+                : Colors.white.withValues(alpha: 0.2),
+            borderWidth: stability < 0.3 ? 3 : 2,
+            hasGlow: stability < 0.3,
+            glowColor: Colors.red,
           ),
           child: Column(
             children: [
               Icon(
-                Icons.science_outlined,
+                Icons.science, // Corrected icon
                 color: stability < 0.3 ? Colors.red : Colors.orange,
                 size: 20,
               ),
@@ -449,7 +453,7 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
                         right: 0,
                         child: Container(
                           height: 1,
-                          color: Colors.white.withValues(alpha: 0.2),
+                          color: Colors.white.withValues(alpha: 0.5),
                         ),
                       );
                     }),
@@ -476,7 +480,12 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
                                     spreadRadius: 2,
                                   ),
                                 ]
-                              : [],
+                              : [
+                                  BoxShadow(
+                                    color: Colors.cyan.withValues(alpha: 0.3),
+                                    blurRadius: 5,
+                                  ),
+                                ],
                         ),
                       ),
                     ),
@@ -568,7 +577,8 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
   ) {
     return GestureDetector(
       onTap: isDisabled ? null : () => widget.game.addDrop(type),
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
         width: size,
         height: size,
         decoration: BoxDecoration(
@@ -598,11 +608,6 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
     if (widget.game.isBlackout) return 'POWER FAILURE DETECTED';
     if (widget.game.isMirrored) return 'OPTICAL AXIS INVERTED';
     if (widget.game.hasWind) return 'HIGH PRESSURE LEAK';
-    if (widget.game.isLeaking) return 'STRUCTURAL BREACH';
-    if (widget.game.isControlsInverted) return 'INTERFACE REVERSED';
-    if (widget.game.isEvaporating) return 'THERMAL OVERLOAD';
-    if (widget.game.isGravityFlux) return 'GRAVITY ANOMALY';
-    if (widget.game.isUiGlitching) return 'DATA CORRUPTION';
-    return 'INSTABILITY DETECTED';
+    return 'STABILITY DECREASING';
   }
 }

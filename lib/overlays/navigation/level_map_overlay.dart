@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import '../../../color_mixer_game.dart';
@@ -7,6 +6,8 @@ import '../../helpers/theme_constants.dart';
 import '../../helpers/audio_manager.dart';
 import '../../core/lives_manager.dart';
 import '../../core/save_manager.dart';
+import '../../helpers/visual_effects.dart'; // For StarField and Shimmer
+import '../../components/ui/responsive_components.dart'; // For ResponsiveIconButton and spacing
 
 class LevelMapOverlay extends StatefulWidget {
   final ColorMixerGame game;
@@ -146,7 +147,9 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
           decoration: const BoxDecoration(gradient: AppTheme.cosmicBackground),
           child: Stack(
             children: [
-              const _AtmosphericBackground(),
+              // Replaced _AtmosphericBackground with StarField
+              const StarField(starCount: 60, color: Colors.white),
+
               SafeArea(
                 child: Column(
                   children: [
@@ -157,8 +160,17 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
                       ),
                       child: Row(
                         children: [
-                          // Back button
-                          _BackButton(onTap: _goBack),
+                          // Back button using ResponsiveIconButton
+                          ResponsiveIconButton(
+                            onPressed: _goBack,
+                            icon: Icons.arrow_back_ios_rounded,
+                            color: AppTheme.neonCyan,
+                            size: 22,
+                            backgroundColor: Colors.white.withValues(
+                              alpha: 0.1,
+                            ),
+                            borderColor: Colors.white.withValues(alpha: 0.1),
+                          ),
                           const SizedBox(width: 16),
                           // Title
                           Expanded(
@@ -215,60 +227,65 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
                       padding: EdgeInsets.symmetric(
                         horizontal: ResponsiveHelper.spacing(context, 16),
                       ),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
-                        ),
-                        decoration: AppTheme.cosmicGlass(
-                          borderRadius: 20,
-                          borderColor: widget.game.randomEventsEnabled
-                              ? AppTheme.neonMagenta.withValues(alpha: 0.5)
-                              : Colors.white.withValues(alpha: 0.1),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.auto_fix_high_rounded,
-                              color: AppTheme.neonMagenta,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 12),
-                            const Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "RANDOM EVENTS",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 14,
-                                      letterSpacing: 1.2,
-                                    ),
-                                  ),
-                                  Text(
-                                    "CHAOTIC ANOMALIES EVERY 15s",
-                                    style: TextStyle(
-                                      color: Colors.white54,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
+                      child: ShimmerEffect(
+                        baseColor: Colors.white.withValues(alpha: 0.1),
+                        highlightColor: widget.game.randomEventsEnabled
+                            ? AppTheme.neonMagenta.withValues(alpha: 0.3)
+                            : Colors.white.withValues(alpha: 0.15),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          decoration: AppTheme.cosmicGlass(
+                            borderRadius: 20,
+                            borderColor: widget.game.randomEventsEnabled
+                                ? AppTheme.neonMagenta.withValues(alpha: 0.5)
+                                : Colors.white.withValues(alpha: 0.1),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.auto_fix_high_rounded,
+                                color: AppTheme.neonMagenta,
+                                size: 20,
                               ),
-                            ),
-                            Switch(
-                              value: widget.game.randomEventsEnabled,
-                              onChanged: _toggleRandomEvents,
-                              activeColor: AppTheme.neonMagenta,
-                              activeTrackColor: AppTheme.neonMagenta.withValues(
-                                alpha: 0.3,
+                              const SizedBox(width: 12),
+                              const Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "RANDOM EVENTS",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w900,
+                                        fontSize: 14,
+                                        letterSpacing: 1.2,
+                                      ),
+                                    ),
+                                    Text(
+                                      "CHAOTIC ANOMALIES EVERY 15s",
+                                      style: TextStyle(
+                                        color: Colors.white54,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              inactiveThumbColor: Colors.white24,
-                              inactiveTrackColor: Colors.black26,
-                            ),
-                          ],
+                              Switch(
+                                value: widget.game.randomEventsEnabled,
+                                onChanged: _toggleRandomEvents,
+                                activeColor: AppTheme.neonMagenta,
+                                activeTrackColor: AppTheme.neonMagenta
+                                    .withValues(alpha: 0.3),
+                                inactiveThumbColor: Colors.white24,
+                                inactiveTrackColor: Colors.black26,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -378,37 +395,6 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
   }
 }
 
-class _BackButton extends StatelessWidget {
-  final VoidCallback onTap;
-
-  const _BackButton({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: AppTheme.cosmicGlass(
-        borderRadius: 15,
-        borderColor: Colors.white.withValues(alpha: 0.1),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(15),
-          child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Icon(
-              Icons.arrow_back_ios_rounded,
-              color: AppTheme.neonCyan,
-              size: 22,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _ProgressBadge extends StatelessWidget {
   final int completed;
   final int total;
@@ -470,6 +456,7 @@ class _LevelCardState extends State<_LevelCard>
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
+  bool _isPressed = false;
 
   @override
   void initState() {
@@ -500,6 +487,26 @@ class _LevelCardState extends State<_LevelCard>
     super.dispose();
   }
 
+  List<Color> _getDifficultyGradient(double difficulty) {
+    if (difficulty < 0.3) {
+      return [AppTheme.success, AppTheme.success.withValues(alpha: 0.7)];
+    } else if (difficulty < 0.5) {
+      return [AppTheme.neonCyan, AppTheme.neonCyan.withValues(alpha: 0.7)];
+    } else if (difficulty < 0.7) {
+      return [
+        AppTheme.electricYellow,
+        AppTheme.electricYellow.withValues(alpha: 0.7),
+      ];
+    } else if (difficulty < 0.9) {
+      return [const Color(0xFFFF7F00), const Color(0xFFFF7F00)];
+    } else {
+      return [
+        AppTheme.neonMagenta,
+        AppTheme.neonMagenta.withValues(alpha: 0.7),
+      ];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isLocked = widget.stars == -1;
@@ -508,36 +515,34 @@ class _LevelCardState extends State<_LevelCard>
       widget.level.difficultyFactor,
     );
 
-    // Cosmic Level Card Look
-    // Locked: Dark, Low opacity
-    // Unlocked: Neon Border, faint glow
-    // Completed: Bright Neon, filled star
-
     return FadeTransition(
       opacity: _fadeAnimation,
       child: ScaleTransition(
         scale: _scaleAnimation,
-        child: Container(
-          decoration: AppTheme.cosmicCard(
-            borderRadius: 24,
-            fillColor: isLocked
-                ? AppTheme.primaryDark.withValues(alpha: 0.5)
-                : isCompleted
-                ? difficultyColors[0].withValues(alpha: 0.25)
-                : difficultyColors[0].withValues(alpha: 0.15),
-            borderColor: isLocked
-                ? Colors.white.withValues(alpha: 0.1)
-                : isCompleted
-                ? AppTheme.electricYellow
-                : difficultyColors[0].withValues(alpha: 0.8),
-            borderWidth: isCompleted ? 2.5 : 1.5,
-            hasGlow: !isLocked,
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: isLocked ? null : widget.onTap,
-              borderRadius: BorderRadius.circular(20),
+        child: GestureDetector(
+          onTapDown: isLocked ? null : (_) => setState(() => _isPressed = true),
+          onTapUp: isLocked ? null : (_) => setState(() => _isPressed = false),
+          onTapCancel: () => setState(() => _isPressed = false),
+          onTap: isLocked ? null : widget.onTap,
+          child: AnimatedScale(
+            scale: _isPressed ? 0.95 : 1.0,
+            duration: const Duration(milliseconds: 100),
+            child: Container(
+              decoration: AppTheme.cosmicCard(
+                borderRadius: 24,
+                fillColor: isLocked
+                    ? AppTheme.primaryDark.withValues(alpha: 0.5)
+                    : isCompleted
+                    ? difficultyColors[0].withValues(alpha: 0.25)
+                    : difficultyColors[0].withValues(alpha: 0.15),
+                borderColor: isLocked
+                    ? Colors.white.withValues(alpha: 0.1)
+                    : isCompleted
+                    ? AppTheme.electricYellow
+                    : difficultyColors[0].withValues(alpha: 0.8),
+                borderWidth: isCompleted ? 2.5 : 1.5,
+                hasGlow: !isLocked,
+              ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -596,68 +601,6 @@ class _LevelCardState extends State<_LevelCard>
           ),
         ),
       ),
-    );
-  }
-
-  List<Color> _getDifficultyGradient(double difficulty) {
-    // Return colors matching the cosmic theme based on difficulty
-    if (difficulty < 0.3) {
-      return [
-        AppTheme.success,
-        AppTheme.success.withValues(alpha: 0.7),
-      ]; // Neon Green
-    } else if (difficulty < 0.5) {
-      return [
-        AppTheme.neonCyan,
-        AppTheme.neonCyan.withValues(alpha: 0.7),
-      ]; // Neon Cyan
-    } else if (difficulty < 0.7) {
-      return [
-        AppTheme.electricYellow,
-        AppTheme.electricYellow.withValues(alpha: 0.7),
-      ]; // Electric Yellow
-    } else if (difficulty < 0.9) {
-      return [const Color(0xFFFF7F00), const Color(0xFFFF7F00)]; // Neon Orange
-    } else {
-      return [
-        AppTheme.neonMagenta,
-        AppTheme.neonMagenta.withValues(alpha: 0.7),
-      ]; // Neon Magenta
-    }
-  }
-}
-
-class _AtmosphericBackground extends StatelessWidget {
-  const _AtmosphericBackground();
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: List.generate(15, (i) {
-        final random = Random();
-        final size = 20.0 + random.nextDouble() * 100;
-        final top = random.nextDouble() * 800;
-        final left = random.nextDouble() * 400;
-        final opacity = 0.05 + random.nextDouble() * 0.1;
-
-        return Positioned(
-          top: top,
-          left: left,
-          child: Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  Colors.white.withValues(alpha: opacity),
-                  Colors.white.withValues(alpha: 0),
-                ],
-              ),
-            ),
-          ),
-        );
-      }),
     );
   }
 }

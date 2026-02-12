@@ -151,6 +151,7 @@ class AppTheme {
     Color borderColor = Colors.white,
     double borderWidth = 1.8,
     bool hasGlow = false,
+    Color? glowColor,
   }) {
     final effectiveBorderColor = borderColor == Colors.white
         ? Colors.white.withValues(alpha: 0.3)
@@ -170,8 +171,10 @@ class AppTheme {
         ),
         if (hasGlow)
           BoxShadow(
-            color: (borderColor != Colors.white ? borderColor : neonCyan)
-                .withValues(alpha: 0.4),
+            color:
+                (glowColor ??
+                        (borderColor != Colors.white ? borderColor : neonCyan))
+                    .withValues(alpha: 0.4),
             blurRadius: 25,
             spreadRadius: -1,
           ),

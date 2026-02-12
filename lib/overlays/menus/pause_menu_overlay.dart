@@ -1,6 +1,8 @@
 import 'package:color_mixing_deductive/helpers/audio_manager.dart';
 import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
+import 'package:color_mixing_deductive/helpers/visual_effects.dart'; // StarField
+import 'package:color_mixing_deductive/components/ui/animated_card.dart'; // AnimatedCard
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import '../../../color_mixer_game.dart';
@@ -31,7 +33,7 @@ class _PauseMenuOverlayState extends State<PauseMenuOverlay>
     );
 
     _scaleAnimation = Tween<double>(
-      begin: 0.8,
+      begin: 0.9,
       end: 1.0,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
@@ -90,12 +92,19 @@ class _PauseMenuOverlayState extends State<PauseMenuOverlay>
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          // Darken background
+          // Darken background with StarField
           FadeTransition(
             opacity: _fadeAnimation,
-            child: GestureDetector(
-              onTap: _resume,
-              child: Container(color: Colors.black.withValues(alpha: 0.7)),
+            child: Stack(
+              children: [
+                GestureDetector(
+                  onTap: _resume,
+                  child: Container(color: Colors.black.withValues(alpha: 0.7)),
+                ),
+                const IgnorePointer(
+                  child: StarField(starCount: 40, color: Colors.white),
+                ),
+              ],
             ),
           ),
 
@@ -116,9 +125,13 @@ class _PauseMenuOverlayState extends State<PauseMenuOverlay>
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      AppStrings.menu.getString(context),
-                      style: AppTheme.heading2(context),
+                    ShimmerEffect(
+                      baseColor: Colors.white,
+                      highlightColor: AppTheme.neonCyan,
+                      child: Text(
+                        AppStrings.menu.getString(context),
+                        style: AppTheme.heading2(context),
+                      ),
                     ),
                     const SizedBox(height: 30),
 
@@ -223,35 +236,26 @@ class _MenuButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          decoration: AppTheme.cosmicCard(
-            borderRadius: 16,
-            fillColor: isOutlined
-                ? Colors.transparent
-                : color.withValues(alpha: 0.2),
-            borderColor: isOutlined ? color.withValues(alpha: 0.5) : color,
-            borderWidth: 1.5,
-            hasGlow: !isOutlined,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: isOutlined ? color : Colors.white, size: 20),
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: AppTheme.buttonText(
-                  context,
-                ).copyWith(color: isOutlined ? color : Colors.white),
-              ),
-            ],
-          ),
+    return AnimatedCard(
+      onTap: onTap,
+      fillColor: isOutlined ? Colors.transparent : color.withValues(alpha: 0.2),
+      borderColor: isOutlined ? color.withValues(alpha: 0.5) : color,
+      hasGlow: !isOutlined,
+      glowColor: color,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: isOutlined ? color : Colors.white, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              label,
+              style: AppTheme.buttonText(
+                context,
+              ).copyWith(color: isOutlined ? color : Colors.white),
+            ),
+          ],
         ),
       ),
     );
@@ -276,11 +280,14 @@ class _AudioToggle extends StatelessWidget {
         AudioManager().playButton();
         onToggle(!isEnabled);
       },
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: AppTheme.cosmicCard(
           borderRadius: 12,
-          fillColor: isEnabled ? AppTheme.primaryLight : Colors.transparent,
+          fillColor: isEnabled
+              ? AppTheme.primaryLight.withValues(alpha: 0.2)
+              : Colors.transparent,
           borderColor: isEnabled
               ? AppTheme.neonCyan
               : Colors.white.withValues(alpha: 0.2),

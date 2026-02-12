@@ -1,10 +1,13 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import '../../../color_mixer_game.dart';
+import '../../helpers/string_manager.dart';
 import '../../helpers/theme_constants.dart';
 import '../../helpers/audio_manager.dart';
+import '../../helpers/visual_effects.dart'; // StarField
+import '../../components/ui/responsive_components.dart'; // ResponsiveIconButton
+import '../../components/ui/animated_card.dart'; // AnimatedCard
 
 class AchievementData {
   final String id;
@@ -22,7 +25,7 @@ class AchievementData {
   });
 }
 
-class AchievementsOverlay extends StatelessWidget {
+class AchievementsOverlay extends StatefulWidget {
   final ColorMixerGame game;
 
   static const List<AchievementData> allAchievements = [
@@ -114,6 +117,11 @@ class AchievementsOverlay extends StatelessWidget {
   const AchievementsOverlay({super.key, required this.game});
 
   @override
+  State<AchievementsOverlay> createState() => _AchievementsOverlayState();
+}
+
+class _AchievementsOverlayState extends State<AchievementsOverlay> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -138,6 +146,11 @@ class AchievementsOverlay extends StatelessWidget {
             ),
           ),
 
+          // StarField
+          const Positioned.fill(
+            child: StarField(starCount: 50, color: Colors.white),
+          ),
+
           SafeArea(
             child: Column(
               children: [
@@ -148,16 +161,16 @@ class AchievementsOverlay extends StatelessWidget {
                       horizontal: 20,
                       vertical: 10,
                     ),
-                    itemCount: allAchievements.length,
+                    itemCount: AchievementsOverlay.allAchievements.length,
                     itemBuilder: (context, index) {
-                      final achievement = allAchievements[index];
-                      final isUnlocked = game.unlockedAchievements.contains(
-                        achievement.id,
-                      );
-                      return _buildAchievementCard(
-                        context,
-                        achievement,
-                        isUnlocked,
+                      final achievement =
+                          AchievementsOverlay.allAchievements[index];
+                      final isUnlocked = widget.game.unlockedAchievements
+                          .contains(achievement.id);
+                      return _AchievementCard(
+                        achievement: achievement,
+                        isUnlocked: isUnlocked,
+                        delay: index * 50, // Staggered delay
                       );
                     },
                   ),
@@ -175,31 +188,40 @@ class AchievementsOverlay extends StatelessWidget {
       padding: const EdgeInsets.all(20.0),
       child: Row(
         children: [
-          _buildIconButton(
-            icon: Icons.arrow_back_rounded,
-            onTap: () {
+          ResponsiveIconButton(
+            onPressed: () {
               AudioManager().playButton();
-              game.overlays.remove('Achievements');
+              widget.game.overlays.remove('Achievements');
             },
+            icon: Icons.arrow_back_rounded,
+            color: Colors.white,
+            backgroundColor: Colors.white.withValues(alpha: 0.1),
           ),
           const SizedBox(width: 20),
           Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: AppTheme.cosmicCard(
-                borderRadius: 16,
-                fillColor: AppTheme.primaryDark.withValues(alpha: 0.7),
-                borderColor: AppTheme.neonCyan.withValues(alpha: 0.3),
-                hasGlow: true,
-              ),
-              child: Text(
-                AppStrings.achievementsTitle.getString(context),
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: AppTheme.neonCyan,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 2.0,
+            child: Hero(
+              tag: 'achievements_title',
+              child: ShimmerEffect(
+                baseColor: AppTheme.neonCyan,
+                highlightColor: Colors.white,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: AppTheme.cosmicCard(
+                    borderRadius: 16,
+                    fillColor: AppTheme.primaryDark.withValues(alpha: 0.7),
+                    borderColor: AppTheme.neonCyan.withValues(alpha: 0.3),
+                    // isInteractive: false, // Removed as it's not a parameter of cosmicCard
+                  ),
+                  child: Text(
+                    AppStrings.achievementsTitle.getString(context),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: AppTheme.neonCyan,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 2.0,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -208,111 +230,160 @@ class AchievementsOverlay extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildAchievementCard(
-    BuildContext context,
-    AchievementData achievement,
-    bool isUnlocked,
-  ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: AppTheme.cosmicCard(
-        borderRadius: 20,
-        fillColor: isUnlocked
-            ? AppTheme.primaryDark.withValues(alpha: 0.8)
-            : AppTheme.primaryDark.withValues(alpha: 0.6),
-        borderColor: isUnlocked
-            ? achievement.color.withValues(alpha: 0.7)
-            : Colors.white.withValues(alpha: 0.08),
-        hasGlow: isUnlocked,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            // Icon Badge
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isUnlocked
-                    ? achievement.color.withValues(alpha: 0.1)
-                    : Colors.black.withValues(alpha: 0.3),
-                border: Border.all(
-                  color: isUnlocked
-                      ? achievement.color.withValues(alpha: 0.8)
-                      : Colors.white24,
-                  width: 2,
-                ),
-                boxShadow: isUnlocked
-                    ? [
-                        BoxShadow(
-                          color: achievement.color.withValues(alpha: 0.3),
-                          blurRadius: 12,
-                        ),
-                      ]
-                    : [],
-              ),
-              child: Icon(
-                isUnlocked ? achievement.icon : Icons.lock_outline_rounded,
-                color: isUnlocked ? achievement.color : Colors.white38,
-                size: 32,
-              ),
-            ),
-            const SizedBox(width: 20),
-            // Text Content
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    achievement.title.getString(context),
-                    style: AppTheme.buttonText(context, isLarge: true).copyWith(
-                      color: isUnlocked ? Colors.white : Colors.white38,
-                      fontSize: 18,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    achievement.description.getString(context),
-                    style: TextStyle(
-                      color: isUnlocked ? Colors.white70 : Colors.white24,
-                      fontSize: 13,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (isUnlocked)
-              const Icon(
-                Icons.check_circle_rounded,
-                color: Colors.greenAccent,
-                size: 24,
-              ),
-          ],
-        ),
-      ),
+class _AchievementCard extends StatefulWidget {
+  final AchievementData achievement;
+  final bool isUnlocked;
+  final int delay;
+
+  const _AchievementCard({
+    required this.achievement,
+    required this.isUnlocked,
+    required this.delay,
+  });
+
+  @override
+  State<_AchievementCard> createState() => _AchievementCardState();
+}
+
+class _AchievementCardState extends State<_AchievementCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _slideAnimation;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
     );
+
+    _slideAnimation = Tween<double>(
+      begin: 50,
+      end: 0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutQuad));
+
+    _fadeAnimation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+
+    Future.delayed(Duration(milliseconds: widget.delay), () {
+      if (mounted) _controller.forward();
+    });
   }
 
-  Widget _buildIconButton({
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      decoration: AppTheme.cosmicGlass(
-        borderRadius: 15,
-        borderColor: Colors.white.withValues(alpha: 0.1),
-        isInteractive: true,
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(15),
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, _slideAnimation.value),
+          child: Opacity(opacity: _fadeAnimation.value, child: child),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        child: AnimatedCard(
+          onTap: () {
+            // Maybe show detail or play sound
+            if (widget.isUnlocked) {
+              // Play shine effect or similar?
+            }
+          },
+          fillColor: widget.isUnlocked
+              ? AppTheme.primaryDark.withValues(alpha: 0.8)
+              : AppTheme.primaryDark.withValues(alpha: 0.6),
+          borderColor: widget.isUnlocked
+              ? widget.achievement.color.withValues(alpha: 0.7)
+              : Colors.white.withValues(alpha: 0.08),
+          hasGlow: widget.isUnlocked,
           child: Padding(
-            padding: const EdgeInsets.all(12),
-            child: Icon(icon, color: Colors.white, size: 24),
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                // Icon Badge
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: widget.isUnlocked
+                        ? widget.achievement.color.withValues(alpha: 0.1)
+                        : Colors.black.withValues(alpha: 0.3),
+                    border: Border.all(
+                      color: widget.isUnlocked
+                          ? widget.achievement.color.withValues(alpha: 0.8)
+                          : Colors.white24,
+                      width: 2,
+                    ),
+                    boxShadow: widget.isUnlocked
+                        ? [
+                            BoxShadow(
+                              color: widget.achievement.color.withValues(
+                                alpha: 0.3,
+                              ),
+                              blurRadius: 12,
+                            ),
+                          ]
+                        : [],
+                  ),
+                  child: Icon(
+                    widget.isUnlocked
+                        ? widget.achievement.icon
+                        : Icons.lock_outline_rounded,
+                    color: widget.isUnlocked
+                        ? widget.achievement.color
+                        : Colors.white38,
+                    size: 32,
+                  ),
+                ),
+                const SizedBox(width: 20),
+                // Text Content
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.achievement.title.getString(context),
+                        style: AppTheme.buttonText(context, isLarge: true)
+                            .copyWith(
+                              color: widget.isUnlocked
+                                  ? Colors.white
+                                  : Colors.white38,
+                              fontSize: 18,
+                            ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        widget.achievement.description.getString(context),
+                        style: TextStyle(
+                          color: widget.isUnlocked
+                              ? Colors.white70
+                              : Colors.white24,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (widget.isUnlocked)
+                  const Icon(
+                    Icons.check_circle_rounded,
+                    color: Colors.greenAccent,
+                    size: 24,
+                  ),
+              ],
+            ),
           ),
         ),
       ),
