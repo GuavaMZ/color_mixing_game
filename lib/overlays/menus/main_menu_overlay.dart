@@ -149,43 +149,43 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
             children: [
               _buildUtilButton(
                 icon: Icons.emoji_events_rounded,
-                tooltip: 'Achievements',
+                tooltip: AppStrings.achievementsTitle.getString(context),
                 onTap: () => _navTo('Achievements'),
                 delay: 0,
               ),
               _buildUtilButton(
                 icon: Icons.bar_chart_rounded,
-                tooltip: 'Statistics',
+                tooltip: AppStrings.statisticsTitle.getString(context),
                 onTap: () => _navTo('Statistics'),
                 delay: 100,
               ),
               _buildUtilButton(
                 icon: Icons.event_available_rounded,
-                tooltip: 'Daily Challenge',
+                tooltip: AppStrings.dailyChallengeTitle.getString(context),
                 onTap: () => _navTo('DailyChallenge'),
                 delay: 200,
               ),
               _buildUtilButton(
                 icon: Icons.shopping_basket_rounded,
-                tooltip: 'Shop',
+                tooltip: AppStrings.shopTitle.getString(context),
                 onTap: () => _navTo('Shop'),
                 delay: 300,
               ),
               _buildUtilButton(
                 icon: Icons.auto_stories_rounded,
-                tooltip: 'Gallery',
+                tooltip: AppStrings.galleryTitle.getString(context),
                 onTap: () => _navTo('Gallery'),
                 delay: 400,
               ),
               _buildUtilButton(
                 icon: Icons.settings_rounded,
-                tooltip: 'Settings',
+                tooltip: AppStrings.settings.getString(context),
                 onTap: () => _navTo('Settings'),
                 delay: 500,
               ),
               _buildUtilButton(
                 icon: Icons.science_outlined,
-                tooltip: 'Lab Upgrade',
+                tooltip: AppStrings.labUpgradeTitle.getString(context),
                 onTap: () => _navTo('LabUpgrade'),
                 delay: 600,
               ),
@@ -432,8 +432,8 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
         SizedBox(height: ResponsiveHelper.spacing(context, 12)),
 
         _buildModeCard(
-          title: 'CHAOS LAB',
-          subtitle: 'Unstable reactions! Emergency protocols active!',
+          title: AppStrings.chaosLabTitle.getString(context),
+          subtitle: AppStrings.chaosLabSubtitle.getString(context),
           icon: Icons.warning_amber_rounded,
           gradient: const LinearGradient(
             colors: [Color(0xFFFF0000), Color(0xFFFF8800)],

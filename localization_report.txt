@@ -1,0 +1,29 @@
+Total defined constants: 137
+
+Map: En
+Total entries in map: 136
+Missing identifiers: 2
+  - locked (Value: locked)
+  - quit (Value: quit)
+Extra entries (not constants): 1
+  - in
+
+Map: Ar
+Total entries in map: 137
+Missing identifiers: 1
+  - quit (Value: quit)
+Extra entries (not constants): 1
+  - في
+
+Map: Es
+Total entries in map: 136
+Missing identifiers: 2
+  - locked (Value: locked)
+  - quit (Value: quit)
+Extra entries (not constants): 1
+  - en
+
+Map: Fr
+Total entries in map: 136
+Missing identifiers: 1
+  - quit (Value: quit)

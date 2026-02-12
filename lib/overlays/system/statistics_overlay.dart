@@ -1,7 +1,9 @@
 import 'package:color_mixing_deductive/helpers/audio_manager.dart';
 import 'package:color_mixing_deductive/helpers/statistics_manager.dart';
+import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 
 import '../../../color_mixer_game.dart';
 
@@ -14,11 +16,11 @@ class StatisticsOverlay extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [const Color(0xFF0A0E27), const Color(0xFF1a1a2e)],
+            colors: [Color(0xFF0A0E27), Color(0xFF1a1a2e)],
           ),
         ),
         child: SafeArea(
@@ -36,9 +38,10 @@ class StatisticsOverlay extends StatelessWidget {
                         game.overlays.remove('Statistics');
                       },
                     ),
-                    const Text(
-                      'Statistics',
-                      style: TextStyle(
+                    const SizedBox(width: 8),
+                    Text(
+                      AppStrings.statisticsTitle.getString(context),
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -68,25 +71,27 @@ class StatisticsOverlay extends StatelessWidget {
                         children: [
                           _StatCard(
                             icon: Icons.emoji_events,
-                            title: 'Levels Completed',
+                            title: AppStrings.levelsCompleted.getString(
+                              context,
+                            ),
                             value: '${stats['totalLevels']}',
                             color: AppTheme.neonCyan,
                           ),
                           _StatCard(
                             icon: Icons.star,
-                            title: 'Perfect Matches',
+                            title: AppStrings.perfectMatches.getString(context),
                             value: '${stats['perfectMatches']}',
                             color: AppTheme.neonPurple,
                           ),
                           _StatCard(
                             icon: Icons.water_drop,
-                            title: 'Total Drops Used',
+                            title: AppStrings.totalDropsUsed.getString(context),
                             value: '${stats['totalDrops']}',
                             color: AppTheme.neonMagenta,
                           ),
                           _StatCard(
                             icon: Icons.local_fire_department,
-                            title: 'Highest Combo',
+                            title: AppStrings.highestCombo.getString(context),
                             value: '${stats['highestCombo']}x',
                             color: Colors.orange,
                           ),
@@ -95,7 +100,9 @@ class StatisticsOverlay extends StatelessWidget {
                             builder: (context, accuracySnapshot) {
                               return _StatCard(
                                 icon: Icons.percent,
-                                title: 'Average Accuracy',
+                                title: AppStrings.averageAccuracy.getString(
+                                  context,
+                                ),
                                 value:
                                     '${(accuracySnapshot.data ?? 0).toStringAsFixed(1)}%',
                                 color: Colors.green,
@@ -107,7 +114,9 @@ class StatisticsOverlay extends StatelessWidget {
                             builder: (context, modeSnapshot) {
                               return _StatCard(
                                 icon: Icons.favorite,
-                                title: 'Favorite Mode',
+                                title: AppStrings.favoriteMode.getString(
+                                  context,
+                                ),
                                 value: modeSnapshot.data ?? 'None',
                                 color: Colors.pink,
                               );
@@ -115,9 +124,9 @@ class StatisticsOverlay extends StatelessWidget {
                           ),
 
                           const SizedBox(height: 20),
-                          const Text(
-                            'Mode Play Counts',
-                            style: TextStyle(
+                          Text(
+                            AppStrings.modePlayCounts.getString(context),
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -125,10 +134,22 @@ class StatisticsOverlay extends StatelessWidget {
                           ),
                           const SizedBox(height: 10),
 
-                          _ModeStatRow('Classic', stats['classicPlays']),
-                          _ModeStatRow('Time Attack', stats['timeAttackPlays']),
-                          _ModeStatRow('Color Echo', stats['colorEchoPlays']),
-                          _ModeStatRow('Chaos Lab', stats['chaosLabPlays']),
+                          _ModeStatRow(
+                            AppStrings.classicMode.getString(context),
+                            stats['classicPlays'],
+                          ),
+                          _ModeStatRow(
+                            AppStrings.timeAttackMode.getString(context),
+                            stats['timeAttackPlays'],
+                          ),
+                          _ModeStatRow(
+                            AppStrings.colorEcho.getString(context),
+                            stats['colorEchoPlays'],
+                          ),
+                          _ModeStatRow(
+                            AppStrings.chaosLabTitle.getString(context),
+                            stats['chaosLabPlays'],
+                          ),
                         ],
                       ),
                     );
@@ -218,7 +239,7 @@ class _ModeStatRow extends StatelessWidget {
             ),
           ),
           Text(
-            '$count plays',
+            '$count ${AppStrings.playsText.getString(context)}',
             style: const TextStyle(
               color: AppTheme.neonCyan,
               fontSize: 16,

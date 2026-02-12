@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import 'package:color_mixing_deductive/color_mixer_game.dart';
 import 'package:color_mixing_deductive/core/color_entry.dart';
 import 'package:color_mixing_deductive/core/color_palette_generator.dart';
@@ -8,6 +9,7 @@ import 'package:color_mixing_deductive/helpers/audio_manager.dart';
 import 'package:color_mixing_deductive/core/save_manager.dart';
 import 'package:color_mixing_deductive/helpers/visual_effects.dart';
 import 'package:color_mixing_deductive/components/ui/responsive_components.dart';
+import 'package:color_mixing_deductive/helpers/string_manager.dart';
 
 class GalleryOverlay extends StatefulWidget {
   final ColorMixerGame game;
@@ -206,7 +208,9 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
                                     baseColor: Colors.white,
                                     highlightColor: AppTheme.neonCyan,
                                     child: Text(
-                                      "LAB ARCHIVES", // More scientific name
+                                      AppStrings.labArchives.getString(
+                                        context,
+                                      ), // More scientific name
                                       textAlign: TextAlign.center,
                                       style: AppTheme.heading1(context)
                                           .copyWith(
@@ -224,7 +228,7 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    "$unlockedCount / ${displayColors.length} SAMPLES",
+                                    "$unlockedCount / ${displayColors.length} ${AppStrings.samplesCount.getString(context)}",
                                     style: AppTheme.caption(context).copyWith(
                                       color: AppTheme.neonMagenta,
                                       fontWeight: FontWeight.bold,
@@ -312,21 +316,33 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
         });
       },
       itemBuilder: (BuildContext context) => <PopupMenuEntry<SortOption>>[
-        const PopupMenuItem<SortOption>(
+        PopupMenuItem<SortOption>(
           value: SortOption.id,
-          child: Text('Discovery Order', style: TextStyle(color: Colors.white)),
+          child: Text(
+            AppStrings.sortDiscovery.getString(context),
+            style: const TextStyle(color: Colors.white),
+          ),
         ),
-        const PopupMenuItem<SortOption>(
+        PopupMenuItem<SortOption>(
           value: SortOption.spectrum,
-          child: Text('Spectral (Hue)', style: TextStyle(color: Colors.white)),
+          child: Text(
+            AppStrings.sortSpectral.getString(context),
+            style: const TextStyle(color: Colors.white),
+          ),
         ),
-        const PopupMenuItem<SortOption>(
+        PopupMenuItem<SortOption>(
           value: SortOption.brightness,
-          child: Text('Luminance', style: TextStyle(color: Colors.white)),
+          child: Text(
+            AppStrings.sortLuminance.getString(context),
+            style: const TextStyle(color: Colors.white),
+          ),
         ),
-        const PopupMenuItem<SortOption>(
+        PopupMenuItem<SortOption>(
           value: SortOption.saturation,
-          child: Text('Saturation', style: TextStyle(color: Colors.white)),
+          child: Text(
+            AppStrings.sortSaturation.getString(context),
+            style: const TextStyle(color: Colors.white),
+          ),
         ),
       ],
     );
@@ -365,7 +381,7 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
               : [],
         ),
         child: Text(
-          category.toUpperCase(),
+          _getLocalizedCategory(category),
           style: TextStyle(
             color: isSelected ? AppTheme.neonCyan : Colors.white70,
             fontSize: 12,
@@ -375,6 +391,27 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
         ),
       ),
     );
+  }
+
+  String _getLocalizedCategory(String category) {
+    switch (category) {
+      case 'All':
+        return AppStrings.allCategory.getString(context);
+      case 'Primary':
+        return AppStrings.primaryCategory.getString(context);
+      case 'Secondary':
+        return AppStrings.secondaryCategory.getString(context);
+      case 'Tertiary':
+        return AppStrings.tertiaryCategory.getString(context);
+      case 'Tinted':
+        return AppStrings.tintedCategory.getString(context);
+      case 'Shaded':
+        return AppStrings.shadedCategory.getString(context);
+      case 'Complex':
+        return AppStrings.complexCategory.getString(context);
+      default:
+        return category.toUpperCase();
+    }
   }
 
   void _showDetailDialog(BuildContext context, ColorEntry color) {
@@ -410,10 +447,10 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // --- Lab Report Header ---
-                    const Text(
-                      "ANALYSIS REPORT",
+                    Text(
+                      AppStrings.analysisReport.getString(context),
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white54,
                         fontSize: 10,
                         letterSpacing: 3,
@@ -485,7 +522,7 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Text(
-                          color.category.toUpperCase(),
+                          _getLocalizedCategory(color.category),
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 9,
@@ -529,9 +566,10 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
                     const SizedBox(height: 24),
 
                     // --- Formula ---
-                    const Text(
-                      "SYNTHESIS FORMULA",
-                      style: TextStyle(
+                    const SizedBox(width: 8),
+                    Text(
+                      AppStrings.synthesisFormula.getString(context),
+                      style: const TextStyle(
                         color: AppTheme.neonMagenta,
                         fontSize: 10,
                         fontWeight: FontWeight.bold,

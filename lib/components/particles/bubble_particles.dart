@@ -59,8 +59,15 @@ class BubbleParticles extends PositionComponent
     );
   }
 
+  bool manualRender = false;
+
   @override
   void render(Canvas canvas) {
+    if (manualRender) return;
+    forceRender(canvas);
+  }
+
+  void forceRender(Canvas canvas) {
     super.render(canvas);
     if (liquidLevel <= 0.05) return;
 

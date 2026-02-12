@@ -170,6 +170,53 @@ mixin AppStrings {
   static const String areYouSure = "are_you_sure";
   static const String giveUpConfirm = "give_up_confirm";
 
+  // HUB/General
+  static const String statisticsTitle = "statistics_title";
+  static const String dailyChallengeTitle = "daily_challenge_title";
+  static const String galleryTitle = "gallery_title";
+  static const String labUpgradeTitle = "lab_upgrade_title";
+  static const String chaosLabTitle = "chaos_lab_title";
+  static const String chaosLabSubtitle = "chaos_lab_subtitle";
+
+  // Statistics
+  static const String levelsCompleted = "levels_completed";
+  static const String perfectMatches = "perfect_matches";
+  static const String totalDropsUsed = "total_drops_used";
+  static const String highestCombo = "highest_combo";
+  static const String averageAccuracy = "average_accuracy";
+  static const String favoriteMode = "favorite_mode";
+  static const String modePlayCounts = "mode_play_counts";
+  static const String playsText = "plays_text";
+
+  // Gallery
+  static const String labArchives = "lab_archives";
+  static const String samplesCount = "samples_count";
+  static const String sortDiscovery = "sort_discovery";
+  static const String sortSpectral = "sort_spectral";
+  static const String sortLuminance = "sort_luminance";
+  static const String sortSaturation = "sort_saturation";
+  static const String allCategory = "all_category";
+  static const String primaryCategory = "primary_category";
+  static const String secondaryCategory = "secondary_category";
+  static const String tertiaryCategory = "tertiary_category";
+  static const String tintedCategory = "tinted_category";
+  static const String shadedCategory = "shaded_category";
+  static const String complexCategory = "complex_category";
+  static const String analysisReport = "analysis_report";
+  static const String synthesisFormula = "synthesis_formula";
+
+  // Daily Challenge
+  static const String dayStreak = "day_streak";
+  static const String keepItGoing = "keep_it_going";
+  static const String todaysChallenge = "todays_challenge";
+  static const String rewardText = "reward_text";
+  static const String completedStatus = "completed_status";
+  static const String howItWorks = "how_it_works";
+  static const String inst1 = "inst_1";
+  static const String inst2 = "inst_2";
+  static const String inst3 = "inst_3";
+  static const String inst4 = "inst_4";
+
   static const Map<String, dynamic> En = {
     // Colors
     redColor: 'Red',
@@ -204,6 +251,7 @@ mixin AppStrings {
     timeAttackMode: 'TIME ATTACK',
     timeAttackModeSubtitle: 'Mix fast against the clock',
     levelMap: 'Level Map',
+    locked: 'LOCKED',
     back: 'BACK',
 
     // Settings
@@ -218,6 +266,7 @@ mixin AppStrings {
     // Game states
     paused: 'Paused',
     resume: 'Resume',
+    quit: 'Quit',
     // Game states
     gameOver: 'Game Over',
     timeUp: "Time's Up!",
@@ -342,6 +391,53 @@ mixin AppStrings {
     hintBlueGreen: "Lots of blue, just a little green.",
     hintBalanceAll: "The perfect balance of all three colors!",
     hintObserve: "Observe the target closely and find the right mix.",
+
+    // HUB/General
+    statisticsTitle: 'Statistics',
+    dailyChallengeTitle: 'Daily Challenge',
+    galleryTitle: 'Gallery',
+    labUpgradeTitle: 'Lab Upgrade',
+    chaosLabTitle: 'CHAOS LAB',
+    chaosLabSubtitle: 'Unstable reactions! Emergency protocols active!',
+
+    // Statistics
+    levelsCompleted: 'Levels Completed',
+    perfectMatches: 'Perfect Matches',
+    totalDropsUsed: 'Total Drops Used',
+    highestCombo: 'Highest Combo',
+    averageAccuracy: 'Average Accuracy',
+    favoriteMode: 'Favorite Mode',
+    modePlayCounts: 'Mode Play Counts',
+    playsText: 'plays',
+
+    // Gallery
+    labArchives: 'LAB ARCHIVES',
+    samplesCount: 'SAMPLES',
+    sortDiscovery: 'Discovery Order',
+    sortSpectral: 'Spectral (Hue)',
+    sortLuminance: 'Luminance',
+    sortSaturation: 'Saturation',
+    allCategory: 'All',
+    primaryCategory: 'Primary',
+    secondaryCategory: 'Secondary',
+    tertiaryCategory: 'Tertiary',
+    tintedCategory: 'Tinted',
+    shadedCategory: 'Shaded',
+    complexCategory: 'Complex',
+    analysisReport: 'ANALYSIS REPORT',
+    synthesisFormula: 'SYNTHESIS FORMULA',
+
+    // Daily Challenge
+    dayStreak: 'Day Streak',
+    keepItGoing: 'Keep it going!',
+    todaysChallenge: "Today's Challenge",
+    rewardText: 'Coins Reward',
+    completedStatus: 'Completed!',
+    howItWorks: 'How it Works:',
+    inst1: 'Complete the challenge to earn bonus coins',
+    inst2: 'New challenge available every day',
+    inst3: 'Build your streak for extra rewards',
+    inst4: 'Challenge resets at midnight',
   };
 
   static const Map<String, dynamic> Ar = {
@@ -393,6 +489,7 @@ mixin AppStrings {
     // Game states
     paused: 'إيقاف مؤقت',
     resume: 'استمرار',
+    quit: 'خروج',
     // Game states
     gameOver: 'انتهت اللعبة',
     timeUp: 'انتهى الوقت!',
@@ -518,6 +615,53 @@ mixin AppStrings {
     hintBlueGreen: "الكثير من الأزرق، فقط القليل من الأخضر.",
     hintBalanceAll: "التوازن المثالي لجميع الألوان الثلاثة!",
     hintObserve: "راقب الهدف عن كثب وجد المزيج الصحيح.",
+
+    // HUB/General
+    statisticsTitle: 'الإحصائيات',
+    dailyChallengeTitle: 'التحدي اليومي',
+    galleryTitle: 'المعرض',
+    labUpgradeTitle: 'تطوير المختبر',
+    chaosLabTitle: 'مختبر الفوضى',
+    chaosLabSubtitle: 'تفاعلات غير مستقرة! بروتوكولات الطوارئ مفعلة!',
+
+    // Statistics
+    levelsCompleted: 'المستويات المكتملة',
+    perfectMatches: 'التطابقات المثالية',
+    totalDropsUsed: 'إجمالي القطرات',
+    highestCombo: 'أعلى كومبو',
+    averageAccuracy: 'متوسط الدقة',
+    favoriteMode: 'الوضع المفضل',
+    modePlayCounts: 'عدد مرات لعب الأوضاع',
+    playsText: 'مرات لعب',
+
+    // Gallery
+    labArchives: 'أرشيف المختبر',
+    samplesCount: 'عينات',
+    sortDiscovery: 'ترتيب الاكتشاف',
+    sortSpectral: 'طيفي (الدرجة)',
+    sortLuminance: 'السطوع',
+    sortSaturation: 'التشبع',
+    allCategory: 'الكل',
+    primaryCategory: 'أساسي',
+    secondaryCategory: 'ثانوي',
+    tertiaryCategory: 'ثالثي',
+    tintedCategory: 'فاتح',
+    shadedCategory: 'مظلل',
+    complexCategory: 'معقد',
+    analysisReport: 'تقرير التحليل',
+    synthesisFormula: 'تركيبة التصنيع',
+
+    // Daily Challenge
+    dayStreak: 'سلسلة أيام',
+    keepItGoing: 'استمر في ذلك!',
+    todaysChallenge: 'تحدي اليوم',
+    rewardText: 'مكافأة عملات',
+    completedStatus: 'مكتمل!',
+    howItWorks: 'كيف يعمل:',
+    inst1: 'أكمل التحدي لكسب عملات إضافية',
+    inst2: 'تحدي جديد متاح كل يوم',
+    inst3: 'ابنِ السلسلة للحصول على مكافآت إضافية',
+    inst4: 'يتم إعادة ضبط التحدي عند منتصف الليل',
   };
 
   static const Map<String, dynamic> Es = {
@@ -554,6 +698,7 @@ mixin AppStrings {
     timeAttackMode: 'ATAQUE DE TIEMPO',
     timeAttackModeSubtitle: 'Mezcla rápido contra el reloj',
     levelMap: 'Mapa de Niveles',
+    locked: 'BLOQUEADO',
     back: 'VOLVER',
 
     // Settings
@@ -568,6 +713,7 @@ mixin AppStrings {
     // Game states
     paused: 'Pausado',
     resume: 'Continuar',
+    quit: 'Salir',
     // Game states
     gameOver: 'Juego Terminado',
     timeUp: '¡Tiempo Agotado!',
@@ -698,7 +844,55 @@ mixin AppStrings {
     hintBlueRed: "Azul primero, luego añade rojo.",
     hintBlueGreen: "Mucho azul, solo un poco de verde.",
     hintBalanceAll: "¡El equilibrio perfecto de los tres colores!",
-    hintObserve: "Observa el objetivo de cerca y encuentra la mezcla adecuada.",
+    hintObserve: "Observa el objetivo de cerca y encuentre la mezcla adecuada.",
+
+    // HUB/General
+    statisticsTitle: 'Estadísticas',
+    dailyChallengeTitle: 'Desafío Diario',
+    galleryTitle: 'Galería',
+    labUpgradeTitle: 'Mejora de Laboratorio',
+    chaosLabTitle: 'LABORATORIO DEL CAOS',
+    chaosLabSubtitle:
+        '¡Reacciones inestables! ¡Protocolos de emergencia activos!',
+
+    // Statistics
+    levelsCompleted: 'Niveles Completados',
+    perfectMatches: 'Parejas Perfectas',
+    totalDropsUsed: 'Total de Gotas Usadas',
+    highestCombo: 'Combo Más Alto',
+    averageAccuracy: 'Precisión Promedio',
+    favoriteMode: 'Modo Favorito',
+    modePlayCounts: 'Recuento de Juegos por Modo',
+    playsText: 'partidas',
+
+    // Gallery
+    labArchives: 'ARCHIVOS DEL LAB',
+    samplesCount: 'MUESTRAS',
+    sortDiscovery: 'Orden de Descubrimiento',
+    sortSpectral: 'Espectral (Tono)',
+    sortLuminance: 'Luminancia',
+    sortSaturation: 'Saturación',
+    allCategory: 'Todo',
+    primaryCategory: 'Primario',
+    secondaryCategory: 'Secundario',
+    tertiaryCategory: 'Terciario',
+    tintedCategory: 'Teñido',
+    shadedCategory: 'Sombreado',
+    complexCategory: 'Complejo',
+    analysisReport: 'INFORME DE ANÁLISIS',
+    synthesisFormula: 'FÓRMULA DE SÍNTESIS',
+
+    // Daily Challenge
+    dayStreak: 'Racha de Días',
+    keepItGoing: '¡Sigue así!',
+    todaysChallenge: 'Desafío de Hoy',
+    rewardText: 'Recompensa de Monedas',
+    completedStatus: '¡Completado!',
+    howItWorks: 'Cómo funciona:',
+    inst1: 'Completa el desafío para ganar monedas extra',
+    inst2: 'Nuevo desafío disponible cada día',
+    inst3: 'Mantén tu racha para obtener recompensas extra',
+    inst4: 'El desafío se reinicia a medianoche',
   };
 
   static const Map<String, dynamic> Fr = {
@@ -750,6 +944,7 @@ mixin AppStrings {
     // Game states
     paused: 'Pause',
     resume: 'Reprendre',
+    quit: 'Quitter',
     // Game states
     gameOver: 'Fin de la Partie',
     timeUp: "Temps Écoulé !",
@@ -881,5 +1076,52 @@ mixin AppStrings {
     hintBlueGreen: "Beaucoup de bleu, juste un peu de vert.",
     hintBalanceAll: "L'équilibre parfait des trois couleurs !",
     hintObserve: "Observe attentivement la cible et trouve le bon mélange.",
+
+    // HUB/General
+    statisticsTitle: 'Statistiques',
+    dailyChallengeTitle: 'Défi Quotidien',
+    galleryTitle: 'Galerie',
+    labUpgradeTitle: 'Amélioration Labo',
+    chaosLabTitle: 'LABO DU CHAOS',
+    chaosLabSubtitle: 'Réactions instables ! Protocoles d\'urgence activés !',
+
+    // Statistics
+    levelsCompleted: 'Niveaux Terminés',
+    perfectMatches: 'Matchs Parfaits',
+    totalDropsUsed: 'Total de Gouttes',
+    highestCombo: 'Plus Haut Combo',
+    averageAccuracy: 'Précision Moyenne',
+    favoriteMode: 'Mode Préféré',
+    modePlayCounts: 'Nombre de Parties par Mode',
+    playsText: 'parties',
+
+    // Gallery
+    labArchives: 'ARCHIVES DU LABO',
+    samplesCount: 'ÉCHANTILLONS',
+    sortDiscovery: 'Ordre de Découverte',
+    sortSpectral: 'Spectral (Teinte)',
+    sortLuminance: 'Luminance',
+    sortSaturation: 'Saturation',
+    allCategory: 'Tout',
+    primaryCategory: 'Primaire',
+    secondaryCategory: 'Secondaire',
+    tertiaryCategory: 'Tertiaire',
+    tintedCategory: 'Teinté',
+    shadedCategory: 'Ombré',
+    complexCategory: 'Complexe',
+    analysisReport: 'RAPPORT D\'ANALYSE',
+    synthesisFormula: 'FORMULE DE SYNTHÈSE',
+
+    // Daily Challenge
+    dayStreak: 'Série de Jours',
+    keepItGoing: 'Continue comme ça !',
+    todaysChallenge: 'Défi du Jour',
+    rewardText: 'Récompense en Pièces',
+    completedStatus: 'Terminé !',
+    howItWorks: 'Comment ça marche :',
+    inst1: 'Terminez le défi pour gagner des pièces bonus',
+    inst2: 'Nouveau défi disponible chaque jour',
+    inst3: 'Maintenez votre série pour des récompenses bonus',
+    inst4: 'Le défi se réinitialise à minuit',
   };
 }

@@ -1,7 +1,9 @@
 import 'package:color_mixing_deductive/helpers/audio_manager.dart';
 import 'package:color_mixing_deductive/helpers/daily_challenge_manager.dart';
+import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 
 import '../../../color_mixer_game.dart';
 
@@ -36,9 +38,9 @@ class DailyChallengeOverlay extends StatelessWidget {
                         game.overlays.remove('DailyChallenge');
                       },
                     ),
-                    const Text(
-                      'Daily Challenge',
-                      style: TextStyle(
+                    Text(
+                      AppStrings.dailyChallengeTitle.getString(context),
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
@@ -109,16 +111,18 @@ class DailyChallengeOverlay extends StatelessWidget {
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              '$streak Day Streak',
+                                              '$streak ${AppStrings.dayStreak.getString(context)}',
                                               style: const TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 24,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
-                                            const Text(
-                                              'Keep it going!',
-                                              style: TextStyle(
+                                            Text(
+                                              AppStrings.keepItGoing.getString(
+                                                context,
+                                              ),
+                                              style: const TextStyle(
                                                 color: Colors.white70,
                                                 fontSize: 14,
                                               ),
@@ -159,9 +163,11 @@ class DailyChallengeOverlay extends StatelessWidget {
                                       size: 60,
                                     ),
                                     const SizedBox(height: 20),
-                                    const Text(
-                                      "Today's Challenge",
-                                      style: TextStyle(
+                                    Text(
+                                      AppStrings.todaysChallenge.getString(
+                                        context,
+                                      ),
+                                      style: const TextStyle(
                                         color: Colors.white70,
                                         fontSize: 16,
                                       ),
@@ -189,7 +195,7 @@ class DailyChallengeOverlay extends StatelessWidget {
                                         ),
                                         const SizedBox(width: 8),
                                         Text(
-                                          '${challenge.reward} Coins Reward',
+                                          '${challenge.reward} ${AppStrings.rewardText.getString(context)}',
                                           style: const TextStyle(
                                             color: Colors.amber,
                                             fontSize: 18,
@@ -218,17 +224,18 @@ class DailyChallengeOverlay extends StatelessWidget {
                                             width: 2,
                                           ),
                                         ),
-                                        child: const Row(
+                                        child: Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            Icon(
+                                            const Icon(
                                               Icons.check_circle,
                                               color: Colors.green,
                                             ),
-                                            SizedBox(width: 8),
+                                            const SizedBox(width: 8),
                                             Text(
-                                              'Completed!',
-                                              style: TextStyle(
+                                              AppStrings.completedStatus
+                                                  .getString(context),
+                                              style: const TextStyle(
                                                 color: Colors.green,
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.bold,
@@ -254,24 +261,24 @@ class DailyChallengeOverlay extends StatelessWidget {
                                     color: Colors.white.withValues(alpha: 0.1),
                                   ),
                                 ),
-                                child: const Column(
+                                child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'How it Works:',
-                                      style: TextStyle(
+                                      AppStrings.howItWorks.getString(context),
+                                      style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    SizedBox(height: 12),
+                                    const SizedBox(height: 12),
                                     Text(
-                                      '• Complete the challenge to earn bonus coins\n'
-                                      '• New challenge available every day\n'
-                                      '• Build your streak for extra rewards\n'
-                                      '• Challenge resets at midnight',
-                                      style: TextStyle(
+                                      '• ${AppStrings.inst1.getString(context)}\n'
+                                      '• ${AppStrings.inst2.getString(context)}\n'
+                                      '• ${AppStrings.inst3.getString(context)}\n'
+                                      '• ${AppStrings.inst4.getString(context)}',
+                                      style: const TextStyle(
                                         color: Colors.white70,
                                         fontSize: 14,
                                         height: 1.6,
