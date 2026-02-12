@@ -163,6 +163,75 @@ class _SettingsOverlayState extends State<SettingsOverlay>
 
                     const SizedBox(height: 24),
 
+                    // Accessibility Section Header
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.accessibility_new_rounded,
+                            color: AppTheme.neonCyan,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Accessibility',
+                            style: AppTheme.bodyLarge(context).copyWith(
+                              color: AppTheme.neonCyan,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // High Contrast Mode
+                    _SettingsTile(
+                      icon: Icons.contrast_rounded,
+                      title: 'High Contrast',
+                      trailing: _ToggleSwitch(
+                        value: false, // TODO: Connect to AccessibilityManager
+                        onChanged: (value) {
+                          _audio.playButton();
+                          // TODO: Implement high contrast toggle
+                          setState(() {});
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Reduced Motion
+                    _SettingsTile(
+                      icon: Icons.motion_photos_off_rounded,
+                      title: 'Reduced Motion',
+                      trailing: _ToggleSwitch(
+                        value: false, // TODO: Connect to AccessibilityManager
+                        onChanged: (value) {
+                          _audio.playButton();
+                          // TODO: Implement reduced motion toggle
+                          setState(() {});
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Tutorial Button
+                    SizedBox(
+                      width: double.infinity,
+                      child: _GradientButton(
+                        label: 'REPLAY TUTORIAL',
+                        onTap: () {
+                          _audio.playButton();
+                          widget.game.overlays.remove('Settings');
+                          widget.game.overlays.add('Tutorial');
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
                     // Close button
                     SizedBox(
                       width: double.infinity,

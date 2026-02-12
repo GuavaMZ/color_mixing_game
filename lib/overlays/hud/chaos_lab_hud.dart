@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'dart:math' as math;
 import 'package:color_mixing_deductive/color_mixer_game.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
 import 'package:color_mixing_deductive/helpers/audio_manager.dart';

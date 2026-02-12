@@ -1,6 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
-// import 'package:flutter/material.dart'; // Removed for script usage
 
 class LevelGenerator {
   // Greatest Common Divisor for N numbers
