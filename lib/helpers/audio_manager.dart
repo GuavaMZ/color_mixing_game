@@ -19,7 +19,7 @@ class AudioManager {
   static const String dropSound = 'drop.mp3';
   static const String winSound = 'win.mp3';
   static const String resetSound = 'reset.mp3';
-  static const String buttonSound = 'button.mp3';
+  static const String buttonSound = 'button.wav';
   static const String starSound = 'star.mp3';
   static const String unlockSound = 'unlock.mp3';
   static const String gameOverSound = 'game_over.mp3';

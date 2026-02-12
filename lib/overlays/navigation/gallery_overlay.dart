@@ -18,11 +18,14 @@ class GalleryOverlay extends StatefulWidget {
   State<GalleryOverlay> createState() => _GalleryOverlayState();
 }
 
+enum SortOption { id, spectrum, brightness, saturation }
+
 class _GalleryOverlayState extends State<GalleryOverlay> {
   Set<int> discoveredColors = {};
   bool isLoading = true;
   List<ColorEntry> allColors = [];
   String selectedCategory = 'All';
+  SortOption currentSort = SortOption.id;
   int completedLevels = 0;
 
   final List<String> categories = [
@@ -65,7 +68,6 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
 
   /// Unlock colors based on level completion
   void _unlockColorsBasedOnProgress() {
-    // ... existing logic ...
     final Set<int> toUnlock = {};
 
     for (var color in allColors) {
@@ -93,19 +95,55 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
     }
   }
 
-  List<ColorEntry> _getFilteredColors() {
-    if (selectedCategory == 'All') return allColors;
-    return allColors
-        .where(
-          (c) => c.category.toLowerCase() == selectedCategory.toLowerCase(),
-        )
-        .toList();
+  List<ColorEntry> _getFilteredAndSortedColors() {
+    // 1. Filter
+    List<ColorEntry> filtered;
+    if (selectedCategory == 'All') {
+      filtered = List.from(allColors);
+    } else {
+      filtered = allColors
+          .where(
+            (c) => c.category.toLowerCase() == selectedCategory.toLowerCase(),
+          )
+          .toList();
+    }
+
+    // 2. Sort
+    switch (currentSort) {
+      case SortOption.id:
+        filtered.sort((a, b) => a.id.compareTo(b.id));
+        break;
+      case SortOption.spectrum:
+        filtered.sort((a, b) {
+          double hueA = a.hsv.hue;
+          double hueB = b.hsv.hue;
+          return hueA.compareTo(hueB);
+        });
+        break;
+      case SortOption.brightness:
+        filtered.sort((a, b) {
+          // Sort Dark -> Light
+          double lumA = a.color.computeLuminance();
+          double lumB = b.color.computeLuminance();
+          return lumA.compareTo(lumB);
+        });
+        break;
+      case SortOption.saturation:
+        filtered.sort((a, b) {
+          double satA = a.hsv.saturation;
+          double satB = b.hsv.saturation;
+          return satA.compareTo(satB);
+        });
+        break;
+    }
+
+    return filtered;
   }
 
   @override
   Widget build(BuildContext context) {
-    final filteredColors = _getFilteredColors();
-    final unlockedCount = filteredColors
+    final displayColors = _getFilteredAndSortedColors();
+    final unlockedCount = displayColors
         .where((c) => discoveredColors.contains(c.id))
         .length;
 
@@ -168,7 +206,7 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
                                     baseColor: Colors.white,
                                     highlightColor: AppTheme.neonCyan,
                                     child: Text(
-                                      "COLOR GALLERY",
+                                      "LAB ARCHIVES", // More scientific name
                                       textAlign: TextAlign.center,
                                       style: AppTheme.heading1(context)
                                           .copyWith(
@@ -186,7 +224,7 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    "$unlockedCount / ${filteredColors.length} Discovered",
+                                    "$unlockedCount / ${displayColors.length} SAMPLES",
                                     style: AppTheme.caption(context).copyWith(
                                       color: AppTheme.neonMagenta,
                                       fontWeight: FontWeight.bold,
@@ -195,9 +233,8 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
                                 ],
                               ),
                             ),
-                            const SizedBox(
-                              width: 48,
-                            ), // Spacer to balance back button
+                            // Sorting Dropdown
+                            _buildSortButton(),
                           ],
                         ),
                         const SizedBox(height: 12),
@@ -234,9 +271,9 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
                                   crossAxisSpacing: 12,
                                   mainAxisSpacing: 12,
                                 ),
-                            itemCount: filteredColors.length,
+                            itemCount: displayColors.length,
                             itemBuilder: (context, index) {
-                              final color = filteredColors[index];
+                              final color = displayColors[index];
                               final isUnlocked = discoveredColors.contains(
                                 color.id,
                               );
@@ -262,6 +299,36 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
                 ),
         ],
       ),
+    );
+  }
+
+  Widget _buildSortButton() {
+    return PopupMenuButton<SortOption>(
+      icon: const Icon(Icons.sort, color: Colors.white),
+      color: AppTheme.primaryDark,
+      onSelected: (SortOption result) {
+        setState(() {
+          currentSort = result;
+        });
+      },
+      itemBuilder: (BuildContext context) => <PopupMenuEntry<SortOption>>[
+        const PopupMenuItem<SortOption>(
+          value: SortOption.id,
+          child: Text('Discovery Order', style: TextStyle(color: Colors.white)),
+        ),
+        const PopupMenuItem<SortOption>(
+          value: SortOption.spectrum,
+          child: Text('Spectral (Hue)', style: TextStyle(color: Colors.white)),
+        ),
+        const PopupMenuItem<SortOption>(
+          value: SortOption.brightness,
+          child: Text('Luminance', style: TextStyle(color: Colors.white)),
+        ),
+        const PopupMenuItem<SortOption>(
+          value: SortOption.saturation,
+          child: Text('Saturation', style: TextStyle(color: Colors.white)),
+        ),
+      ],
     );
   }
 
@@ -321,8 +388,10 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
             BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
               child: Container(
+                width: MediaQuery.of(context).size.width * 0.9,
+                constraints: const BoxConstraints(maxWidth: 400),
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryDark.withValues(alpha: 0.9),
+                  color: AppTheme.primaryDark.withValues(alpha: 0.95),
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(
                     color: AppTheme.neonCyan.withValues(alpha: 0.5),
@@ -338,95 +407,145 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
                 padding: const EdgeInsets.all(24),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Color Swatch
-                    Hero(
-                      tag: 'color_${color.id}',
-                      child: Container(
-                        width: 120,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: color.color,
-                          boxShadow: [
-                            BoxShadow(
-                              color: color.color.withValues(alpha: 0.6),
-                              blurRadius: 30,
-                              spreadRadius: 10,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Name
-                    ShimmerEffect(
-                      baseColor: Colors.white,
-                      highlightColor: color.color,
-                      child: Text(
-                        color.name.toUpperCase(),
-                        style: AppTheme.heading2(
-                          context,
-                        ).copyWith(color: Colors.white, letterSpacing: 1.5),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Category Badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _getCategoryColor(color.category),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        color.category.toUpperCase(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    // --- Lab Report Header ---
+                    const Text(
+                      "ANALYSIS REPORT",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white54,
+                        fontSize: 10,
+                        letterSpacing: 3,
                       ),
                     ),
                     const SizedBox(height: 16),
 
-                    // Description
+                    // --- Color Preview Card ---
+                    Container(
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: color.color,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: color.color.withValues(alpha: 0.4),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            bottom: 12,
+                            right: 12,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withValues(alpha: 0.3),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                color.hexCode,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'monospace',
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // --- Name and Category ---
                     Text(
-                      color.description,
-                      style: AppTheme.bodySmall(
-                        context,
-                      ).copyWith(color: Colors.white70),
+                      color.name.toUpperCase(),
                       textAlign: TextAlign.center,
+                      style: AppTheme.heading2(
+                        context,
+                      ).copyWith(color: Colors.white, letterSpacing: 1.2),
+                    ),
+                    const SizedBox(height: 4),
+                    Center(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _getCategoryColor(color.category),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          color.category.toUpperCase(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 24),
 
-                    // Recipe
+                    // --- Scientific Data Grid ---
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildMetricTile(
+                            "RGB",
+                            "${color.color.red}, ${color.color.green}, ${color.color.blue}",
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildMetricTile(
+                            "HSL",
+                            "${color.hsv.hue.round()}°, ${(color.hsv.saturation * 100).round()}%",
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildMetricTile(
+                            "CMYK",
+                            "${color.cmyk[0]}, ${color.cmyk[1]}, ${color.cmyk[2]}, ${color.cmyk[3]}",
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+
+                    // --- Formula ---
+                    const Text(
+                      "SYNTHESIS FORMULA",
+                      style: TextStyle(
+                        color: AppTheme.neonMagenta,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: AppTheme.cosmicGlass(
                         borderRadius: 12,
                         borderColor: Colors.white.withValues(alpha: 0.1),
                       ),
-                      child: Column(
-                        children: [
-                          const Text(
-                            "FORMULA",
-                            style: TextStyle(
-                              color: AppTheme.neonMagenta,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          _buildRecipeRow(color.recipe),
-                        ],
-                      ),
+                      child: _buildRecipeRow(color.recipe),
                     ),
 
                     const SizedBox(height: 24),
@@ -442,6 +561,40 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildMetricTile(String label, String value) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white54,
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(
+              color: AppTheme.neonCyan,
+              fontSize: 14,
+              fontFamily: 'monospace',
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -468,8 +621,6 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
   Widget _buildRecipeRow(Map<String, int> recipe) {
     List<Widget> drops = [];
     recipe.forEach((colorName, count) {
-      // ... existing recipe logic ... (omitted for brevity, keep same)
-      // Re-implementing for completeness
       if (count > 0) {
         Color c;
         switch (colorName) {
