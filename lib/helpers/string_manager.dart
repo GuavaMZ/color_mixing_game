@@ -103,6 +103,10 @@ mixin AppStrings {
   static const String hintBlueGreen = "hint_blue_green";
   static const String hintBalanceAll = "hint_balance_all";
   static const String hintObserve = "hint_observe";
+  static const String hintPureWhite = "hint_pure_white";
+  static const String hintPureBlack = "hint_pure_black";
+  static const String hintNeedsWhite = "hint_needs_white";
+  static const String hintNeedsBlack = "hint_needs_black";
 
   // Shop
   static const String shopTitle = "shop_title";
@@ -112,6 +116,7 @@ mixin AppStrings {
   static const String beakerHex = "beaker_hex";
   static const String beakerCylinder = "beaker_cylinder";
   static const String beakerRound = "beaker_round";
+  static const String syncing = "syncing";
   static const String select = "select";
   static const String selected = "selected";
   static const String price = "price";
@@ -217,12 +222,26 @@ mixin AppStrings {
   static const String inst3 = "inst_3";
   static const String inst4 = "inst_4";
 
+  // Additional UI strings
+  static const String colorButtons = "color_buttons";
+  static const String undo = "undo";
+  static const String extraDrops = "extra_drops";
+  static const String helpDrop = "help_drop";
+  static const String revealColor = "reveal_color";
+
   static const Map<String, dynamic> En = {
     // Colors
     redColor: 'Red',
     greenColor: 'Green',
     blueColor: 'Blue',
     colorText: 'Color',
+
+    // Additional UI strings
+    colorButtons: 'Color Buttons',
+    undo: 'Undo',
+    extraDrops: 'Extra Drops',
+    helpDrop: 'Help Drop',
+    revealColor: 'Reveal Color',
 
     // Game UI
     precentageMatch: 'Match',
@@ -317,6 +336,7 @@ mixin AppStrings {
     // Modes
     colorEcho: 'COLOR ECHO',
     colorEchoSubtitle: 'Sync the spectral ghost to the laboratory core.',
+    syncing: "SYNCING...",
 
     // Achievements
     achievementsTitle: 'ACHIEVEMENTS',
@@ -391,6 +411,10 @@ mixin AppStrings {
     hintBlueGreen: "Lots of blue, just a little green.",
     hintBalanceAll: "The perfect balance of all three colors!",
     hintObserve: "Observe the target closely and find the right mix.",
+    hintPureWhite: "Pure white. Clean and bright.",
+    hintPureBlack: "Absence of all color. Deep black.",
+    hintNeedsWhite: "It looks too intense. Maybe some white?",
+    hintNeedsBlack: "It looks too bright. Needs more depth with black.",
 
     // HUB/General
     statisticsTitle: 'Statistics',
@@ -542,6 +566,7 @@ mixin AppStrings {
     // Modes
     colorEcho: 'صدى الألوان',
     colorEchoSubtitle: 'قم بمزامنة الشبح الطيفي مع قلب المختبر.',
+    syncing: "جاري المزامنة...",
 
     // Achievements
     achievementsTitle: 'الإنجازات',
@@ -615,6 +640,10 @@ mixin AppStrings {
     hintBlueGreen: "الكثير من الأزرق، فقط القليل من الأخضر.",
     hintBalanceAll: "التوازن المثالي لجميع الألوان الثلاثة!",
     hintObserve: "راقب الهدف عن كثب وجد المزيج الصحيح.",
+    hintPureWhite: "أبيض نقي. نظيف ومشرق.",
+    hintPureBlack: "غياب تام للألوان. أسود عميق.",
+    hintNeedsWhite: "يبدو باهتاً جداً (يحتاج إلى الأبيض).",
+    hintNeedsBlack: "يبدو قاتماً جداً (يحتاج إلى الأسود).",
 
     // HUB/General
     statisticsTitle: 'الإحصائيات',
@@ -662,6 +691,13 @@ mixin AppStrings {
     inst2: 'تحدي جديد متاح كل يوم',
     inst3: 'ابنِ السلسلة للحصول على مكافآت إضافية',
     inst4: 'يتم إعادة ضبط التحدي عند منتصف الليل',
+
+    // Additional UI strings
+    colorButtons: 'أزرار الألوان',
+    undo: 'تراجع',
+    extraDrops: 'قطرات إضافية',
+    helpDrop: 'قطرة مساعدة',
+    revealColor: 'كشف اللون',
   };
 
   static const Map<String, dynamic> Es = {
@@ -768,6 +804,7 @@ mixin AppStrings {
     colorEcho: 'ECO DE COLOR',
     colorEchoSubtitle:
         'Sincroniza el fantasma espectral con el núcleo del laboratorio.',
+    syncing: "SINCRONIZANDO...",
 
     // Achievements
     achievementsTitle: 'LOGROS',
@@ -845,6 +882,11 @@ mixin AppStrings {
     hintBlueGreen: "Mucho azul, solo un poco de verde.",
     hintBalanceAll: "¡El equilibrio perfecto de los tres colores!",
     hintObserve: "Observa el objetivo de cerca y encuentre la mezcla adecuada.",
+    hintPureWhite: "Blanco puro. Limpio y brillante.",
+    hintPureBlack: "Ausencia de todo color. Negro profundo.",
+    hintNeedsWhite: "Parece demasiado intenso. ¿Quizás un poco de blanco?",
+    hintNeedsBlack:
+        "Parece demasiado brillante. Necesita más profundidad con negro.",
 
     // HUB/General
     statisticsTitle: 'Estadísticas',
@@ -893,6 +935,13 @@ mixin AppStrings {
     inst2: 'Nuevo desafío disponible cada día',
     inst3: 'Mantén tu racha para obtener recompensas extra',
     inst4: 'El desafío se reinicia a medianoche',
+
+    // Additional UI strings
+    colorButtons: 'Botones de Color',
+    undo: 'Deshacer',
+    extraDrops: 'Gotas Extra',
+    helpDrop: 'Gotas de Ayuda',
+    revealColor: 'Revelar Color',
   };
 
   static const Map<String, dynamic> Fr = {
@@ -998,6 +1047,7 @@ mixin AppStrings {
     colorEcho: 'ÉCHO DE COULEUR',
     colorEchoSubtitle:
         'Synchronisez le fantôme spectral avec le noyau du laboratoire.',
+    syncing: "SYNCHRONISATION...",
 
     // Achievements
     achievementsTitle: 'SUCCÈS',
@@ -1076,6 +1126,11 @@ mixin AppStrings {
     hintBlueGreen: "Beaucoup de bleu, juste un peu de vert.",
     hintBalanceAll: "L'équilibre parfait des trois couleurs !",
     hintObserve: "Observe attentivement la cible et trouve le bon mélange.",
+    hintPureWhite: "Blanc pur. Propre et brillant.",
+    hintPureBlack: "Absence de toute couleur. Noir profond.",
+    hintNeedsWhite: "Il semble trop intense. Peut-être un peu de blanc ?",
+    hintNeedsBlack:
+        "Il semble trop brillant. Besoin de plus de profondeur avec du noir.",
 
     // HUB/General
     statisticsTitle: 'Statistiques',
@@ -1123,5 +1178,12 @@ mixin AppStrings {
     inst2: 'Nouveau défi disponible chaque jour',
     inst3: 'Maintenez votre série pour des récompenses bonus',
     inst4: 'Le défi se réinitialise à minuit',
+
+    // Additional UI strings
+    colorButtons: 'Boutons de Couleur',
+    undo: 'Annuler',
+    extraDrops: 'Gouttes Supplémentaires',
+    helpDrop: 'Goutte d\'Aide',
+    revealColor: 'Révéler la Couleur',
   };
 }

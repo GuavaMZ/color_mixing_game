@@ -1,7 +1,7 @@
 import 'dart:math';
+import 'dart:ui';
 import 'package:flame/components.dart';
-import 'package:flutter/material.dart';
-import '../../helpers/theme_constants.dart';
+import 'package:flutter/material.dart' show Colors;
 
 class SpectralGhostTarget extends PositionComponent {
   final Color targetColor;
@@ -21,41 +21,75 @@ class SpectralGhostTarget extends PositionComponent {
     super.render(canvas);
     final center = size.toOffset() / 2;
     final pulse = (sin(_time * 3) + 1) / 2;
+    final glitch = (sin(_time * 25) > 0.8) ? (sin(_time * 40) * 3) : 0.0;
 
-    // Spectral glow
+    canvas.save();
+    canvas.translate(glitch, 0);
+
+    // 1. Ghostly Glow
     final glowPaint = Paint()
       ..color = targetColor.withValues(alpha: 0.2 + pulse * 0.1)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 20);
-    canvas.drawCircle(center, 30 + pulse * 10, glowPaint);
 
-    // Outline
-    final outlinePaint = Paint()
+    // Draw an elliptical glow behind
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: center,
+        width: 80 + pulse * 10,
+        height: 100 + pulse * 10,
+      ),
+      glowPaint,
+    );
+
+    // 2. Beaker Silhouette Path
+    final path = Path();
+    final w = 50.0;
+    final h = 70.0;
+    final topY = center.dy - h / 2;
+    final bottomY = center.dy + h / 2;
+    final leftX = center.dx - w / 2;
+    final rightX = center.dx + w / 2;
+
+    path.moveTo(leftX + 10, topY); // Top rim
+    path.lineTo(rightX - 10, topY);
+    path.lineTo(rightX - 8, topY + 10); // Neck
+    path.lineTo(rightX, bottomY - 5); // Body
+    path.quadraticBezierTo(
+      rightX,
+      bottomY,
+      rightX - 10,
+      bottomY,
+    ); // Bottom right
+    path.lineTo(leftX + 10, bottomY); // Bottom
+    path.quadraticBezierTo(leftX, bottomY, leftX, bottomY - 5); // Bottom left
+    path.lineTo(leftX + 8, topY + 10); // Neck
+    path.close();
+
+    // 3. Draw Silhouette
+    final silhouettePaint = Paint()
+      ..color = targetColor.withValues(alpha: 0.6 + pulse * 0.2)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2
-      ..color = targetColor.withValues(alpha: 0.8)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.outer, 5);
+      ..strokeWidth = 2;
+    canvas.drawPath(path, silhouettePaint);
 
-    // Draw a "ghostly" shape (simplified beaker silhouette)
-    final path = Path()
-      ..moveTo(center.dx - 20, center.dy - 30)
-      ..lineTo(center.dx + 20, center.dy - 30)
-      ..lineTo(center.dx + 25, center.dy + 30)
-      ..lineTo(center.dx - 25, center.dy + 30)
-      ..close();
+    // 4. Inner Liquid Core (Classic Circle)
+    final corePaint = Paint()
+      ..color = targetColor
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(center, 15, corePaint);
 
-    canvas.drawPath(path, outlinePaint);
-
-    // Glitch lines
-    if (Random().nextDouble() > 0.8) {
-      final glitchPaint = Paint()
-        ..color = AppTheme.neonCyan.withValues(alpha: 0.5)
+    // 5. Glitch Lines
+    if (sin(_time * 15) > 0.7) {
+      final linePaint = Paint()
+        ..color = Colors.white.withValues(alpha: 0.5)
         ..strokeWidth = 1;
-      double lineY = center.dy - 30 + Random().nextDouble() * 60;
       canvas.drawLine(
-        Offset(center.dx - 35, lineY),
-        Offset(center.dx + 35, lineY),
-        glitchPaint,
+        Offset(leftX - 10, center.dy + sin(_time * 20) * 30),
+        Offset(rightX + 10, center.dy + sin(_time * 20) * 30),
+        linePaint,
       );
     }
+
+    canvas.restore();
   }
 }

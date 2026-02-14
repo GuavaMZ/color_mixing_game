@@ -64,7 +64,7 @@ class LevelManager {
           maxDrops: levelData['maxDrops'],
           difficulty: (levelData['difficultyFactor'] as num).toDouble(),
           isBlindMode: levelData['isBlindMode'] ?? false,
-          hintOverride: levelData['hint'],
+          hintOverride: _mapHint(levelData['hint']),
         );
       }).toList();
 
@@ -174,11 +174,13 @@ class LevelManager {
   }
 
   String _generateSmartHint(int r, int g, int b, int w, int k) {
-    if (w > 0 && r == 0 && g == 0 && b == 0 && k == 0) return "Pure White";
-    if (k > 0 && r == 0 && g == 0 && b == 0 && w == 0) return "Pure Black";
+    if (w > 0 && r == 0 && g == 0 && b == 0 && k == 0)
+      return AppStrings.hintPureWhite;
+    if (k > 0 && r == 0 && g == 0 && b == 0 && w == 0)
+      return AppStrings.hintPureBlack;
 
-    if (w > 0 && w >= r && w >= g && w >= b) return "It looks pale (Add White)";
-    if (k > 0 && k >= r && k >= g && k >= b) return "It looks dark (Add Black)";
+    if (w > 0 && w >= r && w >= g && w >= b) return AppStrings.hintNeedsWhite;
+    if (k > 0 && k >= r && k >= g && k >= b) return AppStrings.hintNeedsBlack;
     if (r > 0 && g == 0 && b == 0) return AppStrings.hintPureRed;
     if (g > 0 && r == 0 && b == 0) return AppStrings.hintPureGreen;
     if (b > 0 && r == 0 && g == 0) return AppStrings.hintPureBlue;
@@ -208,6 +210,43 @@ class LevelManager {
     if (r == g && g == b && r > 0) return AppStrings.hintBalanceAll;
 
     return AppStrings.hintObserve;
+  }
+
+  String _mapHint(String? hint) {
+    if (hint == null || hint.isEmpty) return AppStrings.hintObserve;
+
+    switch (hint) {
+      case "Just Red":
+        return AppStrings.hintPureRed;
+      case "Just Green":
+        return AppStrings.hintPureGreen;
+      case "Just Blue":
+        return AppStrings.hintPureBlue;
+      case "Mostly Red":
+        return AppStrings.hintMostlyRed;
+      case "Mostly Green":
+        return AppStrings.hintMostlyGreen;
+      case "Mostly Blue":
+        return AppStrings.hintMostlyBlue;
+      case "Equal Red and Blue make Magenta":
+        return AppStrings.hintMixRB;
+      case "Equal Green and Blue make Cyan":
+        return AppStrings.hintMixGB;
+      case "Equal Red and Green make Yellow":
+        return AppStrings.hintMixRG;
+      case "Looks very pale (needs White)":
+        return AppStrings.hintNeedsWhite;
+      case "Looks very dark (needs Black)":
+        return AppStrings.hintNeedsBlack;
+      case "Observe the color carefully":
+        return AppStrings.hintObserve;
+      case "Perfect balance of colors":
+        return AppStrings.hintBalanceAll;
+      default:
+        // Check if it's already a hint_ key
+        if (hint.startsWith("hint_")) return hint;
+        return AppStrings.hintObserve;
+    }
   }
 
   void unlockNextLevel(int currentLevelIndex, int stars) {

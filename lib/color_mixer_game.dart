@@ -847,6 +847,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
           targetColor: targetColor,
         ),
       );
+      add(ChromaticAberrationEffect());
       overlays.add('ColorEchoHUD');
       overlays.remove('Controls');
     } else if (currentMode == GameMode.chaosLab) {

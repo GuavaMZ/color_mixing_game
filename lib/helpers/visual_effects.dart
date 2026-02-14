@@ -462,3 +462,94 @@ class _ExplosionPainter extends CustomPainter {
   @override
   bool shouldRepaint(_ExplosionPainter oldDelegate) => true;
 }
+
+/// A pulsing effect for important UI elements
+class PulsingEffect extends StatefulWidget {
+  final Widget child;
+  final Color color;
+  final double minScale;
+  final double maxScale;
+  final Duration duration;
+
+  const PulsingEffect({
+    super.key,
+    required this.child,
+    this.color = Colors.transparent,
+    this.minScale = 1.0,
+    this.maxScale = 1.1,
+    this.duration = const Duration(milliseconds: 1000),
+  });
+
+  @override
+  State<PulsingEffect> createState() => _PulsingEffectState();
+}
+
+class _PulsingEffectState extends State<PulsingEffect>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(duration: widget.duration, vsync: this)
+      ..repeat(reverse: true);
+      
+    _scaleAnimation = Tween<double>(
+      begin: widget.minScale,
+      end: widget.maxScale,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _scaleAnimation,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _scaleAnimation.value,
+          child: widget.child,
+        );
+      },
+    );
+  }
+}
+
+/// A glowing border effect for important UI elements
+class GlowingBorder extends StatelessWidget {
+  final Widget child;
+  final Color color;
+  final double strokeWidth;
+  final double blurRadius;
+
+  const GlowingBorder({
+    super.key,
+    required this.child,
+    this.color = Colors.white,
+    this.strokeWidth = 2.0,
+    this.blurRadius = 10.0,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.5),
+            blurRadius: blurRadius,
+            spreadRadius: strokeWidth,
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+}

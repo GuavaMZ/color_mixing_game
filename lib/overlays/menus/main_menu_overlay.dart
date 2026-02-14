@@ -215,16 +215,27 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
         return Transform.scale(
           scale: value,
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 6.0,
-            ), // Tighter spacing
-            child: ResponsiveIconButton(
-              icon: icon,
-              onPressed: onTap,
-              tooltip: tooltip,
-              size: 20, // Compact size
-              color: Colors.white,
-              backgroundColor: Colors.white.withValues(alpha: 0.05),
+            padding: EdgeInsets.symmetric(
+              horizontal: ResponsiveHelper.spacing(context, 4),
+            ), // Responsive spacing
+            child: Semantics(
+              label: tooltip,
+              button: true,
+              child: ExcludeSemantics(
+                child: ResponsiveIconButton(
+                  icon: icon,
+                  onPressed: onTap,
+                  tooltip: tooltip,
+                  size: ResponsiveHelper.responsive(
+                    context,
+                    mobile: 20,
+                    tablet: 22,
+                    desktop: 24,
+                  ), // Responsive size
+                  color: Colors.white,
+                  backgroundColor: Colors.white.withValues(alpha: 0.05),
+                ),
+              ),
             ),
           ),
         );
@@ -339,31 +350,51 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                     ),
                   ],
                 ),
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.science_rounded,
-                      size: 64,
-                      color: Colors.white.withValues(alpha: 0.9),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      AppStrings.appTitle.getString(context).toUpperCase(),
-                      textAlign: TextAlign.center,
-                      style: AppTheme.heading1(context).copyWith(
-                        letterSpacing: 4,
-                        shadows: [
-                          Shadow(color: AppTheme.neonCyan, blurRadius: 20),
-                          Shadow(
-                            // Holographic edge
-                            color: Colors.white,
-                            offset: const Offset(-2, -2),
-                            blurRadius: 5,
+                child: Semantics(
+                  label: AppStrings.appTitle.getString(context),
+                  child: ExcludeSemantics(
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.science_rounded,
+                          size: ResponsiveHelper.responsive(
+                            context,
+                            mobile: 56,
+                            tablet: 64,
+                            desktop: 72,
                           ),
-                        ],
-                      ),
+                          color: Colors.white.withValues(alpha: 0.9),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          AppStrings.appTitle.getString(context).toUpperCase(),
+                          textAlign: TextAlign.center,
+                          semanticsLabel: AppStrings.appTitle.getString(context),
+                          style: AppTheme.heading1(context).copyWith(
+                            fontSize: ResponsiveHelper.fontSize(
+                              context,
+                              ResponsiveHelper.responsive(
+                                context,
+                                mobile: 32,
+                                tablet: 36,
+                                desktop: 42,
+                              ),
+                            ),
+                            letterSpacing: 4,
+                            shadows: [
+                              Shadow(color: AppTheme.neonCyan, blurRadius: 20),
+                              Shadow(
+                                // Holographic edge
+                                color: Colors.white,
+                                offset: const Offset(-2, -2),
+                                blurRadius: 5,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ],
@@ -488,72 +519,128 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                 padding: EdgeInsets.zero, // We control padding inside
                 hasGlow: false, // Custom glow logic via AnimatedCard
                 borderColor: gradient.colors.first.withValues(alpha: 0.3),
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        gradient.colors.first.withValues(alpha: 0.1),
-                        gradient.colors.last.withValues(alpha: 0.05),
-                      ],
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        // Icon Box
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            gradient: gradient,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: gradient.colors.first.withValues(
-                                  alpha: 0.4,
-                                ),
-                                blurRadius: 12,
-                                offset: const Offset(0, 4),
-                              ),
+                child: Semantics(
+                  label: '$title. $subtitle',
+                  button: true,
+                  child: ExcludeSemantics(
+                    child: GlowingBorder(
+                      color: gradient.colors.first,
+                      blurRadius: 5,
+                      strokeWidth: 1,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              gradient.colors.first.withValues(alpha: 0.1),
+                              gradient.colors.last.withValues(alpha: 0.05),
                             ],
                           ),
-                          child: Icon(icon, color: Colors.white, size: 28),
+                          borderRadius: BorderRadius.circular(24),
                         ),
-
-                        const SizedBox(width: 16),
-
-                        // Text Info
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Padding(
+                          padding: EdgeInsets.all(ResponsiveHelper.responsive(
+                            context,
+                            mobile: 16,
+                            tablet: 20,
+                            desktop: 24,
+                          )),
+                          child: Row(
                             children: [
-                              Text(
-                                title,
-                                style: AppTheme.heading3(context).copyWith(
-                                  letterSpacing: 1,
+                              // Icon Box
+                              Container(
+                                padding: EdgeInsets.all(ResponsiveHelper.responsive(
+                                  context,
+                                  mobile: 12,
+                                  tablet: 14,
+                                  desktop: 16,
+                                )),
+                                decoration: BoxDecoration(
+                                  gradient: gradient,
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: gradient.colors.first.withValues(
+                                        alpha: 0.4,
+                                      ),
+                                      blurRadius: 12,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(
+                                  icon,
                                   color: Colors.white,
+                                  size: ResponsiveHelper.responsive(
+                                    context,
+                                    mobile: 24,
+                                    tablet: 28,
+                                    desktop: 32,
+                                  ),
                                 ),
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                subtitle,
-                                style: AppTheme.bodySmall(
+
+                              SizedBox(width: ResponsiveHelper.spacing(context, 16)),
+
+                              // Text Info
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      title,
+                                      style: AppTheme.heading3(context).copyWith(
+                                        fontSize: ResponsiveHelper.fontSize(
+                                          context,
+                                          ResponsiveHelper.responsive(
+                                            context,
+                                            mobile: 20,
+                                            tablet: 22,
+                                            desktop: 24,
+                                          ),
+                                        ),
+                                        letterSpacing: 1,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    SizedBox(height: ResponsiveHelper.spacing(context, 4)),
+                                    Text(
+                                      subtitle,
+                                      style: AppTheme.bodySmall(
+                                        context,
+                                      ).copyWith(
+                                        fontSize: ResponsiveHelper.fontSize(
+                                          context,
+                                          ResponsiveHelper.responsive(
+                                            context,
+                                            mobile: 12,
+                                            tablet: 14,
+                                            desktop: 16,
+                                          ),
+                                        ),
+                                        color: Colors.white70,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              // Arrow
+                              Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                color: Colors.white.withValues(alpha: 0.5),
+                                size: ResponsiveHelper.responsive(
                                   context,
-                                ).copyWith(color: Colors.white70),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                                  mobile: 14,
+                                  tablet: 16,
+                                  desktop: 18,
+                                ),
                               ),
                             ],
                           ),
                         ),
-
-                        // Arrow
-                        Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          color: Colors.white.withValues(alpha: 0.5),
-                          size: 16,
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),

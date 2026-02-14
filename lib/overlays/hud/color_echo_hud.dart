@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:color_mixing_deductive/color_mixer_game.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
 import 'package:color_mixing_deductive/helpers/audio_manager.dart';
+import 'package:flutter_localization/flutter_localization.dart';
+import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:color_mixing_deductive/helpers/visual_effects.dart'; // StarField
 import 'package:color_mixing_deductive/components/ui/responsive_components.dart'; // ResponsiveIconButton
 
@@ -15,18 +17,17 @@ class ColorEchoHUD extends StatelessWidget {
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          // Background - Grid Distortion Effect (Simulated with grid painter)
+          // Background - Semi-transparent overlay to keep the "spectral" feel
           Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [const Color(0xFF000022), const Color(0xFF110033)],
-              ),
+              color: const Color(0xFF000022).withValues(alpha: 0.4),
             ),
           ),
           Positioned.fill(
-            child: StarField(starCount: 30, color: AppTheme.neonCyan),
+            child: StarField(
+              starCount: 30,
+              color: AppTheme.neonCyan.withValues(alpha: 0.3),
+            ),
           ),
 
           // Grid Overlay
@@ -68,7 +69,7 @@ class ColorEchoHUD extends StatelessWidget {
                       return Column(
                         children: [
                           Text(
-                            "SYNCING... ${match.toStringAsFixed(1)}%",
+                            "${AppStrings.syncing.getString(context)} ${match.toStringAsFixed(1)}%",
                             style: const TextStyle(
                               color: AppTheme.neonCyan,
                               fontSize: 28,

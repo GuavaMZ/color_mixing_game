@@ -335,9 +335,12 @@ class ResponsiveHelper {
     T? tablet,
     T? desktop,
   }) {
-    if (isDesktop(context)) return desktop ?? tablet ?? mobile;
-    if (isTablet(context)) return tablet ?? mobile;
-    return mobile;
+    final width = screenWidth(context);
+    
+    if (width >= 1200) return desktop ?? tablet ?? mobile; // Large desktop
+    if (width >= 900) return (tablet ?? mobile); // Desktop/tablet
+    if (width >= 600) return (tablet ?? mobile); // Tablet
+    return mobile; // Mobile
   }
 
   /// Responsive font size with scaling

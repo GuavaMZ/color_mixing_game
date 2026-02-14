@@ -7,6 +7,7 @@ import '../../helpers/theme_constants.dart';
 class HolographicRadar extends PositionComponent with HasGameRef {
   final double radius;
   double _rotation = 0;
+  double _time = 0;
   double _pulse = 0;
 
   HolographicRadar({required Vector2 position, required this.radius})
@@ -19,8 +20,9 @@ class HolographicRadar extends PositionComponent with HasGameRef {
   @override
   void update(double dt) {
     super.update(dt);
+    _time += dt;
     _rotation += dt * 0.5;
-    _pulse = (sin(gameRef.currentTime() * 2) + 1) / 2;
+    _pulse = (sin(_time * 2) + 1) / 2;
   }
 
   @override
