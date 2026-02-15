@@ -25,6 +25,7 @@ import 'package:color_mixing_deductive/overlays/system/statistics_overlay.dart';
 import 'package:color_mixing_deductive/overlays/navigation/daily_challenge_overlay.dart';
 import 'package:color_mixing_deductive/overlays/system/blackout_overlay.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:color_mixing_deductive/core/ad_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,6 +52,9 @@ void main() async {
 
   // Initialize audio
   await AudioManager().initialize();
+
+  // Initialize Ads
+  await AdManager().initialize();
 
   runApp(const MyApp());
 }

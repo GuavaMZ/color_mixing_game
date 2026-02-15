@@ -1,5 +1,6 @@
 import 'dart:ui';
 import '../../../color_mixer_game.dart';
+import '../../../core/ad_manager.dart';
 import '../../helpers/string_manager.dart';
 import '../../helpers/theme_constants.dart';
 import '../../helpers/audio_manager.dart';
@@ -368,6 +369,7 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
                                 icon: Icons.arrow_forward_rounded,
                                 onTap: () {
                                   _audio.playButton();
+                                  AdManager().showInterstitialAd();
                                   widget.game.goToNextLevel();
                                 },
                               ),
