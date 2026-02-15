@@ -10,6 +10,7 @@ import '../../helpers/audio_manager.dart';
 import '../../helpers/visual_effects.dart';
 import '../../components/ui/responsive_components.dart';
 import '../../components/ui/animated_card.dart';
+import '../../components/ui/coins_widget.dart';
 
 class MainMenuOverlay extends StatefulWidget {
   final ColorMixerGame game;
@@ -289,34 +290,12 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
   }
 
   Widget _buildCoinsDisplay() {
-    return ValueListenableBuilder<int>(
-      valueListenable: widget.game.totalCoins,
-      builder: (context, coins, _) {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: AppTheme.cosmicGlass(
-            borderRadius: 20,
-            borderColor: Colors.amber.withValues(alpha: 0.3),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.monetization_on_rounded,
-                color: Colors.amber,
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                "$coins",
-                style: AppTheme.bodyLarge(
-                  context,
-                ).copyWith(fontWeight: FontWeight.w900, color: Colors.white),
-              ),
-            ],
-          ),
-        );
-      },
+    return CoinsWidget(
+      coinsNotifier: widget.game.totalCoins,
+      useEnhancedStyle: false, // Use basic style to match original
+      iconSize: 20,
+      fontSize: 16,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     );
   }
 

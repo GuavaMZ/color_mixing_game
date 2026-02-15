@@ -1,0 +1,5054 @@
+import 'dart:ui';
+import 'package:color_mixing_deductive/components/gameplay/beaker.dart';
+import 'package:color_mixing_deductive/helpers/audio_manager.dart';
+import 'package:color_mixing_deductive/helpers/string_manager.dart';
+import 'package:color_mixing_deductive/helpers/theme_constants.dart';
+import 'package:color_mixing_deductive/helpers/visual_effects.dart';
+import 'package:color_mixing_deductive/components/ui/animated_card.dart';
+import 'package:color_mixing_deductive/components/ui/responsive_components.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
+import '../../../color_mixer_game.dart';
+
+class ShopItemData {
+  final String nameKey;
+  final int price;
+  final BeakerType type;
+  final IconData icon;
+
+  const ShopItemData({
+    required this.nameKey,
+    required this.price,
+    required this.type,
+    required this.icon,
+  }
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+});
+}
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+class HelperItemData {
+  final String id;
+  final String nameKey;
+  final String descKey;
+  final int price;
+  final int amount;
+  final IconData icon;
+  final Color color;
+
+  const HelperItemData({
+    required this.id,
+    required this.nameKey,
+    required this.descKey,
+    required this.price,
+    required this.amount,
+    required this.icon,
+    required this.color,
+  }
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+});
+}
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+class ShopOverlay extends StatefulWidget {
+  final ColorMixerGame game;
+  const ShopOverlay({super.key, required this.game}
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+});
+
+  @override
+  State<ShopOverlay> createState() => _ShopOverlayState();
+}
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+class _ShopOverlayState extends State<ShopOverlay> {
+  static const List<ShopItemData> _shopItems = [
+    ShopItemData(
+      nameKey: AppStrings.beakerClassic,
+      price: 0,
+      type: BeakerType.classic,
+      icon: Icons.science_outlined,
+    ),
+    ShopItemData(
+      nameKey: AppStrings.beakerFlask,
+      price: 300,
+      type: BeakerType.laboratory,
+      icon: Icons.science_rounded,
+    ),
+    ShopItemData(
+      nameKey: AppStrings.beakerMagic,
+      price: 400,
+      type: BeakerType.magicBox,
+      icon: Icons.inventory_2_rounded,
+    ),
+    ShopItemData(
+      nameKey: AppStrings.beakerHex,
+      price: 800,
+      type: BeakerType.hexagon,
+      icon: Icons.hexagon_rounded,
+    ),
+    ShopItemData(
+      nameKey: AppStrings.beakerCylinder,
+      price: 900,
+      type: BeakerType.cylinder,
+      icon: Icons.view_agenda_rounded,
+    ),
+    ShopItemData(
+      nameKey: AppStrings.beakerRound,
+      price: 1500,
+      type: BeakerType.round,
+      icon: Icons.circle_outlined,
+    ),
+  ];
+
+  static const List<HelperItemData> _helperItems = [
+    HelperItemData(
+      id: 'undo',
+      nameKey: AppStrings.undoTitle,
+      descKey: AppStrings.undoDesc,
+      price: 75,
+      amount: 5,
+      icon: Icons.undo_rounded,
+      color: AppTheme.neonCyan,
+    ),
+    HelperItemData(
+      id: 'extra_drops',
+      nameKey: AppStrings.extraDropsTitle,
+      descKey: AppStrings.extraDropsDesc,
+      price: 200,
+      amount: 3,
+      icon: Icons.add_circle_outline,
+      color: AppTheme.neonMagenta,
+    ),
+    HelperItemData(
+      id: 'help_drop',
+      nameKey: AppStrings.helpDropTitle,
+      descKey: AppStrings.helpDropDesc,
+      price: 350,
+      amount: 3,
+      icon: Icons.water_drop_outlined,
+      color: AppTheme.success,
+    ),
+    HelperItemData(
+      id: 'reveal_color',
+      nameKey: AppStrings.revealColorTitle,
+      descKey: AppStrings.revealColorDesc,
+      price: 500,
+      amount: 2,
+      icon: Icons.visibility_outlined,
+      color: AppTheme.electricYellow,
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          // Enhanced background with animated particles
+          Container(
+            decoration: BoxDecoration(
+              gradient: AppTheme.backgroundGradient.colors.length > 1
+                  ? LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        AppTheme.backgroundGradient.colors.first.withValues(
+                          alpha: 0.7,
+                        ),
+                        AppTheme.backgroundGradient.colors.last.withValues(
+                          alpha: 0.7,
+                        ),
+                      ],
+                    )
+                  : AppTheme.backgroundGradient,
+            ),
+          ),
+          
+          // Animated particle background
+          _AnimatedParticleBackground(),
+          
+          // Original starfield
+          const Positioned.fill(
+            child: StarField(starCount: 40, color: Colors.white),
+          ),
+
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: 8,
+                sigmaY: 8,
+              ), // Increased blur for more cosmic effect
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: AppTheme.backgroundGradient.colors.length > 1
+                      ? LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            AppTheme.backgroundGradient.colors.first.withValues(
+                              alpha: 0.6,
+                            ),
+                            AppTheme.backgroundGradient.colors.last.withValues(
+                              alpha: 0.6,
+                            ),
+                          ],
+                        )
+                      : AppTheme.backgroundGradient,
+                ),
+              ),
+            ),
+          ),
+
+          SafeArea(
+            child: Column(
+              children: [
+                _buildHeader(context),
+                Expanded(
+                  child: AnimatedBuilder(
+                    animation: widget.game,
+                    builder: (context, child) {
+                      return ListView(
+                        padding: const EdgeInsets.all(20),
+                        children: [
+                          _buildSectionTitle(
+                            context,
+                            AppStrings.helpersTitle.getString(context),
+                            Icons.auto_awesome,
+                          ),
+                          const SizedBox(height: 16),
+                          GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  mainAxisSpacing: 16,
+                                  crossAxisSpacing: 16,
+                                  childAspectRatio: 0.9,
+                                ),
+                            itemCount: _helperItems.length,
+                            itemBuilder: (context, index) {
+                              return HelperItemCard(
+                                game: widget.game,
+                                item: _helperItems[index],
+                              );
+                            }
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+},
+                          ),
+                          const SizedBox(height: 32),
+                          _buildSectionTitle(
+                            context,
+                            AppStrings.shopTitle.getString(context),
+                            Icons.science_outlined,
+                          ),
+                          const SizedBox(height: 16),
+                          GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  mainAxisSpacing: 16,
+                                  crossAxisSpacing: 16,
+                                  childAspectRatio: 0.85,
+                                ),
+                            itemCount: _shopItems.length,
+                            itemBuilder: (context, index) {
+                              final item = _shopItems[index];
+                              return ShopItemCard(
+                                game: widget.game,
+                                item: item,
+                              );
+                            }
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+},
+                          ),
+                        ],
+                      );
+                    }
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+},
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+  Widget _buildHeader(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.neonCyan.withValues(alpha: 0.4),
+                  blurRadius: 10,
+                  offset: const Offset(0, 0),
+                ),
+              ],
+            ),
+            child: ResponsiveIconButton(
+              onPressed: () {
+                AudioManager().playButton();
+                widget.game.overlays.remove('Shop');
+              }
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+},
+              icon: Icons.arrow_back_rounded,
+              color: Colors.white,
+              backgroundColor: Colors.white.withValues(alpha: 0.1),
+              borderColor: Colors.white.withValues(alpha: 0.2),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Hero(
+              tag: 'shop_title',
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.neonCyan.withValues(alpha: 0.4),
+                      blurRadius: 20,
+                      offset: const Offset(0, 0),
+                      spreadRadius: 0,
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 16,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppTheme.neonCyan.withValues(alpha: 0.2),
+                          AppTheme.neonMagenta.withValues(alpha: 0.2),
+                          AppTheme.electricYellow.withValues(alpha: 0.2),
+                        ],
+                      ),
+                    ),
+                    child: ShaderMask(
+                      shaderCallback: (bounds) => const LinearGradient(
+                        colors: [
+                          AppTheme.neonCyan,
+                          AppTheme.neonMagenta,
+                          AppTheme.electricYellow,
+                        ],
+                        stops: [0.0, 0.5, 1.0],
+                      ).createShader(bounds),
+                      blendMode: BlendMode.srcATop,
+                      child: Text(
+                        AppStrings.shopTitle.getString(context),
+                        textAlign: TextAlign.center,
+                        style: AppTheme.heading3(context).copyWith(
+                          fontSize: 24,
+                          letterSpacing: 3,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          _buildCoinsDisplay(),
+        ],
+      ),
+    );
+  }
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+  Widget _buildCoinsDisplay() {
+    return AnimatedBuilder(
+      animation: widget.game.totalCoins,
+      builder: (context, child) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.amber.withValues(alpha: 0.4),
+                blurRadius: 15,
+                offset: const Offset(0, 0),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.amber.withValues(alpha: 0.2),
+                    Colors.orange.withValues(alpha: 0.2),
+                  ],
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.monetization_on_rounded,
+                    color: Colors.amber,
+                    size: 24,
+                    shadows: [
+                      Shadow(
+                        color: Colors.amber.withValues(alpha: 0.5),
+                        blurRadius: 8,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    "${widget.game.totalCoins.value}
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}",
+                    style: AppTheme.buttonText(context).copyWith(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      shadows: [
+                        Shadow(
+                          color: Colors.amber.withValues(alpha: 0.5),
+                          blurRadius: 8,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+},
+    );
+  }
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+  Widget _buildSectionTitle(BuildContext context, String title, IconData icon) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+          colors: [
+            AppTheme.neonCyan.withValues(alpha: 0.1),
+            AppTheme.neonMagenta.withValues(alpha: 0.1),
+          ],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.neonCyan.withValues(alpha: 0.2),
+            blurRadius: 10,
+            offset: const Offset(0, 0),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  AppTheme.neonCyan,
+                  AppTheme.neonMagenta,
+                ],
+              ),
+            ),
+            child: Icon(icon, color: Colors.black, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Text(
+            title.toUpperCase(),
+            style: AppTheme.heading3(context).copyWith(
+              fontSize: 18,
+              letterSpacing: 2,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+              shadows: [
+                Shadow(
+                  color: AppTheme.neonCyan.withValues(alpha: 0.5),
+                  blurRadius: 8,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+}
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+class ShopItemCard extends StatelessWidget {
+  final ColorMixerGame game;
+  final ShopItemData item;
+
+  const ShopItemCard({super.key, required this.game, required this.item}
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+});
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isUnlocked = game.unlockedSkins.contains(item.type);
+    final bool isSelected = game.beaker.type == item.type;
+    final bool canAfford = game.totalCoins.value >= item.price;
+
+    final Color statusColor = isSelected
+        ? AppTheme.neonCyan
+        : isUnlocked
+        ? AppTheme.success
+        : AppTheme.neonMagenta;
+
+    return AnimatedCard(
+      onTap: () => _handleTap(context, isUnlocked, isSelected, canAfford),
+      hasGlow: isSelected,
+      fillColor: isSelected
+          ? Colors.black.withOpacity(0.3)
+          : Colors.black.withOpacity(0.4),
+      borderColor: isSelected
+          ? AppTheme.neonCyan
+          : (isUnlocked
+                ? AppTheme.success.withValues(alpha: 0.3)
+                : Colors.white.withValues(alpha: 0.1)),
+      borderWidth: 2,
+      child: Stack(
+        children: [
+          // Item Content
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Icon with Background Glow
+                  Container(
+                    width: 80,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [
+                          statusColor.withValues(alpha: 0.3),
+                          statusColor.withValues(alpha: 0.1),
+                          Colors.transparent,
+                        ],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: statusColor.withValues(alpha: 0.4),
+                          blurRadius: 15,
+                          offset: const Offset(0, 0),
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      item.icon,
+                      size: 48,
+                      color: isUnlocked
+                          ? statusColor
+                          : Colors.white.withValues(alpha: 0.4),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    item.nameKey.getString(context),
+                    style: AppTheme.bodyLarge(context).copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.2,
+                      color: isUnlocked ? Colors.white : Colors.white70,
+                      shadows: [
+                        Shadow(
+                          color: statusColor.withValues(alpha: 0.3),
+                          blurRadius: 6,
+                        ),
+                      ],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  _buildActionLabel(
+                    context,
+                    isUnlocked,
+                    canAfford,
+                    isSelected,
+                    statusColor,
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // "Locked" overlay effect
+          if (!isUnlocked)
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      Colors.black.withValues(alpha: 0.4),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+                child: Center(
+                  child: Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.black.withValues(alpha: 0.6),
+                      border: Border.all(
+                        color: Colors.redAccent,
+                        width: 2,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.lock_outline,
+                      size: 16,
+                      color: Colors.redAccent,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            
+          // Selection indicator
+          if (isSelected)
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppTheme.neonCyan,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.neonCyan.withValues(alpha: 0.6),
+                      blurRadius: 8,
+                      offset: const Offset(0, 0),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.check,
+                  size: 14,
+                  color: Colors.black,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+  Widget _buildActionLabel(
+    BuildContext context,
+    bool isUnlocked,
+    bool canAfford,
+    bool isSelected,
+    Color color,
+  ) {
+    Color labelColor = isSelected
+        ? AppTheme.neonCyan
+        : isUnlocked
+        ? AppTheme.success
+        : (canAfford ? Colors.white : Colors.redAccent);
+
+    String label = isSelected
+        ? AppStrings.active.getString(context)
+        : isUnlocked
+        ? AppStrings.unlocked.getString(context)
+        : item.price.toString();
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: labelColor.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: labelColor.withValues(alpha: 0.4), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: labelColor.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 0),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (!isUnlocked) ...[
+            Icon(Icons.monetization_on_rounded, size: 16, color: labelColor),
+            const SizedBox(width: 6),
+          ],
+          Text(
+            label,
+            style: AppTheme.buttonText(
+              context,
+            ).copyWith(
+              fontSize: 14, 
+              color: labelColor, 
+              letterSpacing: 1.2,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+  void _handleTap(
+    BuildContext context,
+    bool isUnlocked,
+    bool isSelected,
+    bool canAfford,
+  ) {
+    AudioManager().playButton();
+
+    if (isUnlocked) {
+      if (!isSelected) {
+        game.buyOrSelectSkin(item.type, item.price);
+      }
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+    }
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+} else {
+      if (canAfford) {
+        game.buyOrSelectSkin(item.type, item.price);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppStrings.itemActivated.getString(context)),
+            backgroundColor: AppTheme.neonCyan.withValues(alpha: 0.8),
+            duration: const Duration(milliseconds: 1500),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+} else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppStrings.insufficientCredits.getString(context)),
+            backgroundColor: AppTheme.neonMagenta,
+            duration: const Duration(milliseconds: 1500),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+    }
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+  }
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+}
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+class HelperItemCard extends StatelessWidget {
+  final ColorMixerGame game;
+  final HelperItemData item;
+
+  const HelperItemCard({super.key, required this.game, required this.item}
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+});
+
+  @override
+  Widget build(BuildContext context) {
+    final bool canAfford = game.totalCoins.value >= item.price;
+
+    return AnimatedCard(
+      onTap: () => _handlePurchase(context),
+      fillColor: Colors.black.withOpacity(0.3),
+      borderColor: item.color.withValues(alpha: 0.4),
+      borderWidth: 2,
+      hoverScale: 1.05,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              item.color.withValues(alpha: 0.1),
+              Colors.black.withOpacity(0.2),
+            ],
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Stack(
+              alignment: Alignment.topRight,
+              children: [
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        item.color.withValues(alpha: 0.3),
+                        item.color.withValues(alpha: 0.1),
+                        Colors.transparent,
+                      ],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: item.color.withValues(alpha: 0.4),
+                        blurRadius: 12,
+                        offset: const Offset(0, 0),
+                      ),
+                    ],
+                  ),
+                  child: Icon(item.icon, color: item.color, size: 32),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: item.color,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: item.color.withValues(alpha: 0.5),
+                        blurRadius: 6,
+                        offset: const Offset(0, 0),
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    "x${item.amount}
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}",
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              item.nameKey.getString(context),
+              style: AppTheme.bodyLarge(
+                context,
+              ).copyWith(
+                fontSize: 15, 
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                shadows: [
+                  Shadow(
+                    color: item.color.withValues(alpha: 0.3),
+                    blurRadius: 4,
+                  ),
+                ],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: canAfford 
+                    ? item.color.withValues(alpha: 0.2) 
+                    : Colors.redAccent.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: canAfford 
+                      ? item.color.withValues(alpha: 0.5) 
+                      : Colors.redAccent.withValues(alpha: 0.5),
+                  width: 1.5,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: canAfford 
+                        ? item.color.withValues(alpha: 0.3) 
+                        : Colors.redAccent.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 0),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.monetization_on_rounded,
+                    size: 16,
+                    color: canAfford ? item.color : Colors.redAccent,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    "${item.price}
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}",
+                    style: AppTheme.buttonText(context).copyWith(
+                      fontSize: 14,
+                      color: canAfford ? item.color : Colors.redAccent,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
+  void _handlePurchase(BuildContext context) {
+    AudioManager().playButton();
+    if (game.totalCoins.value >= item.price) {
+      game.addCoins(-item.price);
+      game.addHelper(item.id, item.amount);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppStrings.helperPurchased.getString(context)),
+          backgroundColor: AppTheme.success.withValues(alpha: 0.8),
+          duration: const Duration(milliseconds: 1500),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+} else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppStrings.insufficientCredits.getString(context)),
+          backgroundColor: AppTheme.neonMagenta,
+          duration: const Duration(milliseconds: 1500),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+  }
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+}
+
+class _AnimatedParticleBackground extends StatefulWidget {
+  const _AnimatedParticleBackground();
+
+  @override
+  State<_AnimatedParticleBackground> createState() => _AnimatedParticleBackgroundState();
+}
+
+class _AnimatedParticleBackgroundState extends State<_AnimatedParticleBackground> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late List<_Particle> _particles;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 20),
+      vsync: this,
+    )..repeat();
+    
+    _particles = List.generate(
+      30,
+      (index) => _Particle(
+        size: 2 + (index % 5).toDouble(),
+        speed: 0.5 + (index % 3).toDouble(),
+        color: [
+          AppTheme.neonCyan,
+          AppTheme.neonMagenta,
+          AppTheme.electricYellow,
+          Colors.purple,
+          Colors.blue
+        ][index % 5].withOpacity(0.3 + (index % 3) * 0.2),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return CustomPaint(
+          painter: _ParticlePainter(
+            particles: _particles,
+            time: _controller.value * 100,
+          ),
+          child: Container(),
+        );
+      },
+    );
+  }
+}
+
+class _Particle {
+  final double size;
+  final double speed;
+  final Color color;
+
+  _Particle({
+    required this.size,
+    required this.speed,
+    required this.color,
+  });
+}
+
+class _ParticlePainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double time;
+
+  _ParticlePainter({
+    required this.particles,
+    required this.time,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    for (int i = 0; i < particles.length; i++) {
+      final particle = particles[i];
+      
+      // Calculate position with wave-like motion
+      final x = (size.width / 2) + 
+          (size.width / 3) * 
+          (0.7 * (time * particle.speed + i) * 0.02).sin() +
+          (size.width / 4) * 
+          (0.3 * (time * particle.speed + i * 2) * 0.03).cos();
+          
+      final y = (size.height / 2) + 
+          (size.height / 3) * 
+          (0.5 * (time * particle.speed + i * 1.5) * 0.015).cos() +
+          (size.height / 4) * 
+          (0.4 * (time * particle.speed + i * 0.8) * 0.025).sin();
+
+      // Wrap around edges
+      final wrappedX = x % size.width;
+      final wrappedY = y % size.height;
+      
+      final finalX = wrappedX < 0 ? wrappedX + size.width : wrappedX;
+      final finalY = wrappedY < 0 ? wrappedY + size.height : wrappedY;
+
+      paint.color = particle.color;
+      canvas.drawCircle(Offset(finalX, finalY), particle.size, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
