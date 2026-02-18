@@ -138,6 +138,8 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
   Future<void> _equipItem(LabItem item) async {
     _equippedConfig[item.category] = item.id;
     await SaveManager.saveLabConfig(_equippedConfig);
+    // Apply changes to the running game immediately — no restart needed
+    widget.game.applyLabConfig(_equippedConfig);
     AudioManager().playButton();
     setState(() {});
   }

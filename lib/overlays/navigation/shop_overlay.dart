@@ -92,6 +92,24 @@ class _ShopOverlayState extends State<ShopOverlay> {
       type: BeakerType.round,
       icon: Icons.circle_outlined,
     ),
+    ShopItemData(
+      nameKey: AppStrings.beakerDiamond,
+      price: 3600,
+      type: BeakerType.diamond,
+      icon: Icons.diamond_rounded,
+    ),
+    ShopItemData(
+      nameKey: AppStrings.beakerStar,
+      price: 5400,
+      type: BeakerType.star,
+      icon: Icons.star_rounded,
+    ),
+    ShopItemData(
+      nameKey: AppStrings.beakerTriangle,
+      price: 6600,
+      type: BeakerType.triangle,
+      icon: Icons.change_history_rounded,
+    ),
   ];
 
   static const List<HelperItemData> _helperItems = [

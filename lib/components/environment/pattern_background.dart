@@ -4,13 +4,17 @@ import 'package:color_mixing_deductive/core/lab_catalog.dart';
 
 class PatternBackground extends Component with HasGameReference {
   Sprite? _starSprite;
-  final LabItem? config;
+  LabItem? config;
 
   // Confetti/Star configuration
   final List<_StarParticle> _stars = [];
   // final double _speed = 20.0;
 
   PatternBackground({this.config});
+
+  void updateConfig(LabItem? newConfig) {
+    config = newConfig;
+  }
 
   @override
   Future<void> onLoad() async {

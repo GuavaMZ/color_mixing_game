@@ -98,6 +98,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
   late BackgroundGradient backgroundGradient;
   late AmbientParticles ambientParticles;
+  late PatternBackground patternBackground;
+  BeakerStand? beakerStand;
   List<String> unlockedAchievements = [];
   bool globalBlindMode = false;
 
@@ -193,7 +195,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     add(backgroundGradient);
 
     // Add pattern overlay
-    add(PatternBackground(config: surfaceItem));
+    patternBackground = PatternBackground(config: surfaceItem);
+    add(patternBackground);
 
     // Add ambient particles for atmosphere
     ambientParticles = AmbientParticles(
@@ -206,16 +209,15 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
     // Add Beaker Stand (Behind Beaker)
     if (standItem != null) {
-      add(
-        BeakerStand(
-          position: Vector2(
-            beakerPos.x,
-            beakerPos.y + 110,
-          ), // Offset to be under beaker
-          size: Vector2(200, 60),
-          config: standItem,
-        ),
+      beakerStand = BeakerStand(
+        position: Vector2(
+          beakerPos.x,
+          beakerPos.y + 110,
+        ), // Offset to be under beaker
+        size: Vector2(200, 60),
+        config: standItem,
       );
+      add(beakerStand!);
     }
 
     // Position Beaker slightly above center to make room for bottom controls
@@ -981,6 +983,43 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       _audio.playUnlock();
     }
     notifyListeners();
+  }
+
+  /// Apply lab config changes immediately to all environment components.
+  void applyLabConfig(Map<String, String> config) {
+    final bgItem = LabCatalog.getItemByCategory(
+      'background',
+      config['background'] ?? 'bg_default',
+    );
+    final lightItem = LabCatalog.getItemByCategory(
+      'lighting',
+      config['lighting'] ?? 'light_basic',
+    );
+    final surfaceItem = LabCatalog.getItemByCategory(
+      'surface',
+      config['surface'] ?? 'surface_steel',
+    );
+    final standItem = LabCatalog.getItemByCategory(
+      'stand',
+      config['stand'] ?? 'stand_basic',
+    );
+
+    backgroundGradient.updateConfig(bgItem?.gradientColors);
+    ambientParticles.updateConfig(lightItem?.gradientColors);
+    patternBackground.updateConfig(surfaceItem);
+    if (standItem != null) {
+      if (beakerStand != null) {
+        beakerStand!.updateConfig(standItem);
+      } else {
+        final beakerPos = Vector2(size.x / 2, size.y * 0.54);
+        beakerStand = BeakerStand(
+          position: Vector2(beakerPos.x, beakerPos.y + 110),
+          size: Vector2(200, 60),
+          config: standItem,
+        );
+        add(beakerStand!);
+      }
+    }
   }
 
   Future<void> toggleBlindMode(bool enabled) async {

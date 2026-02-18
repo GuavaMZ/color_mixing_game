@@ -8,9 +8,21 @@ class AmbientParticles extends Component with HasGameReference<ColorMixerGame> {
   final List<FloatingBubble> bubbles = [];
   final Random random = Random();
   final int particleCount = 15;
-  final List<Color>? configColors;
+  List<Color>? configColors;
 
   AmbientParticles({this.configColors});
+
+  void updateConfig(List<Color>? newColors) {
+    configColors = newColors;
+    // Re-color existing bubbles so the change is immediate
+    for (final bubble in bubbles) {
+      bubble.updateColor(
+        configColors != null && configColors!.isNotEmpty
+            ? configColors![random.nextInt(configColors!.length)]
+            : null,
+      );
+    }
+  }
 
   @override
   Future<void> onLoad() async {
@@ -59,7 +71,7 @@ class FloatingBubble {
   double speed;
   double opacity;
   double phase;
-  final Color? color;
+  Color? color;
 
   FloatingBubble({
     required this.position,
@@ -70,6 +82,10 @@ class FloatingBubble {
        phase = Random().nextDouble() * pi * 2,
        _highlightPaint = Paint()..style = PaintingStyle.fill,
        _gradientPaint = Paint();
+
+  void updateColor(Color? newColor) {
+    color = newColor;
+  }
 
   final Paint _highlightPaint;
   final Paint _gradientPaint;

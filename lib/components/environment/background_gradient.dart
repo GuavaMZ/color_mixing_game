@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 import '../../color_mixer_game.dart';
 
 class BackgroundGradient extends PositionComponent with HasGameReference {
-  final List<Color>? configColors;
+  List<Color>? configColors;
 
   BackgroundGradient({this.configColors});
+
+  void updateConfig(List<Color>? newColors) {
+    configColors = newColors;
+  }
 
   @override
   void render(Canvas canvas) {

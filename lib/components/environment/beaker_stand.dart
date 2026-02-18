@@ -3,13 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:color_mixing_deductive/core/lab_catalog.dart';
 
 class BeakerStand extends PositionComponent {
-  final LabItem config;
+  LabItem config;
 
   BeakerStand({
     required Vector2 position,
     required Vector2 size,
     required this.config,
   }) : super(position: position, size: size, anchor: Anchor.center);
+
+  void updateConfig(LabItem newConfig) {
+    config = newConfig;
+  }
 
   @override
   void render(Canvas canvas) {

@@ -75,6 +75,26 @@ class LabCatalog {
       gradientColors: [Color(0xFFE1F5FE), Color(0xFF81D4FA), Color(0xFF4FC3F7)],
       icon: Icons.auto_awesome,
     ),
+    LabItem(
+      id: 'surface_obsidian',
+      name: 'Obsidian Slab',
+      description: 'Volcanic obsidian glass with deep reflective sheen',
+      price: 4800,
+      category: 'surface',
+      placeholderColor: Color(0xFF1A1A1A),
+      gradientColors: [Color(0xFF1A1A1A), Color(0xFF3D0000), Color(0xFF1A1A1A)],
+      icon: Icons.layers_outlined,
+    ),
+    LabItem(
+      id: 'surface_aurora',
+      name: 'Aurora Plate',
+      description: 'Iridescent aurora-tinted surface that shifts with light',
+      price: 8400,
+      category: 'surface',
+      placeholderColor: Color(0xFF00E5FF),
+      gradientColors: [Color(0xFF00E5FF), Color(0xFF7C4DFF), Color(0xFF00E676)],
+      icon: Icons.blur_circular,
+    ),
 
     // Lighting
     LabItem(
@@ -130,6 +150,26 @@ class LabCatalog {
       gradientColors: [Color(0xFF00FF88), Color(0xFF00CCAA)],
       icon: Icons.eco,
     ),
+    LabItem(
+      id: 'light_plasma',
+      name: 'Plasma Arc',
+      description: 'High-voltage plasma arc lighting with electric crackle',
+      price: 6000,
+      category: 'lighting',
+      placeholderColor: Color(0xFFE040FB),
+      gradientColors: [Color(0xFFE040FB), Color(0xFF7C4DFF), Color(0xFF40C4FF)],
+      icon: Icons.electric_bolt,
+    ),
+    LabItem(
+      id: 'light_solar',
+      name: 'Solar Spectrum',
+      description: 'Full-spectrum solar simulation for true color accuracy',
+      price: 9000,
+      category: 'lighting',
+      placeholderColor: Color(0xFFFFD600),
+      gradientColors: [Color(0xFFFFD600), Color(0xFFFF6D00), Color(0xFFFFFFFF)],
+      icon: Icons.wb_sunny_rounded,
+    ),
 
     // Backgrounds
     LabItem(
@@ -181,6 +221,26 @@ class LabCatalog {
       gradientColors: [Color(0xFF006064), Color(0xFF00838F), Color(0xFF0097A7)],
       icon: Icons.water,
     ),
+    LabItem(
+      id: 'bg_volcano',
+      name: 'Volcanic Observatory',
+      description: 'Dramatic crater-side lab with molten lava flows below',
+      price: 4500,
+      category: 'background',
+      placeholderColor: Color(0xFFBF360C),
+      gradientColors: [Color(0xFF212121), Color(0xFFBF360C), Color(0xFFFF6D00)],
+      icon: Icons.local_fire_department_rounded,
+    ),
+    LabItem(
+      id: 'bg_space',
+      name: 'Deep Space Station',
+      description: 'Orbiting space station lab with nebula vistas',
+      price: 9000,
+      category: 'background',
+      placeholderColor: Color(0xFF0D0D2B),
+      gradientColors: [Color(0xFF0D0D2B), Color(0xFF1A0533), Color(0xFF00B0FF)],
+      icon: Icons.rocket_launch_rounded,
+    ),
 
     // Stands
     LabItem(
@@ -231,6 +291,26 @@ class LabCatalog {
       placeholderColor: Color(0xFFAA00FF),
       gradientColors: [Color(0xFFAA00FF), Color(0xFF6200EA)],
       icon: Icons.flight_takeoff,
+    ),
+    LabItem(
+      id: 'stand_crystal',
+      name: 'Crystal Pedestal',
+      description: 'Translucent crystal pedestal with prismatic glow',
+      price: 4500,
+      category: 'stand',
+      placeholderColor: Color(0xFF80DEEA),
+      gradientColors: [Color(0xFF80DEEA), Color(0xFFB2EBF2), Color(0xFF00BCD4)],
+      icon: Icons.diamond_outlined,
+    ),
+    LabItem(
+      id: 'stand_obsidian',
+      name: 'Obsidian Throne',
+      description: 'Imposing dark volcanic rock stand with ember veins',
+      price: 7500,
+      category: 'stand',
+      placeholderColor: Color(0xFF212121),
+      gradientColors: [Color(0xFF212121), Color(0xFF4E0000), Color(0xFF212121)],
+      icon: Icons.chair_rounded,
     ),
   ];
 

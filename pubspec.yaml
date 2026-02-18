@@ -37,6 +37,9 @@ dependencies:
   flame_audio: ^2.11.12
   shared_preferences: ^2.5.4
   google_mobile_ads: ^7.0.0
+  flutter_secure_storage: ^10.0.0
+  crypto: ^3.0.7
+  shorebird_code_push: ^2.0.5
 
 dev_dependencies:
   flutter_test:
@@ -67,6 +70,7 @@ flutter:
     - assets/audio/
     - assets/images/shop/
     - assets/levels.json
+    - shorebird.yaml
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

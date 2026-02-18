@@ -7,6 +7,8 @@ import '../../helpers/theme_constants.dart';
 import '../../helpers/audio_manager.dart';
 import '../../helpers/visual_effects.dart';
 import '../../components/ui/responsive_components.dart';
+import '../../core/lives_manager.dart';
+import '../../core/save_manager.dart';
 
 class SettingsOverlay extends StatefulWidget {
   final ColorMixerGame game;
@@ -56,6 +58,106 @@ class _SettingsOverlayState extends State<SettingsOverlay>
     _controller.reverse().then((_) {
       widget.game.overlays.remove('Settings');
     });
+  }
+
+  void _showRedeemDialog(BuildContext context) {
+    final TextEditingController codeController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.primaryDark,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: AppTheme.neonCyan, width: 2),
+        ),
+        title: Text(
+          'Redeem Code',
+          style: AppTheme.heading2(context).copyWith(fontSize: 24),
+        ),
+        content: TextField(
+          controller: codeController,
+          style: const TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            hintText: 'Enter legacy code...',
+            hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
+            filled: true,
+            fillColor: Colors.white.withValues(alpha: 0.1),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              final code = codeController.text.trim().toLowerCase();
+              Navigator.pop(context);
+              await _handleRedeem(code);
+            },
+            child: Text(
+              'Redeem',
+              style: TextStyle(
+                color: AppTheme.neonCyan,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _handleRedeem(String code) async {
+    if (code == 'totymz') {
+      // bool redeemed = await SaveManager.isCodeRedeemed('toty');
+      // if (redeemed) {
+      //   _showResultDialog(
+      //     'Already Redeemed!',
+      //     'You have already used this code.',
+      //   );
+      //   return;
+      // }
+
+      LivesManager().addLives(3);
+      // await SaveManager.markCodeAsRedeemed('toty');
+      _audio.playWin();
+      _showResultDialog('Success!', 'Code redeemed! +3 Lives added.');
+    } else {
+      _audio.playButton(); // Play some sound
+      _showResultDialog('Invalid Code', 'The code you entered is not valid.');
+    }
+  }
+
+  void _showResultDialog(String title, String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.primaryDark,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: AppTheme.neonCyan, width: 2),
+        ),
+        title: Text(
+          title,
+          style: AppTheme.heading2(context).copyWith(fontSize: 20),
+        ),
+        content: Text(message, style: const TextStyle(color: Colors.white)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('OK', style: TextStyle(color: AppTheme.neonCyan)),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -264,6 +366,20 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                             _audio.playButton();
                             widget.game.overlays.remove('Settings');
                             widget.game.overlays.add('Tutorial');
+                          },
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      // Redeem Code Button
+                      SizedBox(
+                        width: double.infinity,
+                        child: _GradientButton(
+                          label: 'REDEEM CODE',
+                          onTap: () {
+                            _audio.playButton();
+                            _showRedeemDialog(context);
                           },
                         ),
                       ),

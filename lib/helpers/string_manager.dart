@@ -116,6 +116,9 @@ mixin AppStrings {
   static const String beakerHex = "beaker_hex";
   static const String beakerCylinder = "beaker_cylinder";
   static const String beakerRound = "beaker_round";
+  static const String beakerDiamond = "beaker_diamond";
+  static const String beakerStar = "beaker_star";
+  static const String beakerTriangle = "beaker_triangle";
   static const String syncing = "syncing";
   static const String select = "select";
   static const String selected = "selected";
@@ -307,6 +310,9 @@ mixin AppStrings {
     beakerHex: 'Hexa Beaker',
     beakerCylinder: 'Cylinder',
     beakerRound: 'Round Flask',
+    beakerDiamond: 'Diamond Prism',
+    beakerStar: 'Star Vessel',
+    beakerTriangle: 'Tri-Flask',
     select: 'Select',
     selected: 'Selected',
     price: 'Price',
@@ -537,6 +543,9 @@ mixin AppStrings {
     beakerHex: 'كأس سداسي',
     beakerCylinder: 'أنبوب',
     beakerRound: 'دورق دائري',
+    beakerDiamond: 'منشور الماس',
+    beakerStar: 'وعاء النجمة',
+    beakerTriangle: 'دورق مثلث',
     select: 'اختيار',
     selected: 'مختار',
     price: 'السعر',
@@ -774,6 +783,9 @@ mixin AppStrings {
     beakerHex: 'Vaso Hexagonal',
     beakerCylinder: 'Cilindro',
     beakerRound: 'Matraz Redondo',
+    beakerDiamond: 'Prisma Diamante',
+    beakerStar: 'Vasija Estrella',
+    beakerTriangle: 'Tri-Matraz',
     select: 'Seleccionar',
     selected: 'Seleccionado',
     price: 'Precio',

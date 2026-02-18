@@ -7,7 +7,17 @@ import 'package:flutter/material.dart';
 
 import '../../color_mixer_game.dart';
 
-enum BeakerType { classic, laboratory, magicBox, hexagon, cylinder, round }
+enum BeakerType {
+  classic,
+  laboratory,
+  magicBox,
+  hexagon,
+  cylinder,
+  round,
+  diamond,
+  star,
+  triangle,
+}
 
 class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
   Color currentColor = Colors.white.withValues(alpha: .2);
@@ -103,6 +113,15 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
         break;
       case BeakerType.round:
         _renderRound3D(canvas);
+        break;
+      case BeakerType.diamond:
+        _renderDiamond3D(canvas);
+        break;
+      case BeakerType.star:
+        _renderStar3D(canvas);
+        break;
+      case BeakerType.triangle:
+        _renderTriangle3D(canvas);
         break;
     }
   }
@@ -650,6 +669,168 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
     _drawHighlights(canvas);
   }
 
+  // ─── Diamond Prism ───────────────────────────────────────────────────────
+  void _renderDiamond3D(Canvas canvas) {
+    // 1. Back glass
+    canvas.drawPath(
+      _getBeakerPath(size),
+      Paint()..color = Colors.white.withValues(alpha: 0.05),
+    );
+
+    // 2. Liquid
+    if (_activeLevel > 0.01) {
+      final clampedLevel = _activeLevel.clamp(0.0, 1.0);
+      final surfaceY = size.y * (1 - clampedLevel);
+      final displayColor = isBlindMode ? const Color(0xFF222222) : currentColor;
+
+      // Diamond: top point, wide middle, bottom point
+      // Liquid fills from bottom point upward
+      final cx = size.x / 2;
+      final midY = size.y * 0.45; // widest point
+
+      final liquidPath = Path();
+      if (surfaceY >= midY) {
+        // Liquid is in the lower triangle (bottom half)
+        final t = (surfaceY - midY) / (size.y - midY);
+        final halfW = size.x / 2 * (1 - t);
+        liquidPath.moveTo(cx - halfW, surfaceY);
+        liquidPath.lineTo(cx, size.y);
+        liquidPath.lineTo(cx + halfW, surfaceY);
+        liquidPath.close();
+      } else {
+        // Liquid is in the upper half too
+        final t = surfaceY / midY;
+        final halfW = size.x / 2 * t;
+        liquidPath.moveTo(cx - halfW, surfaceY);
+        liquidPath.lineTo(0, midY);
+        liquidPath.lineTo(cx, size.y);
+        liquidPath.lineTo(size.x, midY);
+        liquidPath.lineTo(cx + halfW, surfaceY);
+        liquidPath.close();
+      }
+
+      canvas.drawPath(
+        liquidPath,
+        Paint()..color = displayColor.withValues(alpha: 0.8),
+      );
+
+      if (isBlindMode && _activeLevel > 0.1) {
+        _drawBlindModeSymbols(canvas, size, surfaceY);
+      }
+
+      canvas.save();
+      canvas.clipPath(liquidPath);
+      _bubbleParticles.forceRender(canvas);
+      canvas.restore();
+    }
+
+    // 3. Front outline
+    canvas.drawPath(
+      _getBeakerPath(size),
+      Paint()
+        ..color = Colors.white.withValues(alpha: 0.25)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.5,
+    );
+    _drawHighlights(canvas);
+  }
+
+  // ─── Star Vessel ─────────────────────────────────────────────────────────
+  void _renderStar3D(Canvas canvas) {
+    // 1. Back glass
+    canvas.drawPath(
+      _getBeakerPath(size),
+      Paint()..color = Colors.white.withValues(alpha: 0.05),
+    );
+
+    // 2. Liquid
+    if (_activeLevel > 0.01) {
+      final clampedLevel = _activeLevel.clamp(0.0, 1.0);
+      final surfaceY = size.y * (1 - clampedLevel);
+      final displayColor = isBlindMode ? const Color(0xFF222222) : currentColor;
+
+      final liquidPath = Path();
+      liquidPath.addPath(_getBeakerPath(size), Offset.zero);
+
+      canvas.save();
+      canvas.clipPath(liquidPath);
+      canvas.drawRect(
+        Rect.fromLTWH(0, surfaceY, size.x, size.y),
+        Paint()..color = displayColor.withValues(alpha: 0.8),
+      );
+
+      if (isBlindMode && _activeLevel > 0.1) {
+        _drawBlindModeSymbols(canvas, size, surfaceY);
+      }
+
+      _bubbleParticles.forceRender(canvas);
+      canvas.restore();
+    }
+
+    // 3. Front outline
+    canvas.drawPath(
+      _getBeakerPath(size),
+      Paint()
+        ..color = Colors.white.withValues(alpha: 0.25)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.5,
+    );
+    _drawHighlights(canvas);
+  }
+
+  // ─── Tri-Flask ───────────────────────────────────────────────────────────
+  void _renderTriangle3D(Canvas canvas) {
+    // 1. Back glass
+    canvas.drawPath(
+      _getBeakerPath(size),
+      Paint()..color = Colors.white.withValues(alpha: 0.05),
+    );
+
+    // 2. Liquid
+    if (_activeLevel > 0.01) {
+      final clampedLevel = _activeLevel.clamp(0.0, 1.0);
+      final surfaceY = size.y * (1 - clampedLevel);
+      final displayColor = isBlindMode ? const Color(0xFF222222) : currentColor;
+
+      // Triangle: apex at top-center, base at bottom
+      // At surfaceY, the width = size.x * (1 - surfaceY/size.y)
+      final t = surfaceY / size.y;
+      final halfW = (size.x / 2) * (1 - t);
+      final cx = size.x / 2;
+
+      final liquidPath = Path();
+      liquidPath.moveTo(cx - halfW, surfaceY);
+      liquidPath.lineTo(0, size.y);
+      liquidPath.lineTo(size.x, size.y);
+      liquidPath.lineTo(cx + halfW, surfaceY);
+      liquidPath.close();
+
+      canvas.drawPath(
+        liquidPath,
+        Paint()..color = displayColor.withValues(alpha: 0.8),
+      );
+
+      if (isBlindMode && _activeLevel > 0.1) {
+        _drawBlindModeSymbols(canvas, size, surfaceY);
+      }
+
+      canvas.save();
+      canvas.clipPath(liquidPath);
+      _bubbleParticles.forceRender(canvas);
+      canvas.restore();
+    }
+
+    // 3. Front outline
+    canvas.drawPath(
+      _getBeakerPath(size),
+      Paint()
+        ..color = Colors.white.withValues(alpha: 0.25)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.5,
+    );
+    _drawHighlights(canvas);
+  }
+
   void _drawBlindModeSymbols(Canvas canvas, Vector2 size, double liquidTop) {
     // Estimate color components from currentColor
     // We need to know the Mix. Since `currentColor` is a Color, we can try to guess or better, pass the mix state.
@@ -828,6 +1009,45 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
         path.arcTo(Rect.fromLTWH(0, 0, size.x, ellipseHeight), 0, -pi, false);
 
         path.close();
+        break;
+
+      case BeakerType.diamond:
+        // Diamond / rhombus shape: top point, wide middle, bottom point
+        path.moveTo(size.x / 2, 0);
+        path.lineTo(size.x, size.y * 0.45);
+        path.lineTo(size.x / 2, size.y);
+        path.lineTo(0, size.y * 0.45);
+        path.close();
+        break;
+
+      case BeakerType.star:
+        // 5-pointed star
+        final double cx = size.x / 2;
+        final double cy = size.y / 2;
+        final double outerR = size.x / 2;
+        final double innerR = outerR * 0.42;
+        const int points = 5;
+        for (int i = 0; i < points * 2; i++) {
+          final double angle = (pi / points) * i - pi / 2;
+          final double r = (i % 2 == 0) ? outerR : innerR;
+          final double px = cx + r * cos(angle);
+          final double py = cy + r * sin(angle);
+          if (i == 0) {
+            path.moveTo(px, py);
+          } else {
+            path.lineTo(px, py);
+          }
+        }
+        path.close();
+        break;
+
+      case BeakerType.triangle:
+        // Equilateral-ish triangle: apex top-center, base at bottom
+        path.moveTo(size.x / 2, 0);
+        path.lineTo(size.x, size.y);
+        path.lineTo(0, size.y);
+        path.close();
+        break;
     }
     return path;
   }
@@ -900,6 +1120,27 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
         canvas.drawCircle(
           Offset(size.x * 0.7, size.y * 0.6),
           12,
+          _reflectionPaint,
+        );
+        break;
+      case BeakerType.diamond:
+        canvas.drawCircle(
+          Offset(size.x * 0.7, size.y * 0.35),
+          8,
+          _reflectionPaint,
+        );
+        break;
+      case BeakerType.star:
+        canvas.drawCircle(
+          Offset(size.x * 0.65, size.y * 0.4),
+          7,
+          _reflectionPaint,
+        );
+        break;
+      case BeakerType.triangle:
+        canvas.drawCircle(
+          Offset(size.x * 0.65, size.y * 0.55),
+          8,
           _reflectionPaint,
         );
         break;
