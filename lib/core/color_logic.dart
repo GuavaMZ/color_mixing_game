@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:color_mixing_deductive/core/color_science.dart';
 
 class ColorLogic {
   static Color createMixedColor(
@@ -64,16 +65,24 @@ class ColorLogic {
     return Color.lerp(current, added, 0.3)!;
   }
 
-  // دالة لقياس مدى قرب اللاعب من الهدف (من 0 لـ 100)
+  // Perceptual color match using CIE76 Delta-E
+  // Delta-E ≤ 2 is imperceptible to human eyes → 100%
+  // Delta-E ≥ 50 is completely different → 0%
   static double checkMatch(Color current, Color target) {
-    // حساب الفرق المطلق بين قيم الـ RGB
-    int rDiff = (current.red - target.red).abs();
-    int gDiff = (current.green - target.green).abs();
-    int bDiff = (current.blue - target.blue).abs();
+    final double deltaE = ColorScience.deltaE76(current, target);
 
-    // تحويل الفرق لنسبة مئوية (0 هي تطابق تام)
-    double totalDiff = (rDiff + gDiff + bDiff) / (255 * 3);
-    return (1 - totalDiff) * 100;
+    // Map Delta-E to a 0–100 percentage (lower deltaE = higher match)
+    const double perfectThreshold = 2.0; // Imperceptible difference
+    const double maxDelta = 50.0; // Completely different
+
+    if (deltaE <= perfectThreshold) return 100.0;
+    if (deltaE >= maxDelta) return 0.0;
+
+    // Linear interpolation between thresholds
+    return ((1.0 -
+                (deltaE - perfectThreshold) / (maxDelta - perfectThreshold)) *
+            100.0)
+        .clamp(0.0, 100.0);
   }
 
   static Color generateRandomHardColor() {

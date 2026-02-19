@@ -1,5 +1,6 @@
 import '../../../color_mixer_game.dart';
 import '../../../core/ad_manager.dart';
+import '../../../core/color_science.dart';
 import '../../helpers/string_manager.dart';
 import '../../helpers/theme_constants.dart';
 import '../../helpers/audio_manager.dart';
@@ -344,8 +345,12 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
                             ],
                           ),
                         ),
-
                         SizedBox(height: ResponsiveHelper.spacing(context, 28)),
+
+                        // Scientific Lab Report
+                        _buildLabReport(context),
+
+                        SizedBox(height: ResponsiveHelper.spacing(context, 20)),
 
                         // Action buttons
                         Row(
@@ -437,6 +442,259 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
           ),
         ],
       ),
+    );
+  }
+
+  /// Scientific Lab Report section showing color science data.
+  Widget _buildLabReport(BuildContext context) {
+    final targetColor = widget.game.targetColor;
+    final wavelength = ColorScience.estimateWavelength(targetColor);
+    final spectralRegion = ColorScience.getSpectralRegion(wavelength);
+    final temp = ColorScience.getColorTemperature(targetColor);
+    final currentColor = widget.game.beaker.currentColor;
+    final harmony = ColorScience.getHarmonyType(currentColor, targetColor);
+    final fact = ColorScience.getColorFact(targetColor);
+
+    String tempLabel;
+    switch (temp['label']) {
+      case 'warm':
+        tempLabel = AppStrings.warmLabel.getString(context);
+        break;
+      case 'cool':
+        tempLabel = AppStrings.coolLabel.getString(context);
+        break;
+      default:
+        tempLabel = AppStrings.neutralLabel.getString(context);
+    }
+
+    String harmonyLabel;
+    switch (harmony) {
+      case 'complementary':
+        harmonyLabel = AppStrings.complementaryLabel.getString(context);
+        break;
+      case 'analogous':
+        harmonyLabel = AppStrings.analogousLabel.getString(context);
+        break;
+      case 'triadic':
+        harmonyLabel = AppStrings.triadicLabel.getString(context);
+        break;
+      case 'splitComplementary':
+        harmonyLabel = AppStrings.splitComplementaryLabel.getString(context);
+        break;
+      default:
+        harmonyLabel = AppStrings.neutralLabel.getString(context);
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: AppTheme.cosmicCard(
+        borderRadius: 20,
+        fillColor: Colors.black.withValues(alpha: 0.25),
+        borderColor: Colors.cyanAccent.withValues(alpha: 0.15),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Row(
+            children: [
+              Icon(
+                Icons.science_rounded,
+                color: AppTheme.neonCyan,
+                size: 20,
+                shadows: [
+                  Shadow(
+                    color: AppTheme.neonCyan.withValues(alpha: 0.5),
+                    blurRadius: 8,
+                  ),
+                ],
+              ),
+              const SizedBox(width: 8),
+              Text(
+                AppStrings.labReport.getString(context),
+                style: AppTheme.buttonText(context).copyWith(
+                  color: AppTheme.neonCyan,
+                  fontSize: ResponsiveHelper.fontSize(context, 14),
+                  letterSpacing: 1.5,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 12),
+
+          // Wavelength row with spectral gradient
+          _buildReportRow(
+            context,
+            icon: Icons.waves_rounded,
+            iconColor: Colors.purpleAccent,
+            label: AppStrings.wavelengthLabel.getString(context),
+            value: '$wavelength nm · $spectralRegion',
+          ),
+
+          const SizedBox(height: 8),
+
+          // Spectral gradient bar
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: Container(
+              height: 6,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color(0xFF9400D3), // Violet
+                    Color(0xFF4B0082), // Indigo
+                    Color(0xFF0000FF), // Blue
+                    Color(0xFF00FF00), // Green
+                    Color(0xFFFFFF00), // Yellow
+                    Color(0xFFFF7F00), // Orange
+                    Color(0xFFFF0000), // Red
+                  ],
+                ),
+              ),
+              child: Align(
+                alignment: Alignment(
+                  // Map 380-780nm to -1..1
+                  ((wavelength - 380) / 400.0 * 2.0 - 1.0).clamp(-1.0, 1.0),
+                  0,
+                ),
+                child: Container(
+                  width: 3,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.white.withValues(alpha: 0.8),
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          // Temperature row
+          _buildReportRow(
+            context,
+            icon: IconData(temp['icon'] as int, fontFamily: 'MaterialIcons'),
+            iconColor: temp['label'] == 'warm'
+                ? Colors.orangeAccent
+                : temp['label'] == 'cool'
+                ? Colors.lightBlueAccent
+                : Colors.grey,
+            label: AppStrings.colorTempLabel.getString(context),
+            value: '$tempLabel · ${temp['kelvin']}K',
+          ),
+
+          const SizedBox(height: 8),
+
+          // Harmony row
+          _buildReportRow(
+            context,
+            icon: Icons.auto_awesome_rounded,
+            iconColor: Colors.amberAccent,
+            label: AppStrings.colorHarmonyLabel.getString(context),
+            value: harmonyLabel,
+          ),
+
+          const SizedBox(height: 12),
+
+          // Did You Know?
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.cyanAccent.withValues(alpha: 0.06),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.cyanAccent.withValues(alpha: 0.1),
+              ),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.lightbulb_rounded,
+                  color: Colors.amberAccent,
+                  size: 18,
+                  shadows: [
+                    Shadow(
+                      color: Colors.amberAccent.withValues(alpha: 0.5),
+                      blurRadius: 6,
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        AppStrings.didYouKnow.getString(context),
+                        style: AppTheme.buttonText(context).copyWith(
+                          color: Colors.amberAccent,
+                          fontSize: ResponsiveHelper.fontSize(context, 11),
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        fact,
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.8),
+                          fontSize: ResponsiveHelper.fontSize(context, 11),
+                          height: 1.4,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Helper to build a single row in the Lab Report.
+  Widget _buildReportRow(
+    BuildContext context, {
+    required IconData icon,
+    required Color iconColor,
+    required String label,
+    required String value,
+  }) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          color: iconColor,
+          size: 16,
+          shadows: [
+            Shadow(color: iconColor.withValues(alpha: 0.4), blurRadius: 6),
+          ],
+        ),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.5),
+            fontSize: ResponsiveHelper.fontSize(context, 11),
+          ),
+        ),
+        const Spacer(),
+        Text(
+          value,
+          style: AppTheme.buttonText(context).copyWith(
+            color: Colors.white.withValues(alpha: 0.9),
+            fontSize: ResponsiveHelper.fontSize(context, 12),
+          ),
+        ),
+      ],
     );
   }
 }

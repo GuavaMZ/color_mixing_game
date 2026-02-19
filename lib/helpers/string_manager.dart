@@ -225,6 +225,20 @@ mixin AppStrings {
   static const String inst3 = "inst_3";
   static const String inst4 = "inst_4";
 
+  // Lab Report (Win Screen)
+  static const String labReport = "lab_report";
+  static const String wavelengthLabel = "wavelength_label";
+  static const String colorTempLabel = "color_temp_label";
+  static const String colorHarmonyLabel = "color_harmony_label";
+  static const String didYouKnow = "did_you_know";
+  static const String warmLabel = "warm_label";
+  static const String coolLabel = "cool_label";
+  static const String neutralLabel = "neutral_label";
+  static const String complementaryLabel = "complementary_label";
+  static const String analogousLabel = "analogous_label";
+  static const String triadicLabel = "triadic_label";
+  static const String splitComplementaryLabel = "split_complementary_label";
+
   // Additional UI strings
   static const String colorButtons = "color_buttons";
   static const String undo = "undo";
@@ -468,6 +482,20 @@ mixin AppStrings {
     inst2: 'New challenge available every day',
     inst3: 'Build your streak for extra rewards',
     inst4: 'Challenge resets at midnight',
+
+    // Lab Report
+    labReport: 'Lab Report',
+    wavelengthLabel: 'Wavelength',
+    colorTempLabel: 'Temperature',
+    colorHarmonyLabel: 'Harmony',
+    didYouKnow: 'Did You Know?',
+    warmLabel: 'Warm',
+    coolLabel: 'Cool',
+    neutralLabel: 'Neutral',
+    complementaryLabel: 'Complementary',
+    analogousLabel: 'Analogous',
+    triadicLabel: 'Triadic',
+    splitComplementaryLabel: 'Split-Complementary',
   };
 
   static const Map<String, dynamic> Ar = {
@@ -700,6 +728,20 @@ mixin AppStrings {
     inst2: 'تحدي جديد متاح كل يوم',
     inst3: 'ابنِ السلسلة للحصول على مكافآت إضافية',
     inst4: 'يتم إعادة ضبط التحدي عند منتصف الليل',
+
+    // Lab Report
+    labReport: 'تقرير المختبر',
+    wavelengthLabel: 'الطول الموجي',
+    colorTempLabel: 'درجة الحرارة',
+    colorHarmonyLabel: 'التناغم',
+    didYouKnow: 'هل تعلم؟',
+    warmLabel: 'دافئ',
+    coolLabel: 'بارد',
+    neutralLabel: 'محايد',
+    complementaryLabel: 'مكمّل',
+    analogousLabel: 'متناظر',
+    triadicLabel: 'ثلاثي',
+    splitComplementaryLabel: 'مكمّل منقسم',
 
     // Additional UI strings
     colorButtons: 'أزرار الألوان',
@@ -948,6 +990,20 @@ mixin AppStrings {
     inst3: 'Mantén tu racha para obtener recompensas extra',
     inst4: 'El desafío se reinicia a medianoche',
 
+    // Lab Report
+    labReport: 'Informe de Lab',
+    wavelengthLabel: 'Longitud de Onda',
+    colorTempLabel: 'Temperatura',
+    colorHarmonyLabel: 'Armonía',
+    didYouKnow: '¿Sabías que?',
+    warmLabel: 'Cálido',
+    coolLabel: 'Frío',
+    neutralLabel: 'Neutro',
+    complementaryLabel: 'Complementario',
+    analogousLabel: 'Análogo',
+    triadicLabel: 'Triádico',
+    splitComplementaryLabel: 'Complementario Dividido',
+
     // Additional UI strings
     colorButtons: 'Botones de Color',
     undo: 'Deshacer',
@@ -1190,6 +1246,20 @@ mixin AppStrings {
     inst2: 'Nouveau défi disponible chaque jour',
     inst3: 'Maintenez votre série pour des récompenses bonus',
     inst4: 'Le défi se réinitialise à minuit',
+
+    // Lab Report
+    labReport: 'Rapport de Labo',
+    wavelengthLabel: 'Longueur d\'Onde',
+    colorTempLabel: 'Température',
+    colorHarmonyLabel: 'Harmonie',
+    didYouKnow: 'Le Saviez-Vous ?',
+    warmLabel: 'Chaud',
+    coolLabel: 'Froid',
+    neutralLabel: 'Neutre',
+    complementaryLabel: 'Complémentaire',
+    analogousLabel: 'Analogue',
+    triadicLabel: 'Triadique',
+    splitComplementaryLabel: 'Complémentaire Divisé',
 
     // Additional UI strings
     colorButtons: 'Boutons de Couleur',
