@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:color_mixing_deductive/core/lab_catalog.dart';
@@ -55,39 +56,81 @@ class BeakerStand extends PositionComponent {
 
     canvas.drawPath(path, paint);
 
-    // Add specular highlight for chrome
-    if (config.id == 'stand_chrome') {
+    // Add techy details (small panels/lines)
+    final detailPaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.1)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+
+    canvas.drawLine(
+      Offset(w * 0.3, h * 0.3),
+      Offset(w * 0.7, h * 0.3),
+      detailPaint,
+    );
+    canvas.drawLine(
+      Offset(w * 0.4, h * 0.6),
+      Offset(w * 0.6, h * 0.6),
+      detailPaint,
+    );
+
+    // Add specular highlight for chrome and general premium feel
+    if (config.id == 'stand_chrome' || config.gradientColors.isNotEmpty) {
       final highlightPaint = Paint()
         ..color = Colors.white.withValues(alpha: 0.3)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 2;
+        ..strokeWidth = 1.5;
 
       canvas.drawLine(
         Offset(w * 0.25, h * 0.2),
         Offset(w * 0.2, h * 0.8),
         highlightPaint,
       );
+
+      final glossPaint = Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Colors.white.withValues(alpha: 0.2),
+            Colors.white.withValues(alpha: 0.0),
+          ],
+        ).createShader(Rect.fromLTWH(0, 0, w, h));
+      canvas.drawPath(path, glossPaint);
     }
   }
 
   void _renderHoloStand(Canvas canvas) {
+    final baseColor = (config.gradientColors.isNotEmpty
+        ? config.gradientColors.first
+        : Colors.cyan);
+
     final paint = Paint()
-      ..color =
-          (config.gradientColors.isNotEmpty
-                  ? config.gradientColors.first
-                  : Colors.cyan)
-              .withValues(alpha: 0.3)
+      ..color = baseColor.withValues(alpha: 0.2)
       ..style = PaintingStyle.fill;
 
-    // Draw multiple rings
+    // Draw multiple rings with aura
     for (int i = 0; i < 3; i++) {
       final yOffset = i * (size.y / 3);
       final radiusX = size.x / 2 - (i * 5);
       final radiusY = size.y / 4;
 
+      final center = Offset(size.x / 2, size.y / 2 + yOffset - size.y / 4);
+
+      // Glow Aura
       canvas.drawOval(
         Rect.fromCenter(
-          center: Offset(size.x / 2, size.y / 2 + yOffset - size.y / 4),
+          center: center,
+          width: radiusX * 2.2,
+          height: radiusY * 2.2,
+        ),
+        Paint()
+          ..color = baseColor.withValues(alpha: 0.05)
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5),
+      );
+
+      canvas.drawOval(
+        Rect.fromCenter(
+          center: center,
           width: radiusX * 2,
           height: radiusY * 2,
         ),
@@ -96,22 +139,37 @@ class BeakerStand extends PositionComponent {
 
       // Ring border
       final borderPaint = Paint()
-        ..color =
-            (config.gradientColors.isNotEmpty
-                    ? config.gradientColors.first
-                    : Colors.cyan)
-                .withValues(alpha: 0.6)
+        ..color = baseColor.withValues(alpha: 0.5)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.5;
 
       canvas.drawOval(
         Rect.fromCenter(
-          center: Offset(size.x / 2, size.y / 2 + yOffset - size.y / 4),
+          center: center,
           width: radiusX * 2,
           height: radiusY * 2,
         ),
         borderPaint,
       );
+
+      // Scanning light effect
+      if (i == 1) {
+        final scanPaint = Paint()
+          ..color = Colors.white.withValues(alpha: 0.3)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2;
+        canvas.drawArc(
+          Rect.fromCenter(
+            center: center,
+            width: radiusX * 2,
+            height: radiusY * 2,
+          ),
+          0,
+          pi / 2,
+          false,
+          scanPaint,
+        );
+      }
     }
   }
 

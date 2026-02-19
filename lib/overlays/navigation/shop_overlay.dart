@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'dart:math' as math;
 import 'package:color_mixing_deductive/components/gameplay/beaker.dart';
+import 'package:color_mixing_deductive/components/ui/beaker_preview.dart';
 import 'package:color_mixing_deductive/helpers/audio_manager.dart';
 import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
@@ -481,12 +482,13 @@ class ShopItemCard extends StatelessWidget {
                             ),
                           ],
                         ),
-                        child: Icon(
-                          item.icon,
-                          size: iconSize * 0.6,
+                        child: BeakerPreview(
+                          type: item.type,
                           color: isUnlocked
                               ? statusColor
-                              : Colors.white.withValues(alpha: 0.4),
+                              : Colors.white.withValues(alpha: 0.2),
+                          size: iconSize * 0.8,
+                          liquidLevel: isUnlocked ? 0.6 : 0.0,
                         ),
                       ),
                       SizedBox(height: spacing),

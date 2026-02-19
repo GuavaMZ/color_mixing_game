@@ -88,47 +88,166 @@ class PatternBackground extends Component with HasGameReference {
 
   void _renderGridPattern(Canvas canvas) {
     final size = game.size;
+    final baseColor = config?.placeholderColor ?? Colors.cyan;
+
     final paint = Paint()
-      ..color = (config?.placeholderColor ?? Colors.cyan).withValues(alpha: 0.1)
+      ..color = baseColor.withValues(alpha: 0.1)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1;
 
-    const gridSize = 50.0;
+    final glowPaint = Paint()
+      ..color = baseColor.withValues(alpha: 0.05)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3);
+
+    const gridSize = 60.0;
 
     // Vertical lines
     for (double x = 0; x <= size.x; x += gridSize) {
+      canvas.drawLine(Offset(x, 0), Offset(x, size.y), glowPaint);
       canvas.drawLine(Offset(x, 0), Offset(x, size.y), paint);
+
+      // Measurement Ticks
+      _drawTicks(canvas, Offset(x, 0), true, size.y);
     }
 
     // Horizontal lines
     for (double y = 0; y <= size.y; y += gridSize) {
+      canvas.drawLine(Offset(0, y), Offset(size.x, y), glowPaint);
       canvas.drawLine(Offset(0, y), Offset(size.x, y), paint);
+
+      // Measurement Ticks
+      _drawTicks(canvas, Offset(0, y), false, size.x);
+    }
+
+    // Coordinates/Labels at intersections (some of them)
+    _drawCoordinates(canvas, size, gridSize);
+  }
+
+  void _drawTicks(Canvas canvas, Offset start, bool isVertical, double length) {
+    final tickPaint = Paint()
+      ..color = (config?.placeholderColor ?? Colors.cyan).withValues(alpha: 0.2)
+      ..strokeWidth = 1;
+
+    const tickSpacing = 12.0;
+    const tickLength = 4.0;
+
+    for (double i = 0; i < length; i += tickSpacing) {
+      if (isVertical) {
+        canvas.drawLine(
+          Offset(start.dx - tickLength / 2, i),
+          Offset(start.dx + tickLength / 2, i),
+          tickPaint,
+        );
+      } else {
+        canvas.drawLine(
+          Offset(i, start.dy - tickLength / 2),
+          Offset(i, start.dy + tickLength / 2),
+          tickPaint,
+        );
+      }
+    }
+  }
+
+  void _drawCoordinates(Canvas canvas, Vector2 size, double gridSize) {
+    final textPainter = TextPainter(textDirection: TextDirection.ltr);
+
+    final textColor = (config?.placeholderColor ?? Colors.cyan).withValues(
+      alpha: 0.3,
+    );
+
+    for (double x = gridSize; x < size.x; x += gridSize * 3) {
+      for (double y = gridSize; y < size.y; y += gridSize * 3) {
+        final coordText =
+            "X:${(x / 10).toStringAsFixed(0)} Y:${(y / 10).toStringAsFixed(0)}";
+        textPainter.text = TextSpan(
+          text: coordText,
+          style: TextStyle(
+            color: textColor,
+            fontSize: 8,
+            fontWeight: FontWeight.bold,
+          ),
+        );
+        textPainter.layout();
+        textPainter.paint(canvas, Offset(x + 4, y + 4));
+      }
     }
   }
 
   void _renderCrystalPattern(Canvas canvas) {
     final size = game.size;
+    final baseColor = config?.placeholderColor ?? Colors.white;
+
     final paint = Paint()
-      ..color = (config?.placeholderColor ?? Colors.white).withValues(
-        alpha: 0.05,
-      )
+      ..color = baseColor.withValues(alpha: 0.1)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1;
 
-    // Draw random connected lines/triangles for crystal feel
-    // For now, simpler geometric pattern
-    const gridSize = 80.0;
+    final glowPaint = Paint()
+      ..color = baseColor.withValues(alpha: 0.03)
+      ..style = PaintingStyle.fill;
+
+    const gridSize = 100.0;
 
     for (double x = 0; x <= size.x; x += gridSize) {
       for (double y = 0; y <= size.y; y += gridSize) {
         if ((x / gridSize + y / gridSize) % 2 == 0) continue;
 
-        canvas.drawRect(
-          Rect.fromLTWH(x, y, gridSize * 0.8, gridSize * 0.8),
-          paint,
+        final rect = Rect.fromLTWH(
+          x + 10,
+          y + 10,
+          gridSize - 20,
+          gridSize - 20,
         );
+
+        // Layered crystal effect
+        canvas.drawRect(rect, glowPaint);
+        canvas.drawRect(rect, paint);
+
+        // Inner detail lines
+        canvas.drawLine(rect.topLeft, rect.bottomRight, paint);
+        canvas.drawLine(rect.topRight, rect.bottomLeft, paint);
       }
     }
+
+    // Add scientific crosshairs
+    _drawScientificOverlays(canvas, size);
+  }
+
+  void _drawScientificOverlays(Canvas canvas, Vector2 size) {
+    final paint = Paint()
+      ..color = (config?.placeholderColor ?? Colors.white).withValues(
+        alpha: 0.15,
+      )
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5;
+
+    final centerX = size.x / 2;
+    final centerY = size.y / 2;
+
+    // Central Crosshair
+    canvas.drawCircle(Offset(centerX, centerY), 40, paint);
+    canvas.drawLine(
+      Offset(centerX - 60, centerY),
+      Offset(centerX - 20, centerY),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(centerX + 20, centerY),
+      Offset(centerX + 60, centerY),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(centerX, centerY - 60),
+      Offset(centerX, centerY - 20),
+      paint,
+    );
+    canvas.drawLine(
+      Offset(centerX, centerY + 20),
+      Offset(centerX, centerY + 60),
+      paint,
+    );
   }
 }
 
