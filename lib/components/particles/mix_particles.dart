@@ -12,6 +12,11 @@ class MixParticles extends PositionComponent with HasGameRef<ColorMixerGame> {
   double _lifetime = 0;
   final double maxLifetime = 1.5;
 
+  final Paint _particlePaint = Paint()..style = PaintingStyle.fill;
+  final Paint _glowPaint = Paint()
+    ..style = PaintingStyle.fill
+    ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
+
   MixParticles({required this.dropColor, required this.mixPosition})
     : super(position: mixPosition);
 
@@ -57,7 +62,7 @@ class MixParticles extends PositionComponent with HasGameRef<ColorMixerGame> {
   void render(Canvas canvas) {
     super.render(canvas);
     for (var particle in _particles) {
-      particle.render(canvas);
+      particle.render(canvas, _particlePaint, _glowPaint);
     }
   }
 }
@@ -91,25 +96,20 @@ class _MixParticle {
     }
   }
 
-  void render(Canvas canvas) {
+  void render(Canvas canvas, Paint particlePaint, Paint glowPaint) {
     if (age >= lifetime) return;
 
-    final alpha = (1 - age / lifetime).clamp(0.0, 1.0);
-    final paint = Paint()
-      ..color = color.withValues(alpha: alpha)
-      ..style = PaintingStyle.fill;
+    final progress = (1 - age / lifetime).clamp(0.0, 1.0);
 
+    particlePaint.color = color.withValues(alpha: progress);
     canvas.drawCircle(
       Offset(position.x, position.y),
       size * (1 - age / lifetime * 0.5),
-      paint,
+      particlePaint,
     );
 
     // Glow effect
-    final glowPaint = Paint()
-      ..color = color.withValues(alpha: alpha * 0.3)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
-
+    glowPaint.color = color.withValues(alpha: progress * 0.3);
     canvas.drawCircle(Offset(position.x, position.y), size * 2, glowPaint);
   }
 }
@@ -120,6 +120,12 @@ class ShimmerEffect extends PositionComponent {
   final Color targetColor;
   double _time = 0;
   final double duration = 2.0;
+
+  final Paint _ringPaint = Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 3;
+
+  final Paint _sparklePaint = Paint()..style = PaintingStyle.fill;
 
   ShimmerEffect({required this.targetPosition, required this.targetColor})
     : super(position: targetPosition);
@@ -145,12 +151,8 @@ class ShimmerEffect extends PositionComponent {
       final radius = ringProgress * 100;
       final ringAlpha = alpha * (1 - ringProgress);
 
-      final paint = Paint()
-        ..color = targetColor.withValues(alpha: ringAlpha * 0.3)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 3;
-
-      canvas.drawCircle(Offset.zero, radius, paint);
+      _ringPaint.color = targetColor.withValues(alpha: ringAlpha * 0.3);
+      canvas.drawCircle(Offset.zero, radius, _ringPaint);
     }
 
     // Sparkles
@@ -161,11 +163,8 @@ class ShimmerEffect extends PositionComponent {
       final x = cos(angle) * distance;
       final y = sin(angle) * distance;
 
-      final sparklePaint = Paint()
-        ..color = Colors.white.withValues(alpha: alpha)
-        ..style = PaintingStyle.fill;
-
-      canvas.drawCircle(Offset(x, y), 2, sparklePaint);
+      _sparklePaint.color = Colors.white.withValues(alpha: alpha);
+      canvas.drawCircle(Offset(x, y), 2, _sparklePaint);
     }
   }
 }

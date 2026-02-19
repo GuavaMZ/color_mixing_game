@@ -44,6 +44,10 @@ class ElectricalSparks extends Component with HasGameRef<ColorMixerGame> {
     ..style = PaintingStyle.fill
     ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3);
 
+  final Paint _trailPaint = Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeCap = StrokeCap.round;
+
   @override
   void update(double dt) {
     super.update(dt);
@@ -117,17 +121,15 @@ class ElectricalSparks extends Component with HasGameRef<ColorMixerGame> {
 
       // Draw trail
       if (spark.velocity.length > 50) {
-        final trailPaint = Paint()
-          ..color = spark.color.withValues(alpha: spark.opacity * 0.3)
-          ..strokeWidth = spark.size * 0.5
-          ..strokeCap = StrokeCap.round;
+        _trailPaint.color = spark.color.withValues(alpha: spark.opacity * 0.3);
+        _trailPaint.strokeWidth = spark.size * 0.5;
 
         final trailEnd = spark.position - (spark.velocity.normalized() * 8);
 
         canvas.drawLine(
           spark.position.toOffset(),
           trailEnd.toOffset(),
-          trailPaint,
+          _trailPaint,
         );
       }
     }

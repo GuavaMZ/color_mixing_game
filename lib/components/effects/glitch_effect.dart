@@ -16,6 +16,15 @@ class GlitchEffect extends Component with HasGameRef<ColorMixerGame> {
   double _glitchOffset = 0;
   int _scanLineY = 0;
 
+  // Cached Paints
+  final Paint _rgbPaint = Paint()..blendMode = BlendMode.screen;
+  final Paint _scanLinePaint = Paint()
+    ..color = Colors.white.withValues(alpha: 0.15)
+    ..strokeWidth = 1.5;
+  final Paint _blockPaint = Paint()..style = PaintingStyle.fill;
+  final Paint _shredPaint = Paint()
+    ..color = const Color(0xFF15192B).withValues(alpha: 0.4);
+
   // New digital artifacts
   final List<Rect> _glitchBlocks = [];
   double _chromaticIntensity = 0;
@@ -77,40 +86,33 @@ class GlitchEffect extends Component with HasGameRef<ColorMixerGame> {
     final gameSize = gameRef.size;
 
     // 1. Digital Color Split (Chromatic Aberration)
-    final rgbPaint = Paint()..blendMode = BlendMode.screen;
-
     // Red channel offset (Shift Left)
-    rgbPaint.color = Colors.red.withValues(alpha: 0.2 * _chromaticIntensity);
+    _rgbPaint.color = Colors.red.withValues(alpha: 0.2 * _chromaticIntensity);
     canvas.drawRect(
       Rect.fromLTWH(_glitchOffset, 0, gameSize.x, gameSize.y),
-      rgbPaint,
+      _rgbPaint,
     );
 
     // Cyan channel offset (Shift Right)
-    rgbPaint.color = Colors.cyan.withValues(alpha: 0.2 * _chromaticIntensity);
+    _rgbPaint.color = Colors.cyan.withValues(alpha: 0.2 * _chromaticIntensity);
     canvas.drawRect(
       Rect.fromLTWH(-_glitchOffset, 0, gameSize.x, gameSize.y),
-      rgbPaint,
+      _rgbPaint,
     );
 
     // 2. Fragmented Scan Lines
-    final scanLinePaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.15)
-      ..strokeWidth = 1.5;
-
     for (int i = 0; i < 8; i++) {
       final y = (_scanLineY + i * 40) % gameSize.y.toInt();
       if (_random.nextDouble() < 0.7) {
         canvas.drawLine(
           Offset(0, y.toDouble()),
           Offset(gameSize.x, y.toDouble()),
-          scanLinePaint,
+          _scanLinePaint,
         );
       }
     }
 
     // 3. Digital Failure Blocks (White/Cyan/Magenta blocks)
-    final blockPaint = Paint()..style = PaintingStyle.fill;
     for (var block in _glitchBlocks) {
       final palette = [
         Colors.white,
@@ -118,10 +120,10 @@ class GlitchEffect extends Component with HasGameRef<ColorMixerGame> {
         AppTheme.neonMagenta,
         Colors.yellow,
       ];
-      blockPaint.color = palette[_random.nextInt(palette.length)].withValues(
+      _blockPaint.color = palette[_random.nextInt(palette.length)].withValues(
         alpha: 0.15,
       );
-      canvas.drawRect(block, blockPaint);
+      canvas.drawRect(block, _blockPaint);
     }
 
     // 4. Horizontal Displacement "Shreds"
@@ -130,13 +132,10 @@ class GlitchEffect extends Component with HasGameRef<ColorMixerGame> {
       final shredY = _random.nextDouble() * gameSize.y;
       final shredOffset = (_random.nextDouble() - 0.5) * 60;
 
-      final shredPaint = Paint()
-        ..color = Color(0xFF15192B).withValues(alpha: 0.4);
-
       // Draw a "copied" strip of background or just a dark displacement bar
       canvas.drawRect(
         Rect.fromLTWH(shredOffset, shredY, gameSize.x, shredHeight),
-        shredPaint,
+        _shredPaint,
       );
     }
 

@@ -40,6 +40,31 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
     ..strokeWidth = 4
     ..color = Colors.white.withValues(alpha: 0.8);
 
+  // Optimization: Cached Paints and Shaders
+  final Paint _backGlassPaint = Paint()
+    ..color = Colors.white.withValues(alpha: 0.05)
+    ..style = PaintingStyle.fill;
+
+  final Paint _liquidVolPaint = Paint()..style = PaintingStyle.fill;
+  final Paint _liquidSurfacePaint = Paint()..style = PaintingStyle.fill;
+  final Paint _liquidMeniscusPaint = Paint()
+    ..color = Colors.white.withValues(alpha: 0.3)
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 2;
+
+  final Paint _highlightPaint = Paint();
+  final Paint _rimPaint = Paint()
+    ..color = Colors.white.withValues(alpha: 0.4)
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 3;
+
+  Shader? _liquidGradientShader;
+  Color? _lastGradientColor;
+  Vector2? _lastShaderSize;
+  Path? _cachedBeakerPath;
+  BeakerType? _lastPathType;
+  Vector2? _lastPathSize;
+
   Beaker({required Vector2 position, required Vector2 size})
     : super(position: position, size: size, anchor: Anchor.center);
 
@@ -91,6 +116,56 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
       final chaosFactor = (1.0 - gameRef.chaosStability / 0.4).clamp(0.0, 1.0);
       _shakeLevel = max(_shakeLevel, chaosFactor * 0.5);
     }
+
+    _updatePaintsAndShaders();
+  }
+
+  void _updatePaintsAndShaders() {
+    final displayColor = isBlindMode ? const Color(0xFF222222) : currentColor;
+
+    // Update Liquid Surface Paint
+    _liquidSurfacePaint.color = displayColor.withValues(alpha: 0.8);
+
+    // Update Liquid Gradient Shader if needed
+    if (_lastGradientColor != displayColor || _lastShaderSize != size) {
+      _liquidGradientShader = LinearGradient(
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+        colors: [
+          displayColor.withValues(alpha: 0.9),
+          displayColor.withValues(alpha: 0.7),
+          displayColor.withValues(alpha: 0.9),
+        ],
+        stops: const [0.0, 0.5, 1.0],
+      ).createShader(Rect.fromLTWH(0, 0, size.x, size.y));
+      _liquidVolPaint.shader = _liquidGradientShader;
+
+      // Also update Highlight Shader
+      _highlightPaint.shader = LinearGradient(
+        colors: [
+          Colors.white.withValues(alpha: 0.0),
+          Colors.white.withValues(alpha: 0.2),
+          Colors.white.withValues(alpha: 0.0),
+          Colors.white.withValues(alpha: 0.3),
+          Colors.white.withValues(alpha: 0.0),
+        ],
+        stops: const [0.0, 0.1, 0.2, 0.85, 1.0],
+      ).createShader(Rect.fromLTWH(0, 0, size.x, size.y));
+
+      _lastGradientColor = displayColor;
+      _lastShaderSize = size.clone();
+    }
+  }
+
+  Path _getBeakerPathCached() {
+    if (_cachedBeakerPath == null ||
+        _lastPathType != type ||
+        _lastPathSize != size) {
+      _cachedBeakerPath = _getBeakerPath(size);
+      _lastPathType = type;
+      _lastPathSize = size.clone();
+    }
+    return _cachedBeakerPath!;
   }
 
   @override
@@ -137,9 +212,7 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
 
     // 2. Back Glass Wall (Behind Liquid)
     // Draw the full cylinder background
-    final Paint backGlassPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.05)
-      ..style = PaintingStyle.fill;
+    // (Paints are now cached as fields)
 
     // Draw relative to a "cylinder" shape.
     // Top Ellipse: Rect.fromLTWH(0, 0, size.x, ellipseHeight)
@@ -164,7 +237,7 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
     );
     backPath.close();
 
-    canvas.drawPath(backPath, backGlassPaint);
+    canvas.drawPath(backPath, _backGlassPaint);
 
     // 3. Liquid (Painter's Algorithm)
     if (_activeLevel > 0.01) {
@@ -195,7 +268,8 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
     // Volume = Bottom Ellipse (full) to Surface Ellipse (full).
     // But we draw Back Surface -> Volume -> Front Surface.
 
-    final displayColor = isBlindMode ? const Color(0xFF222222) : currentColor;
+    // (Paints and Shaders are now cached as fields)
+    // displayColor is managed in _updatePaintsAndShaders()
 
     // 3.1 Back Liquid Surface (The part "behind" the meniscus if looking from top, or just the top ellipse back half)
     // Actually, if we look from slightly above (perspective), we see the TOP of the liquid.
@@ -205,8 +279,6 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
 
     // Liquid Column Path:
     // Starts at surfaceY, goes down to bottomY.
-    final liquidPath = Path();
-    liquidPath.moveTo(0, liquidSurfaceY);
     // Bottom arc (full bottom ellipse? No, just the visible front part? Or full if transparent?)
     // If glass is transparent, we see the liquid volume.
     // Let's draw the main body relative to the "Front" view.
@@ -219,23 +291,7 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
     // 3. Liquid Volume: Main body.
     // 5. Front Liquid Surface: Front half.
 
-    // Liquid Gradient
-    final liquidGradient = LinearGradient(
-      begin: Alignment.centerLeft,
-      end: Alignment.centerRight,
-      colors: [
-        displayColor.withValues(alpha: 0.9),
-        displayColor.withValues(alpha: 0.7), // Center is lighter/translucent?
-        displayColor.withValues(alpha: 0.9),
-      ],
-      stops: const [0.0, 0.5, 1.0],
-    ).createShader(Rect.fromLTWH(0, 0, size.x, size.y));
-
-    Paint volPaint = Paint()..shader = liquidGradient;
-    Paint surfacePaint = Paint()
-      ..color = displayColor.withValues(
-        alpha: 0.8,
-      ); // Slightly different for surface
+    // (Paints and Shaders are now cached as fields)
 
     // Back of Liquid Surface (The "Inside" look of the meniscus if transparent?)
     // If we look from top, we see the whole ellipse.
@@ -271,7 +327,7 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
         width: size.x,
         height: ellipseHeight,
       ),
-      surfacePaint,
+      _liquidSurfacePaint,
     );
 
     // Draw Body
@@ -300,7 +356,7 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
     bodyPath.lineTo(0, liquidSurfaceY);
     bodyPath.close();
 
-    canvas.drawPath(bodyPath, volPaint);
+    canvas.drawPath(bodyPath, _liquidVolPaint);
 
     // 4. Bubbles (Clipped to Liquid Body)
     // We need a clip path for bubbles.
@@ -318,10 +374,7 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
         width: size.x,
         height: ellipseHeight,
       ),
-      Paint()
-        ..color = Colors.white.withValues(alpha: 0.3)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2,
+      _liquidMeniscusPaint,
     );
   }
 
@@ -333,27 +386,10 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
     double bottomY,
     double ellipseHeight,
   ) {
-    // Light reflections on the glass tube
-    // Vertical gradient highlights
-    final highlightPaint = Paint()
-      ..shader = LinearGradient(
-        colors: [
-          Colors.white.withValues(alpha: 0.0),
-          Colors.white.withValues(alpha: 0.2),
-          Colors.white.withValues(alpha: 0.0),
-          Colors.white.withValues(alpha: 0.3), // Stronger specular
-          Colors.white.withValues(alpha: 0.0),
-        ],
-        stops: const [0.0, 0.1, 0.2, 0.85, 1.0],
-      ).createShader(Rect.fromLTWH(0, 0, size.x, size.y));
-
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y), highlightPaint);
-
     // Rims (Top and Bottom)
-    final rimPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.4)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3;
+    // (Using cached _highlightPaint and _rimPaint)
+
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y), _highlightPaint);
 
     // Top Rim
     canvas.drawOval(
@@ -362,7 +398,7 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
         width: size.x,
         height: ellipseHeight,
       ),
-      rimPaint,
+      _rimPaint,
     );
 
     // Bottom Rim
@@ -372,7 +408,7 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
         width: size.x,
         height: ellipseHeight,
       ),
-      rimPaint,
+      _rimPaint,
     );
   }
 
@@ -389,10 +425,7 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
     final double neckEllipseHeight = neckWidth * _perspectiveRatio;
 
     // 1. Back Glass
-    final Paint backGlassPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.05)
-      ..style = PaintingStyle.fill;
-    canvas.drawPath(_getBeakerPath(size), backGlassPaint);
+    canvas.drawPath(_getBeakerPathCached(), _backGlassPaint);
 
     // 2. Liquid
     if (_activeLevel > 0.01) {
@@ -409,19 +442,7 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
       }
       final currentEllipseH = currentWidth * _perspectiveRatio;
 
-      final displayColor = isBlindMode ? const Color(0xFF222222) : currentColor;
-      final liquidGradient = LinearGradient(
-        begin: Alignment.centerLeft,
-        end: Alignment.centerRight,
-        colors: [
-          displayColor.withValues(alpha: 0.9),
-          displayColor.withValues(alpha: 0.7),
-          displayColor.withValues(alpha: 0.9),
-        ],
-      ).createShader(Rect.fromLTWH(0, 0, size.x, size.y));
-
-      final volPaint = Paint()..shader = liquidGradient;
-      final surfacePaint = Paint()..color = displayColor.withValues(alpha: 0.8);
+      // (Paints and Shaders are now cached as fields)
 
       final Path filledPath = Path();
       filledPath.moveTo(centerX - currentWidth / 2, surfaceY);
@@ -441,14 +462,14 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
       filledPath.lineTo(centerX + currentWidth / 2, surfaceY);
       filledPath.close();
 
-      canvas.drawPath(filledPath, volPaint);
+      canvas.drawPath(filledPath, _liquidVolPaint);
       canvas.drawOval(
         Rect.fromCenter(
           center: Offset(centerX, surfaceY),
           width: currentWidth,
           height: currentEllipseH,
         ),
-        surfacePaint,
+        _liquidSurfacePaint,
       );
 
       // Blind Mode Symbols
@@ -467,25 +488,18 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
           width: currentWidth,
           height: currentEllipseH,
         ),
-        Paint()
-          ..color = Colors.white.withValues(alpha: 0.3)
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 2,
+        _liquidMeniscusPaint,
       );
     }
 
     // 3. Front Rims / Details
-    final rimPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.4)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3;
     canvas.drawOval(
       Rect.fromCenter(
         center: Offset(centerX, 0),
         width: neckWidth,
         height: neckEllipseHeight,
       ),
-      rimPaint,
+      _rimPaint,
     );
 
     _drawHighlights(canvas);
@@ -495,10 +509,9 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
     final double padding = 8.0;
     final Rect frontRect = Rect.fromLTWH(0, 0, size.x, size.y);
 
-    // 1. Back Glass
     canvas.drawRRect(
       RRect.fromRectAndRadius(frontRect, const Radius.circular(12)),
-      Paint()..color = Colors.white.withValues(alpha: 0.05),
+      _backGlassPaint,
     );
 
     // 2. Liquid
@@ -506,19 +519,15 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
       final clampedLevel = _activeLevel.clamp(0.0, 1.0);
       final liquidH = (size.y - padding * 2) * clampedLevel;
       final surfaceY = size.y - padding - liquidH;
-      final displayColor = isBlindMode ? const Color(0xFF222222) : currentColor;
-
       final Rect liquidRect = Rect.fromLTRB(
         padding,
         surfaceY,
         size.x - padding,
         size.y - padding,
       );
-      final liquidPaint = Paint()..color = displayColor.withValues(alpha: 0.8);
-
       canvas.drawRRect(
         RRect.fromRectAndRadius(liquidRect, const Radius.circular(4)),
-        liquidPaint,
+        _liquidSurfacePaint,
       );
 
       // Blind Mode Symbols
@@ -536,36 +545,24 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
       canvas.drawLine(
         Offset(padding, surfaceY),
         Offset(size.x - padding, surfaceY),
-        Paint()
-          ..color = Colors.white.withValues(alpha: 0.4)
-          ..strokeWidth = 2,
+        _liquidMeniscusPaint,
       );
     }
 
-    // 3. Front
     canvas.drawRRect(
       RRect.fromRectAndRadius(frontRect, const Radius.circular(12)),
-      Paint()
-        ..color = Colors.white.withValues(alpha: 0.2)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 3,
+      _rimPaint,
     );
     _drawHighlights(canvas);
   }
 
   void _renderHexagon3D(Canvas canvas) {
-    // 1. Back
-    canvas.drawPath(
-      _getBeakerPath(size),
-      Paint()..color = Colors.white.withValues(alpha: 0.05),
-    );
+    canvas.drawPath(_getBeakerPathCached(), _backGlassPaint);
 
     // 2. Liquid
     if (_activeLevel > 0.01) {
       final clampedLevel = _activeLevel.clamp(0.0, 1.0);
       final surfaceY = size.y * (1 - clampedLevel);
-      final displayColor = isBlindMode ? const Color(0xFF222222) : currentColor;
-
       final Path liquidPath = Path();
       liquidPath.moveTo(size.x * 0.1, surfaceY);
       liquidPath.lineTo(0, size.y * 0.75);
@@ -574,12 +571,7 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
       liquidPath.lineTo(size.x * 0.9, surfaceY);
       liquidPath.close();
 
-      canvas.drawPath(
-        liquidPath,
-        Paint()..color = displayColor.withValues(alpha: 0.8),
-      );
-
-      // Blind Mode Symbols
+      canvas.drawPath(liquidPath, _liquidSurfacePaint); // Blind Mode Symbols
       if (isBlindMode && _activeLevel > 0.1) {
         _drawBlindModeSymbols(canvas, size, surfaceY);
       }
@@ -608,27 +600,22 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
     final sphereCenterY = size.y - (size.x / 2);
     final sphereRadius = size.x / 2;
 
-    // 1. Back
-    canvas.drawPath(
-      _getBeakerPath(size),
-      Paint()..color = Colors.white.withValues(alpha: 0.05),
-    );
+    canvas.drawPath(_getBeakerPathCached(), _backGlassPaint);
 
     // 2. Liquid
     if (_activeLevel > 0.01) {
       final clampedLevel = _activeLevel.clamp(0.0, 1.0);
       final liquidH = size.y * clampedLevel;
       final surfaceY = size.y - liquidH;
-      final displayColor = isBlindMode ? const Color(0xFF222222) : currentColor;
 
       final Path liquidBody = Path();
-      liquidBody.addPath(_getBeakerPath(size), Offset.zero);
+      liquidBody.addPath(_getBeakerPathCached(), Offset.zero);
 
       canvas.save();
       canvas.clipPath(liquidBody);
       canvas.drawRect(
         Rect.fromLTWH(0, surfaceY, size.x, size.y),
-        Paint()..color = displayColor.withValues(alpha: 0.8),
+        _liquidSurfacePaint,
       );
 
       // Blind Mode Symbols
@@ -651,37 +638,23 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
           width: currentW,
           height: currentW * _perspectiveRatio,
         ),
-        Paint()
-          ..color = Colors.white.withValues(alpha: 0.3)
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 2,
+        _liquidMeniscusPaint,
       );
     }
 
     // 3. Front
-    canvas.drawPath(
-      _getBeakerPath(size),
-      Paint()
-        ..color = Colors.white.withValues(alpha: 0.2)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 3,
-    );
+    canvas.drawPath(_getBeakerPathCached(), _rimPaint);
     _drawHighlights(canvas);
   }
 
   // ─── Diamond Prism ───────────────────────────────────────────────────────
   void _renderDiamond3D(Canvas canvas) {
-    // 1. Back glass
-    canvas.drawPath(
-      _getBeakerPath(size),
-      Paint()..color = Colors.white.withValues(alpha: 0.05),
-    );
+    canvas.drawPath(_getBeakerPathCached(), _backGlassPaint);
 
     // 2. Liquid
     if (_activeLevel > 0.01) {
       final clampedLevel = _activeLevel.clamp(0.0, 1.0);
       final surfaceY = size.y * (1 - clampedLevel);
-      final displayColor = isBlindMode ? const Color(0xFF222222) : currentColor;
 
       // Diamond: top point, wide middle, bottom point
       // Liquid fills from bottom point upward
@@ -692,7 +665,7 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
       if (surfaceY >= midY) {
         // Liquid is in the lower triangle (bottom half)
         final t = (surfaceY - midY) / (size.y - midY);
-        final halfW = size.x / 2 * (1 - t);
+        final halfW = (size.x / 2) * (1 - t);
         liquidPath.moveTo(cx - halfW, surfaceY);
         liquidPath.lineTo(cx, size.y);
         liquidPath.lineTo(cx + halfW, surfaceY);
@@ -700,7 +673,7 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
       } else {
         // Liquid is in the upper half too
         final t = surfaceY / midY;
-        final halfW = size.x / 2 * t;
+        final halfW = (size.x / 2) * t;
         liquidPath.moveTo(cx - halfW, surfaceY);
         liquidPath.lineTo(0, midY);
         liquidPath.lineTo(cx, size.y);
@@ -709,10 +682,7 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
         liquidPath.close();
       }
 
-      canvas.drawPath(
-        liquidPath,
-        Paint()..color = displayColor.withValues(alpha: 0.8),
-      );
+      canvas.drawPath(liquidPath, _liquidSurfacePaint);
 
       if (isBlindMode && _activeLevel > 0.1) {
         _drawBlindModeSymbols(canvas, size, surfaceY);
@@ -725,38 +695,27 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
     }
 
     // 3. Front outline
-    canvas.drawPath(
-      _getBeakerPath(size),
-      Paint()
-        ..color = Colors.white.withValues(alpha: 0.25)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2.5,
-    );
+    canvas.drawPath(_getBeakerPathCached(), _rimPaint);
     _drawHighlights(canvas);
   }
 
   // ─── Star Vessel ─────────────────────────────────────────────────────────
   void _renderStar3D(Canvas canvas) {
-    // 1. Back glass
-    canvas.drawPath(
-      _getBeakerPath(size),
-      Paint()..color = Colors.white.withValues(alpha: 0.05),
-    );
+    canvas.drawPath(_getBeakerPathCached(), _backGlassPaint);
 
     // 2. Liquid
     if (_activeLevel > 0.01) {
       final clampedLevel = _activeLevel.clamp(0.0, 1.0);
       final surfaceY = size.y * (1 - clampedLevel);
-      final displayColor = isBlindMode ? const Color(0xFF222222) : currentColor;
 
-      final liquidPath = Path();
-      liquidPath.addPath(_getBeakerPath(size), Offset.zero);
+      final Path liquidPath = Path();
+      liquidPath.addPath(_getBeakerPathCached(), Offset.zero);
 
       canvas.save();
       canvas.clipPath(liquidPath);
       canvas.drawRect(
         Rect.fromLTWH(0, surfaceY, size.x, size.y),
-        Paint()..color = displayColor.withValues(alpha: 0.8),
+        _liquidSurfacePaint,
       );
 
       if (isBlindMode && _activeLevel > 0.1) {
@@ -768,29 +727,18 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
     }
 
     // 3. Front outline
-    canvas.drawPath(
-      _getBeakerPath(size),
-      Paint()
-        ..color = Colors.white.withValues(alpha: 0.25)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2.5,
-    );
+    canvas.drawPath(_getBeakerPathCached(), _rimPaint);
     _drawHighlights(canvas);
   }
 
   // ─── Tri-Flask ───────────────────────────────────────────────────────────
   void _renderTriangle3D(Canvas canvas) {
-    // 1. Back glass
-    canvas.drawPath(
-      _getBeakerPath(size),
-      Paint()..color = Colors.white.withValues(alpha: 0.05),
-    );
+    canvas.drawPath(_getBeakerPathCached(), _backGlassPaint);
 
     // 2. Liquid
     if (_activeLevel > 0.01) {
       final clampedLevel = _activeLevel.clamp(0.0, 1.0);
       final surfaceY = size.y * (1 - clampedLevel);
-      final displayColor = isBlindMode ? const Color(0xFF222222) : currentColor;
 
       // Triangle: apex at top-center, base at bottom
       // At surfaceY, the width = size.x * (1 - surfaceY/size.y)
@@ -798,17 +746,14 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
       final halfW = (size.x / 2) * (1 - t);
       final cx = size.x / 2;
 
-      final liquidPath = Path();
+      final Path liquidPath = Path();
       liquidPath.moveTo(cx - halfW, surfaceY);
       liquidPath.lineTo(0, size.y);
       liquidPath.lineTo(size.x, size.y);
       liquidPath.lineTo(cx + halfW, surfaceY);
       liquidPath.close();
 
-      canvas.drawPath(
-        liquidPath,
-        Paint()..color = displayColor.withValues(alpha: 0.8),
-      );
+      canvas.drawPath(liquidPath, _liquidSurfacePaint);
 
       if (isBlindMode && _activeLevel > 0.1) {
         _drawBlindModeSymbols(canvas, size, surfaceY);
@@ -821,13 +766,7 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
     }
 
     // 3. Front outline
-    canvas.drawPath(
-      _getBeakerPath(size),
-      Paint()
-        ..color = Colors.white.withValues(alpha: 0.25)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2.5,
-    );
+    canvas.drawPath(_getBeakerPathCached(), _rimPaint);
     _drawHighlights(canvas);
   }
 
@@ -1055,12 +994,8 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
   void _drawHighlights(Canvas canvas) {
     // Draw Rim for Classic/Realistic Beaker
     if (type == BeakerType.classic) {
-      final rimPaint = Paint()
-        ..color = Colors.white.withValues(alpha: 0.3)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 4;
-
       // Flared Rim
+      // (Using cached _rimPaint and reusable logic)
       final rimPath = Path();
       rimPath.moveTo(-5, 0);
       rimPath.lineTo(size.x + 5, 0);
@@ -1079,9 +1014,9 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
       canvas.drawRRect(
         RRect.fromRectAndRadius(
           Rect.fromLTWH(-4, -4, size.x + 8, 8),
-          Radius.circular(4),
+          const Radius.circular(4),
         ),
-        rimPaint,
+        _rimPaint,
       );
     }
 

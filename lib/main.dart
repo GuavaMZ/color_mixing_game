@@ -26,6 +26,7 @@ import 'package:color_mixing_deductive/overlays/navigation/daily_challenge_overl
 import 'package:color_mixing_deductive/overlays/system/blackout_overlay.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:color_mixing_deductive/core/ad_manager.dart';
+import 'package:shorebird_code_push/shorebird_code_push.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,6 +56,11 @@ void main() async {
 
   // Initialize Ads
   await AdManager().initialize();
+
+  // Shorebird logging
+  final shorebird = ShorebirdUpdater();
+  final patch = await shorebird.readCurrentPatch();
+  debugPrint('Shorebird Patch: ${patch?.number ?? "None"}');
 
   runApp(const MyApp());
 }

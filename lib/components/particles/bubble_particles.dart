@@ -11,6 +11,9 @@ class BubbleParticles extends PositionComponent
   double _spawnTimer = 0.0;
   double liquidLevel = 0.0;
   Color color = Colors.white;
+  final Paint _bubblePaint = Paint()
+    ..color = Colors.white.withValues(alpha: 0.3)
+    ..style = PaintingStyle.fill;
 
   BubbleParticles({required Vector2 size}) : super(size: size);
 
@@ -71,12 +74,12 @@ class BubbleParticles extends PositionComponent
     super.render(canvas);
     if (liquidLevel <= 0.05) return;
 
-    final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.3)
-      ..style = PaintingStyle.fill;
-
     for (final bubble in _bubbles) {
-      canvas.drawCircle(Offset(bubble.x, bubble.y), bubble.radius, paint);
+      canvas.drawCircle(
+        Offset(bubble.x, bubble.y),
+        bubble.radius,
+        _bubblePaint,
+      );
     }
   }
 }

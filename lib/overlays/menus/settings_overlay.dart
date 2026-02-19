@@ -8,7 +8,7 @@ import '../../helpers/audio_manager.dart';
 import '../../helpers/visual_effects.dart';
 import '../../components/ui/responsive_components.dart';
 import '../../core/lives_manager.dart';
-import '../../core/save_manager.dart';
+import 'package:shorebird_code_push/shorebird_code_push.dart';
 
 class SettingsOverlay extends StatefulWidget {
   final ColorMixerGame game;
@@ -25,6 +25,9 @@ class _SettingsOverlayState extends State<SettingsOverlay>
   late Animation<double> _fadeAnimation;
   final AudioManager _audio = AudioManager();
   final FlutterLocalization _localization = FlutterLocalization.instance;
+  final _shorebird = ShorebirdUpdater();
+  int? _currentPatch;
+  bool _isCheckingForUpdate = false;
 
   @override
   void initState() {
@@ -45,6 +48,79 @@ class _SettingsOverlayState extends State<SettingsOverlay>
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     _controller.forward();
+    _loadPatchNumber();
+  }
+
+  Future<void> _loadPatchNumber() async {
+    final patch = await _shorebird.readCurrentPatch();
+    if (mounted) {
+      setState(() {
+        _currentPatch = patch?.number;
+      });
+    }
+  }
+
+  Future<void> _checkForUpdate() async {
+    if (_isCheckingForUpdate) return;
+    setState(() => _isCheckingForUpdate = true);
+
+    try {
+      final status = await _shorebird.checkForUpdate();
+      if (mounted) {
+        if (status == UpdateStatus.upToDate) {
+          _showResultDialog(
+            'No update available',
+            'You are on the latest version.',
+          );
+        } else if (status == UpdateStatus.outdated) {
+          _showUpdateDialog();
+        } else {
+          _showResultDialog('Status', 'Update status: ${status.name}');
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        _showResultDialog('Error', 'Failed to check for updates: $e');
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isCheckingForUpdate = false);
+      }
+    }
+  }
+
+  void _showUpdateDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.primaryDark,
+        title: const Text('Update Available'),
+        content: const Text(
+          'A new update is available. Do you want to download it now?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Later'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              try {
+                await _shorebird.update();
+                _showResultDialog(
+                  'Success',
+                  'Update downloaded! Please restart the app to apply changes.',
+                );
+              } catch (e) {
+                _showResultDialog('Error', 'Failed to update: $e');
+              }
+            },
+            child: const Text('Download'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -348,6 +424,43 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                                     _audio.playButton();
                                     setState(() {});
                                   },
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              _SettingsTile(
+                                icon: Icons.system_update_rounded,
+                                title: 'App Version',
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      _currentPatch != null
+                                          ? 'Patch #$_currentPatch'
+                                          : 'v1.0.0',
+                                      style: TextStyle(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.5,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    if (_isCheckingForUpdate)
+                                      const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    else
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.refresh_rounded,
+                                          size: 20,
+                                        ),
+                                        onPressed: _checkForUpdate,
+                                      ),
+                                  ],
                                 ),
                               ),
                             ],
