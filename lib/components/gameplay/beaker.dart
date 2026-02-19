@@ -24,14 +24,18 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
   Color _targetColor = Colors.white.withValues(alpha: .2);
   double liquidLevel = 0.0;
   double _activeLevel = 0.0;
-  double _time = 0.0;
   double _shakeLevel = 0.0;
   BeakerType type = BeakerType.classic;
   bool isBlindMode = false;
   late BubbleParticles _bubbleParticles;
-  // Cached Paints
-  final Paint _reflectionPaint = Paint()
-    ..color = Colors.white.withValues(alpha: 0.3)
+
+  // Cached Paints - Premium Glass Effects
+  final Paint _glassFrontPaint = Paint()
+    ..color = Colors.white.withValues(alpha: 0.15)
+    ..style = PaintingStyle.fill;
+
+  final Paint _glassBackPaint = Paint()
+    ..color = Colors.white.withValues(alpha: 0.08)
     ..style = PaintingStyle.fill;
 
   // Symbol Paints
@@ -40,25 +44,26 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
     ..strokeWidth = 4
     ..color = Colors.white.withValues(alpha: 0.8);
 
-  // Optimization: Cached Paints and Shaders
-  final Paint _backGlassPaint = Paint()
-    ..color = Colors.white.withValues(alpha: 0.05)
-    ..style = PaintingStyle.fill;
-
+  // Liquid Paints
   final Paint _liquidVolPaint = Paint()..style = PaintingStyle.fill;
   final Paint _liquidSurfacePaint = Paint()..style = PaintingStyle.fill;
   final Paint _liquidMeniscusPaint = Paint()
-    ..color = Colors.white.withValues(alpha: 0.3)
-    ..style = PaintingStyle.stroke
-    ..strokeWidth = 2;
-
-  final Paint _highlightPaint = Paint();
-  final Paint _rimPaint = Paint()
     ..color = Colors.white.withValues(alpha: 0.4)
     ..style = PaintingStyle.stroke
-    ..strokeWidth = 3;
+    ..strokeWidth = 2.5;
+
+  final Paint _liquidBackPaint = Paint()..style = PaintingStyle.fill;
+  final Paint _rimPaint = Paint()
+    ..color = Colors.white.withValues(alpha: 0.5)
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 3.5;
+
+  final Paint _specularHighlightPaint = Paint()
+    ..color = Colors.white.withValues(alpha: 0.6)
+    ..style = PaintingStyle.fill;
 
   Shader? _liquidGradientShader;
+  Shader? _glassGradientShader;
   Color? _lastGradientColor;
   Vector2? _lastShaderSize;
   Path? _cachedBeakerPath;
@@ -86,7 +91,6 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
       dt,
     ); // Handled by add(_bubbleParticles) automatically
     super.update(dt);
-    _time += dt;
 
     // Smoothly interpolate current color towards target color
     if (currentColor != _targetColor) {
@@ -124,33 +128,48 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
     final displayColor = isBlindMode ? const Color(0xFF222222) : currentColor;
 
     // Update Liquid Surface Paint
-    _liquidSurfacePaint.color = displayColor.withValues(alpha: 0.8);
+    _liquidSurfacePaint.color = displayColor.withValues(alpha: 0.85);
 
     // Update Liquid Gradient Shader if needed
     if (_lastGradientColor != displayColor || _lastShaderSize != size) {
+      // Liquid gradient - more vibrant with depth
       _liquidGradientShader = LinearGradient(
         begin: Alignment.centerLeft,
         end: Alignment.centerRight,
         colors: [
-          displayColor.withValues(alpha: 0.9),
-          displayColor.withValues(alpha: 0.7),
-          displayColor.withValues(alpha: 0.9),
+          displayColor.withValues(alpha: 0.95),
+          displayColor.withValues(alpha: 0.75),
+          displayColor.withValues(alpha: 0.85),
+          displayColor.withValues(alpha: 0.95),
         ],
-        stops: const [0.0, 0.5, 1.0],
+        stops: const [0.0, 0.3, 0.7, 1.0],
       ).createShader(Rect.fromLTWH(0, 0, size.x, size.y));
       _liquidVolPaint.shader = _liquidGradientShader;
 
-      // Also update Highlight Shader
-      _highlightPaint.shader = LinearGradient(
+      // Back liquid layer for depth
+      _liquidBackPaint.shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
         colors: [
-          Colors.white.withValues(alpha: 0.0),
-          Colors.white.withValues(alpha: 0.2),
-          Colors.white.withValues(alpha: 0.0),
-          Colors.white.withValues(alpha: 0.3),
-          Colors.white.withValues(alpha: 0.0),
+          displayColor.withValues(alpha: 0.6),
+          displayColor.withValues(alpha: 0.8),
         ],
-        stops: const [0.0, 0.1, 0.2, 0.85, 1.0],
+        stops: const [0.0, 1.0],
       ).createShader(Rect.fromLTWH(0, 0, size.x, size.y));
+
+      // Glass gradient shader for premium look
+      _glassGradientShader = LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          Colors.white.withValues(alpha: 0.2),
+          Colors.white.withValues(alpha: 0.05),
+          Colors.white.withValues(alpha: 0.08),
+          Colors.white.withValues(alpha: 0.15),
+        ],
+        stops: const [0.0, 0.4, 0.6, 1.0],
+      ).createShader(Rect.fromLTWH(0, 0, size.x, size.y));
+      _glassFrontPaint.shader = _glassGradientShader;
 
       _lastGradientColor = displayColor;
       _lastShaderSize = size.clone();
@@ -170,660 +189,202 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
 
   @override
   void render(Canvas canvas) {
-    switch (type) {
-      case BeakerType.classic:
-        _renderClassic3D(canvas);
-        break;
-      case BeakerType.cylinder:
-        _renderCylinder3D(canvas);
-        break;
-      case BeakerType.laboratory:
-        _renderLaboratory3D(canvas);
-        break;
-      case BeakerType.magicBox:
-        _renderMagicBox3D(canvas);
-        break;
-      case BeakerType.hexagon:
-        _renderHexagon3D(canvas);
-        break;
-      case BeakerType.round:
-        _renderRound3D(canvas);
-        break;
-      case BeakerType.diamond:
-        _renderDiamond3D(canvas);
-        break;
-      case BeakerType.star:
-        _renderStar3D(canvas);
-        break;
-      case BeakerType.triangle:
-        _renderTriangle3D(canvas);
-        break;
-    }
-  }
+    // 1. Render Back Glass (Base shape)
+    final Path beakerPath = _getBeakerPathCached();
+    canvas.drawPath(beakerPath, _glassBackPaint);
 
-  void _renderClassic3D(Canvas canvas) {
-    // 1. Setup Geometry (Cylinder with elliptical top/bottom)
-    // We treat the beaker as a cylinder.
-    final double radius = size.x / 2;
-    final double centerX = size.x / 2;
-    final double topY = 0;
-    final double bottomY = size.y;
-    final double ellipseHeight = size.x * _perspectiveRatio;
-
-    // 2. Back Glass Wall (Behind Liquid)
-    // Draw the full cylinder background
-    // (Paints are now cached as fields)
-
-    // Draw relative to a "cylinder" shape.
-    // Top Ellipse: Rect.fromLTWH(0, 0, size.x, ellipseHeight)
-    // Bottom Ellipse: Rect.fromLTWH(0, size.y - ellipseHeight, size.x, ellipseHeight)
-
-    final backPath = Path();
-    backPath.moveTo(0, topY + ellipseHeight / 2);
-    // Top back arc (from left to right, curving down) -> This matches "bottom half of top ellipse"
-    backPath.arcTo(
-      Rect.fromLTWH(0, topY, size.x, ellipseHeight),
-      pi,
-      -pi,
-      false,
-    );
-    backPath.lineTo(size.x, bottomY - ellipseHeight / 2);
-    // Bottom back arc (from right to left, curving down) -> "bottom half of bottom ellipse"
-    backPath.arcTo(
-      Rect.fromLTWH(0, bottomY - ellipseHeight, size.x, ellipseHeight),
-      0,
-      pi,
-      false,
-    );
-    backPath.close();
-
-    canvas.drawPath(backPath, _backGlassPaint);
-
-    // 3. Liquid (Painter's Algorithm)
+    // 2. Render Liquid with Clipping
     if (_activeLevel > 0.01) {
-      _renderLiquid3D(canvas, centerX, radius, bottomY, ellipseHeight);
+      canvas.save();
+      canvas.clipPath(beakerPath);
+      _renderLiquidInterior(canvas);
+      canvas.restore();
     }
 
-    // 4. Front Glass (Highlights & Rims)
-    _renderFrontGlass3D(canvas, centerX, radius, topY, bottomY, ellipseHeight);
+    // 3. Render Front Glass and Details
+    _renderFrontGlass(canvas);
   }
 
-  void _renderLiquid3D(
-    Canvas canvas,
-    double centerX,
-    double radius,
-    double bottomY,
-    double ellipseHeight,
-  ) {
+  void _renderLiquidInterior(Canvas canvas) {
     final clampedLevel = _activeLevel.clamp(0.0, 1.0);
-    // Liquid Height from bottom
     final liquidHeight = size.y * clampedLevel;
     final liquidSurfaceY = size.y - liquidHeight;
 
-    // Need to adjust liquidTopY to be the CENTER of the surface ellipse
-    // If level is 1.0 (full), surface is at topY.
-    // If level is 0.0, surface is at bottomY.
-
-    // We need to construct the liquid volume.
-    // Volume = Bottom Ellipse (full) to Surface Ellipse (full).
-    // But we draw Back Surface -> Volume -> Front Surface.
-
-    // (Paints and Shaders are now cached as fields)
-    // displayColor is managed in _updatePaintsAndShaders()
-
-    // 3.1 Back Liquid Surface (The part "behind" the meniscus if looking from top, or just the top ellipse back half)
-    // Actually, if we look from slightly above (perspective), we see the TOP of the liquid.
-    // So we see the FULL surface ellipse.
-    // But we should draw it in order.
-    // Let's draw the "Liquid Column" first (back part), then Surface?
-
-    // Liquid Column Path:
-    // Starts at surfaceY, goes down to bottomY.
-    // Bottom arc (full bottom ellipse? No, just the visible front part? Or full if transparent?)
-    // If glass is transparent, we see the liquid volume.
-    // Let's draw the main body relative to the "Front" view.
-    // Actually, standard 3D cylinder liquid:
-    // 1. Draw "Surface Ellipse" (top of liquid).
-    // 2. Draw "Body" (Rect from surface center to bottom center with curved bottom).
-
-    // Let's refine based on "Painter's Algorithm" in plan:
-    // 2. Back Liquid Surface: The back half of the liquid meniscus.
-    // 3. Liquid Volume: Main body.
-    // 5. Front Liquid Surface: Front half.
-
-    // (Paints and Shaders are now cached as fields)
-
-    // Back of Liquid Surface (The "Inside" look of the meniscus if transparent?)
-    // If we look from top, we see the whole ellipse.
-    // Let's draw the Liquid Volume (Back/Sides) first.
-
-    Path volumePath = Path();
-    volumePath.moveTo(0, liquidSurfaceY);
-    // Side down
-    volumePath.lineTo(0, bottomY - ellipseHeight / 2);
-    // Bottom Curve (Front half of bottom ellipse - actually we see the front of the bottom curve)
-    volumePath.arcTo(
-      Rect.fromLTWH(0, bottomY - ellipseHeight, size.x, ellipseHeight),
-      pi,
-      -pi,
-      false,
-    ); // This is top half? No, logic: 0 is Right, pi is Left.
-    // CW: 0 -> pi (Bottom half). CCW: 0 -> -pi (Top half).
-    // We want the bottom curve of the cylinder. That is 0 to pi.
-    volumePath.lineTo(size.x, liquidSurfaceY);
-    // Top Curve (Front half or Back half?)
-    // To close the volume "behind" the front glass, we usually just draw the front face for 2D.
-    // BUT for 3D effect with transparency:
-    // functionality: Draw the "Back" of the liquid cylinder first?
-
-    // SIMPLIFICATION:
-    // 1. Draw Surface Ellipse (Full) -> Represents the top level.
-    // 2. Draw Body (Rectangle from Equator of Surface to Equator of Bottom, with Bottom Arc).
-
-    // Draw Surface Ellipse
-    canvas.drawOval(
-      Rect.fromCenter(
-        center: Offset(centerX, liquidSurfaceY),
-        width: size.x,
-        height: ellipseHeight,
-      ),
-      _liquidSurfacePaint,
+    // Back liquid layer for depth
+    canvas.drawRect(
+      Rect.fromLTWH(0, liquidSurfaceY, size.x, size.y - liquidSurfaceY),
+      _liquidBackPaint,
     );
 
-    // Draw Body
-    Path bodyPath = Path();
-    bodyPath.moveTo(0, liquidSurfaceY);
-    bodyPath.lineTo(0, bottomY - ellipseHeight / 2);
-    // Bottom Arc (0 to pi)
-    bodyPath.arcTo(
-      Rect.fromLTWH(0, bottomY - ellipseHeight, size.x, ellipseHeight),
-      pi,
-      -pi,
-      false, // Left to Right via Bottom
+    // Main liquid volume with gradient
+    canvas.drawRect(
+      Rect.fromLTWH(0, liquidSurfaceY, size.x, size.y - liquidSurfaceY),
+      _liquidVolPaint,
     );
-    // Note: arcTo(rect, startAngle, sweepAngle, forceMoveTo)
-    // 0 is Right (3 o'clock). pi is Left (9 o'clock).
-    // pi to 0 (CCW?) -> Top half.
-    // pi to 2pi (CW) -> Bottom half.
-    // We want Left (pi) to Right (0) via Bottom. So Start=pi, Sweep=pi? No, Sweep=-pi is Top. Sweep=pi is Bottom?
-    // Let's verify: arcTo sweeps clockwise for positive? Memory fuzzy on Flutter Path.arcTo default direction.
-    // Usually positive sweep is clockwise.
-    // pi + pi = 2pi (0). So yes.
 
-    bodyPath.lineTo(size.x, liquidSurfaceY);
-    // Close back to 0, liquidSurfaceY?
-    // We need to fill the area between Surface Equator and Bottom Equator.
-    bodyPath.lineTo(0, liquidSurfaceY);
-    bodyPath.close();
+    // Bubbles
+    _bubbleParticles.forceRender(canvas);
 
-    canvas.drawPath(bodyPath, _liquidVolPaint);
+    // Surface effect (ellipse or line depending on shape)
+    _renderLiquidSurface(canvas, liquidSurfaceY);
 
-    // 4. Bubbles (Clipped to Liquid Body)
-    // We need a clip path for bubbles.
-    // The bubble clip should be the Body + Surface?
-    // Or just the Body is enough for now.
-    canvas.save();
-    canvas.clipPath(bodyPath); // Clip to liquid volume
-    _bubbleParticles.forceRender(canvas); // Render particles manually
-    canvas.restore();
-
-    // Draw Surface Ring (Meniscus)
-    canvas.drawOval(
-      Rect.fromCenter(
-        center: Offset(centerX, liquidSurfaceY),
-        width: size.x,
-        height: ellipseHeight,
-      ),
-      _liquidMeniscusPaint,
-    );
+    // Blind Mode Symbols
+    if (isBlindMode && _activeLevel > 0.1) {
+      _drawBlindModeSymbols(canvas, size, liquidSurfaceY);
+    }
   }
 
-  void _renderFrontGlass3D(
-    Canvas canvas,
-    double centerX,
-    double radius,
-    double topY,
-    double bottomY,
-    double ellipseHeight,
-  ) {
-    // Rims (Top and Bottom)
-    // (Using cached _highlightPaint and _rimPaint)
+  void _renderLiquidSurface(Canvas canvas, double surfaceY) {
+    double surfaceWidth = size.x;
+    double ellipseH = size.x * _perspectiveRatio;
 
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y), _highlightPaint);
-
-    // Top Rim
-    canvas.drawOval(
-      Rect.fromCenter(
-        center: Offset(centerX, topY + ellipseHeight / 2),
-        width: size.x,
-        height: ellipseHeight,
-      ),
-      _rimPaint,
-    );
-
-    // Bottom Rim
-    canvas.drawOval(
-      Rect.fromCenter(
-        center: Offset(centerX, bottomY - ellipseHeight / 2),
-        width: size.x,
-        height: ellipseHeight,
-      ),
-      _rimPaint,
-    );
-  }
-
-  void _renderCylinder3D(Canvas canvas) {
-    _renderClassic3D(canvas);
-  }
-
-  void _renderLaboratory3D(Canvas canvas) {
-    final double neckWidth = size.x * 0.4;
-    final double neckHeight = size.y * 0.35;
-    final double centerX = size.x / 2;
-    final double bottomY = size.y;
-    final double ellipseHeight = size.x * _perspectiveRatio;
-    final double neckEllipseHeight = neckWidth * _perspectiveRatio;
-
-    // 1. Back Glass
-    canvas.drawPath(_getBeakerPathCached(), _backGlassPaint);
-
-    // 2. Liquid
-    if (_activeLevel > 0.01) {
-      final clampedLevel = _activeLevel.clamp(0.0, 1.0);
-      final liquidH = size.y * clampedLevel;
-      final surfaceY = size.y - liquidH;
-
-      double currentWidth;
-      if (surfaceY > neckHeight) {
-        final p = (surfaceY - neckHeight) / (bottomY - neckHeight);
-        currentWidth = lerpDouble(neckWidth, size.x, p)!;
-      } else {
-        currentWidth = neckWidth;
-      }
-      final currentEllipseH = currentWidth * _perspectiveRatio;
-
-      // (Paints and Shaders are now cached as fields)
-
-      final Path filledPath = Path();
-      filledPath.moveTo(centerX - currentWidth / 2, surfaceY);
-      if (surfaceY < neckHeight) {
-        filledPath.lineTo(centerX - neckWidth / 2, neckHeight);
-      }
-      filledPath.lineTo(0, bottomY - ellipseHeight / 2);
-      filledPath.arcTo(
-        Rect.fromLTWH(0, bottomY - ellipseHeight, size.x, ellipseHeight),
-        pi,
-        -pi,
-        false,
-      );
-      if (surfaceY < neckHeight) {
-        filledPath.lineTo(centerX + neckWidth / 2, neckHeight);
-      }
-      filledPath.lineTo(centerX + currentWidth / 2, surfaceY);
-      filledPath.close();
-
-      canvas.drawPath(filledPath, _liquidVolPaint);
-      canvas.drawOval(
-        Rect.fromCenter(
-          center: Offset(centerX, surfaceY),
-          width: currentWidth,
-          height: currentEllipseH,
-        ),
-        _liquidSurfacePaint,
-      );
-
-      // Blind Mode Symbols
-      if (isBlindMode && _activeLevel > 0.1) {
-        _drawBlindModeSymbols(canvas, size, surfaceY);
-      }
-
-      canvas.save();
-      canvas.clipPath(filledPath);
-      _bubbleParticles.forceRender(canvas);
-      canvas.restore();
-
-      canvas.drawOval(
-        Rect.fromCenter(
-          center: Offset(centerX, surfaceY),
-          width: currentWidth,
-          height: currentEllipseH,
-        ),
-        _liquidMeniscusPaint,
-      );
+    // Adjust surface width/shape based on beaker type and height
+    switch (type) {
+      case BeakerType.laboratory:
+        final neckWidth = size.x * 0.45;
+        final neckHeight = size.y * 0.35;
+        if (surfaceY > neckHeight) {
+          final p = (surfaceY - neckHeight) / (size.y - neckHeight);
+          surfaceWidth = lerpDouble(neckWidth, size.x, p)!;
+        } else {
+          surfaceWidth = neckWidth;
+        }
+        ellipseH = surfaceWidth * _perspectiveRatio;
+        break;
+      case BeakerType.round:
+        final neckWidth = size.x * 0.35;
+        final neckHeight = size.y * 0.35;
+        final sphereCenterY = size.y - (size.x / 2);
+        final sphereRadius = size.x / 2;
+        if (surfaceY > neckHeight) {
+          final dy = (surfaceY - sphereCenterY).abs();
+          surfaceWidth =
+              2 * sqrt(max(0, sphereRadius * sphereRadius - dy * dy));
+        } else {
+          surfaceWidth = neckWidth;
+        }
+        ellipseH = surfaceWidth * _perspectiveRatio;
+        break;
+      case BeakerType.triangle:
+        final t = surfaceY / size.y;
+        surfaceWidth = size.x * (1 - t);
+        ellipseH = 0; // Flat line for triangle
+        break;
+      case BeakerType.diamond:
+        final midY = size.y * 0.45;
+        if (surfaceY >= midY) {
+          final t = (surfaceY - midY) / (size.y - midY);
+          surfaceWidth = size.x * (1 - t);
+        } else {
+          final t = surfaceY / midY;
+          surfaceWidth = size.x * t;
+        }
+        ellipseH = 0; // Flat line for diamond
+        break;
+      case BeakerType.hexagon:
+        // Hexagon width varies significantly
+        if (surfaceY <= size.y * 0.25) {
+          surfaceWidth = size.x * (0.5 + (surfaceY / (size.y * 0.25)) * 0.5);
+        } else if (surfaceY <= size.y * 0.75) {
+          surfaceWidth = size.x;
+        } else {
+          final t = (surfaceY - size.y * 0.75) / (size.y * 0.25);
+          surfaceWidth = size.x * (1.0 - t * 0.5);
+        }
+        ellipseH = 0;
+        break;
+      case BeakerType.star:
+        surfaceWidth = size.x; // Star is complex, use full width clipping
+        ellipseH = 0;
+        break;
+      case BeakerType.magicBox:
+      case BeakerType.cylinder:
+      case BeakerType.classic:
+        surfaceWidth = size.x;
+        ellipseH = (type == BeakerType.magicBox)
+            ? 0
+            : size.x * _perspectiveRatio;
+        break;
     }
 
-    // 3. Front Rims / Details
-    canvas.drawOval(
-      Rect.fromCenter(
-        center: Offset(centerX, 0),
-        width: neckWidth,
-        height: neckEllipseHeight,
-      ),
-      _rimPaint,
-    );
-
-    _drawHighlights(canvas);
-  }
-
-  void _renderMagicBox3D(Canvas canvas) {
-    final double padding = 8.0;
-    final Rect frontRect = Rect.fromLTWH(0, 0, size.x, size.y);
-
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(frontRect, const Radius.circular(12)),
-      _backGlassPaint,
-    );
-
-    // 2. Liquid
-    if (_activeLevel > 0.01) {
-      final clampedLevel = _activeLevel.clamp(0.0, 1.0);
-      final liquidH = (size.y - padding * 2) * clampedLevel;
-      final surfaceY = size.y - padding - liquidH;
-      final Rect liquidRect = Rect.fromLTRB(
-        padding,
-        surfaceY,
-        size.x - padding,
-        size.y - padding,
+    if (ellipseH > 0) {
+      final rect = Rect.fromCenter(
+        center: Offset(size.x / 2, surfaceY),
+        width: surfaceWidth,
+        height: ellipseH,
       );
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(liquidRect, const Radius.circular(4)),
-        _liquidSurfacePaint,
-      );
-
-      // Blind Mode Symbols
-      if (isBlindMode && _activeLevel > 0.1) {
-        _drawBlindModeSymbols(canvas, size, surfaceY);
-      }
-
-      canvas.save();
-      canvas.clipRRect(
-        RRect.fromRectAndRadius(liquidRect, const Radius.circular(4)),
-      );
-      _bubbleParticles.forceRender(canvas);
-      canvas.restore();
-
+      canvas.drawOval(rect, _liquidSurfacePaint);
+      canvas.drawOval(rect, _liquidMeniscusPaint);
+    } else {
+      final halfW = surfaceWidth / 2;
       canvas.drawLine(
-        Offset(padding, surfaceY),
-        Offset(size.x - padding, surfaceY),
+        Offset(size.x / 2 - halfW, surfaceY),
+        Offset(size.x / 2 + halfW, surfaceY),
         _liquidMeniscusPaint,
       );
     }
+  }
+
+  void _renderFrontGlass(Canvas canvas) {
+    final Path beakerPath = _getBeakerPathCached();
+    canvas.drawPath(beakerPath, _glassFrontPaint);
+    canvas.drawPath(beakerPath, _rimPaint);
+
+    // Highlights
+    _renderHighlights(canvas);
+  }
+
+  void _renderHighlights(Canvas canvas) {
+    final centerX = size.x / 2;
+
+    // Default vertical highlight
+    final highlightRect = Rect.fromLTWH(
+      size.x * 0.15,
+      size.y * 0.1,
+      size.x * 0.2,
+      size.y * 0.7,
+    );
+    final highlightPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+        colors: [
+          Colors.white.withValues(alpha: 0.0),
+          Colors.white.withValues(alpha: 0.3),
+          Colors.white.withValues(alpha: 0.0),
+        ],
+      ).createShader(highlightRect);
 
     canvas.drawRRect(
-      RRect.fromRectAndRadius(frontRect, const Radius.circular(12)),
-      _rimPaint,
+      RRect.fromRectAndRadius(highlightRect, const Radius.circular(10)),
+      highlightPaint,
     );
-    _drawHighlights(canvas);
-  }
 
-  void _renderHexagon3D(Canvas canvas) {
-    canvas.drawPath(_getBeakerPathCached(), _backGlassPaint);
-
-    // 2. Liquid
-    if (_activeLevel > 0.01) {
-      final clampedLevel = _activeLevel.clamp(0.0, 1.0);
-      final surfaceY = size.y * (1 - clampedLevel);
-      final Path liquidPath = Path();
-      liquidPath.moveTo(size.x * 0.1, surfaceY);
-      liquidPath.lineTo(0, size.y * 0.75);
-      liquidPath.lineTo(size.x * 0.5, size.y);
-      liquidPath.lineTo(size.x, size.y * 0.75);
-      liquidPath.lineTo(size.x * 0.9, surfaceY);
-      liquidPath.close();
-
-      canvas.drawPath(liquidPath, _liquidSurfacePaint); // Blind Mode Symbols
-      if (isBlindMode && _activeLevel > 0.1) {
-        _drawBlindModeSymbols(canvas, size, surfaceY);
-      }
-
-      canvas.save();
-      canvas.clipPath(liquidPath);
-      _bubbleParticles.forceRender(canvas);
-      canvas.restore();
-    }
-
-    // 3. Front
-    canvas.drawPath(
-      _getBeakerPath(size),
-      Paint()
-        ..color = Colors.white.withValues(alpha: 0.2)
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 3,
-    );
-    _drawHighlights(canvas);
-  }
-
-  void _renderRound3D(Canvas canvas) {
-    final neckWidth = size.x * 0.35;
-    final neckHeight = size.y * 0.35;
-    final centerX = size.x / 2;
-    final sphereCenterY = size.y - (size.x / 2);
-    final sphereRadius = size.x / 2;
-
-    canvas.drawPath(_getBeakerPathCached(), _backGlassPaint);
-
-    // 2. Liquid
-    if (_activeLevel > 0.01) {
-      final clampedLevel = _activeLevel.clamp(0.0, 1.0);
-      final liquidH = size.y * clampedLevel;
-      final surfaceY = size.y - liquidH;
-
-      final Path liquidBody = Path();
-      liquidBody.addPath(_getBeakerPathCached(), Offset.zero);
-
-      canvas.save();
-      canvas.clipPath(liquidBody);
-      canvas.drawRect(
-        Rect.fromLTWH(0, surfaceY, size.x, size.y),
-        _liquidSurfacePaint,
-      );
-
-      // Blind Mode Symbols
-      if (isBlindMode && _activeLevel > 0.1) {
-        _drawBlindModeSymbols(canvas, size, surfaceY);
-      }
-
-      _bubbleParticles.forceRender(canvas);
-      canvas.restore();
-
-      // Surface Ellipse
-      double currentW = neckWidth;
-      if (surfaceY > neckHeight) {
-        final dy = (surfaceY - sphereCenterY).abs();
-        currentW = 2 * sqrt(max(0, sphereRadius * sphereRadius - dy * dy));
-      }
-      canvas.drawOval(
-        Rect.fromCenter(
-          center: Offset(centerX, surfaceY),
-          width: currentW,
-          height: currentW * _perspectiveRatio,
-        ),
-        _liquidMeniscusPaint,
+    // Type specific highlights
+    if (type == BeakerType.laboratory || type == BeakerType.round) {
+      canvas.drawCircle(
+        Offset(centerX + size.x * 0.2, size.y * 0.7),
+        size.x * 0.1,
+        _specularHighlightPaint,
       );
     }
-
-    // 3. Front
-    canvas.drawPath(_getBeakerPathCached(), _rimPaint);
-    _drawHighlights(canvas);
-  }
-
-  // ─── Diamond Prism ───────────────────────────────────────────────────────
-  void _renderDiamond3D(Canvas canvas) {
-    canvas.drawPath(_getBeakerPathCached(), _backGlassPaint);
-
-    // 2. Liquid
-    if (_activeLevel > 0.01) {
-      final clampedLevel = _activeLevel.clamp(0.0, 1.0);
-      final surfaceY = size.y * (1 - clampedLevel);
-
-      // Diamond: top point, wide middle, bottom point
-      // Liquid fills from bottom point upward
-      final cx = size.x / 2;
-      final midY = size.y * 0.45; // widest point
-
-      final liquidPath = Path();
-      if (surfaceY >= midY) {
-        // Liquid is in the lower triangle (bottom half)
-        final t = (surfaceY - midY) / (size.y - midY);
-        final halfW = (size.x / 2) * (1 - t);
-        liquidPath.moveTo(cx - halfW, surfaceY);
-        liquidPath.lineTo(cx, size.y);
-        liquidPath.lineTo(cx + halfW, surfaceY);
-        liquidPath.close();
-      } else {
-        // Liquid is in the upper half too
-        final t = surfaceY / midY;
-        final halfW = (size.x / 2) * t;
-        liquidPath.moveTo(cx - halfW, surfaceY);
-        liquidPath.lineTo(0, midY);
-        liquidPath.lineTo(cx, size.y);
-        liquidPath.lineTo(size.x, midY);
-        liquidPath.lineTo(cx + halfW, surfaceY);
-        liquidPath.close();
-      }
-
-      canvas.drawPath(liquidPath, _liquidSurfacePaint);
-
-      if (isBlindMode && _activeLevel > 0.1) {
-        _drawBlindModeSymbols(canvas, size, surfaceY);
-      }
-
-      canvas.save();
-      canvas.clipPath(liquidPath);
-      _bubbleParticles.forceRender(canvas);
-      canvas.restore();
-    }
-
-    // 3. Front outline
-    canvas.drawPath(_getBeakerPathCached(), _rimPaint);
-    _drawHighlights(canvas);
-  }
-
-  // ─── Star Vessel ─────────────────────────────────────────────────────────
-  void _renderStar3D(Canvas canvas) {
-    canvas.drawPath(_getBeakerPathCached(), _backGlassPaint);
-
-    // 2. Liquid
-    if (_activeLevel > 0.01) {
-      final clampedLevel = _activeLevel.clamp(0.0, 1.0);
-      final surfaceY = size.y * (1 - clampedLevel);
-
-      final Path liquidPath = Path();
-      liquidPath.addPath(_getBeakerPathCached(), Offset.zero);
-
-      canvas.save();
-      canvas.clipPath(liquidPath);
-      canvas.drawRect(
-        Rect.fromLTWH(0, surfaceY, size.x, size.y),
-        _liquidSurfacePaint,
-      );
-
-      if (isBlindMode && _activeLevel > 0.1) {
-        _drawBlindModeSymbols(canvas, size, surfaceY);
-      }
-
-      _bubbleParticles.forceRender(canvas);
-      canvas.restore();
-    }
-
-    // 3. Front outline
-    canvas.drawPath(_getBeakerPathCached(), _rimPaint);
-    _drawHighlights(canvas);
-  }
-
-  // ─── Tri-Flask ───────────────────────────────────────────────────────────
-  void _renderTriangle3D(Canvas canvas) {
-    canvas.drawPath(_getBeakerPathCached(), _backGlassPaint);
-
-    // 2. Liquid
-    if (_activeLevel > 0.01) {
-      final clampedLevel = _activeLevel.clamp(0.0, 1.0);
-      final surfaceY = size.y * (1 - clampedLevel);
-
-      // Triangle: apex at top-center, base at bottom
-      // At surfaceY, the width = size.x * (1 - surfaceY/size.y)
-      final t = surfaceY / size.y;
-      final halfW = (size.x / 2) * (1 - t);
-      final cx = size.x / 2;
-
-      final Path liquidPath = Path();
-      liquidPath.moveTo(cx - halfW, surfaceY);
-      liquidPath.lineTo(0, size.y);
-      liquidPath.lineTo(size.x, size.y);
-      liquidPath.lineTo(cx + halfW, surfaceY);
-      liquidPath.close();
-
-      canvas.drawPath(liquidPath, _liquidSurfacePaint);
-
-      if (isBlindMode && _activeLevel > 0.1) {
-        _drawBlindModeSymbols(canvas, size, surfaceY);
-      }
-
-      canvas.save();
-      canvas.clipPath(liquidPath);
-      _bubbleParticles.forceRender(canvas);
-      canvas.restore();
-    }
-
-    // 3. Front outline
-    canvas.drawPath(_getBeakerPathCached(), _rimPaint);
-    _drawHighlights(canvas);
   }
 
   void _drawBlindModeSymbols(Canvas canvas, Vector2 size, double liquidTop) {
-    // Estimate color components from currentColor
-    // We need to know the Mix. Since `currentColor` is a Color, we can try to guess or better, pass the mix state.
-    // But Beaker only knows Color. R, G, B components of the Color.
-    // Pure Red ~ (255, 0, 0).
     final r = currentColor.red;
     final g = currentColor.green;
     final b = currentColor.blue;
-
-    // Threshold to show symbol
     const threshold = 50;
 
     final centerY = (liquidTop + size.y) / 2;
     final centerX = size.x / 2;
-
-    // We'll draw symbols in a row or overlapping?
-    // Let's create a composite visual.
-    // Red -> Triangle
-    // Blue -> Square
-    // Yellow (Green component in additive?) -> Circle.
-    // Wait, the game is CMY or RGB? "Color Mixing Deductive" usually implies RYB or CMY or RGB.
-    // Existing code has rDrops, gDrops, bDrops, white, black. So it's RGB mixing.
-    // User request: "Triangle for Red, Square for Blue, Circle for Yellow".
-    // Yellow in RGB is Red + Green.
-    // So if Red & Green are high -> Yellow -> Circle.
-    // If just Red -> Triangle.
-    // If just Blue -> Square.
-    // If Green? User didn't specify Green symbol. Maybe 'Circle' for Yellow implies Green?
-    // Usually Yellow = Red + Green in light.
-    // Let's stick to Red, Blue, Yellow (Red+Green).
+    const double iconSize = 40;
 
     final bool hasRed = r > threshold;
-    final bool hasGreen = g > threshold; // Used for Yellow
+    final bool hasGreen = g > threshold;
     final bool hasBlue = b > threshold;
 
-    // Logic:
-    // If Red & Green -> Show Yellow Circle? Or Show Red Triangle AND Green Symbol?
-    // User said "Circle for Yellow".
-    // I'll try to map RGB to the requested symbols.
-
-    // Setup positions
-    double iconSize = 40;
-
-    // We are drawing on Canvas, not widgets.
-
-    // Calculate total width to center them
-    // simple logic: Draw symbols based on presence.
-
-    // If multiple, offset them
-    // Let's always draw them in fixed slots or overlaid?
-    // "Inscribed inside".
-
     if (hasBlue) {
-      // Square
       canvas.drawRect(
         Rect.fromCenter(
           center: Offset(centerX, centerY),
@@ -834,57 +395,75 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
       );
     }
 
-    // If Red and Green are both high, maybe it's Yellow?
     if (hasRed && hasGreen) {
-      // Yellow Circle
       canvas.drawCircle(Offset(centerX, centerY), iconSize / 2, _symbolPaint);
     } else if (hasRed) {
-      // Red Triangle
       final path = Path();
       path.moveTo(centerX, centerY - iconSize / 2);
       path.lineTo(centerX + iconSize / 2, centerY + iconSize / 2);
       path.lineTo(centerX - iconSize / 2, centerY + iconSize / 2);
       path.close();
       canvas.drawPath(path, _symbolPaint);
-    }
-    // What if Green only?
-    else if (hasGreen) {
-      // Triangle pointing down? or Circle?
-      // User didn't specify Green. I'll use Circle for Green too as it makes Yellow.
+    } else if (hasGreen) {
       canvas.drawCircle(Offset(centerX, centerY), iconSize / 2, _symbolPaint);
     }
   }
 
   Path _getBeakerPath(Vector2 size) {
+    // ... existing _getBeakerPath implementation is already quite good,
+    // but I'll make sure classic/cylinder use perspective correctly in their silhouette
     final path = Path();
     switch (type) {
+      case BeakerType.classic:
+      case BeakerType.cylinder:
+        final double ellipseHeight = size.x * _perspectiveRatio;
+        final double w = (type == BeakerType.cylinder) ? size.x * 0.8 : size.x;
+        final double ox = (size.x - w) / 2;
+
+        path.moveTo(ox, ellipseHeight / 2);
+        path.lineTo(ox, size.y - ellipseHeight / 2);
+        path.arcTo(
+          Rect.fromLTWH(ox, size.y - ellipseHeight, w, ellipseHeight),
+          pi,
+          -pi,
+          false,
+        );
+        path.lineTo(ox + w, ellipseHeight / 2);
+        path.arcTo(Rect.fromLTWH(ox, 0, w, ellipseHeight), 0, -pi, false);
+        path.close();
+        break;
       case BeakerType.laboratory:
-        // Flask shape
         path.moveTo(size.x * 0.35, 0);
         path.lineTo(size.x * 0.65, 0);
-        path.lineTo(size.x * 0.65, size.y * 0.4);
+        path.lineTo(size.x * 0.65, size.y * 0.35);
         path.cubicTo(
+          size.x * 0.9,
+          size.y * 0.45,
           size.x,
-          size.y * 0.5,
-          size.x,
-          size.y,
+          size.y * 0.8,
           size.x * 0.8,
           size.y,
         );
         path.lineTo(size.x * 0.2, size.y);
-        path.cubicTo(0, size.y, 0, size.y * 0.5, size.x * 0.35, size.y * 0.4);
+        path.cubicTo(
+          0,
+          size.y * 0.8,
+          size.x * 0.1,
+          size.y * 0.45,
+          size.x * 0.35,
+          size.y * 0.35,
+        );
         path.close();
         break;
       case BeakerType.magicBox:
-        // Box shape with rounded bottom
-        final rect = RRect.fromRectAndRadius(
-          Rect.fromLTWH(0, 0, size.x, size.y),
-          const Radius.circular(12),
+        path.addRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromLTWH(0, 0, size.x, size.y),
+            const Radius.circular(12),
+          ),
         );
-        path.addRRect(rect);
         break;
       case BeakerType.hexagon:
-        // Hexagon shape
         path.moveTo(size.x * 0.5, 0);
         path.lineTo(size.x, size.y * 0.25);
         path.lineTo(size.x, size.y * 0.75);
@@ -893,74 +472,28 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
         path.lineTo(0, size.y * 0.25);
         path.close();
         break;
-      case BeakerType.cylinder:
-        // Tall cylinder shape
-        double w = size.x * 0.6;
-        double offsetX = (size.x - w) / 2;
-        path.addRRect(
-          RRect.fromRectAndRadius(
-            Rect.fromLTWH(offsetX, 0, w, size.y),
-            const Radius.circular(8),
-          ),
-        );
-        break;
       case BeakerType.round:
-        // Round bottom flask (sphere with neck)
-        double neckW = size.x * 0.4;
+        double neckW = size.x * 0.35;
         double sphereR = size.x / 2;
-
-        // Neck
         path.moveTo((size.x - neckW) / 2, 0);
         path.lineTo((size.x + neckW) / 2, 0);
-        path.lineTo((size.x + neckW) / 2, size.y * 0.4);
-
-        // Sphere body
-        // We draw an arc for the body
+        path.lineTo((size.x + neckW) / 2, size.y * 0.35);
         path.arcToPoint(
-          Offset((size.x - neckW) / 2, size.y * 0.4),
+          Offset((size.x - neckW) / 2, size.y * 0.35),
           radius: Radius.circular(sphereR),
           largeArc: true,
           clockwise: true,
         );
         path.close();
         break;
-      case BeakerType.classic:
-        // Pseudo-3D Cylinder Silhouette
-        final double ellipseHeight = size.x * _perspectiveRatio;
-
-        path.moveTo(0, ellipseHeight / 2); // Start at top-left of cylinder body
-
-        // Left Side
-        path.lineTo(0, size.y - ellipseHeight / 2);
-
-        // Bottom Curve
-        path.arcTo(
-          Rect.fromLTWH(0, size.y - ellipseHeight, size.x, ellipseHeight),
-          pi,
-          -pi,
-          false,
-        );
-
-        // Right Side
-        path.lineTo(size.x, ellipseHeight / 2);
-
-        // Top Curve (Back Rim)
-        path.arcTo(Rect.fromLTWH(0, 0, size.x, ellipseHeight), 0, -pi, false);
-
-        path.close();
-        break;
-
       case BeakerType.diamond:
-        // Diamond / rhombus shape: top point, wide middle, bottom point
         path.moveTo(size.x / 2, 0);
         path.lineTo(size.x, size.y * 0.45);
         path.lineTo(size.x / 2, size.y);
         path.lineTo(0, size.y * 0.45);
         path.close();
         break;
-
       case BeakerType.star:
-        // 5-pointed star
         final double cx = size.x / 2;
         final double cy = size.y / 2;
         final double outerR = size.x / 2;
@@ -969,19 +502,11 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
         for (int i = 0; i < points * 2; i++) {
           final double angle = (pi / points) * i - pi / 2;
           final double r = (i % 2 == 0) ? outerR : innerR;
-          final double px = cx + r * cos(angle);
-          final double py = cy + r * sin(angle);
-          if (i == 0) {
-            path.moveTo(px, py);
-          } else {
-            path.lineTo(px, py);
-          }
+          path.lineTo(cx + r * cos(angle), cy + r * sin(angle));
         }
         path.close();
         break;
-
       case BeakerType.triangle:
-        // Equilateral-ish triangle: apex top-center, base at bottom
         path.moveTo(size.x / 2, 0);
         path.lineTo(size.x, size.y);
         path.lineTo(0, size.y);
@@ -989,108 +514,6 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
         break;
     }
     return path;
-  }
-
-  void _drawHighlights(Canvas canvas) {
-    // Draw Rim for Classic/Realistic Beaker
-    if (type == BeakerType.classic) {
-      // Flared Rim
-      // (Using cached _rimPaint and reusable logic)
-      final rimPath = Path();
-      rimPath.moveTo(-5, 0);
-      rimPath.lineTo(size.x + 5, 0);
-      // Maybe a slight lip structure
-
-      // Draw a rounded rect for the distinct heavy rim look at the top
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(-4, -4, size.x + 8, 8),
-          Radius.circular(4),
-        ),
-        Paint()
-          ..color = Colors.white.withValues(alpha: 0.2)
-          ..style = PaintingStyle.fill,
-      );
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(-4, -4, size.x + 8, 8),
-          const Radius.circular(4),
-        ),
-        _rimPaint,
-      );
-    }
-
-    switch (type) {
-      case BeakerType.laboratory:
-        canvas.drawCircle(
-          Offset(size.x * 0.75, size.y * 0.7),
-          8,
-          _reflectionPaint,
-        );
-        canvas.drawRRect(
-          RRect.fromRectAndRadius(
-            Rect.fromLTWH(size.x * 0.4, 10, 6, size.y * 0.3),
-            const Radius.circular(3),
-          ),
-          _reflectionPaint,
-        );
-        break;
-      case BeakerType.hexagon:
-        canvas.drawCircle(
-          Offset(size.x * 0.8, size.y * 0.3),
-          6,
-          _reflectionPaint,
-        );
-        break;
-      case BeakerType.cylinder:
-        canvas.drawRRect(
-          RRect.fromRectAndRadius(
-            Rect.fromLTWH(size.x * 0.25, 20, 6, size.y * 0.6),
-            const Radius.circular(3),
-          ),
-          _reflectionPaint,
-        );
-        break;
-      case BeakerType.round:
-        canvas.drawCircle(
-          Offset(size.x * 0.7, size.y * 0.6),
-          12,
-          _reflectionPaint,
-        );
-        break;
-      case BeakerType.diamond:
-        canvas.drawCircle(
-          Offset(size.x * 0.7, size.y * 0.35),
-          8,
-          _reflectionPaint,
-        );
-        break;
-      case BeakerType.star:
-        canvas.drawCircle(
-          Offset(size.x * 0.65, size.y * 0.4),
-          7,
-          _reflectionPaint,
-        );
-        break;
-      case BeakerType.triangle:
-        canvas.drawCircle(
-          Offset(size.x * 0.65, size.y * 0.55),
-          8,
-          _reflectionPaint,
-        );
-        break;
-      default:
-        // Side highlight
-        canvas.drawRRect(
-          RRect.fromRectAndRadius(
-            Rect.fromLTWH(10, 25, 12, size.y * 0.5),
-            const Radius.circular(6),
-          ),
-          _reflectionPaint,
-        );
-        // Top highlight
-        canvas.drawCircle(const Offset(35, 18), 6, _reflectionPaint);
-    }
   }
 
   void updateVisuals(Color newMixedColor, double newLevel) {

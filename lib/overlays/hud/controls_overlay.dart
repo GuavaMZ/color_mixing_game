@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'dart:math';
 import 'package:color_mixing_deductive/helpers/haptic_manager.dart';
 
@@ -39,19 +38,22 @@ class ControlsOverlay extends StatelessWidget {
           child: Stack(
             children: [
               // Banner Ad at the top
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: SafeArea(child: Center(child: BannerAdWidget())),
-              ),
+              if (game.levelManager.currentLevelIndex >= 10)
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: SafeArea(child: Center(child: BannerAdWidget())),
+                ),
 
               // Top section - Target color
               Positioned(
                 top:
                     ResponsiveHelper.safePadding(context).top +
                     ResponsiveHelper.spacing(context, 16) +
-                    50, // Added offset for Ad
+                    (game.levelManager.currentLevelIndex >= 10
+                        ? 50
+                        : 0), // Added offset for Ad
                 left: 0,
                 right: 0,
                 child: Center(child: _buildTargetColorDisplay(context)),

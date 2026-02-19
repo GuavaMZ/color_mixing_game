@@ -8,6 +8,7 @@ import '../../helpers/audio_manager.dart';
 import '../../helpers/visual_effects.dart';
 import '../../components/ui/responsive_components.dart';
 import '../../core/lives_manager.dart';
+import '../../core/save_manager.dart';
 import 'package:shorebird_code_push/shorebird_code_push.dart';
 
 class SettingsOverlay extends StatefulWidget {
@@ -192,20 +193,25 @@ class _SettingsOverlayState extends State<SettingsOverlay>
   }
 
   Future<void> _handleRedeem(String code) async {
-    if (code == 'totymz') {
-      // bool redeemed = await SaveManager.isCodeRedeemed('toty');
-      // if (redeemed) {
-      //   _showResultDialog(
-      //     'Already Redeemed!',
-      //     'You have already used this code.',
-      //   );
-      //   return;
-      // }
+    bool redeemed = await SaveManager.isCodeRedeemed(code);
+    if (redeemed) {
+      _showResultDialog(
+        'Already Redeemed!',
+        'You have already used this code.',
+      );
+      return;
+    }
 
+    if (code == 'totymz') {
       LivesManager().addLives(3);
-      // await SaveManager.markCodeAsRedeemed('toty');
+      await SaveManager.markCodeAsRedeemed('totymz');
       _audio.playWin();
       _showResultDialog('Success!', 'Code redeemed! +3 Lives added.');
+    } else if (code == 'richie') {
+      widget.game.addCoins(99999);
+      await SaveManager.markCodeAsRedeemed('richie');
+      _audio.playWin();
+      _showResultDialog('Jackpot!', 'Code redeemed! +99999 Coins added.');
     } else {
       _audio.playButton(); // Play some sound
       _showResultDialog('Invalid Code', 'The code you entered is not valid.');

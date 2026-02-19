@@ -1,4 +1,3 @@
-import 'dart:ui';
 import '../../../color_mixer_game.dart';
 import '../../../core/ad_manager.dart';
 import '../../helpers/string_manager.dart';
@@ -171,8 +170,8 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
                             shape: BoxShape.circle,
                             gradient: RadialGradient(
                               colors: [
-                                Colors.amber.withOpacity(0.4),
-                                Colors.amber.withOpacity(0.1),
+                                Colors.amber.withValues(alpha: 0.4),
+                                Colors.amber.withValues(alpha: 0.1),
                                 Colors.transparent,
                               ],
                               stops: const [0.0, 0.6, 1.0],
@@ -191,7 +190,9 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
                                   size: ResponsiveHelper.iconSize(context, 80),
                                   shadows: [
                                     Shadow(
-                                      color: Colors.amber.withOpacity(0.6),
+                                      color: Colors.amber.withValues(
+                                        alpha: 0.6,
+                                      ),
                                       blurRadius: 25,
                                     ),
                                   ],
@@ -253,7 +254,9 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
                                               : Icons.star_outline_rounded,
                                           color: isEarned
                                               ? Colors.amber
-                                              : Colors.white.withOpacity(0.3),
+                                              : Colors.white.withValues(
+                                                  alpha: 0.3,
+                                                ),
                                           size: ResponsiveHelper.iconSize(
                                             context,
                                             50,
@@ -262,7 +265,7 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
                                               ? [
                                                   Shadow(
                                                     color: Colors.amber
-                                                        .withOpacity(0.6),
+                                                        .withValues(alpha: 0.6),
                                                     blurRadius: 15,
                                                   ),
                                                 ]
@@ -369,7 +372,13 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
                                 icon: Icons.arrow_forward_rounded,
                                 onTap: () {
                                   _audio.playButton();
-                                  AdManager().showInterstitialAd();
+                                  if (widget
+                                          .game
+                                          .levelManager
+                                          .currentLevelIndex >=
+                                      10) {
+                                    AdManager().showInterstitialAd();
+                                  }
                                   widget.game.goToNextLevel();
                                 },
                               ),

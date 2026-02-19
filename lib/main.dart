@@ -15,6 +15,10 @@ import 'package:color_mixing_deductive/overlays/navigation/gallery_overlay.dart'
 import 'package:color_mixing_deductive/overlays/hud/color_echo_hud.dart';
 import 'package:color_mixing_deductive/overlays/hud/chaos_lab_hud.dart';
 import 'package:color_mixing_deductive/overlays/menus/lab_upgrade_hub.dart';
+import 'package:color_mixing_deductive/overlays/menus/echo_win_overlay.dart';
+import 'package:color_mixing_deductive/overlays/menus/echo_game_over_overlay.dart';
+import 'package:color_mixing_deductive/overlays/menus/chaos_win_overlay.dart';
+import 'package:color_mixing_deductive/overlays/menus/chaos_game_over_overlay.dart';
 import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
@@ -149,6 +153,11 @@ class _MyAppState extends State<MyApp> {
                 DailyChallengeOverlay(game: game),
             'Blackout': (context, game) => BlackoutOverlay(game: game),
             'LabUpgrade': (context, game) => LabUpgradeHub(game: game),
+            'EchoWin': (context, game) => EchoWinOverlay(game: game),
+            'EchoGameOver': (context, game) => EchoGameOverOverlay(game: game),
+            'ChaosWin': (context, game) => ChaosWinOverlay(game: game),
+            'ChaosGameOver': (context, game) =>
+                ChaosGameOverOverlay(game: game),
           },
           initialActiveOverlays: const ['MainMenu', 'Transition'],
           loadingBuilder: (context) => Container(

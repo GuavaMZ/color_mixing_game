@@ -252,9 +252,12 @@ class LevelManager {
   void unlockNextLevel(int currentLevelIndex, int stars) {
     if (levels.isEmpty) return;
 
-    // Update current level star
+    // Update current level star only if it's better
     int levelId = levels[currentLevelIndex].id;
-    levelStars[levelId] = stars;
+    int existingStars = levelStars[levelId] ?? -1;
+    if (stars > existingStars) {
+      levelStars[levelId] = stars;
+    }
 
     // Unlock next level
     if (currentLevelIndex < levels.length - 1) {

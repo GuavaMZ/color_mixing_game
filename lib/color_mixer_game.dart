@@ -39,7 +39,6 @@ import 'package:flutter_localization/flutter_localization.dart';
 import 'dart:math';
 import 'package:flame/game.dart';
 import 'package:flame/components.dart';
-import 'package:flame/particles.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 
@@ -289,16 +288,18 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       if (_evaporationVisualOffset >= 1.0) {
         _evaporationVisualOffset -= 1.0;
         if (totalDrops.value > 0) {
-          if (rDrops > 0)
+          if (rDrops > 0) {
             rDrops--;
-          else if (gDrops > 0)
+          } else if (gDrops > 0) {
             gDrops--;
-          else if (bDrops > 0)
+          } else if (bDrops > 0) {
             bDrops--;
-          else if (whiteDrops > 0)
+          } else if (whiteDrops > 0) {
             whiteDrops--;
-          else if (blackDrops > 0)
+          } else if (blackDrops > 0) {
             blackDrops--;
+          }
+          blackDrops--;
 
           _audio.playSteam(); // Sound effect
           if (totalDrops.value == 0) {
@@ -415,6 +416,11 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     int bonusCoins = baseCoins * (comboMultiplier - 1);
     addCoins(baseCoins + bonusCoins);
 
+    // Save progress immediately
+    if (currentMode == GameMode.classic || currentMode == GameMode.timeAttack) {
+      levelManager.unlockNextLevel(levelManager.currentLevelIndex, stars);
+    }
+
     // Track statistics
     StatisticsManager.incrementLevelsCompleted();
     if (stars == 3) {
@@ -425,7 +431,13 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     StatisticsManager.incrementModePlay(currentMode);
 
     Future.delayed(const Duration(milliseconds: 1500), () {
-      overlays.add('WinMenu');
+      if (currentMode == GameMode.colorEcho) {
+        overlays.add('EchoWin');
+      } else if (currentMode == GameMode.chaosLab) {
+        overlays.add('ChaosWin');
+      } else {
+        overlays.add('WinMenu');
+      }
     });
   }
 
@@ -465,9 +477,9 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     // Handle Inverse Controls
     String effectiveColorType = colorType;
     if (isControlsInverted) {
-      if (colorType == 'red')
+      if (colorType == 'red') {
         effectiveColorType = 'blue';
-      else if (colorType == 'blue')
+      } else if (colorType == 'blue')
         effectiveColorType = 'red';
       // Can also swap others if desired, e.g. green/yellow? Green is secondary?
       // Let's stick to Red/Blue as per request "red button adds blue, and the yellow button adds red"
@@ -603,16 +615,17 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       return (current < required) ? 1 : 0;
     }
 
-    if (needed('red', rDrops) > 0)
+    if (needed('red', rDrops) > 0) {
       colorToDrop = 'red';
-    else if (needed('green', gDrops) > 0)
+    } else if (needed('green', gDrops) > 0) {
       colorToDrop = 'green';
-    else if (needed('blue', bDrops) > 0)
+    } else if (needed('blue', bDrops) > 0) {
       colorToDrop = 'blue';
-    else if (needed('white', whiteDrops) > 0)
+    } else if (needed('white', whiteDrops) > 0) {
       colorToDrop = 'white';
-    else if (needed('black', blackDrops) > 0)
+    } else if (needed('black', blackDrops) > 0) {
       colorToDrop = 'black';
+    }
 
     if (colorToDrop != null) {
       if (!useHelper('help_drop')) return;
@@ -888,17 +901,12 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   }
 
   void goToNextLevel() {
-    int stars = calculateStars();
-
     if (currentMode == GameMode.colorEcho) {
       overlays.remove('WinMenu');
       startLevel();
       notifyListeners();
       return;
     }
-
-    // Save progress
-    levelManager.unlockNextLevel(levelManager.currentLevelIndex, stars);
 
     // Remove WinMenu overlay
     overlays.remove('WinMenu');
@@ -952,7 +960,13 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
     _audio.playGameOver();
 
-    overlays.add('GameOver');
+    if (currentMode == GameMode.colorEcho) {
+      overlays.add('EchoGameOver');
+    } else if (currentMode == GameMode.chaosLab) {
+      overlays.add('ChaosGameOver');
+    } else {
+      overlays.add('GameOver');
+    }
     LivesManager().consumeLife();
   }
 
@@ -1166,8 +1180,9 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       }
 
       // Force severe events with higher probability
-      if (!isMirrored && _random.nextDouble() < 0.7)
+      if (!isMirrored && _random.nextDouble() < 0.7) {
         add(MirrorDistortionEffect());
+      }
       if (!hasWind && _random.nextDouble() < 0.7) add(WindForceEffect());
 
       // Play critical alert
@@ -1179,8 +1194,9 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
   void _triggerRandomEvent() {
     // Prevent stacking of certain events
-    if (isBlackout || isEvaporating || isControlsInverted || isUiGlitching)
+    if (isBlackout || isEvaporating || isControlsInverted || isUiGlitching) {
       return;
+    }
 
     // Check for existing visual effects
     bool isEffectActive =
