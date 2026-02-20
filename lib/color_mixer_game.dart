@@ -70,6 +70,18 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   bool isTimeFreeze = false;
   bool isDoubleCoinActive = false;
 
+  // Echo Mode — Progressive Difficulty & Scoring
+  int echoRound = 0;
+  double echoScore = 0.0;
+  int echoStreak = 0;
+  final ValueNotifier<bool> echoAlmostSync = ValueNotifier<bool>(false);
+
+  // Chaos Mode — Phase System & Stability Recovery
+  int chaosRound = 0;
+  double _previousMatchPct = 0.0;
+  final ValueNotifier<String> chaosPhase = ValueNotifier<String>('STABLE');
+  final ValueNotifier<bool> stabilityRecovered = ValueNotifier<bool>(false);
+
   final Random _random = Random();
   Random get random => _random;
 
@@ -244,6 +256,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     super.update(dt);
 
     if ((currentMode == GameMode.timeAttack ||
+            currentMode == GameMode.colorEcho ||
             currentMode == GameMode.chaosLab) &&
         !_hasWon) {
       // Only decrease time if not frozen
@@ -253,10 +266,24 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
       // Chaos Stability Decay - Accelerates as stability drops
       if (currentMode == GameMode.chaosLab) {
-        // Dynamic decay: faster as stability decreases
-        double decayRate = 0.003 + (1.0 - chaosStability) * 0.008;
+        // Dynamic decay: faster as stability decreases + round scaling
+        double decayRate =
+            0.003 + chaosRound * 0.001 + (1.0 - chaosStability) * 0.008;
         chaosStability -= decayRate * dt;
         if (chaosStability < 0) chaosStability = 0;
+
+        if (chaosStability <= 0 && !_hasWon) {
+          _handleGameOver();
+        }
+
+        // Update chaos phase based on stability
+        if (chaosStability > 0.7) {
+          chaosPhase.value = 'STABLE';
+        } else if (chaosStability > 0.4) {
+          chaosPhase.value = 'CAUTION';
+        } else {
+          chaosPhase.value = 'CRITICAL';
+        }
       }
 
       if (timeLeft <= 0) {
@@ -432,13 +459,66 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
     Future.delayed(const Duration(milliseconds: 1500), () {
       if (currentMode == GameMode.colorEcho) {
+        // Echo scoring: reward efficiency (fewer drops = more points)
+        echoScore += matchPercentage.value * (maxDrops - totalDrops.value + 1);
+        echoRound++;
+        echoStreak++;
+
+        // Streak coin bonus: 1.5× per consecutive win
+        int echoCoins = (30 * (1 + echoStreak * 0.5)).toInt();
+        addCoins(echoCoins);
+
         overlays.add('EchoWin');
       } else if (currentMode == GameMode.chaosLab) {
+        // Chaos coin bonus: stability % dictates bonus
+        int chaosBaseCoins = 30;
+        int chaosBonus = (chaosBaseCoins * chaosStability).toInt();
+        addCoins(chaosBaseCoins + chaosBonus);
+        chaosRound++;
+
         overlays.add('ChaosWin');
       } else {
         overlays.add('WinMenu');
       }
     });
+  }
+
+  /// Start next Echo round without resetting score/streak
+  void nextEchoRound() {
+    _hasWon = false;
+    overlays.remove('EchoWin');
+    beaker.clearContents();
+    totalDrops.value = 0;
+    matchPercentage.value = 0;
+    rDrops = 0;
+    gDrops = 0;
+    bDrops = 0;
+    whiteDrops = 0;
+    blackDrops = 0;
+    dropsLimitReached.value = false;
+    dropHistory.clear();
+    _previousMatchPct = 0.0;
+    startLevel();
+    notifyListeners();
+  }
+
+  /// Start next Chaos round without resetting round counter
+  void nextChaosRound() {
+    _hasWon = false;
+    overlays.remove('ChaosWin');
+    beaker.clearContents();
+    totalDrops.value = 0;
+    matchPercentage.value = 0;
+    rDrops = 0;
+    gDrops = 0;
+    bDrops = 0;
+    whiteDrops = 0;
+    blackDrops = 0;
+    dropsLimitReached.value = false;
+    dropHistory.clear();
+    _previousMatchPct = 0.0;
+    startLevel();
+    notifyListeners();
   }
 
   void resetGame() {
@@ -447,7 +527,22 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     // Remove overlays if they exist
     overlays.remove('WinMenu');
     overlays.remove('GameOver');
+    overlays.remove('EchoWin');
+    overlays.remove('EchoGameOver');
+    overlays.remove('ChaosWin');
+    overlays.remove('ChaosGameOver');
     _evaporationVisualOffset = 0.0;
+
+    // Reset Echo state on retry (not next round)
+    if (currentMode == GameMode.colorEcho) {
+      echoRound = 0;
+      echoScore = 0.0;
+      echoStreak = 0;
+    }
+    // Reset Chaos state on retry
+    if (currentMode == GameMode.chaosLab) {
+      chaosRound = 0;
+    }
 
     // Removed levelManager.reset() as it resets currentLevelIndex to 0
     beaker.clearContents();
@@ -684,6 +779,24 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     totalDrops.value = rDrops + gDrops + bDrops + whiteDrops + blackDrops;
     matchPercentage.value = ColorLogic.checkMatch(newColor, targetColor);
 
+    // Echo Mode: proximity hint when match >= 80%
+    if (currentMode == GameMode.colorEcho) {
+      echoAlmostSync.value =
+          matchPercentage.value >= 80.0 && matchPercentage.value < 100.0;
+    }
+
+    // Chaos Mode: stability recovery on accurate drops
+    if (currentMode == GameMode.chaosLab &&
+        matchPercentage.value > _previousMatchPct) {
+      double improvement = matchPercentage.value - _previousMatchPct;
+      if (improvement >= 5.0) {
+        chaosStability = (chaosStability + 0.08).clamp(0.0, 1.0);
+        stabilityRecovered.value =
+            !stabilityRecovered.value; // Toggle to trigger UI
+      }
+    }
+    _previousMatchPct = matchPercentage.value;
+
     // Auto-win if 100% match
     if (matchPercentage.value == 100.0) {
       _hasWon = true;
@@ -739,12 +852,13 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
     if (currentMode == GameMode.colorEcho) {
       targetColor = ColorLogic.generateRandomHardColor();
-      maxDrops = 15;
+      // Progressive difficulty: reduce drops and time each round
+      maxDrops = (15 - echoRound).clamp(8, 15);
       isBlindMode = Random().nextBool(); // 50% chance of blind mode in echo
     } else if (currentMode == GameMode.chaosLab) {
       // Chaos Lab Mode: Unstable, random target colors
       targetColor = ColorLogic.generateRandomHardColor();
-      maxDrops = 25; // Increased from 18 to allow more experimentation
+      maxDrops = 25;
       isBlindMode = false; // No blind mode in chaos - too chaotic already!
     } else {
       final level = levelManager.currentLevel;
@@ -796,12 +910,11 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       timeLeft = maxTime;
       isTimeUp = false;
     } else if (currentMode == GameMode.colorEcho) {
-      // Echo mode also has time attack? Or unlimited?
-      // User said "random hard target color", let's give it a generous but decreasing time if needed?
-      // For now, let's make it unlimited time or a fixed 20s.
-      timeLeft = 25.0;
-      maxTime = 25.0;
+      // Progressive: reduce time each round
+      maxTime = (25.0 - echoRound * 2).clamp(12.0, 25.0);
+      timeLeft = maxTime;
       isTimeUp = false;
+      echoAlmostSync.value = false;
     } else {
       timeLeft = 0;
       isTimeUp = false;
@@ -866,16 +979,15 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       overlays.add('ColorEchoHUD');
       overlays.remove('Controls');
     } else if (currentMode == GameMode.chaosLab) {
-      // Chaos Lab Mode: Unstable, random target colors
-      // Start CLEAN - events will trigger periodically
-
-      // Set chaos timer
+      // Chaos Lab: dynamic difficulty based on chaosRound
       timeLeft = 120.0;
       maxTime = 120.0;
       isTimeUp = false;
+      _previousMatchPct = 0.0;
+      chaosPhase.value = 'STABLE';
 
-      // Reset event timer to trigger first event after 20 seconds
-      _eventTimer = 20.0;
+      // Dynamic first-event timer: shrinks each round
+      _eventTimer = (20.0 - chaosRound * 2).clamp(8.0, 20.0);
 
       overlays.add('ChaosLabHUD');
       overlays.remove('Controls');

@@ -246,6 +246,39 @@ mixin AppStrings {
   static const String helpDrop = "help_drop";
   static const String revealColor = "reveal_color";
 
+  // Chaos & Echo Specific
+  static const String echoSynced = "echo_synced";
+  static const String syncLost = "sync_lost";
+  static const String spectralAnalysis = "spectral_analysis";
+  static const String syncAccuracy = "sync_accuracy";
+  static const String echoRound = "echo_round";
+  static const String echoScore = "echo_score";
+  static const String nextEcho = "next_echo";
+  static const String stabilized = "stabilized";
+  static const String meltdown = "meltdown";
+  static const String containmentReport = "containment_report";
+  static const String containmentRating = "containment_rating";
+  static const String stabilityRecovered = "stability_recovered";
+  static const String flawless = "flawless";
+  static const String controlled = "controlled";
+  static const String barelyContained = "barely_contained";
+  static const String causeOfFailure = "cause_of_failure";
+  static const String timeExpired = "time_expired";
+  static const String dropsExceeded = "drops_exceeded";
+  static const String signalDrift = "signal_drift";
+  static const String reactorFrequency = "reactor_frequency";
+  static const String phase = "phase";
+  static const String stable = "stable";
+  static const String caution = "caution";
+  static const String critical = "critical";
+  static const String reEngageReactor = "re_engage_reactor";
+  static const String totalScore = "total_score";
+  static const String almost = "almost";
+  static const String chaosBonus = "chaos_bonus";
+  static const String signalDiagnostics = "signal_diagnostics";
+  static const String survivalTip = "survival_tip";
+  static const String meltdownReport = "meltdown_report";
+
   static const Map<String, dynamic> En = {
     // Colors
     redColor: 'Red',
@@ -496,6 +529,39 @@ mixin AppStrings {
     analogousLabel: 'Analogous',
     triadicLabel: 'Triadic',
     splitComplementaryLabel: 'Split-Complementary',
+
+    // Chaos & Echo
+    echoSynced: 'ECHO SYNCED',
+    syncLost: 'SYNC LOST',
+    spectralAnalysis: 'Spectral Analysis Report',
+    syncAccuracy: 'Sync Accuracy',
+    echoRound: 'Echo Round',
+    echoScore: 'Echo Score',
+    nextEcho: 'NEXT ECHO',
+    stabilized: 'STABILIZED',
+    meltdown: 'MELTDOWN',
+    containmentReport: 'Containment Report',
+    containmentRating: 'Containment Rating',
+    stabilityRecovered: 'STABILITY RECOVERED',
+    flawless: 'Flawless',
+    controlled: 'Controlled',
+    barelyContained: 'Barely Contained',
+    causeOfFailure: 'Cause of Failure',
+    timeExpired: 'Time Expired',
+    dropsExceeded: 'Drops Exceeded',
+    signalDrift: 'Signal Drift',
+    reactorFrequency: 'Reactor Frequency',
+    phase: 'Phase',
+    stable: 'STABLE',
+    caution: 'CAUTION',
+    critical: 'CRITICAL',
+    reEngageReactor: 'RE-ENGAGE REACTOR',
+    totalScore: 'Total Score',
+    almost: 'ALMOST',
+    chaosBonus: 'Chaos Bonus',
+    signalDiagnostics: 'Signal Diagnostics',
+    survivalTip: 'Survival Tip',
+    meltdownReport: 'Meltdown Report',
   };
 
   static const Map<String, dynamic> Ar = {
@@ -742,6 +808,39 @@ mixin AppStrings {
     analogousLabel: 'متناظر',
     triadicLabel: 'ثلاثي',
     splitComplementaryLabel: 'مكمّل منقسم',
+
+    // Chaos & Echo
+    echoSynced: 'تمت مزامنة الصدى',
+    syncLost: 'فقدت المزامنة',
+    spectralAnalysis: 'تقرير التحليل الطيفي',
+    syncAccuracy: 'دقة المزامنة',
+    echoRound: 'جولة الصدى',
+    echoScore: 'نقاط الصدى',
+    nextEcho: 'الصدى التالي',
+    stabilized: 'تم التثبيت',
+    meltdown: 'انهيار',
+    containmentReport: 'تقرير الاحتواء',
+    containmentRating: 'تقييم الاحتواء',
+    stabilityRecovered: 'استعادة الاستقرار',
+    flawless: 'مثالي',
+    controlled: 'خاضع للسيطرة',
+    barelyContained: 'بالكاد محتوى',
+    causeOfFailure: 'سبب الفشل',
+    timeExpired: 'انتهى الوقت',
+    dropsExceeded: 'تجاوز القطرات',
+    signalDrift: 'انحراف الإشارة',
+    reactorFrequency: 'تردد المفاعل',
+    phase: 'المرحلة',
+    stable: 'مستقر',
+    caution: 'حذر',
+    critical: 'حرج',
+    reEngageReactor: 'إعادة تشغيل المفاعل',
+    totalScore: 'إجمالي النقاط',
+    almost: 'تقريباً',
+    chaosBonus: 'مكافأة الفوضى',
+    signalDiagnostics: 'تشخيص الإشارة',
+    survivalTip: 'نصيحة للبقاء',
+    meltdownReport: 'تقرير الانصهار',
 
     // Additional UI strings
     colorButtons: 'أزرار الألوان',
@@ -1004,6 +1103,39 @@ mixin AppStrings {
     triadicLabel: 'Triádico',
     splitComplementaryLabel: 'Complementario Dividido',
 
+    // Chaos & Echo
+    echoSynced: 'ECO SINCRONIZADO',
+    syncLost: 'SINCRONIZACIÓN PERDIDA',
+    spectralAnalysis: 'Informe de Análisis Espectral',
+    syncAccuracy: 'Precisión de Sincronización',
+    echoRound: 'Ronda de Eco',
+    echoScore: 'Puntuación de Eco',
+    nextEcho: 'SIGUIENTE ECO',
+    stabilized: 'ESTABILIZADO',
+    meltdown: 'COLAPSO',
+    containmentReport: 'Informe de Contención',
+    containmentRating: 'Calificación de Contención',
+    stabilityRecovered: 'ESTABILIDAD RECUPERADA',
+    flawless: 'Impecable',
+    controlled: 'Controlado',
+    barelyContained: 'Apenas Contenido',
+    causeOfFailure: 'Causa del Fallo',
+    timeExpired: 'Tiempo Agotado',
+    dropsExceeded: 'Gotas Excedidas',
+    signalDrift: 'Deriva de la Señal',
+    reactorFrequency: 'Frecuencia del Reactor',
+    phase: 'Fase',
+    stable: 'ESTABLE',
+    caution: 'PRECAUCIÓN',
+    critical: 'CRÍTICO',
+    reEngageReactor: 'REENGANCHAR REACTOR',
+    totalScore: 'Puntuación Total',
+    almost: 'CASI',
+    chaosBonus: 'Bono de Caos',
+    signalDiagnostics: 'Diagnóstico de Señal',
+    survivalTip: 'Consejo de Supervivencia',
+    meltdownReport: 'Informe de Colapso',
+
     // Additional UI strings
     colorButtons: 'Botones de Color',
     undo: 'Deshacer',
@@ -1260,6 +1392,39 @@ mixin AppStrings {
     analogousLabel: 'Analogue',
     triadicLabel: 'Triadique',
     splitComplementaryLabel: 'Complémentaire Divisé',
+
+    // Chaos & Echo
+    echoSynced: 'ÉCHO SYNCHRONISÉ',
+    syncLost: 'SYNCHRONISATION PERDUE',
+    spectralAnalysis: 'Rapport d\'Analyse Spectrale',
+    syncAccuracy: 'Précision de Sincronización',
+    echoRound: 'Tour d\'Écho',
+    echoScore: 'Score d\'Écho',
+    nextEcho: 'ÉCHO SUIVANT',
+    stabilized: 'STABILISÉ',
+    meltdown: 'EFFONDREMENT',
+    containmentReport: 'Rapport de Confinement',
+    containmentRating: 'Évaluation du Confinement',
+    stabilityRecovered: 'STABILITÉ RÉCUPÉRÉE',
+    flawless: 'Impeccable',
+    controlled: 'Contrôlé',
+    barelyContained: 'À peine Confiné',
+    causeOfFailure: 'Cause de l\'Échec',
+    timeExpired: 'Temps Écoulé',
+    dropsExceeded: 'Gouttes Excédées',
+    signalDrift: 'Dérive du Signal',
+    reactorFrequency: 'Fréquence du Réacteur',
+    phase: 'Phase',
+    stable: 'STABLE',
+    caution: 'ATTENTION',
+    critical: 'CRITIQUE',
+    reEngageReactor: 'RÉENGAGER LE RÉACTEUR',
+    totalScore: 'Score Total',
+    almost: 'PRESQUE',
+    chaosBonus: 'Bonus de Chaos',
+    signalDiagnostics: 'Diagnostic du Signal',
+    survivalTip: 'Conseil de Survie',
+    meltdownReport: 'Rapport d\'Effondrement',
 
     // Additional UI strings
     colorButtons: 'Boutons de Couleur',

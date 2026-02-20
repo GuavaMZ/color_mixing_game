@@ -5,6 +5,9 @@ import 'package:color_mixing_deductive/helpers/audio_manager.dart';
 import 'package:color_mixing_deductive/helpers/visual_effects.dart'; // ShimmerEffect
 import 'package:color_mixing_deductive/components/ui/responsive_components.dart'; // ResponsiveHelper
 import 'package:flutter/material.dart';
+import 'package:color_mixing_deductive/helpers/string_manager.dart';
+import 'package:color_mixing_deductive/core/color_science.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 
 class ChaosLabHUD extends StatefulWidget {
   const ChaosLabHUD({super.key, required this.game});
@@ -142,6 +145,18 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
                     ),
                   ),
                 ),
+              ),
+            ),
+
+            // Stability Recovered Toast
+            Positioned(
+              right: ResponsiveHelper.spacing(context, 80),
+              top: MediaQuery.of(context).size.height * 0.45,
+              child: ValueListenableBuilder<bool>(
+                valueListenable: widget.game.stabilityRecovered,
+                builder: (context, _, __) {
+                  return _StabilityRecoveryToast(key: UniqueKey());
+                },
               ),
             ),
           ],
@@ -329,48 +344,78 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
         hasGlow: true,
         glowColor: _getIntensityColor(intensity),
       ),
-      child: Row(
+      child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            'CHAOS',
-            style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.7),
-              fontSize: ResponsiveHelper.fontSize(context, 10),
-              fontWeight: FontWeight.bold,
-              decoration: TextDecoration.none,
-              letterSpacing: 1.5,
-            ),
-          ),
-          const SizedBox(width: 8),
-          ...List.generate(5, (index) {
-            final isActive = index < intensity;
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 1),
-              child: AnimatedBuilder(
-                animation: _pulseAnimation,
-                builder: (context, child) {
-                  return Icon(
-                    isActive
-                        ? Icons.flash_on_rounded
-                        : Icons.flash_off_rounded, // Improved icon
-                    color: isActive
-                        ? _getIntensityColor(intensity)
-                        : Colors.grey.withValues(alpha: 0.3),
-                    size: isActive ? 14 * _pulseAnimation.value : 14,
-                    shadows: isActive
-                        ? [
-                            Shadow(
-                              color: _getIntensityColor(intensity),
-                              blurRadius: 8,
-                            ),
-                          ]
-                        : null,
-                  );
-                },
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'CHAOS',
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.7),
+                  fontSize: ResponsiveHelper.fontSize(context, 10),
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.none,
+                  letterSpacing: 1.5,
+                ),
               ),
-            );
-          }),
+              const SizedBox(width: 8),
+              ...List.generate(5, (index) {
+                final isActive = index < intensity;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 1),
+                  child: AnimatedBuilder(
+                    animation: _pulseAnimation,
+                    builder: (context, child) {
+                      return Icon(
+                        isActive
+                            ? Icons.flash_on_rounded
+                            : Icons.flash_off_rounded, // Improved icon
+                        color: isActive
+                            ? _getIntensityColor(intensity)
+                            : Colors.grey.withValues(alpha: 0.3),
+                        size: isActive ? 14 * _pulseAnimation.value : 14,
+                        shadows: isActive
+                            ? [
+                                Shadow(
+                                  color: _getIntensityColor(intensity),
+                                  blurRadius: 8,
+                                ),
+                              ]
+                            : null,
+                      );
+                    },
+                  ),
+                );
+              }),
+            ],
+          ),
+          const SizedBox(height: 4),
+          ValueListenableBuilder<String>(
+            valueListenable: widget.game.chaosPhase,
+            builder: (context, phase, child) {
+              String phaseText = phase;
+              Color phaseColor = _getIntensityColor(intensity);
+              if (phase == 'STABLE')
+                phaseText = AppStrings.stable.getString(context);
+              if (phase == 'CAUTION')
+                phaseText = AppStrings.caution.getString(context);
+              if (phase == 'CRITICAL')
+                phaseText = AppStrings.critical.getString(context);
+
+              return Text(
+                phaseText,
+                style: TextStyle(
+                  color: phaseColor,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1,
+                  fontFamily: 'monospace',
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -430,6 +475,16 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
                   color: stability < 0.3 ? Colors.red : Colors.white,
                   fontSize: 10,
                   fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.none,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                'λ ${ColorScience.estimateWavelength(widget.game.targetColor).toInt()}nm',
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.5),
+                  fontSize: 8,
+                  fontFamily: 'monospace',
                   decoration: TextDecoration.none,
                 ),
               ),
@@ -609,5 +664,79 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
     if (widget.game.isMirrored) return 'OPTICAL AXIS INVERTED';
     if (widget.game.hasWind) return 'HIGH PRESSURE LEAK';
     return 'STABILITY DECREASING';
+  }
+}
+
+class _StabilityRecoveryToast extends StatefulWidget {
+  const _StabilityRecoveryToast({super.key});
+
+  @override
+  State<_StabilityRecoveryToast> createState() =>
+      _StabilityRecoveryToastState();
+}
+
+class _StabilityRecoveryToastState extends State<_StabilityRecoveryToast>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _opacity;
+  late Animation<Offset> _slide;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+    _opacity = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0.0, end: 1.0), weight: 20),
+      TweenSequenceItem(tween: ConstantTween(1.0), weight: 60),
+      TweenSequenceItem(tween: Tween(begin: 1.0, end: 0.0), weight: 20),
+    ]).animate(_controller);
+    _slide = Tween<Offset>(
+      begin: const Offset(0, 0),
+      end: const Offset(0, -1),
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Opacity(
+          opacity: _opacity.value,
+          child: SlideTransition(
+            position: _slide,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.green.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.green, width: 1.5),
+              ),
+              child: Text(
+                AppStrings.stabilityRecovered.getString(context).toUpperCase(),
+                style: const TextStyle(
+                  color: Colors.green,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1,
+                  fontFamily: 'monospace',
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 }

@@ -6,6 +6,7 @@ import 'package:flutter_localization/flutter_localization.dart';
 import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:color_mixing_deductive/helpers/visual_effects.dart'; // StarField
 import 'package:color_mixing_deductive/components/ui/responsive_components.dart'; // ResponsiveIconButton
+import 'package:color_mixing_deductive/core/color_science.dart';
 
 class ColorEchoHUD extends StatelessWidget {
   final ColorMixerGame game;
@@ -56,6 +57,31 @@ class ColorEchoHUD extends StatelessWidget {
                         ),
                         borderColor: AppTheme.neonCyan.withValues(alpha: 0.3),
                       ),
+                      const Spacer(),
+                      // Round and Score
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            "${AppStrings.echoRound.getString(context)}: ${game.echoRound + 1}",
+                            style: const TextStyle(
+                              color: AppTheme.neonCyan,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                          Text(
+                            "${AppStrings.echoScore.getString(context)}: ${game.echoScore.toInt()}",
+                            style: const TextStyle(
+                              color: AppTheme.neonMagenta,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'monospace',
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -66,6 +92,11 @@ class ColorEchoHUD extends StatelessWidget {
                   child: ValueListenableBuilder<double>(
                     valueListenable: game.matchPercentage,
                     builder: (context, match, child) {
+                      final wavelength = ColorScience.estimateWavelength(
+                        game.targetColor,
+                      );
+                      final region = ColorScience.getSpectralRegion(wavelength);
+
                       return Column(
                         children: [
                           Text(
@@ -90,6 +121,32 @@ class ColorEchoHUD extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 16),
+                          // Wavelength and Almost Status
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "λ ${wavelength.toInt()}nm · $region",
+                                style: const TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 12,
+                                  fontFamily: 'monospace',
+                                  letterSpacing: 1.5,
+                                ),
+                              ),
+                              ValueListenableBuilder<bool>(
+                                valueListenable: game.echoAlmostSync,
+                                builder: (context, almost, child) {
+                                  if (!almost) return const SizedBox.shrink();
+                                  return Padding(
+                                    padding: const EdgeInsets.only(left: 12),
+                                    child: _AlmostPulseIndicator(),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
                           // Digital track
                           Container(
                             width: 250,
@@ -151,10 +208,20 @@ class ColorEchoHUD extends StatelessWidget {
                       _GlitchButton(
                         onTap: () {
                           AudioManager().playButton();
+                          game.addDrop('white');
+                        },
+                        label: "W",
+                        color: Colors.white,
+                        size: 55,
+                      ),
+                      _GlitchButton(
+                        onTap: () {
+                          AudioManager().playButton();
                           game.addDrop('red');
                         },
                         label: "R",
                         color: Colors.redAccent,
+                        size: 55,
                       ),
                       _GlitchButton(
                         onTap: () {
@@ -163,6 +230,7 @@ class ColorEchoHUD extends StatelessWidget {
                         },
                         label: "G",
                         color: Colors.greenAccent,
+                        size: 55,
                       ),
                       _GlitchButton(
                         onTap: () {
@@ -171,6 +239,16 @@ class ColorEchoHUD extends StatelessWidget {
                         },
                         label: "B",
                         color: Colors.blueAccent,
+                        size: 55,
+                      ),
+                      _GlitchButton(
+                        onTap: () {
+                          AudioManager().playButton();
+                          game.addDrop('black');
+                        },
+                        label: "K",
+                        color: Colors.grey[800]!,
+                        size: 55,
                       ),
                     ],
                   ),
@@ -252,11 +330,13 @@ class _GlitchButton extends StatefulWidget {
   final VoidCallback onTap;
   final String label;
   final Color color;
+  final double size;
 
   const _GlitchButton({
     required this.onTap,
     required this.label,
     required this.color,
+    this.size = 70,
   });
 
   @override
@@ -308,8 +388,8 @@ class _GlitchButtonState extends State<_GlitchButton>
           return Transform.translate(
             offset: Offset(offsetX, offsetY),
             child: Container(
-              width: 70,
-              height: 70,
+              width: widget.size,
+              height: widget.size,
               decoration: BoxDecoration(
                 color: widget.color.withValues(alpha: 0.1),
                 border: Border.all(
@@ -342,6 +422,60 @@ class _GlitchButtonState extends State<_GlitchButton>
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _AlmostPulseIndicator extends StatefulWidget {
+  @override
+  State<_AlmostPulseIndicator> createState() => _AlmostPulseIndicatorState();
+}
+
+class _AlmostPulseIndicatorState extends State<_AlmostPulseIndicator>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    )..repeat(reverse: true);
+    _animation = Tween<double>(
+      begin: 1.0,
+      end: 1.2,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaleTransition(
+      scale: _animation,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+        decoration: BoxDecoration(
+          color: AppTheme.neonMagenta.withValues(alpha: 0.2),
+          border: Border.all(color: AppTheme.neonMagenta, width: 1),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Text(
+          AppStrings.almost.getString(context).toUpperCase(),
+          style: const TextStyle(
+            color: AppTheme.neonMagenta,
+            fontSize: 10,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1,
+          ),
+        ),
       ),
     );
   }
