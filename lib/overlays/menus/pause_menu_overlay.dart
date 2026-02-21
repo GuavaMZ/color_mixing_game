@@ -43,6 +43,7 @@ class _PauseMenuOverlayState extends State<PauseMenuOverlay>
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
     _controller.forward();
+    _audio.pauseMusic();
   }
 
   @override
@@ -53,6 +54,7 @@ class _PauseMenuOverlayState extends State<PauseMenuOverlay>
 
   void _resume() {
     _audio.playButton();
+    _audio.resumeMusic();
     _controller.reverse().then((_) {
       widget.game.overlays.remove('PauseMenu');
     });

@@ -48,6 +48,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   late Beaker beaker;
   late Color targetColor;
   bool _hasWon = false;
+  bool _hasLost = false;
   int rDrops = 0, gDrops = 0, bDrops = 0;
   int whiteDrops = 0, blackDrops = 0;
   bool isBlindMode = false;
@@ -368,11 +369,13 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
   @override
   void onRemove() {
-    _audio.stopMusic();
+    _audio.dispose();
     super.onRemove();
   }
 
   void showWinEffect() {
+    if (_hasLost) return;
+
     // Combo System: Increment on perfect match
     int stars = calculateStars();
     if (stars == 3) {
@@ -486,6 +489,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   /// Start next Echo round without resetting score/streak
   void nextEchoRound() {
     _hasWon = false;
+    _hasLost = false;
     overlays.remove('EchoWin');
     beaker.clearContents();
     totalDrops.value = 0;
@@ -505,6 +509,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   /// Start next Chaos round without resetting round counter
   void nextChaosRound() {
     _hasWon = false;
+    _hasLost = false;
     overlays.remove('ChaosWin');
     beaker.clearContents();
     totalDrops.value = 0;
@@ -523,6 +528,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
   void resetGame() {
     _hasWon = false;
+    _hasLost = false;
     comboCount.value = 0; // Reset combo on retry
     // Remove overlays if they exist
     overlays.remove('WinMenu');
@@ -853,12 +859,12 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     if (currentMode == GameMode.colorEcho) {
       targetColor = ColorLogic.generateRandomHardColor();
       // Progressive difficulty: reduce drops and time each round
-      maxDrops = (15 - echoRound).clamp(8, 15);
+      maxDrops = (30 - echoRound).clamp(15, 30);
       isBlindMode = Random().nextBool(); // 50% chance of blind mode in echo
     } else if (currentMode == GameMode.chaosLab) {
       // Chaos Lab Mode: Unstable, random target colors
       targetColor = ColorLogic.generateRandomHardColor();
-      maxDrops = 25;
+      maxDrops = 40;
       isBlindMode = false; // No blind mode in chaos - too chaotic already!
     } else {
       final level = levelManager.currentLevel;
@@ -882,6 +888,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     matchPercentage.value = 0;
     dropsLimitReached.value = false;
     _hasWon = false;
+    _hasLost = false;
     isColorBlindEvent = false;
     _evaporationVisualOffset = 0.0;
     _lastBeakerColor = Colors.transparent;
@@ -980,8 +987,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       overlays.remove('Controls');
     } else if (currentMode == GameMode.chaosLab) {
       // Chaos Lab: dynamic difficulty based on chaosRound
-      timeLeft = 120.0;
-      maxTime = 120.0;
+      timeLeft = 240.0;
+      maxTime = 240.0;
       isTimeUp = false;
       _previousMatchPct = 0.0;
       chaosPhase.value = 'STABLE';
@@ -1068,6 +1075,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   }
 
   void _handleGameOver() {
+    if (_hasLost || _hasWon) return;
+    _hasLost = true;
     _hasWon = false; // نضمن أن حالة الفوز لم تتحقق
 
     _audio.playGameOver();

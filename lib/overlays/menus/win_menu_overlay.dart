@@ -580,7 +580,11 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
           // Temperature row
           _buildReportRow(
             context,
-            icon: IconData(temp['icon'] as int, fontFamily: 'MaterialIcons'),
+            icon: temp['label'] == 'warm'
+                ? Icons.wb_sunny_rounded
+                : temp['label'] == 'cool'
+                ? Icons.ac_unit_rounded
+                : Icons.trip_origin_rounded,
             iconColor: temp['label'] == 'warm'
                 ? Colors.orangeAccent
                 : temp['label'] == 'cool'
