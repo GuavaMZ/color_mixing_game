@@ -4,6 +4,7 @@ import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:color_mixing_deductive/components/ui/animated_card.dart';
 
 import '../../../color_mixer_game.dart';
 
@@ -138,23 +139,15 @@ class DailyChallengeOverlay extends StatelessWidget {
                               const SizedBox(height: 30),
 
                               // Challenge card
-                              Container(
+                              AnimatedCard(
                                 padding: const EdgeInsets.all(24),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      AppTheme.neonCyan.withValues(alpha: 0.2),
-                                      AppTheme.neonCyan.withValues(alpha: 0.05),
-                                    ],
-                                  ),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: AppTheme.neonCyan.withValues(
-                                      alpha: 0.5,
-                                    ),
-                                    width: 2,
-                                  ),
+                                fillColor: AppTheme.neonCyan.withValues(
+                                  alpha: 0.1,
                                 ),
+                                borderColor: AppTheme.neonCyan.withValues(
+                                  alpha: 0.5,
+                                ),
+                                hasGlow: true,
                                 child: Column(
                                   children: [
                                     const Icon(
@@ -252,14 +245,11 @@ class DailyChallengeOverlay extends StatelessWidget {
                               const SizedBox(height: 30),
 
                               // Instructions
-                              Container(
+                              AnimatedCard(
                                 padding: const EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.05),
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
-                                    color: Colors.white.withValues(alpha: 0.1),
-                                  ),
+                                fillColor: Colors.white.withValues(alpha: 0.05),
+                                borderColor: Colors.white.withValues(
+                                  alpha: 0.1,
                                 ),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,

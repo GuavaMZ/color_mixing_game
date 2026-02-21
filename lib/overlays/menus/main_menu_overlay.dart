@@ -11,6 +11,7 @@ import '../../helpers/visual_effects.dart';
 import '../../components/ui/responsive_components.dart';
 import '../../components/ui/animated_card.dart';
 import '../../components/ui/coins_widget.dart';
+import '../../helpers/daily_login_manager.dart';
 
 class MainMenuOverlay extends StatefulWidget {
   final ColorMixerGame game;
@@ -57,6 +58,18 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
     // Start
     _logoController.forward();
     _glowController.repeat(reverse: true);
+
+    // Check for Daily Login
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkDailyLogin();
+    });
+  }
+
+  Future<void> _checkDailyLogin() async {
+    final canClaim = await DailyLoginManager.canClaimToday();
+    if (canClaim && mounted) {
+      widget.game.overlays.add('DailyLogin');
+    }
   }
 
   @override
@@ -348,7 +361,9 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                         Text(
                           AppStrings.appTitle.getString(context).toUpperCase(),
                           textAlign: TextAlign.center,
-                          semanticsLabel: AppStrings.appTitle.getString(context),
+                          semanticsLabel: AppStrings.appTitle.getString(
+                            context,
+                          ),
                           style: AppTheme.heading1(context).copyWith(
                             fontSize: ResponsiveHelper.fontSize(
                               context,
@@ -517,22 +532,26 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                           borderRadius: BorderRadius.circular(24),
                         ),
                         child: Padding(
-                          padding: EdgeInsets.all(ResponsiveHelper.responsive(
-                            context,
-                            mobile: 16,
-                            tablet: 20,
-                            desktop: 24,
-                          )),
+                          padding: EdgeInsets.all(
+                            ResponsiveHelper.responsive(
+                              context,
+                              mobile: 16,
+                              tablet: 20,
+                              desktop: 24,
+                            ),
+                          ),
                           child: Row(
                             children: [
                               // Icon Box
                               Container(
-                                padding: EdgeInsets.all(ResponsiveHelper.responsive(
-                                  context,
-                                  mobile: 12,
-                                  tablet: 14,
-                                  desktop: 16,
-                                )),
+                                padding: EdgeInsets.all(
+                                  ResponsiveHelper.responsive(
+                                    context,
+                                    mobile: 12,
+                                    tablet: 14,
+                                    desktop: 16,
+                                  ),
+                                ),
                                 decoration: BoxDecoration(
                                   gradient: gradient,
                                   borderRadius: BorderRadius.circular(16),
@@ -558,7 +577,9 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                                 ),
                               ),
 
-                              SizedBox(width: ResponsiveHelper.spacing(context, 16)),
+                              SizedBox(
+                                width: ResponsiveHelper.spacing(context, 16),
+                              ),
 
                               // Text Info
                               Expanded(
@@ -567,37 +588,42 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                                   children: [
                                     Text(
                                       title,
-                                      style: AppTheme.heading3(context).copyWith(
-                                        fontSize: ResponsiveHelper.fontSize(
-                                          context,
-                                          ResponsiveHelper.responsive(
-                                            context,
-                                            mobile: 20,
-                                            tablet: 22,
-                                            desktop: 24,
+                                      style: AppTheme.heading3(context)
+                                          .copyWith(
+                                            fontSize: ResponsiveHelper.fontSize(
+                                              context,
+                                              ResponsiveHelper.responsive(
+                                                context,
+                                                mobile: 20,
+                                                tablet: 22,
+                                                desktop: 24,
+                                              ),
+                                            ),
+                                            letterSpacing: 1,
+                                            color: Colors.white,
                                           ),
-                                        ),
-                                        letterSpacing: 1,
-                                        color: Colors.white,
+                                    ),
+                                    SizedBox(
+                                      height: ResponsiveHelper.spacing(
+                                        context,
+                                        4,
                                       ),
                                     ),
-                                    SizedBox(height: ResponsiveHelper.spacing(context, 4)),
                                     Text(
                                       subtitle,
-                                      style: AppTheme.bodySmall(
-                                        context,
-                                      ).copyWith(
-                                        fontSize: ResponsiveHelper.fontSize(
-                                          context,
-                                          ResponsiveHelper.responsive(
-                                            context,
-                                            mobile: 12,
-                                            tablet: 14,
-                                            desktop: 16,
+                                      style: AppTheme.bodySmall(context)
+                                          .copyWith(
+                                            fontSize: ResponsiveHelper.fontSize(
+                                              context,
+                                              ResponsiveHelper.responsive(
+                                                context,
+                                                mobile: 12,
+                                                tablet: 14,
+                                                desktop: 16,
+                                              ),
+                                            ),
+                                            color: Colors.white70,
                                           ),
-                                        ),
-                                        color: Colors.white70,
-                                      ),
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                     ),

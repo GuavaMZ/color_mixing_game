@@ -7,6 +7,8 @@ import '../../helpers/theme_constants.dart';
 import '../../helpers/audio_manager.dart';
 import '../../helpers/visual_effects.dart';
 import '../../components/ui/responsive_components.dart';
+import '../../components/ui/animated_card.dart';
+import '../../components/ui/enhanced_button.dart';
 import '../../core/lives_manager.dart';
 import '../../core/save_manager.dart';
 import 'package:shorebird_code_push/shorebird_code_push.dart';
@@ -273,13 +275,11 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                   ),
                   maxHeight: MediaQuery.of(context).size.height * 0.85,
                 ),
-                child: Container(
-                  decoration: AppTheme.cosmicCard(
-                    borderRadius: 30,
-                    fillColor: AppTheme.primaryDark.withValues(alpha: 0.9),
-                    borderColor: AppTheme.neonCyan.withValues(alpha: 0.3),
-                    hasGlow: true,
-                  ),
+                child: AnimatedCard(
+                  onTap: () {}, // For glow effect
+                  hasGlow: true,
+                  borderRadius: 30,
+                  fillColor: AppTheme.primaryDark.withValues(alpha: 0.9),
                   padding: EdgeInsets.all(
                     ResponsiveHelper.spacing(context, 24),
                   ),
@@ -479,8 +479,9 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                       // Tutorial Button
                       SizedBox(
                         width: double.infinity,
-                        child: _GradientButton(
+                        child: EnhancedButton(
                           label: 'REPLAY TUTORIAL',
+                          icon: Icons.school_rounded,
                           onTap: () {
                             _audio.playButton();
                             widget.game.overlays.remove('Settings');
@@ -494,8 +495,10 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                       // Redeem Code Button
                       SizedBox(
                         width: double.infinity,
-                        child: _GradientButton(
+                        child: EnhancedButton(
                           label: 'REDEEM CODE',
+                          icon: Icons.card_giftcard_rounded,
+                          isOutlined: true,
                           onTap: () {
                             _audio.playButton();
                             _showRedeemDialog(context);
@@ -508,10 +511,11 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                       // Close button
                       SizedBox(
                         width: double.infinity,
-                        child: _GradientButton(
+                        child: EnhancedButton(
                           label: AppStrings.back
                               .getString(context)
                               .toUpperCase(),
+                          icon: Icons.arrow_back_rounded,
                           onTap: _close,
                         ),
                       ),
@@ -538,14 +542,23 @@ class _SettingsTile extends StatelessWidget {
     required this.trailing,
   });
 
-  @override
   Widget build(BuildContext context) {
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: AppTheme.cosmicGlass(
-        borderRadius: 16,
-        borderColor: Colors.white.withValues(alpha: 0.1),
-      ),
+      decoration:
+          AppTheme.cosmicGlass(
+            borderRadius: 16,
+            borderColor: AppTheme.neonCyan.withValues(alpha: 0.2),
+          ).copyWith(
+            boxShadow: [
+              BoxShadow(
+                color: AppTheme.neonCyan.withValues(alpha: 0.05),
+                blurRadius: 10,
+                spreadRadius: 1,
+              ),
+            ],
+          ),
       child: Row(
         children: [
           Container(
@@ -689,43 +702,6 @@ class _LanguageSelector extends StatelessWidget {
             ),
           );
         }).toList(),
-      ),
-    );
-  }
-}
-
-class _GradientButton extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-
-  const _GradientButton({required this.label, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: AppTheme.cosmicCard(
-        borderRadius: 16,
-        fillColor: AppTheme.primaryColor.withValues(alpha: 0.2),
-        borderColor: AppTheme.neonCyan,
-        hasGlow: true,
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
-          splashColor: AppTheme.neonCyan.withValues(alpha: 0.3),
-          highlightColor: AppTheme.neonCyan.withValues(alpha: 0.1),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            child: Center(
-              child: Text(
-                label,
-                style: AppTheme.buttonText(context, isLarge: true),
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }

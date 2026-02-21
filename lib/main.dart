@@ -27,6 +27,7 @@ import 'package:color_mixing_deductive/overlays/system/tutorial_overlay.dart';
 import 'package:color_mixing_deductive/overlays/system/loading_overlay.dart';
 import 'package:color_mixing_deductive/overlays/system/statistics_overlay.dart';
 import 'package:color_mixing_deductive/overlays/navigation/daily_challenge_overlay.dart';
+import 'package:color_mixing_deductive/overlays/menus/daily_login_overlay.dart';
 import 'package:color_mixing_deductive/overlays/system/blackout_overlay.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:color_mixing_deductive/core/ad_manager.dart';
@@ -151,6 +152,7 @@ class _MyAppState extends State<MyApp> {
             'Statistics': (context, game) => StatisticsOverlay(game: game),
             'DailyChallenge': (context, game) =>
                 DailyChallengeOverlay(game: game),
+            'DailyLogin': (context, game) => DailyLoginOverlay(game: game),
             'Blackout': (context, game) => BlackoutOverlay(game: game),
             'LabUpgrade': (context, game) => LabUpgradeHub(game: game),
             'EchoWin': (context, game) => EchoWinOverlay(game: game),

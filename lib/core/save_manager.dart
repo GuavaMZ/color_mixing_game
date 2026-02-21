@@ -192,10 +192,10 @@ class SaveManager {
         if (decoded.values.any((v) => v is! int || v < 0)) {
           print('SecurityWarning: Negative helper count detected. Resetting.');
           return {
-            'extra_drops': 3,
-            'help_drop': 3,
-            'reveal_color': 3,
-            'undo': 5,
+            'extra_drops': 0,
+            'help_drop': 0,
+            'reveal_color': 0,
+            'undo': 0,
           };
         }
         return decoded.map((key, value) => MapEntry(key, value as int));
@@ -204,7 +204,7 @@ class SaveManager {
         // Fallback to defaults
       }
     }
-    return {'extra_drops': 3, 'help_drop': 3, 'reveal_color': 3, 'undo': 5};
+    return {'extra_drops': 0, 'help_drop': 0, 'reveal_color': 0, 'undo': 0};
   }
 
   static Future<void> saveRandomEvents(bool enabled) async {
