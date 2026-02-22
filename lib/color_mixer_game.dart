@@ -274,7 +274,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
         chaosStability -= decayRate * dt;
         if (chaosStability < 0) chaosStability = 0;
 
-        if (chaosStability <= 0 && !_hasWon) {
+        if (chaosStability <= 0 && !_hasWon && !_hasLost) {
           _handleGameOver();
         }
 
@@ -328,7 +328,6 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
           } else if (blackDrops > 0) {
             blackDrops--;
           }
-          blackDrops--;
 
           _audio.playSteam(); // Sound effect
           if (totalDrops.value == 0) {
@@ -339,7 +338,6 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       _updateGameState(); // Update visuals every frame during evaporation
     }
 
-    helpersUsedInLevel.clear();
     // Random Events Logic (Chaos Director)
     if (currentMode == GameMode.chaosLab && !_hasWon) {
       _eventTimer -= dt;
@@ -574,6 +572,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     rDrops = 0;
     gDrops = 0;
     bDrops = 0;
+    whiteDrops = 0;
+    blackDrops = 0;
     dropsLimitReached.value = false;
     startLevel();
     notifyListeners();
@@ -907,7 +907,9 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     _hasWon = false;
     _hasLost = false;
     isColorBlindEvent = false;
+    isDoubleCoinActive = false;
     _evaporationVisualOffset = 0.0;
+    helpersUsedInLevel.clear();
     _lastBeakerColor = Colors.transparent;
 
     // Reset Chaos State
@@ -1202,9 +1204,14 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     overlays.remove('PauseMenu');
     overlays.remove('GameOver');
     overlays.remove('WinMenu');
+    overlays.remove('EchoWin');
+    overlays.remove('EchoGameOver');
+    overlays.remove('ChaosWin');
+    overlays.remove('ChaosGameOver');
     overlays.remove('Controls');
     overlays.remove('LevelMap');
     overlays.remove('ColorEchoHUD');
+    overlays.remove('ChaosLabHUD');
 
     overlays.add('MainMenu');
     notifyListeners();
@@ -1563,6 +1570,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
         isUiGlitching = false;
         isColorBlindEvent = false;
         isGravityFlux = false;
+        isEarthquake = false;
         isTimeFreeze = false;
         // Note: isDoubleCoinActive persists until level completion
         beaker.isBlindMode = isBlindMode; // Restore from level setting

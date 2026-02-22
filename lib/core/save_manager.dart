@@ -42,7 +42,7 @@ class SaveManager {
       try {
         Map<String, dynamic> decoded = jsonDecode(data);
         // Sanity check for invalid star counts
-        if (decoded.values.any((v) => v is! int || v < 0 || v > 3)) {
+        if (decoded.values.any((v) => v is! int || v < -1 || v > 3)) {
           print(
             'SecurityWarning: Invalid star count detected in progress. Resetting.',
           );

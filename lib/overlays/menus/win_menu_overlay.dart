@@ -59,10 +59,6 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
         _triggerConfetti();
       }
     });
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _awardCoins();
-    });
   }
 
   void _triggerConfetti() {
@@ -80,16 +76,6 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
         ),
       ];
     });
-  }
-
-  void _awardCoins() {
-    final stars = widget.game.calculateStars();
-    int coinsEarned = 0;
-    if (stars == 3) coinsEarned = 100;
-    if (stars == 2) coinsEarned = 50;
-    if (stars == 1) coinsEarned = 20;
-
-    widget.game.addCoins(coinsEarned);
   }
 
   @override

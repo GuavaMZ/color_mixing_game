@@ -58,10 +58,6 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
     ..style = PaintingStyle.stroke
     ..strokeWidth = 3.5;
 
-  final Paint _specularHighlightPaint = Paint()
-    ..color = Colors.white.withValues(alpha: 0.6)
-    ..style = PaintingStyle.fill;
-
   Shader? _liquidGradientShader;
   Shader? _glassGradientShader;
   Color? _lastGradientColor;
@@ -124,52 +120,68 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
     _updatePaintsAndShaders();
   }
 
+  Color _darken(Color color, [double amount = .1]) {
+    assert(amount >= 0 && amount <= 1);
+    final hsl = HSLColor.fromColor(color);
+    final hslDark = hsl.withLightness((hsl.lightness - amount).clamp(0.0, 1.0));
+    return hslDark.toColor();
+  }
+
   void _updatePaintsAndShaders() {
     final displayColor = isBlindMode ? const Color(0xFF222222) : currentColor;
 
-    // Update Liquid Surface Paint
-    _liquidSurfacePaint.color = displayColor.withValues(alpha: 0.85);
+    // Surface Meniscus is slightly brighter
+    _liquidSurfacePaint.color = displayColor.withValues(alpha: 0.9);
 
-    // Update Liquid Gradient Shader if needed
     if (_lastGradientColor != displayColor || _lastShaderSize != size) {
-      // Liquid gradient - more vibrant with depth
-      _liquidGradientShader = LinearGradient(
-        begin: Alignment.centerLeft,
-        end: Alignment.centerRight,
+      // 1. Liquid Volume Gradient: Darker at bottom, brighter at edges
+      _liquidGradientShader = RadialGradient(
+        center: const Alignment(0.0, -0.5),
+        radius: 1.5,
         colors: [
-          displayColor.withValues(alpha: 0.95),
-          displayColor.withValues(alpha: 0.75),
-          displayColor.withValues(alpha: 0.85),
-          displayColor.withValues(alpha: 0.95),
+          displayColor.withValues(alpha: 0.95), // Core brightness
+          _darken(
+            displayColor,
+            0.2,
+          ).withValues(alpha: 0.95), // Deeper bottom/edges
+          _darken(
+            displayColor,
+            0.4,
+          ).withValues(alpha: 1.0), // Pitch dark very bottom
         ],
-        stops: const [0.0, 0.3, 0.7, 1.0],
+        stops: const [0.0, 0.6, 1.0],
       ).createShader(Rect.fromLTWH(0, 0, size.x, size.y));
       _liquidVolPaint.shader = _liquidGradientShader;
 
-      // Back liquid layer for depth
+      // Back liquid layer represents looking through the liquid to the back glass
       _liquidBackPaint.shader = LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          displayColor.withValues(alpha: 0.6),
-          displayColor.withValues(alpha: 0.8),
+          _darken(displayColor, 0.1).withValues(alpha: 0.5),
+          _darken(displayColor, 0.3).withValues(alpha: 0.8),
         ],
         stops: const [0.0, 1.0],
       ).createShader(Rect.fromLTWH(0, 0, size.x, size.y));
 
-      // Glass gradient shader for premium look
+      // 2. Glass Gradient Shader: Simulates cylindrical reflection and glass thickness
       _glassGradientShader = LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
         colors: [
-          Colors.white.withValues(alpha: 0.2),
-          Colors.white.withValues(alpha: 0.05),
-          Colors.white.withValues(alpha: 0.08),
-          Colors.white.withValues(alpha: 0.15),
+          Colors.white.withValues(alpha: 0.4), // Strong left rim
+          Colors.white.withValues(alpha: 0.05), // Mid-left transition
+          Colors.transparent, // Clear view center
+          Colors.black.withValues(alpha: 0.15), // Deep inner right curve
+          Colors.white.withValues(alpha: 0.25), // Bounce light right rim
         ],
-        stops: const [0.0, 0.4, 0.6, 1.0],
+        stops: const [0.0, 0.15, 0.5, 0.85, 1.0],
       ).createShader(Rect.fromLTWH(0, 0, size.x, size.y));
       _glassFrontPaint.shader = _glassGradientShader;
+
+      // Update rim stroke width for premium feel
+      _rimPaint.strokeWidth = min(size.x, size.y) * 0.015;
+      _rimPaint.color = Colors.white.withValues(alpha: 0.6);
 
       _lastGradientColor = displayColor;
       _lastShaderSize = size.clone();
@@ -313,14 +325,29 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
         width: surfaceWidth,
         height: ellipseH,
       );
+
+      // Draw interior surface gradient to simulate meniscus depth
+      final innerSurfacePaint = Paint()
+        ..shader = RadialGradient(
+          colors: [Colors.white.withValues(alpha: 0.4), Colors.transparent],
+        ).createShader(rect);
+
       canvas.drawOval(rect, _liquidSurfacePaint);
+      canvas.drawOval(rect, innerSurfacePaint);
+
+      // Draw crispy outer edge highlight
       canvas.drawOval(rect, _liquidMeniscusPaint);
     } else {
       final halfW = surfaceWidth / 2;
       canvas.drawLine(
+        // Draw a thicker line for edge view
         Offset(size.x / 2 - halfW, surfaceY),
         Offset(size.x / 2 + halfW, surfaceY),
-        _liquidMeniscusPaint,
+        Paint()
+          ..color = _liquidMeniscusPaint.color
+          ..style = PaintingStyle.stroke
+          ..strokeCap = StrokeCap.round
+          ..strokeWidth = 4,
       );
     }
   }
@@ -335,39 +362,84 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
   }
 
   void _renderHighlights(Canvas canvas) {
-    final centerX = size.x / 2;
+    // Save state and clip to beaker interior so highlights conform precisely to any shape
+    canvas.save();
+    canvas.clipPath(_getBeakerPathCached());
 
-    // Default vertical highlight
-    final highlightRect = Rect.fromLTWH(
-      size.x * 0.15,
-      size.y * 0.1,
-      size.x * 0.2,
-      size.y * 0.7,
-    );
-    final highlightPaint = Paint()
+    final double w = size.x;
+    final double h = size.y;
+
+    // 1. Sharp Left Gleam (Main Specular)
+    final Rect leftRect = Rect.fromLTWH(w * 0.08, 0, w * 0.12, h);
+    final Paint leftGleam = Paint()
       ..shader = LinearGradient(
         begin: Alignment.centerLeft,
         end: Alignment.centerRight,
         colors: [
           Colors.white.withValues(alpha: 0.0),
+          Colors.white.withValues(alpha: 0.45),
+          Colors.white.withValues(alpha: 0.0),
+        ],
+        stops: const [0.0, 0.4, 1.0],
+      ).createShader(leftRect);
+
+    canvas.drawRect(leftRect, leftGleam);
+
+    // 2. Secondary Right Reflection
+    final Rect rightRect = Rect.fromLTWH(w * 0.82, 0, w * 0.08, h);
+    final Paint rightGleam = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+        colors: [
+          Colors.white.withValues(alpha: 0.0),
+          Colors.white.withValues(alpha: 0.2),
+          Colors.white.withValues(alpha: 0.0),
+        ],
+        stops: const [0.0, 0.5, 1.0],
+      ).createShader(rightRect);
+
+    canvas.drawRect(rightRect, rightGleam);
+
+    // 3. Top Rim Catch-light
+    final Rect topRimRect = Rect.fromLTWH(0, 0, w, h * 0.1);
+    final Paint topRimGleam = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
           Colors.white.withValues(alpha: 0.3),
           Colors.white.withValues(alpha: 0.0),
         ],
-      ).createShader(highlightRect);
+      ).createShader(topRimRect);
+    canvas.drawRect(topRimRect, topRimGleam);
 
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(highlightRect, const Radius.circular(10)),
-      highlightPaint,
-    );
-
-    // Type specific highlights
+    // 4. Type specialized specular spotlight
     if (type == BeakerType.laboratory || type == BeakerType.round) {
       canvas.drawCircle(
-        Offset(centerX + size.x * 0.2, size.y * 0.7),
-        size.x * 0.1,
-        _specularHighlightPaint,
+        Offset(w * 0.75, h * 0.65),
+        w * 0.08,
+        Paint()
+          ..color = Colors.white.withValues(alpha: 0.25)
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5),
       );
     }
+
+    // Cleanup clip
+    canvas.restore();
+
+    // 5. Very sharp 1px left edge rim light (drawn outside clip for contrast)
+    final Paint sharpRim = Paint()
+      ..color = Colors.white.withValues(alpha: 0.7)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.2;
+
+    // We draw the silhouette again but slightly offset to catch the edge
+    canvas.save();
+    canvas.clipPath(_getBeakerPathCached());
+    canvas.translate(w * 0.02, 0);
+    canvas.drawPath(_getBeakerPathCached(), sharpRim);
+    canvas.restore();
   }
 
   void _drawBlindModeSymbols(Canvas canvas, Vector2 size, double liquidTop) {

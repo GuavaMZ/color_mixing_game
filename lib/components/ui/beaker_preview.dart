@@ -46,62 +46,100 @@ class _BeakerPreviewPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final path = _getBeakerPath(size);
+    final w = size.width;
+    final h = size.height;
 
-    // Glass Paints
-    final glassPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.15)
+    // 1. Refined Glass Shaders (Volumetric)
+    final glassFrontPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+        colors: [
+          Colors.white.withValues(alpha: 0.35),
+          Colors.white.withValues(alpha: 0.05),
+          Colors.transparent,
+          Colors.black.withValues(alpha: 0.1),
+          Colors.white.withValues(alpha: 0.2),
+        ],
+        stops: const [0.0, 0.15, 0.5, 0.85, 1.0],
+      ).createShader(Rect.fromLTWH(0, 0, w, h));
+
+    final glassBackPaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.08)
       ..style = PaintingStyle.fill;
 
     final rimPaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.4)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5;
-
-    // Liquid Paints
-    final liquidPaint = Paint()
-      ..color = color.withValues(alpha: 0.8)
-      ..style = PaintingStyle.fill;
-
-    // 1. Draw Glass Back
-    canvas.drawPath(path, glassPaint);
-
-    // 2. Draw Liquid with Clipping
-    canvas.save();
-    canvas.clipPath(path);
-    final liquidHeight = size.height * liquidLevel;
-    canvas.drawRect(
-      Rect.fromLTWH(0, size.height - liquidHeight, size.width, liquidHeight),
-      liquidPaint,
-    );
-
-    // Simple surface line
-    final surfaceY = size.height - liquidHeight;
-    final surfacePaint = Paint()
       ..color = Colors.white.withValues(alpha: 0.5)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
-    canvas.drawLine(
-      Offset(0, surfaceY),
-      Offset(size.width, surfaceY),
-      surfacePaint,
+      ..strokeWidth = w * 0.02;
+
+    // 2. Liquid Volume with Depth
+    final liquidPaint = Paint()
+      ..shader =
+          RadialGradient(
+            center: const Alignment(0.0, -0.5),
+            radius: 1.5,
+            colors: [
+              color.withValues(alpha: 0.9),
+              color.withValues(alpha: 0.95),
+              color.withValues(alpha: 1.0),
+            ],
+            stops: const [0.0, 0.7, 1.0],
+          ).createShader(
+            Rect.fromLTWH(0, h * (1 - liquidLevel), w, h * liquidLevel),
+          );
+
+    // 1. Draw Glass Back
+    canvas.drawPath(path, glassBackPaint);
+
+    // 2. Draw Liquid with Clipping
+    if (liquidLevel > 0.01) {
+      canvas.save();
+      canvas.clipPath(path);
+      final liquidHeight = h * liquidLevel;
+      final surfaceY = h - liquidHeight;
+
+      canvas.drawRect(Rect.fromLTWH(0, surfaceY, w, liquidHeight), liquidPaint);
+
+      // Refined surface line (meniscus)
+      final surfacePaint = Paint()
+        ..color = Colors.white.withValues(alpha: 0.4)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5;
+      canvas.drawLine(Offset(0, surfaceY), Offset(w, surfaceY), surfacePaint);
+      canvas.restore();
+    }
+
+    // 3. Draw Front Glass and Rim
+    canvas.drawPath(path, glassFrontPaint);
+    canvas.drawPath(path, rimPaint);
+
+    // 4. Sharp Highlights
+    canvas.save();
+    canvas.clipPath(path);
+
+    // Left gleam
+    final leftRect = Rect.fromLTWH(w * 0.08, 0, w * 0.12, h);
+    canvas.drawRect(
+      leftRect,
+      Paint()
+        ..shader = LinearGradient(
+          colors: [Colors.white.withValues(alpha: 0.4), Colors.transparent],
+        ).createShader(leftRect),
+    );
+
+    // Top catch light
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, w, h * 0.1),
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Colors.white.withValues(alpha: 0.2), Colors.transparent],
+        ).createShader(Rect.fromLTWH(0, 0, w, h * 0.1)),
     );
 
     canvas.restore();
-
-    // 3. Draw Rim
-    canvas.drawPath(path, rimPaint);
-
-    // 4. Subtle Highlight
-    final highlightPaint = Paint()
-      ..shader = LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [
-          Colors.white.withValues(alpha: 0.3),
-          Colors.white.withValues(alpha: 0.0),
-        ],
-      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
-    canvas.drawPath(path, highlightPaint);
   }
 
   Path _getBeakerPath(Size size) {
