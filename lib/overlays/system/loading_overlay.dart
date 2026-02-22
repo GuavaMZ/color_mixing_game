@@ -1,4 +1,6 @@
+import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import 'dart:math';
 
 class LoadingOverlay extends StatefulWidget {
@@ -12,19 +14,6 @@ class _LoadingOverlayState extends State<LoadingOverlay>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   int _currentTipIndex = 0;
-
-  final List<String> _tips = [
-    "💡 Mix colors carefully - you have limited drops!",
-    "🎯 Perfect matches earn 3 stars and bonus coins",
-    "🔥 Chain perfect matches for combo bonuses",
-    "⚡ Time Attack mode rewards speed",
-    "🌀 Chaos Lab has unpredictable random events",
-    "🎨 White lightens colors, black darkens them",
-    "⭐ Earn stars to unlock new game modes",
-    "🎪 Use helpers wisely - they cost coins",
-    "🔬 Each beaker skin is purely cosmetic",
-    "💰 Save coins for hints on tough levels",
-  ];
 
   @override
   void initState() {
@@ -41,7 +30,7 @@ class _LoadingOverlayState extends State<LoadingOverlay>
   void _rotateTip() {
     if (mounted) {
       setState(() {
-        _currentTipIndex = (_currentTipIndex + 1) % _tips.length;
+        _currentTipIndex = (_currentTipIndex + 1) % 10;
       });
       Future.delayed(const Duration(seconds: 3), _rotateTip);
     }
@@ -55,6 +44,19 @@ class _LoadingOverlayState extends State<LoadingOverlay>
 
   @override
   Widget build(BuildContext context) {
+    final List<String> tips = [
+      AppStrings.tip1.getString(context),
+      AppStrings.tip2.getString(context),
+      AppStrings.tip3.getString(context),
+      AppStrings.tip4.getString(context),
+      AppStrings.tip5.getString(context),
+      AppStrings.tip6.getString(context),
+      AppStrings.tip7.getString(context),
+      AppStrings.tip8.getString(context),
+      AppStrings.tip9.getString(context),
+      AppStrings.tip10.getString(context),
+    ];
+
     return Material(
       color: const Color(0xFF0A0E27),
       child: Stack(
@@ -131,9 +133,9 @@ class _LoadingOverlayState extends State<LoadingOverlay>
                 const SizedBox(height: 40),
 
                 // Loading text
-                const Text(
-                  'Loading...',
-                  style: TextStyle(
+                Text(
+                  AppStrings.loading.getString(context).toUpperCase(),
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -184,7 +186,7 @@ class _LoadingOverlayState extends State<LoadingOverlay>
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 500),
                     child: Text(
-                      _tips[_currentTipIndex],
+                      tips[_currentTipIndex],
                       key: ValueKey(_currentTipIndex),
                       textAlign: TextAlign.center,
                       style: const TextStyle(

@@ -23,9 +23,11 @@ class ColorLogic {
     double b = 0;
 
     if (totalColorDrops > 0) {
-      r = (redDrops * 255) / totalColorDrops;
-      g = (greenDrops * 255) / totalColorDrops;
-      b = (blueDrops * 255) / totalColorDrops;
+      // Use max-normalization to keep colors vibrant
+      int maxDrops = [redDrops, greenDrops, blueDrops].reduce(max);
+      r = (redDrops * 255) / maxDrops;
+      g = (greenDrops * 255) / maxDrops;
+      b = (blueDrops * 255) / maxDrops;
     } else {
       // If no color drops, start from neutral grey or handled by tint/shade
       // But typically, white + black = grey.

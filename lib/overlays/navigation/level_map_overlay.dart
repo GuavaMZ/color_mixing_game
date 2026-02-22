@@ -251,13 +251,15 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
                                 size: 20,
                               ),
                               const SizedBox(width: 12),
-                              const Expanded(
+                              Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "RANDOM EVENTS",
-                                      style: TextStyle(
+                                      AppStrings.randomEvents.getString(
+                                        context,
+                                      ),
+                                      style: const TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.w900,
                                         fontSize: 14,
@@ -265,8 +267,10 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
                                       ),
                                     ),
                                     Text(
-                                      "CHAOTIC ANOMALIES EVERY 15s",
-                                      style: TextStyle(
+                                      AppStrings.chaoticAnomalies.getString(
+                                        context,
+                                      ),
+                                      style: const TextStyle(
                                         color: Colors.white54,
                                         fontSize: 10,
                                         fontWeight: FontWeight.bold,

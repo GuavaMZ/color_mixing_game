@@ -539,14 +539,14 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
                       children: [
                         Expanded(
                           child: _buildMetricTile(
-                            "RGB",
+                            AppStrings.compRGB.getString(context),
                             "${color.color.red}, ${color.color.green}, ${color.color.blue}",
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: _buildMetricTile(
-                            "HSL",
+                            AppStrings.compHSL.getString(context),
                             "${color.hsv.hue.round()}°, ${(color.hsv.saturation * 100).round()}%",
                           ),
                         ),
@@ -557,7 +557,7 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
                       children: [
                         Expanded(
                           child: _buildMetricTile(
-                            "CMYK",
+                            AppStrings.compCMYK.getString(context),
                             "${color.cmyk[0]}, ${color.cmyk[1]}, ${color.cmyk[2]}, ${color.cmyk[3]}",
                           ),
                         ),

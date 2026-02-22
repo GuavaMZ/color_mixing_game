@@ -142,12 +142,12 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
           displayColor.withValues(alpha: 0.95), // Core brightness
           _darken(
             displayColor,
-            0.2,
+            0.1,
           ).withValues(alpha: 0.95), // Deeper bottom/edges
           _darken(
             displayColor,
-            0.4,
-          ).withValues(alpha: 1.0), // Pitch dark very bottom
+            0.2,
+          ).withValues(alpha: 1.0), // Slightly darker very bottom
         ],
         stops: const [0.0, 0.6, 1.0],
       ).createShader(Rect.fromLTWH(0, 0, size.x, size.y));
@@ -158,8 +158,8 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          _darken(displayColor, 0.1).withValues(alpha: 0.5),
-          _darken(displayColor, 0.3).withValues(alpha: 0.8),
+          _darken(displayColor, 0.05).withValues(alpha: 0.5),
+          _darken(displayColor, 0.1).withValues(alpha: 0.8),
         ],
         stops: const [0.0, 1.0],
       ).createShader(Rect.fromLTWH(0, 0, size.x, size.y));

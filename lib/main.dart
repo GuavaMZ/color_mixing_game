@@ -142,8 +142,8 @@ class _MyAppState extends State<MyApp> {
             'Tutorial': (context, game) => TutorialOverlay(game: game),
             'Achievement': (context, game) => AchievementNotification(
               onDismiss: () => game.overlays.remove('Achievement'),
-              title: "MAD CHEMIST",
-              subtitle: "First successful mixture!",
+              title: AppStrings.achievement1Title.getString(context),
+              subtitle: AppStrings.achievement1Desc.getString(context),
               icon: Icons.science_rounded,
             ),
             'Achievements': (context, game) => AchievementsOverlay(game: game),

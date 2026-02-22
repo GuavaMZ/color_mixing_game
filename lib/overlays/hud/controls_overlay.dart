@@ -433,11 +433,31 @@ class ControlsOverlay extends StatelessWidget {
 
   Widget _buildControlsRow(BuildContext context) {
     final palette = [
-      {'color': Colors.black, 'type': 'black', 'label': 'Black'},
-      {'color': Colors.red, 'type': 'red', 'label': 'Red'},
-      {'color': Colors.green, 'type': 'green', 'label': 'Green'},
-      {'color': Colors.blue, 'type': 'blue', 'label': 'Blue'},
-      {'color': Colors.white, 'type': 'white', 'label': 'White'},
+      {
+        'color': Colors.black,
+        'type': 'black',
+        'label': AppStrings.blackColor.getString(context),
+      },
+      {
+        'color': Colors.red,
+        'type': 'red',
+        'label': AppStrings.redColor.getString(context),
+      },
+      {
+        'color': Colors.green,
+        'type': 'green',
+        'label': AppStrings.greenColor.getString(context),
+      },
+      {
+        'color': Colors.blue,
+        'type': 'blue',
+        'label': AppStrings.blueColor.getString(context),
+      },
+      {
+        'color': Colors.white,
+        'type': 'white',
+        'label': AppStrings.whiteColor.getString(context),
+      },
     ];
 
     return ValueListenableBuilder<bool>(

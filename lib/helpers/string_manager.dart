@@ -3,6 +3,8 @@ mixin AppStrings {
   static const String redColor = "red_color";
   static const String greenColor = "green_color";
   static const String blueColor = "blue_color";
+  static const String blackColor = "black_color";
+  static const String whiteColor = "white_color";
   static const String colorText = "color_text";
 
   // Game UI
@@ -278,12 +280,86 @@ mixin AppStrings {
   static const String signalDiagnostics = "signal_diagnostics";
   static const String survivalTip = "survival_tip";
   static const String meltdownReport = "meltdown_report";
+  static const String madChemistTitle = "mad_chemist_title";
+  static const String madChemistDesc = "mad_chemist_desc";
+  static const String skipTutorialTitle = "skip_tutorial_title";
+  static const String skipTutorialDesc = "skip_tutorial_desc";
+  static const String gotIt = "got_it";
+  static const String criticalSystemFailure = "critical_system_failure";
+  static const String systemInstability = "system_instability";
+  static const String powerFailureDetected = "power_failure_detected";
+  static const String opticalAxisInverted = "optical_axis_inverted";
+  static const String highPressureLeak = "high_pressure_leak";
+  static const String stabilityDecreasing = "stability_decreasing";
+  static const String controlsSwapped = "controls_swapped";
+  static const String phaseStable = "phase_stable";
+  static const String phaseCaution = "phase_caution";
+  static const String phaseCritical = "phase_critical";
+  static const String matchRaw = "match_raw";
+  static const String sec = "sec";
+  static const String catAll = "cat_all";
+  static const String catPrimary = "cat_primary";
+  static const String catSecondary = "cat_secondary";
+  static const String catTertiary = "cat_tertiary";
+  static const String catTinted = "cat_tinted";
+  static const String catShaded = "cat_shaded";
+  static const String catComplex = "cat_complex";
+  static const String compRGB = "comp_rgb";
+  static const String compHSL = "comp_hsl";
+  static const String compCMYK = "comp_cmyk";
+  static const String noUpdateAvailable = "no_update_available";
+  static const String latestVersion = "latest_version";
+  static const String updateAvailable = "update_available";
+  static const String updateDesc = "update_desc";
+  static const String later = "later";
+  static const String download = "download";
+  static const String updateDownloaded = "update_downloaded";
+  static const String redeemTitle = "redeem_title";
+  static const String enterCodeHint = "enter_code_hint";
+  static const String alreadyRedeemed = "already_redeemed";
+  static const String alreadyRedeemedDesc = "already_redeemed_desc";
+  static const String invalidCode = "invalid_code";
+  static const String invalidCodeDesc = "invalid_code_desc";
+  static const String codeRedeemedLives = "code_redeemed_lives";
+  static const String codeRedeemedCoins = "code_redeemed_coins";
+  static const String accessibility = "accessibility";
+  static const String highContrast = "high_contrast";
+  static const String reducedMotion = "reduced_motion";
+  static const String appVersion = "app_version";
+  static const String patch = "patch";
+  static const String none = "none";
+  static const String status = "status";
+  static const String error = "error";
+  static const String success = "success";
+  static const String jackpot = "jackpot";
+
+  static const String tip1 = "tip1";
+  static const String tip2 = "tip2";
+  static const String tip3 = "tip3";
+  static const String tip4 = "tip4";
+  static const String tip5 = "tip5";
+  static const String tip6 = "tip6";
+  static const String tip7 = "tip7";
+  static const String tip8 = "tip8";
+  static const String tip9 = "tip9";
+  static const String tip10 = "tip10";
+
+  static const String randomEvents = "randomEvents";
+  static const String chaoticAnomalies = "chaoticAnomalies";
+
+  static const String replayTutorial = "replayTutorial";
+  static const String redeemCode = "redeemCode";
+  static const String chaos = "chaos";
+  static const String step = "step";
+  static const String of = "of";
 
   static const Map<String, dynamic> En = {
     // Colors
     redColor: 'Red',
     greenColor: 'Green',
     blueColor: 'Blue',
+    blackColor: 'Black',
+    whiteColor: 'White',
     colorText: 'Color',
 
     // Additional UI strings
@@ -562,6 +638,76 @@ mixin AppStrings {
     signalDiagnostics: 'Signal Diagnostics',
     survivalTip: 'Survival Tip',
     meltdownReport: 'Meltdown Report',
+    madChemistTitle: 'Mad Chemist',
+    madChemistDesc: 'First successful mixture!',
+    skipTutorialTitle: 'Skip Tutorial?',
+    skipTutorialDesc: 'You can always access the tutorial from Settings.',
+    gotIt: 'Got it!',
+    criticalSystemFailure: 'CRITICAL SYSTEM FAILURE',
+    systemInstability: 'SYSTEM INSTABILITY',
+    powerFailureDetected: 'POWER FAILURE DETECTED',
+    opticalAxisInverted: 'OPTICAL AXIS INVERTED',
+    highPressureLeak: 'HIGH PRESSURE LEAK',
+    stabilityDecreasing: 'STABILITY DECREASING',
+    controlsSwapped: 'CONTROLS SWAPPED',
+    phaseStable: 'STABLE',
+    phaseCaution: 'CAUTION',
+    phaseCritical: 'CRITICAL',
+    matchRaw: 'MATCH',
+    sec: 'SEC',
+    catAll: 'All',
+    catPrimary: 'Primary',
+    catSecondary: 'Secondary',
+    catTertiary: 'Tertiary',
+    catTinted: 'Tinted',
+    catShaded: 'Shaded',
+    catComplex: 'Complex',
+    compRGB: 'RGB',
+    compHSL: 'HSL',
+    compCMYK: 'CMYK',
+    noUpdateAvailable: 'No update available',
+    latestVersion: 'You are on the latest version.',
+    updateAvailable: 'Update Available',
+    updateDesc: 'A new update is available. Do you want to download it now?',
+    later: 'Later',
+    download: 'Download',
+    updateDownloaded:
+        'Update downloaded! Please restart the app to apply changes.',
+    redeemTitle: 'Redeem Code',
+    enterCodeHint: 'Enter legacy code...',
+    alreadyRedeemed: 'Already Redeemed!',
+    alreadyRedeemedDesc: 'You have already used this code.',
+    invalidCode: 'Invalid Code',
+    invalidCodeDesc: 'The code you entered is not valid.',
+    codeRedeemedLives: 'Code redeemed! +3 Lives added.',
+    codeRedeemedCoins: 'Code redeemed! +99999 Coins added.',
+    accessibility: 'Accessibility',
+    highContrast: 'High Contrast',
+    reducedMotion: 'Reduced Motion',
+    appVersion: 'App Version',
+    patch: 'Patch',
+    none: 'None',
+    status: 'Status',
+    error: 'Error',
+    success: 'Success',
+    jackpot: 'Jackpot!',
+    tip1: '💡 Mix colors carefully - you have limited drops!',
+    tip2: '🎯 Perfect matches earn 3 stars and bonus coins',
+    tip3: '🔥 Chain perfect matches for combo bonuses',
+    tip4: '⚡ Time Attack mode rewards speed',
+    tip5: '🌀 Chaos Lab has unpredictable random events',
+    tip6: '🎨 White lightens colors, black darkens them',
+    tip7: '⭐ Earn stars to unlock new game modes',
+    tip8: '🎪 Use helpers wisely - they cost coins',
+    tip9: '🔬 Each beaker skin is purely cosmetic',
+    tip10: '💰 Save coins for hints on tough levels',
+    randomEvents: 'RANDOM EVENTS',
+    chaoticAnomalies: 'CHAOTIC ANOMALIES EVERY 15s',
+    replayTutorial: 'REPLAY TUTORIAL',
+    redeemCode: 'REDEEM CODE',
+    chaos: 'CHAOS',
+    step: 'Step',
+    of: 'of',
   };
 
   static const Map<String, dynamic> Ar = {
@@ -569,6 +715,8 @@ mixin AppStrings {
     redColor: 'أحمر',
     greenColor: 'أخضر',
     blueColor: 'أزرق',
+    blackColor: 'أسود',
+    whiteColor: 'أبيض',
     colorText: 'لون',
 
     // Game UI
@@ -841,6 +989,75 @@ mixin AppStrings {
     signalDiagnostics: 'تشخيص الإشارة',
     survivalTip: 'نصيحة للبقاء',
     meltdownReport: 'تقرير الانصهار',
+    madChemistTitle: 'كيميائي مجنون',
+    madChemistDesc: 'أول خليط ناجح!',
+    skipTutorialTitle: 'تخطي التعليمات؟',
+    skipTutorialDesc: 'يمكنك دائماً الوصول للتعليمات من الإعدادات.',
+    gotIt: 'فهمت!',
+    criticalSystemFailure: 'فشل حرج في النظام',
+    systemInstability: 'عدم استقرار النظام',
+    powerFailureDetected: 'تم رصد فشل في الطاقة',
+    opticalAxisInverted: 'المحور البصري معكوس',
+    highPressureLeak: 'تسريب ضغط عالٍ',
+    stabilityDecreasing: 'الاستقرار يتناقص',
+    controlsSwapped: 'تم تبديل الأزرار',
+    phaseStable: 'مستقر',
+    phaseCaution: 'تحذير',
+    phaseCritical: 'حرج',
+    matchRaw: 'تطابق',
+    sec: 'ثوانٍ',
+    catAll: 'الكل',
+    catPrimary: 'أساسي',
+    catSecondary: 'ثانوي',
+    catTertiary: 'ثالثي',
+    catTinted: 'فاتح',
+    catShaded: 'مظلل',
+    catComplex: 'معقد',
+    compRGB: 'RGB',
+    compHSL: 'HSL',
+    compCMYK: 'CMYK',
+    noUpdateAvailable: 'لا توجد تحديثات متاحة',
+    latestVersion: 'أنت على أحدث إصدار.',
+    updateAvailable: 'تحديث متاح',
+    updateDesc: 'يتوفر تحديث جديد. هل تريد تنزيله الآن؟',
+    later: 'لاحقاً',
+    download: 'تنزيل',
+    updateDownloaded:
+        'تم تنزيل التحديث! يرجى إعادة تشغيل التطبيق لتطبيق التغييرات.',
+    redeemTitle: 'ريديم كود',
+    enterCodeHint: 'أدخل الكود مسبقاً...',
+    alreadyRedeemed: 'تم الاستخدام بالفعل!',
+    alreadyRedeemedDesc: 'لقد استخدمت هذا الكود بالفعل.',
+    invalidCode: 'كود غير صالح',
+    invalidCodeDesc: 'الكود الذي أدخلته غير صالح.',
+    codeRedeemedLives: 'تم استخدام الكود! أضيفت +3 أرواح.',
+    codeRedeemedCoins: 'تم استخدام الكود! أضيفت +99999 عملة.',
+    accessibility: 'إمكانية الوصول',
+    highContrast: 'تباين عالٍ',
+    reducedMotion: 'حركة مخففة',
+    appVersion: 'إصدار التطبيق',
+    patch: 'باتش',
+    none: 'لا يوجد',
+    status: 'الحالة',
+    error: 'خطأ',
+    success: 'نجاح',
+    jackpot: 'ثروة!',
+    tip1: '💡 امزج الألوان بعناية - قطراتك محدودة!',
+    tip2: '🎯 التطابق المثالي يمنحك 3 نجوم وعملات إضافية',
+    tip3: '🔥 سلسلة التطابقات المثالية تمنح مكافآت كومبو',
+    tip4: '⚡ وضع الهجوم الزمني يكافئ السرعة',
+    tip5: '🌀 مختبر الفوضى به أحداث عشوائية غير متوقعة',
+    tip6: '🎨 الأبيض يفتح الألوان، والأسود يغمقها',
+    tip7: '⭐ اجمع النجوم لفتح أوضاع لعب جديدة',
+    tip8: '🎪 استخدم المساعدات بحكمة - فهي تكلف عملات',
+    tip9: '🔬 جميع أشكال الكؤوس تجميلية فقط',
+    tip10: '💰 وفر العملات للحصول على تلميحات في المستويات الصعبة',
+    randomEvents: 'الأحداث العشوائية',
+    chaoticAnomalies: 'شذوذ فوضوي كل 15 ثانية',
+    replayTutorial: 'إعادة التعليمات',
+    redeemCode: 'استخدام كود',
+    step: 'خطوة',
+    of: 'من',
 
     // Additional UI strings
     colorButtons: 'أزرار الألوان',
@@ -855,6 +1072,8 @@ mixin AppStrings {
     redColor: 'Rojo',
     greenColor: 'Verde',
     blueColor: 'Azul',
+    blackColor: 'Negro',
+    whiteColor: 'Blanco',
     colorText: 'Color',
 
     // Game UI
@@ -1135,6 +1354,76 @@ mixin AppStrings {
     signalDiagnostics: 'Diagnóstico de Señal',
     survivalTip: 'Consejo de Supervivencia',
     meltdownReport: 'Informe de Colapso',
+    madChemistTitle: 'Químico Loco',
+    madChemistDesc: '¡Primera mezcla exitosa!',
+    skipTutorialTitle: '¿Saltar Tutorial?',
+    skipTutorialDesc: 'Siempre puedes acceder al tutorial desde Ajustes.',
+    gotIt: '¡Entendido!',
+    criticalSystemFailure: 'FALLO CRÍTICO DEL SISTEMA',
+    systemInstability: 'INESTABILIDAD DEL SISTEMA',
+    powerFailureDetected: 'FALLO DE ENERGÍA DETECTADO',
+    opticalAxisInverted: 'EJE ÓPTICO INVERTIDO',
+    highPressureLeak: 'FUGA DE ALTA PRESIÓN',
+    stabilityDecreasing: 'ESTABILIDAD DISMINUYENDO',
+    controlsSwapped: 'CONTROLES INTERCAMBIADOS',
+    phaseStable: 'ESTABLE',
+    phaseCaution: 'PRECAUCIÓN',
+    phaseCritical: 'CRÍTICO',
+    matchRaw: 'COINCIDENCIA',
+    sec: 'SEG',
+    catAll: 'Todo',
+    catPrimary: 'Primario',
+    catSecondary: 'Secundario',
+    catTertiary: 'Terciario',
+    catTinted: 'Teñido',
+    catShaded: 'Sombreado',
+    catComplex: 'Complejo',
+    compRGB: 'RGB',
+    compHSL: 'HSL',
+    compCMYK: 'CMYK',
+    noUpdateAvailable: 'No hay actualizaciones disponibles',
+    latestVersion: 'Estás en la última versión.',
+    updateAvailable: 'Actualización Disponible',
+    updateDesc:
+        'Hay una nueva actualización disponible. ¿Quieres descargarla ahora?',
+    later: 'Más tarde',
+    download: 'Descargar',
+    updateDownloaded:
+        '¡Actualización descargada! Reinicia la aplicación para aplicar los cambios.',
+    redeemTitle: 'Canjear Código',
+    enterCodeHint: 'Introduce el código...',
+    alreadyRedeemed: '¡Ya Canjeado!',
+    alreadyRedeemedDesc: 'Ya has utilizado este código.',
+    invalidCode: 'Código Inválido',
+    invalidCodeDesc: 'El código introducido no es válido.',
+    codeRedeemedLives: '¡Código canjeado! +3 Vidas añadidas.',
+    codeRedeemedCoins: '¡Código canjeado! +99999 Monedas añadidas.',
+    accessibility: 'Accesibilidad',
+    highContrast: 'Alto Contraste',
+    reducedMotion: 'Movimiento Reducido',
+    appVersion: 'Versión de la App',
+    patch: 'Parche',
+    none: 'Ninguno',
+    status: 'Estado',
+    error: 'Error',
+    success: 'Éxito',
+    jackpot: '¡Premio Mayor!',
+    tip1: '💡 Mezcla colores con cuidado: ¡tienes gotas limitadas!',
+    tip2: '🎯 Las coincidencias perfectas ganan 3 estrellas y monedas extra',
+    tip3: '🔥 Encadena coincidencias perfectas para obtener bonos de combo',
+    tip4: '⚡ El modo Time Attack premia la velocidad',
+    tip5: '🌀 Chaos Lab tiene eventos aleatorios impredecibles',
+    tip6: '🎨 El blanco aclara los colores, el negro los oscurece',
+    tip7: '⭐ Gana estrellas para desbloquear nuevos modos de juego',
+    tip8: '🎪 Usa los ayudantes sabiamente: cuestan monedas',
+    tip9: '🔬 Cada apariencia de vaso es puramente cosmética',
+    tip10: '💰 Ahorra monedas para pistas en niveles difíciles',
+    randomEvents: 'EVENTOS ALEATORIOS',
+    chaoticAnomalies: 'ANOMALÍAS CAÓTICAS CADA 15s',
+    replayTutorial: 'REPETIR TUTORIAL',
+    redeemCode: 'CANJEAR CÓDIGO',
+    step: 'Paso',
+    of: 'de',
 
     // Additional UI strings
     colorButtons: 'Botones de Color',
@@ -1149,6 +1438,8 @@ mixin AppStrings {
     redColor: 'Rouge',
     greenColor: 'Vert',
     blueColor: 'Bleu',
+    blackColor: 'Noir',
+    whiteColor: 'Blanc',
     colorText: 'Couleur',
 
     // Game UI
@@ -1425,6 +1716,78 @@ mixin AppStrings {
     signalDiagnostics: 'Diagnostic du Signal',
     survivalTip: 'Conseil de Survie',
     meltdownReport: 'Rapport d\'Effondrement',
+    madChemistTitle: 'Chimiste Fou',
+    madChemistDesc: 'Premier mélange réussi !',
+    skipTutorialTitle: 'Passer le Tutoriel ?',
+    skipTutorialDesc:
+        'Vous pouvez toujours accéder au tutoriel depuis les Paramètres.',
+    gotIt: 'Compris !',
+    criticalSystemFailure: 'DÉFAILLANCE CRITIQUE DU SYSTÈME',
+    systemInstability: 'INSTABILITÉ DU SYSTÈME',
+    powerFailureDetected: 'PANNE DE COURANT DÉTECTÉE',
+    opticalAxisInverted: 'AXE OPTIQUE INVERSÉ',
+    highPressureLeak: 'FUITE HAUTE PRESSION',
+    stabilityDecreasing: 'STABILITÉ EN BAISSE',
+    controlsSwapped: 'COMMANDES ÉCHANGÉES',
+    phaseStable: 'STABLE',
+    phaseCaution: 'ATTENTION',
+    phaseCritical: 'CRITIQUE',
+    matchRaw: 'CORRESPONDANCE',
+    sec: 'SEC',
+    catAll: 'Tout',
+    catPrimary: 'Primaire',
+    catSecondary: 'Secondaire',
+    catTertiary: 'Tertiaire',
+    catTinted: 'Teinté',
+    catShaded: 'Ombré',
+    catComplex: 'Complexe',
+    compRGB: 'RGB',
+    compHSL: 'HSL',
+    compCMYK: 'CMYK',
+    noUpdateAvailable: 'Aucune mise à jour disponible',
+    latestVersion: 'Vous utilisez la dernière version.',
+    updateAvailable: 'Mise à Jour Disponible',
+    updateDesc:
+        'Une nouvelle mise à jour est disponible. Voulez-vous la télécharger maintenant ?',
+    later: 'Plus tard',
+    download: 'Télécharger',
+    updateDownloaded:
+        'Mise à jour téléchargée ! Veuillez redémarrer l\'application pour appliquer les changements.',
+    redeemTitle: 'Utiliser un Code',
+    enterCodeHint: 'Entrez le code hérité...',
+    alreadyRedeemed: 'Déjà Utilisé !',
+    alreadyRedeemedDesc: 'Vous avez déjà utilisé ce code.',
+    invalidCode: 'Code Invalide',
+    invalidCodeDesc: 'Le code que vous avez saisi n\'est pas valide.',
+    codeRedeemedLives: 'Code utilisé ! +3 Vies ajoutées.',
+    codeRedeemedCoins: 'Code utilisé ! +99999 Pièces ajoutées.',
+    accessibility: 'Accessibilité',
+    highContrast: 'Contraste Élevé',
+    reducedMotion: 'Mouvement Réduit',
+    appVersion: 'Version de l\'App',
+    patch: 'Correctif',
+    none: 'Aucun',
+    status: 'Statut',
+    error: 'Erreur',
+    success: 'Succès',
+    jackpot: 'Gros Lot !',
+    tip1: '💡 Mélangez les couleurs avec soin - gouttes limitées !',
+    tip2: '🎯 Les matchs parfaits gagnent 3 étoiles et des pièces bonus',
+    tip3: '🔥 Enchaînez les matchs parfaits pour des bonus de combo',
+    tip4: '⚡ Le mode Time Attack récompense la vitesse',
+    tip5: '🌀 Chaos Lab a des événements aléatoires imprévisibles',
+    tip6: '🎨 Le blanc éclaircit les couleurs, le noir les assombrit',
+    tip7: '⭐ Gagnez des étoiles pour débloquer de nouveaux modes',
+    tip8: '🎪 Utilisez les aides à bon escient - elles coûtent des pièces',
+    tip9: '🔬 Chaque apparence de bécher est purement cosmétique',
+    tip10:
+        '💰 Économisez des pièces pour des indices sur les niveaux difficiles',
+    randomEvents: 'ÉVÉNEMENTS ALÉATOIRES',
+    chaoticAnomalies: 'ANOMALIES CHAOTIQUES TOUTES LES 15s',
+    replayTutorial: 'REJOUER LE TUTORIEL',
+    redeemCode: 'UTILISER UN CODE',
+    step: 'Étape',
+    of: 'sur',
 
     // Additional UI strings
     colorButtons: 'Boutons de Couleur',

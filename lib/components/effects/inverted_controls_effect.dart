@@ -2,6 +2,8 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../../color_mixer_game.dart';
+import '../../helpers/string_manager.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 
 class InvertedControlsEffect extends PositionComponent
     with HasGameRef<ColorMixerGame> {
@@ -86,7 +88,7 @@ class InvertedControlsEffect extends PositionComponent
 
     textPaint.render(
       canvas,
-      "CONTROLS SWAPPED",
+      AppStrings.controlsSwapped.getString(gameRef.buildContext!).toUpperCase(),
       Vector2(size.x / 2, size.y + 20),
       anchor: Anchor.center,
     );

@@ -72,18 +72,24 @@ class _SettingsOverlayState extends State<SettingsOverlay>
       if (mounted) {
         if (status == UpdateStatus.upToDate) {
           _showResultDialog(
-            'No update available',
-            'You are on the latest version.',
+            AppStrings.noUpdateAvailable.getString(context),
+            AppStrings.latestVersion.getString(context),
           );
         } else if (status == UpdateStatus.outdated) {
           _showUpdateDialog();
         } else {
-          _showResultDialog('Status', 'Update status: ${status.name}');
+          _showResultDialog(
+            AppStrings.status.getString(context),
+            '${AppStrings.status.getString(context)}: ${status.name}',
+          );
         }
       }
     } catch (e) {
       if (mounted) {
-        _showResultDialog('Error', 'Failed to check for updates: $e');
+        _showResultDialog(
+          AppStrings.error.getString(context),
+          '${AppStrings.error.getString(context)}: $e',
+        );
       }
     } finally {
       if (mounted) {
@@ -97,14 +103,12 @@ class _SettingsOverlayState extends State<SettingsOverlay>
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppTheme.primaryDark,
-        title: const Text('Update Available'),
-        content: const Text(
-          'A new update is available. Do you want to download it now?',
-        ),
+        title: Text(AppStrings.updateAvailable.getString(context)),
+        content: Text(AppStrings.updateDesc.getString(context)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Later'),
+            child: Text(AppStrings.later.getString(context)),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -112,14 +116,17 @@ class _SettingsOverlayState extends State<SettingsOverlay>
               try {
                 await _shorebird.update();
                 _showResultDialog(
-                  'Success',
-                  'Update downloaded! Please restart the app to apply changes.',
+                  AppStrings.success.getString(context),
+                  AppStrings.updateDownloaded.getString(context),
                 );
               } catch (e) {
-                _showResultDialog('Error', 'Failed to update: $e');
+                _showResultDialog(
+                  AppStrings.error.getString(context),
+                  '${AppStrings.error.getString(context)}: $e',
+                );
               }
             },
-            child: const Text('Download'),
+            child: Text(AppStrings.download.getString(context)),
           ),
         ],
       ),
@@ -150,14 +157,14 @@ class _SettingsOverlayState extends State<SettingsOverlay>
           side: BorderSide(color: AppTheme.neonCyan, width: 2),
         ),
         title: Text(
-          'Redeem Code',
+          AppStrings.redeemTitle.getString(context),
           style: AppTheme.heading2(context).copyWith(fontSize: 24),
         ),
         content: TextField(
           controller: codeController,
           style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
-            hintText: 'Enter legacy code...',
+            hintText: AppStrings.enterCodeHint.getString(context),
             hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
             filled: true,
             fillColor: Colors.white.withValues(alpha: 0.1),
@@ -171,7 +178,7 @@ class _SettingsOverlayState extends State<SettingsOverlay>
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: Text(
-              'Cancel',
+              AppStrings.cancel.getString(context),
               style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
             ),
           ),
@@ -182,7 +189,7 @@ class _SettingsOverlayState extends State<SettingsOverlay>
               await _handleRedeem(code);
             },
             child: Text(
-              'Redeem',
+              AppStrings.redeemCode.getString(context),
               style: TextStyle(
                 color: AppTheme.neonCyan,
                 fontWeight: FontWeight.bold,
@@ -198,8 +205,8 @@ class _SettingsOverlayState extends State<SettingsOverlay>
     bool redeemed = await SaveManager.isCodeRedeemed(code);
     if (redeemed) {
       _showResultDialog(
-        'Already Redeemed!',
-        'You have already used this code.',
+        AppStrings.alreadyRedeemed.getString(context),
+        AppStrings.alreadyRedeemedDesc.getString(context),
       );
       return;
     }
@@ -208,15 +215,24 @@ class _SettingsOverlayState extends State<SettingsOverlay>
       LivesManager().addLives(3);
       await SaveManager.markCodeAsRedeemed('totymz');
       _audio.playWin();
-      _showResultDialog('Success!', 'Code redeemed! +3 Lives added.');
+      _showResultDialog(
+        AppStrings.success.getString(context),
+        AppStrings.codeRedeemedLives.getString(context),
+      );
     } else if (code == 'richie') {
       widget.game.addCoins(99999);
       await SaveManager.markCodeAsRedeemed('richie');
       _audio.playWin();
-      _showResultDialog('Jackpot!', 'Code redeemed! +99999 Coins added.');
+      _showResultDialog(
+        AppStrings.jackpot.getString(context),
+        AppStrings.codeRedeemedCoins.getString(context),
+      );
     } else {
       _audio.playButton(); // Play some sound
-      _showResultDialog('Invalid Code', 'The code you entered is not valid.');
+      _showResultDialog(
+        AppStrings.invalidCode.getString(context),
+        AppStrings.invalidCodeDesc.getString(context),
+      );
     }
   }
 
@@ -237,7 +253,10 @@ class _SettingsOverlayState extends State<SettingsOverlay>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('OK', style: TextStyle(color: AppTheme.neonCyan)),
+            child: Text(
+              AppStrings.ok.getString(context),
+              style: TextStyle(color: AppTheme.neonCyan),
+            ),
           ),
         ],
       ),
@@ -397,7 +416,9 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                                     ),
                                     const SizedBox(width: 8),
                                     Text(
-                                      'Accessibility',
+                                      AppStrings.accessibility.getString(
+                                        context,
+                                      ),
                                       style: AppTheme.bodyLarge(context)
                                           .copyWith(
                                             color: AppTheme.neonCyan,
@@ -411,7 +432,9 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                               // Placeholder for Accessibility features - visual improvements
                               _SettingsTile(
                                 icon: Icons.contrast_rounded,
-                                title: 'High Contrast',
+                                title: AppStrings.highContrast.getString(
+                                  context,
+                                ),
                                 trailing: _ToggleSwitch(
                                   value: false, // Wire up later
                                   onChanged: (value) {
@@ -423,7 +446,9 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                               const SizedBox(height: 16),
                               _SettingsTile(
                                 icon: Icons.motion_photos_off_rounded,
-                                title: 'Reduced Motion',
+                                title: AppStrings.reducedMotion.getString(
+                                  context,
+                                ),
                                 trailing: _ToggleSwitch(
                                   value: false, // Wire up later
                                   onChanged: (value) {
@@ -435,13 +460,13 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                               const SizedBox(height: 16),
                               _SettingsTile(
                                 icon: Icons.system_update_rounded,
-                                title: 'App Version',
+                                title: AppStrings.appVersion.getString(context),
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Text(
                                       _currentPatch != null
-                                          ? 'Patch #$_currentPatch'
+                                          ? '${AppStrings.patch.getString(context)} #$_currentPatch'
                                           : 'v1.0.0',
                                       style: TextStyle(
                                         color: Colors.white.withValues(
@@ -480,7 +505,7 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                       SizedBox(
                         width: double.infinity,
                         child: EnhancedButton(
-                          label: 'REPLAY TUTORIAL',
+                          label: AppStrings.replayTutorial.getString(context),
                           icon: Icons.school_rounded,
                           onTap: () {
                             _audio.playButton();
@@ -496,7 +521,7 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                       SizedBox(
                         width: double.infinity,
                         child: EnhancedButton(
-                          label: 'REDEEM CODE',
+                          label: AppStrings.redeemCode.getString(context),
                           icon: Icons.card_giftcard_rounded,
                           isOutlined: true,
                           onTap: () {

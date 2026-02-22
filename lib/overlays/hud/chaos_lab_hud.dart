@@ -237,8 +237,12 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
                         children: [
                           Text(
                             widget.game.chaosStability < 0.3
-                                ? 'CRITICAL SYSTEM FAILURE'
-                                : 'SYSTEM INSTABILITY',
+                                ? AppStrings.criticalSystemFailure
+                                      .getString(context)
+                                      .toUpperCase()
+                                : AppStrings.systemInstability
+                                      .getString(context)
+                                      .toUpperCase(),
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: ResponsiveHelper.fontSize(context, 16),
@@ -351,7 +355,7 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'CHAOS',
+                AppStrings.chaos.getString(context).toUpperCase(),
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.7),
                   fontSize: ResponsiveHelper.fontSize(context, 10),
@@ -398,11 +402,11 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
               String phaseText = phase;
               Color phaseColor = _getIntensityColor(intensity);
               if (phase == 'STABLE')
-                phaseText = AppStrings.stable.getString(context);
+                phaseText = AppStrings.phaseStable.getString(context);
               if (phase == 'CAUTION')
-                phaseText = AppStrings.caution.getString(context);
+                phaseText = AppStrings.phaseCaution.getString(context);
               if (phase == 'CRITICAL')
-                phaseText = AppStrings.critical.getString(context);
+                phaseText = AppStrings.phaseCritical.getString(context);
 
               return Text(
                 phaseText,
@@ -572,7 +576,7 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
           ),
         ),
         Text(
-          'MATCH',
+          AppStrings.precentageMatch.getString(context).toUpperCase(),
           style: TextStyle(
             fontSize: ResponsiveHelper.fontSize(context, 12),
             color: Colors.white.withValues(alpha: 0.7),
@@ -660,10 +664,13 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
   }
 
   String _getCurrentDisasterText() {
-    if (widget.game.isBlackout) return 'POWER FAILURE DETECTED';
-    if (widget.game.isMirrored) return 'OPTICAL AXIS INVERTED';
-    if (widget.game.hasWind) return 'HIGH PRESSURE LEAK';
-    return 'STABILITY DECREASING';
+    if (widget.game.isBlackout)
+      return AppStrings.powerFailureDetected.getString(context).toUpperCase();
+    if (widget.game.isMirrored)
+      return AppStrings.opticalAxisInverted.getString(context).toUpperCase();
+    if (widget.game.hasWind)
+      return AppStrings.highPressureLeak.getString(context).toUpperCase();
+    return AppStrings.stabilityDecreasing.getString(context).toUpperCase();
   }
 }
 

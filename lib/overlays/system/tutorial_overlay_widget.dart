@@ -2,6 +2,8 @@ import 'package:color_mixing_deductive/color_mixer_game.dart';
 import 'package:color_mixing_deductive/helpers/tutorial_system.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
 import 'package:flutter/material.dart';
+import 'package:color_mixing_deductive/helpers/string_manager.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 
 class TutorialOverlayWidget extends StatefulWidget {
   final ColorMixerGame game;
@@ -75,18 +77,18 @@ class _TutorialOverlayWidgetState extends State<TutorialOverlayWidget>
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1A1A2E),
-        title: const Text(
-          'Skip Tutorial?',
-          style: TextStyle(color: Colors.white),
+        title: Text(
+          AppStrings.skipTutorialTitle.getString(context),
+          style: const TextStyle(color: Colors.white),
         ),
-        content: const Text(
-          'You can always access the tutorial from Settings.',
-          style: TextStyle(color: Colors.white70),
+        content: Text(
+          AppStrings.skipTutorialDesc.getString(context),
+          style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(AppStrings.cancel.getString(context)),
           ),
           ElevatedButton(
             onPressed: () {
@@ -94,7 +96,7 @@ class _TutorialOverlayWidgetState extends State<TutorialOverlayWidget>
               _completeTutorial();
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppTheme.neonCyan),
-            child: const Text('Skip'),
+            child: Text(AppStrings.skip.getString(context)),
           ),
         ],
       ),
@@ -137,7 +139,7 @@ class _TutorialOverlayWidgetState extends State<TutorialOverlayWidget>
                     Icon(Icons.touch_app, color: AppTheme.neonCyan, size: 20),
                     const SizedBox(width: 8),
                     Text(
-                      'Step ${_currentStep + 1} of ${TutorialSteps.mainTutorial.length}',
+                      '${AppStrings.step.getString(context)} ${_currentStep + 1} ${AppStrings.of.getString(context)} ${TutorialSteps.mainTutorial.length}',
                       style: TextStyle(
                         color: AppTheme.neonCyan,
                         fontSize: 14,
@@ -231,18 +233,18 @@ class _TutorialOverlayWidgetState extends State<TutorialOverlayWidget>
                                 Icons.arrow_back,
                                 color: Colors.white,
                               ),
-                              label: const Text(
-                                'Back',
-                                style: TextStyle(color: Colors.white),
+                              label: Text(
+                                AppStrings.back.getString(context),
+                                style: const TextStyle(color: Colors.white),
                               ),
                             )
                           else
                             const SizedBox.shrink(),
                           TextButton(
                             onPressed: _skipTutorial,
-                            child: const Text(
-                              'Skip',
-                              style: TextStyle(color: Colors.white70),
+                            child: Text(
+                              AppStrings.skip.getString(context),
+                              style: const TextStyle(color: Colors.white70),
                             ),
                           ),
                           ElevatedButton.icon(
@@ -264,8 +266,8 @@ class _TutorialOverlayWidgetState extends State<TutorialOverlayWidget>
                             label: Text(
                               _currentStep ==
                                       TutorialSteps.mainTutorial.length - 1
-                                  ? 'Got it!'
-                                  : 'Next',
+                                  ? AppStrings.gotIt.getString(context)
+                                  : AppStrings.next.getString(context),
                             ),
                           ),
                         ],
