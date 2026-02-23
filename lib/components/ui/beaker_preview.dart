@@ -184,12 +184,18 @@ class _BeakerPreviewPainter extends CustomPainter {
         );
         break;
       case BeakerType.hexagon:
-        path.moveTo(w * 0.5, 0);
-        path.lineTo(w, h * 0.25);
-        path.lineTo(w, h * 0.75);
-        path.lineTo(w * 0.5, h);
-        path.lineTo(0, h * 0.75);
-        path.lineTo(0, h * 0.25);
+        final double nx = w * 0.3; // neck x offset (40% width overall)
+        final double wx = w; // max width
+        final double bx = w * 0.2; // base x offset (60% width overall)
+
+        path.moveTo(nx, 0); // Top left
+        path.lineTo(w - nx, 0); // Top right
+        path.lineTo(w - nx, h * 0.1); // Neck right down
+        path.lineTo(wx, h * 0.65); // Flare right down to max width
+        path.lineTo(w - bx, h); // Taper right down to base
+        path.lineTo(bx, h); // Base width
+        path.lineTo(0, h * 0.65); // Taper left up to max width
+        path.lineTo(nx, h * 0.1); // Flare left up to neck
         path.close();
         break;
       case BeakerType.round:
@@ -207,27 +213,103 @@ class _BeakerPreviewPainter extends CustomPainter {
         path.close();
         break;
       case BeakerType.diamond:
-        path.moveTo(w / 2, 0);
-        path.lineTo(w, h * 0.45);
-        path.lineTo(w / 2, h);
-        path.lineTo(0, h * 0.45);
+        // Faceted Diamond Flask (standing)
+        final double nx = w * 0.35; // Neck inset (30% width)
+        final double bx = w * 0.40; // Base inset (20% width)
+
+        path.moveTo(nx, 0); // Top left
+        path.lineTo(w - nx, 0); // Top right
+        path.lineTo(w - nx, h * 0.15); // Neck straight down
+        path.lineTo(w, h * 0.45); // Flare right out
+        path.lineTo(w - bx, h); // Taper down to base right
+        path.lineTo(bx, h); // Base flat
+        path.lineTo(0, h * 0.45); // Taper up to base left
+        path.lineTo(nx, h * 0.15); // Flare in to neck
         path.close();
         break;
       case BeakerType.star:
+        // Stylized 4-Point Mystic Vessel
         final double cx = w / 2;
-        final double cy = h / 2;
-        final double outerR = w / 2;
-        final double innerR = outerR * 0.42;
-        const int points = 5;
-        for (int i = 0; i < points * 2; i++) {
-          final double angle = (pi / points) * i - pi / 2;
-          final double r = (i % 2 == 0) ? outerR : innerR;
-          if (i == 0) {
-            path.moveTo(cx + r * cos(angle), cy + r * sin(angle));
-          } else {
-            path.lineTo(cx + r * cos(angle), cy + r * sin(angle));
-          }
-        }
+
+        final double neckW = w * 0.25;
+        final double shoulderW = w * 0.95;
+        final double waistW = w * 0.40;
+        final double baseW = w * 0.85;
+
+        final double neckY = h * 0.15;
+        final double shoulderY = h * 0.40;
+        final double waistY = h * 0.60;
+        final double baseY = h * 0.95;
+
+        path.moveTo(cx - (neckW / 2), 0); // Top left rim
+        path.lineTo(cx + (neckW / 2), 0); // Top right rim
+        path.lineTo(cx + (neckW / 2), neckY); // Neck right down
+        path.cubicTo(
+          cx + (neckW / 2),
+          neckY + (shoulderY - neckY) * 0.5, // c1
+          cx + (shoulderW / 2),
+          shoulderY - (shoulderY - neckY) * 0.5, // c2
+          cx + (shoulderW / 2),
+          shoulderY, // Right top point
+        );
+        path.cubicTo(
+          cx + (shoulderW / 2),
+          shoulderY + (waistY - shoulderY) * 0.5,
+          cx + (waistW / 2),
+          waistY - (waistY - shoulderY) * 0.5,
+          cx + (waistW / 2),
+          waistY, // Inner right corner
+        );
+        path.cubicTo(
+          cx + (waistW / 2),
+          waistY + (baseY - waistY) * 0.5,
+          cx + (baseW / 2),
+          baseY - (baseY - waistY) * 0.5,
+          cx + (baseW / 2),
+          baseY, // Right bottom point
+        );
+        path.cubicTo(
+          cx + (baseW / 2),
+          baseY + (h - baseY) * 0.5,
+          cx,
+          h,
+          cx,
+          h, // Absolute bottom tip
+        );
+
+        // Mirror for left side
+        path.cubicTo(
+          cx,
+          h,
+          cx - (baseW / 2),
+          baseY + (h - baseY) * 0.5,
+          cx - (baseW / 2),
+          baseY, // Left bottom point
+        );
+        path.cubicTo(
+          cx - (baseW / 2),
+          baseY - (baseY - waistY) * 0.5,
+          cx - (waistW / 2),
+          waistY + (baseY - waistY) * 0.5,
+          cx - (waistW / 2),
+          waistY, // Inner left corner
+        );
+        path.cubicTo(
+          cx - (waistW / 2),
+          waistY - (waistY - shoulderY) * 0.5,
+          cx - (shoulderW / 2),
+          shoulderY + (waistY - shoulderY) * 0.5,
+          cx - (shoulderW / 2),
+          shoulderY, // Left top point
+        );
+        path.cubicTo(
+          cx - (shoulderW / 2),
+          shoulderY - (shoulderY - neckY) * 0.5,
+          cx - (neckW / 2),
+          neckY + (shoulderY - neckY) * 0.5,
+          cx - (neckW / 2),
+          neckY, // Neck left down
+        );
         path.close();
         break;
       case BeakerType.triangle:

@@ -514,6 +514,76 @@ class LabCatalog {
       rarity: LabRarity.legendary,
       unlockLevel: 30,
     ),
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STRING LIGHTS
+    // ═══════════════════════════════════════════════════════════════════════════
+    LabItem(
+      id: 'lights_none',
+      name: 'No Lights',
+      description: 'Remove overhead string lights',
+      lore: 'Standard laboratory protocol: clear airspace.',
+      price: 0,
+      category: 'string_lights',
+      placeholderColor: Colors.transparent,
+      icon: Icons.highlight_remove,
+      rarity: LabRarity.common,
+    ),
+    LabItem(
+      id: 'lights_warm',
+      name: 'Tungsten Glow',
+      description: 'Warm, cozy overhead tungsten string lights',
+      lore:
+          'Provides a comforting, low-temperature amber glow to ease the mind during long synthesis sessions.',
+      price: 1500,
+      category: 'string_lights',
+      placeholderColor: Color(0xFFFFD54F),
+      gradientColors: [Color(0xFFFFA000), Color(0xFFFFD54F)],
+      icon: Icons.lightbulb,
+      rarity: LabRarity.common,
+    ),
+    LabItem(
+      id: 'lights_neon',
+      name: 'Neon Cyber-String',
+      description: 'Bright alternating cyan and magenta lights',
+      lore:
+          'Salvaged from an orbital arcade. The high-frequency flicker keeps you sharp and awake.',
+      price: 3200,
+      category: 'string_lights',
+      placeholderColor: Color(0xFF00FFFF),
+      gradientColors: [Color(0xFF00FFFF), Color(0xFFFF00FF)],
+      icon: Icons.wb_twilight,
+      rarity: LabRarity.rare,
+      unlockLevel: 8,
+    ),
+    LabItem(
+      id: 'lights_bio',
+      name: 'Isotope Pulser',
+      description: 'Slow-pulsing radioactive green suspended orbs',
+      lore:
+          'Contains trace amounts of Tritium-3. The rhythmic pulsing syncs with local geiger counters for a calming ambiance.',
+      price: 5500,
+      category: 'string_lights',
+      placeholderColor: Color(0xFF00FF00),
+      gradientColors: [Color(0xFF00FF00), Color(0xFFB2FF59)],
+      icon: Icons.stream,
+      rarity: LabRarity.epic,
+      unlockLevel: 16,
+    ),
+    LabItem(
+      id: 'lights_starlight',
+      name: 'Astral Thread',
+      description: 'Intense, sharply twinkling true-white stellar fragments',
+      lore:
+          'Microscopic shards of a white dwarf star suspended in a magnetic containment string. Emits pure, undistorted photons.',
+      price: 8500,
+      category: 'string_lights',
+      placeholderColor: Colors.white,
+      gradientColors: [Color(0xFFFFFFFF), Color(0xFFE3F2FD)],
+      icon: Icons.auto_awesome,
+      rarity: LabRarity.legendary,
+      unlockLevel: 25,
+    ),
   ];
 
   static LabItem getItem(String id) {

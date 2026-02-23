@@ -228,6 +228,12 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
                 Icons.wallpaper,
               ),
               _buildMobileTab(context, 'Stand', 'stand', Icons.science),
+              _buildMobileTab(
+                context,
+                'Overhead',
+                'string_lights',
+                Icons.wb_incandescent,
+              ),
             ],
           ),
         ),
@@ -488,6 +494,12 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
                   isTablet,
                 ),
                 _buildTab('Beaker Stand', 'stand', Icons.science, isTablet),
+                _buildTab(
+                  'Overhead Lights',
+                  'string_lights',
+                  Icons.wb_incandescent,
+                  isTablet,
+                ),
                 const Spacer(),
                 if (!isTablet)
                   Container(

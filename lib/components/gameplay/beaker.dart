@@ -283,31 +283,81 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
         ellipseH = 0; // Flat line for triangle
         break;
       case BeakerType.diamond:
-        final midY = size.y * 0.45;
-        if (surfaceY >= midY) {
-          final t = (surfaceY - midY) / (size.y - midY);
-          surfaceWidth = size.x * (1 - t);
+        // Faceted Diamond Flask
+        // Base: 20% width. Neck: 30% width. Widest point: 100% at 45% height.
+        final double h = size.y;
+        final double w = size.x;
+        final double neckH = h * 0.15;
+        final double widestY = h * 0.45;
+        final double baseW = w * 0.2;
+        final double neckW = w * 0.3;
+
+        if (surfaceY < neckH) {
+          surfaceWidth = neckW;
+        } else if (surfaceY < widestY) {
+          final t = (surfaceY - neckH) / (widestY - neckH);
+          surfaceWidth = lerpDouble(neckW, w, t)!;
         } else {
-          final t = surfaceY / midY;
-          surfaceWidth = size.x * t;
+          final t = (surfaceY - widestY) / (h - widestY);
+          surfaceWidth = lerpDouble(w, baseW, t)!;
         }
-        ellipseH = 0; // Flat line for diamond
+        ellipseH = surfaceWidth * _perspectiveRatio;
         break;
       case BeakerType.hexagon:
-        // Hexagon width varies significantly
-        if (surfaceY <= size.y * 0.25) {
-          surfaceWidth = size.x * (0.5 + (surfaceY / (size.y * 0.25)) * 0.5);
-        } else if (surfaceY <= size.y * 0.75) {
-          surfaceWidth = size.x;
+        // Tall Flat-Topped Hexagonal Flask
+        // Base: 60%. Neck: 40%. Widest: 100% at 65% height.
+        final double h = size.y;
+        final double w = size.x;
+        final double neckH = h * 0.1;
+        final double widestY = h * 0.65;
+        final double baseW = w * 0.6;
+        final double neckW = w * 0.4;
+
+        if (surfaceY < neckH) {
+          surfaceWidth = neckW;
+        } else if (surfaceY < widestY) {
+          final t = (surfaceY - neckH) / (widestY - neckH);
+          surfaceWidth = lerpDouble(neckW, w, t)!;
         } else {
-          final t = (surfaceY - size.y * 0.75) / (size.y * 0.25);
-          surfaceWidth = size.x * (1.0 - t * 0.5);
+          final t = (surfaceY - widestY) / (h - widestY);
+          surfaceWidth = lerpDouble(w, baseW, t)!;
         }
-        ellipseH = 0;
+        ellipseH = surfaceWidth * _perspectiveRatio;
         break;
       case BeakerType.star:
-        surfaceWidth = size.x; // Star is complex, use full width clipping
-        ellipseH = 0;
+        // Stylized 4-Pointed Star Flask
+        // A complex shape requiring tight surface tracking
+        final double h = size.y;
+        final double w = size.x;
+        final double neckY = h * 0.15;
+        final double shoulderY = h * 0.40;
+        final double waistY = h * 0.60;
+        final double baseY = h * 0.95;
+
+        final double neckW = w * 0.25;
+        final double shoulderW = w * 0.95;
+        final double waistW = w * 0.40;
+        final double baseW = w * 0.85;
+
+        // Custom interpolation based on absolute bounds
+        if (surfaceY < neckY) {
+          surfaceWidth = neckW;
+        } else if (surfaceY < shoulderY) {
+          final t = (surfaceY - neckY) / (shoulderY - neckY);
+          surfaceWidth = lerpDouble(neckW, shoulderW, t)!;
+        } else if (surfaceY < waistY) {
+          final t = (surfaceY - shoulderY) / (waistY - shoulderY);
+          surfaceWidth = lerpDouble(shoulderW, waistW, t)!;
+        } else if (surfaceY < baseY) {
+          final t = (surfaceY - waistY) / (baseY - waistY);
+          surfaceWidth = lerpDouble(waistW, baseW, t)!;
+        } else {
+          final t = (surfaceY - baseY) / (h - baseY);
+          surfaceWidth = lerpDouble(baseW, 0.0, t)!;
+        }
+
+        // Slightly reduced perspective scaling for star points to prevent poking outside clip
+        ellipseH = surfaceWidth * (_perspectiveRatio * 0.8);
         break;
       case BeakerType.magicBox:
       case BeakerType.cylinder:
@@ -536,12 +586,21 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
         );
         break;
       case BeakerType.hexagon:
-        path.moveTo(size.x * 0.5, 0);
-        path.lineTo(size.x, size.y * 0.25);
-        path.lineTo(size.x, size.y * 0.75);
-        path.lineTo(size.x * 0.5, size.y);
-        path.lineTo(0, size.y * 0.75);
-        path.lineTo(0, size.y * 0.25);
+        // Tall Flat-Topped Hexagonal Flask
+        final double h = size.y;
+        final double w = size.x;
+        final double nx = w * 0.3; // neck x offset (40% width overall)
+        final double wx = w; // max width
+        final double bx = w * 0.2; // base x offset (60% width overall)
+
+        path.moveTo(nx, 0); // Top left
+        path.lineTo(w - nx, 0); // Top right
+        path.lineTo(w - nx, h * 0.1); // Neck right down
+        path.lineTo(wx, h * 0.65); // Flare right down to max width
+        path.lineTo(w - bx, h); // Taper right down to base
+        path.lineTo(bx, h); // Base width
+        path.lineTo(0, h * 0.65); // Taper left up to max width
+        path.lineTo(nx, h * 0.1); // Flare left up to neck
         path.close();
         break;
       case BeakerType.round:
@@ -559,23 +618,107 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
         path.close();
         break;
       case BeakerType.diamond:
-        path.moveTo(size.x / 2, 0);
-        path.lineTo(size.x, size.y * 0.45);
-        path.lineTo(size.x / 2, size.y);
-        path.lineTo(0, size.y * 0.45);
+        // Faceted Diamond Flask (standing)
+        final double h = size.y;
+        final double w = size.x;
+        final double nx = w * 0.35; // Neck inset (30% width)
+        final double bx = w * 0.40; // Base inset (20% width)
+
+        path.moveTo(nx, 0); // Top left
+        path.lineTo(w - nx, 0); // Top right
+        path.lineTo(w - nx, h * 0.15); // Neck straight down
+        path.lineTo(w, h * 0.45); // Flare right out
+        path.lineTo(w - bx, h); // Taper down to base right
+        path.lineTo(bx, h); // Base flat
+        path.lineTo(0, h * 0.45); // Taper up to base left
+        path.lineTo(nx, h * 0.15); // Flare in to neck
         path.close();
         break;
       case BeakerType.star:
-        final double cx = size.x / 2;
-        final double cy = size.y / 2;
-        final double outerR = size.x / 2;
-        final double innerR = outerR * 0.42;
-        const int points = 5;
-        for (int i = 0; i < points * 2; i++) {
-          final double angle = (pi / points) * i - pi / 2;
-          final double r = (i % 2 == 0) ? outerR : innerR;
-          path.lineTo(cx + r * cos(angle), cy + r * sin(angle));
-        }
+        // Stylized 4-Point Mystic Vessel
+        final double h = size.y;
+        final double w = size.x;
+        final double cx = w / 2;
+
+        final double neckW = w * 0.25;
+        final double shoulderW = w * 0.95;
+        final double waistW = w * 0.40;
+        final double baseW = w * 0.85;
+
+        final double neckY = h * 0.15;
+        final double shoulderY = h * 0.40;
+        final double waistY = h * 0.60;
+        final double baseY = h * 0.95;
+
+        path.moveTo(cx - (neckW / 2), 0); // Top left rim
+        path.lineTo(cx + (neckW / 2), 0); // Top right rim
+        path.lineTo(cx + (neckW / 2), neckY); // Neck right down
+        path.cubicTo(
+          cx + (neckW / 2),
+          neckY + (shoulderY - neckY) * 0.5, // c1
+          cx + (shoulderW / 2),
+          shoulderY - (shoulderY - neckY) * 0.5, // c2
+          cx + (shoulderW / 2),
+          shoulderY, // Right top point
+        );
+        path.cubicTo(
+          cx + (shoulderW / 2),
+          shoulderY + (waistY - shoulderY) * 0.5,
+          cx + (waistW / 2),
+          waistY - (waistY - shoulderY) * 0.5,
+          cx + (waistW / 2),
+          waistY, // Inner right corner
+        );
+        path.cubicTo(
+          cx + (waistW / 2),
+          waistY + (baseY - waistY) * 0.5,
+          cx + (baseW / 2),
+          baseY - (baseY - waistY) * 0.5,
+          cx + (baseW / 2),
+          baseY, // Right bottom point
+        );
+        path.cubicTo(
+          cx + (baseW / 2),
+          baseY + (h - baseY) * 0.5,
+          cx,
+          h,
+          cx,
+          h, // Absolute bottom tip
+        );
+
+        // Mirror for left side
+        path.cubicTo(
+          cx,
+          h,
+          cx - (baseW / 2),
+          baseY + (h - baseY) * 0.5,
+          cx - (baseW / 2),
+          baseY, // Left bottom point
+        );
+        path.cubicTo(
+          cx - (baseW / 2),
+          baseY - (baseY - waistY) * 0.5,
+          cx - (waistW / 2),
+          waistY + (baseY - waistY) * 0.5,
+          cx - (waistW / 2),
+          waistY, // Inner left corner
+        );
+        path.cubicTo(
+          cx - (waistW / 2),
+          waistY - (waistY - shoulderY) * 0.5,
+          cx - (shoulderW / 2),
+          shoulderY + (waistY - shoulderY) * 0.5,
+          cx - (shoulderW / 2),
+          shoulderY, // Left top point
+        );
+        path.cubicTo(
+          cx - (shoulderW / 2),
+          shoulderY - (shoulderY - neckY) * 0.5,
+          cx - (neckW / 2),
+          neckY + (shoulderY - neckY) * 0.5,
+          cx - (neckW / 2),
+          neckY, // Neck left down
+        );
         path.close();
         break;
       case BeakerType.triangle:

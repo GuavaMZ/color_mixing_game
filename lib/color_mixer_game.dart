@@ -18,6 +18,7 @@ import 'package:color_mixing_deductive/components/environment/surface_steam.dart
 import 'package:color_mixing_deductive/components/effects/gravity_flux_effect.dart';
 import 'package:color_mixing_deductive/core/lab_catalog.dart';
 import 'package:color_mixing_deductive/components/environment/beaker_stand.dart';
+import 'package:color_mixing_deductive/components/environment/string_lights.dart';
 import 'package:color_mixing_deductive/components/effects/inverted_controls_effect.dart';
 import 'package:color_mixing_deductive/components/effects/earthquake_visual_effect.dart';
 import 'package:color_mixing_deductive/components/effects/mirror_distortion_effect.dart';
@@ -113,6 +114,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   late AmbientParticles ambientParticles;
   late PatternBackground patternBackground;
   BeakerStand? beakerStand;
+  StringLights? stringLights;
   List<String> unlockedAchievements = [];
   bool globalBlindMode = false;
 
@@ -200,6 +202,10 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       'stand',
       labConfig['stand'] ?? 'stand_basic',
     );
+    final lightsItem = LabCatalog.getItemByCategory(
+      'string_lights',
+      labConfig['string_lights'] ?? 'lights_none',
+    );
 
     // Add background gradient first (rendered first)
     backgroundGradient = BackgroundGradient(
@@ -216,6 +222,13 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       configColors: lightItem?.gradientColors,
     );
     add(ambientParticles);
+
+    // Add string lights
+    stringLights = StringLights(
+      size: Vector2(size.x, 200),
+      currentConfig: lightsItem,
+    );
+    add(stringLights!);
 
     // Position Beaker slightly above center to make room for bottom controls
     final beakerPos = Vector2(size.x / 2, size.y * 0.54);
@@ -605,7 +618,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       // The game has 'red', 'green', 'blue', 'white', 'black'. No explicit 'yellow' button mentioned in code?
       // RGB are primaries. Maybe user meant a specific button.
       // Assuming user meant "Red <-> Blue" swap for standard inversion.
-      // If "yellow" refers to something else, I'll stick to Red/Blue swap for max confusion.
+      // If "yellow" refers to something eI'll stick to Red/Blue swap for max confusion.
     }
 
     Color dropColor;
@@ -1157,10 +1170,15 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       'stand',
       config['stand'] ?? 'stand_basic',
     );
+    final lightsItem = LabCatalog.getItemByCategory(
+      'string_lights',
+      config['string_lights'] ?? 'lights_none',
+    );
 
     backgroundGradient.updateConfig(bgItem?.gradientColors);
     ambientParticles.updateConfig(lightItem?.gradientColors);
     patternBackground.updateConfig(surfaceItem);
+    stringLights?.updateConfig(lightsItem);
     if (standItem != null) {
       if (beakerStand != null) {
         beakerStand!.updateConfig(standItem);
@@ -1173,6 +1191,14 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
         );
         add(beakerStand!);
       }
+    }
+  }
+
+  @override
+  void onGameResize(Vector2 size) {
+    super.onGameResize(size);
+    if (stringLights != null) {
+      stringLights!.size = Vector2(size.x, 200);
     }
   }
 
