@@ -25,12 +25,11 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
   List<String> _unlockedItems = [];
   Map<String, String> _equippedConfig = {};
   bool _isLoading = true;
-  String? _hoveredItemId;
   bool _isSidebarCollapsed = false;
 
   late AnimationController _fadeController;
   late AnimationController _sidebarController;
-  late Animation<double> _fadeAnimation;
+  late AnimationController _scrollController;
   late Animation<double> _sidebarAnimation;
 
   // Catalog with enhanced descriptions
@@ -41,7 +40,7 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
     super.initState();
 
     _fadeController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 600),
       vsync: this,
     );
 
@@ -50,13 +49,17 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
-    );
+    _scrollController = AnimationController(
+      duration: const Duration(seconds: 10),
+      vsync: this,
+    )..repeat();
 
     _sidebarAnimation = Tween<double>(begin: 1.0, end: 0.0).animate(
       CurvedAnimation(parent: _sidebarController, curve: Curves.easeInOut),
     );
+
+    // Initial animation
+    _fadeController.forward();
 
     _loadData();
   }
@@ -65,6 +68,7 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
   void dispose() {
     _fadeController.dispose();
     _sidebarController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -82,66 +86,6 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
         _fadeController.forward();
       }
     }
-  }
-
-  Future<void> _purchaseItem(LabItem item) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => _buildPurchaseDialog(item),
-    );
-
-    if (confirmed != true) return;
-
-    if (widget.game.totalCoins.value >= item.price) {
-      int newBalance = widget.game.totalCoins.value - item.price;
-      widget.game.totalCoins.value = newBalance;
-      await SaveManager.saveTotalCoins(newBalance);
-
-      _unlockedItems.add(item.id);
-      await SaveManager.saveUnlockedLabItems(_unlockedItems);
-      AudioManager().playUnlockSound();
-
-      if (_equippedConfig[item.category] == null ||
-          !_unlockedItems.contains(_equippedConfig[item.category])) {
-        await _equipItem(item);
-      } else {
-        setState(() {}); // Update to show unlocked status
-      }
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('✨ ${item.name} unlocked!'),
-            backgroundColor: AppTheme.neonCyan,
-            duration: const Duration(seconds: 2),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    } else {
-      AudioManager().playError();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Not enough coins! Need ${item.price - widget.game.totalCoins.value} more.',
-            ),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 2),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    }
-  }
-
-  Future<void> _equipItem(LabItem item) async {
-    _equippedConfig[item.category] = item.id;
-    await SaveManager.saveLabConfig(_equippedConfig);
-    // Apply changes to the running game immediately — no restart needed
-    widget.game.applyLabConfig(_equippedConfig);
-    AudioManager().playButton();
-    setState(() {});
   }
 
   void _changeCategory(String category) {
@@ -352,6 +296,10 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
   }
 
   Widget _buildHeader(BuildContext context, bool isMobile, bool isTablet) {
+    int totalUnlocked = _unlockedItems.length;
+    int totalItems = _catalog.length;
+    double completion = totalItems > 0 ? (totalUnlocked / totalItems) * 100 : 0;
+
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: isMobile ? 12 : 24,
@@ -408,15 +356,33 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 4),
-                    Container(
-                      height: 2,
-                      width: 40,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [AppTheme.neonCyan, AppTheme.neonMagenta],
+                    const SizedBox(height: 6),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppTheme.neonCyan.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: AppTheme.neonCyan.withValues(alpha: 0.5),
+                            ),
+                          ),
+                          child: Text(
+                            '🔬 ${completion.toStringAsFixed(0)}% COMPLETE',
+                            style: TextStyle(
+                              color: AppTheme.neonCyan,
+                              fontSize: isMobile ? 9 : 11,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1,
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ],
                 ),
@@ -570,6 +536,7 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
     final unlockedCount = _catalog
         .where((i) => i.category == id && _unlockedItems.contains(i.id))
         .length;
+    final progress = itemCount > 0 ? unlockedCount / itemCount : 0.0;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
@@ -643,7 +610,56 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
                           fontSize: isCompact ? 12 : 14,
                         ),
                       ),
-                      if (!isCompact)
+                      if (!isCompact) ...[
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.5),
+                                  borderRadius: BorderRadius.circular(2),
+                                ),
+                                child: FractionallySizedBox(
+                                  alignment: Alignment.centerLeft,
+                                  widthFactor: progress,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: progress == 1.0
+                                          ? AppTheme.success
+                                          : AppTheme.neonCyan,
+                                      borderRadius: BorderRadius.circular(2),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color:
+                                              (progress == 1.0
+                                                      ? AppTheme.success
+                                                      : AppTheme.neonCyan)
+                                                  .withValues(alpha: 0.5),
+                                          blurRadius: 4,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '$unlockedCount/$itemCount',
+                              style: TextStyle(
+                                color: isSelected
+                                    ? AppTheme.neonCyan
+                                    : Colors.grey.withValues(alpha: 0.7),
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ] else ...[
+                        // Compact version progress (just text)
                         Container(
                           margin: const EdgeInsets.only(top: 4),
                           padding: const EdgeInsets.symmetric(
@@ -667,6 +683,7 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
                             ),
                           ),
                         ),
+                      ],
                     ],
                   ),
                 ),
@@ -692,32 +709,71 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
       crossAxisCount = 4;
     }
 
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: Padding(
-        padding: EdgeInsets.all(isMobile ? 12.0 : (isTablet ? 16.0 : 24.0)),
-        child: items.isEmpty
-            ? Center(
-                child: Text(
-                  'No items available',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.5),
-                    fontSize: isMobile ? 14 : 16,
-                  ),
+    return Padding(
+      padding: EdgeInsets.all(isMobile ? 12.0 : (isTablet ? 16.0 : 24.0)),
+      child: items.isEmpty
+          ? Center(
+              child: Text(
+                'No items available',
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.5),
+                  fontSize: isMobile ? 14 : 16,
                 ),
-              )
-            : GridView.builder(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: crossAxisCount,
-                  childAspectRatio: isMobile ? 0.7 : 0.75,
-                  crossAxisSpacing: isMobile ? 12 : 20,
-                  mainAxisSpacing: isMobile ? 12 : 20,
-                ),
-                itemCount: items.length,
-                itemBuilder: (context, index) =>
-                    _buildItemCard(items[index], isMobile, isTablet),
               ),
-      ),
+            )
+          : GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                childAspectRatio: isMobile ? 0.7 : 0.75,
+                crossAxisSpacing: isMobile ? 12 : 20,
+                mainAxisSpacing: isMobile ? 12 : 20,
+              ),
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                // Staggered animation values
+                final fadeDelay = index * 0.05;
+                final slideAnimation =
+                    Tween<Offset>(
+                      begin: const Offset(0, 50),
+                      end: Offset.zero,
+                    ).animate(
+                      CurvedAnimation(
+                        parent: _fadeController,
+                        curve: Interval(
+                          fadeDelay.clamp(0.0, 1.0),
+                          (fadeDelay + 0.5).clamp(0.0, 1.0),
+                          curve: Curves.easeOutCubic,
+                        ),
+                      ),
+                    );
+
+                final opacityAnimation = Tween<double>(begin: 0.0, end: 1.0)
+                    .animate(
+                      CurvedAnimation(
+                        parent: _fadeController,
+                        curve: Interval(
+                          fadeDelay.clamp(0.0, 1.0),
+                          (fadeDelay + 0.5).clamp(0.0, 1.0),
+                          curve: Curves.easeIn,
+                        ),
+                      ),
+                    );
+
+                return AnimatedBuilder(
+                  animation: _fadeController,
+                  builder: (context, child) {
+                    return Opacity(
+                      opacity: opacityAnimation.value,
+                      child: Transform.translate(
+                        offset: slideAnimation.value,
+                        child: child,
+                      ),
+                    );
+                  },
+                  child: _buildItemCard(items[index], isMobile, isTablet),
+                );
+              },
+            ),
     );
   }
 
@@ -725,29 +781,16 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
     final isUnlocked = _unlockedItems.contains(item.id);
     final isEquipped = _equippedConfig[item.category] == item.id;
     final canAfford = widget.game.totalCoins.value >= item.price;
-    final isHovered = _hoveredItemId == item.id;
 
     return MouseRegion(
-      onEnter: (_) => setState(() => _hoveredItemId = item.id),
-      onExit: (_) => setState(() => _hoveredItemId = null),
       child: AnimatedCard(
-        onTap: () {
-          if (!isUnlocked && canAfford) {
-            _purchaseItem(item);
-          } else if (isUnlocked && !isEquipped) {
-            _equipItem(item);
-          }
-        },
-        hasGlow: isEquipped,
-        fillColor: isEquipped
-            ? Colors.black.withValues(alpha: 0.2)
-            : Colors.black.withValues(alpha: 0.4),
+        onTap: () => _showItemDetail(item),
+        hasGlow: isEquipped || item.rarity == LabRarity.legendary,
+        fillColor: Colors.black.withValues(alpha: isEquipped ? 0.2 : 0.4),
         borderColor: isEquipped
             ? AppTheme.neonCyan
-            : (isUnlocked
-                  ? AppTheme.success.withValues(alpha: 0.3)
-                  : Colors.red.withValues(alpha: 0.3)),
-        borderWidth: 2,
+            : item.rarity.color.withValues(alpha: isUnlocked ? 0.6 : 0.3),
+        borderWidth: item.rarity == LabRarity.legendary ? 2.5 : 2,
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
@@ -756,7 +799,7 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
               end: Alignment.bottomRight,
               colors: [
                 Colors.black.withValues(alpha: 0.3),
-                Colors.grey.withValues(alpha: 0.1),
+                item.rarity.color.withValues(alpha: 0.05),
               ],
             ),
           ),
@@ -766,105 +809,172 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
               // Preview Area
               Expanded(
                 flex: 3,
-                child: Container(
-                  margin: EdgeInsets.all(isMobile ? 8 : 12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(isMobile ? 12 : 16),
-                    gradient: item.gradientColors.isNotEmpty
-                        ? LinearGradient(
-                            colors: item.gradientColors,
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          )
-                        : LinearGradient(
-                            colors: [
-                              item.placeholderColor,
-                              item.placeholderColor.withValues(alpha: 0.6),
-                            ],
+                child: AnimatedBuilder(
+                  animation: _scrollController,
+                  builder: (context, child) {
+                    final isLockedLegendary =
+                        !isUnlocked && item.rarity == LabRarity.legendary;
+                    return Container(
+                      margin: EdgeInsets.all(isMobile ? 8 : 12),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(isMobile ? 12 : 16),
+                        gradient: item.gradientColors.isNotEmpty
+                            ? LinearGradient(
+                                colors: item.gradientColors,
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              )
+                            : LinearGradient(
+                                colors: [
+                                  item.placeholderColor,
+                                  item.placeholderColor.withValues(alpha: 0.6),
+                                ],
+                              ),
+                        boxShadow: [
+                          BoxShadow(
+                            color:
+                                (isEquipped
+                                        ? AppTheme.neonCyan
+                                        : item.rarity.glowColor)
+                                    .withValues(alpha: 0.4),
+                            blurRadius: 15,
+                            offset: const Offset(0, 5),
                           ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: item.placeholderColor.withValues(alpha: 0.4),
-                        blurRadius: 15,
-                        offset: const Offset(0, 5),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: Stack(
-                    children: [
-                      if (item.icon != null)
-                        Center(
-                          child: Icon(
-                            item.icon,
-                            size: isMobile ? 36 : 48,
-                            color: Colors.white.withValues(alpha: 0.4),
-                          ),
-                        ),
-                      if (isEquipped)
-                        Positioned(
-                          top: 8,
-                          right: 8,
-                          child: Container(
-                            padding: const EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              color: AppTheme.neonCyan,
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppTheme.neonCyan.withValues(
-                                    alpha: 0.5,
-                                  ),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 0),
-                                ),
-                              ],
-                            ),
-                            child: Icon(
-                              Icons.check,
-                              color: Colors.black,
-                              size: 16,
-                            ),
-                          ),
-                        ),
-                      if (!isUnlocked)
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(
-                              isMobile ? 12 : 16,
-                            ),
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Colors.black.withValues(alpha: 0.6),
-                                Colors.transparent,
-                              ],
-                            ),
-                          ),
-                          child: Center(
-                            child: Container(
-                              padding: EdgeInsets.all(isMobile ? 8 : 12),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withValues(alpha: 0.7),
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.redAccent,
-                                  width: 2,
-                                ),
-                              ),
+                      child: Stack(
+                        children: [
+                          if (item.icon != null)
+                            Center(
                               child: Icon(
-                                Icons.lock,
-                                size: isMobile ? 20 : 28,
-                                color: Colors.redAccent,
+                                item.icon,
+                                size: isMobile ? 36 : 48,
+                                color: Colors.white.withValues(alpha: 0.4),
+                              ),
+                            ),
+                          // Legendary Shimmer Effect
+                          if (isLockedLegendary)
+                            Positioned.fill(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(
+                                  isMobile ? 12 : 16,
+                                ),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      begin: Alignment(
+                                        -2.0 + (_scrollController.value * 4.0),
+                                        -2.0 + (_scrollController.value * 4.0),
+                                      ),
+                                      end: Alignment(
+                                        -1.0 + (_scrollController.value * 4.0),
+                                        -1.0 + (_scrollController.value * 4.0),
+                                      ),
+                                      stops: const [0.0, 0.5, 1.0],
+                                      colors: [
+                                        Colors.transparent,
+                                        Colors.white.withValues(alpha: 0.3),
+                                        Colors.transparent,
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          // Rarity badge
+                          Positioned(
+                            top: 6,
+                            left: 6,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: item.rarity.gradient,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: item.rarity.glowColor.withValues(
+                                      alpha: 0.5,
+                                    ),
+                                    blurRadius: 6,
+                                  ),
+                                ],
+                              ),
+                              child: Text(
+                                '${item.rarity.icon} ${item.rarity.label}',
+                                style: TextStyle(
+                                  color: item.rarity == LabRarity.legendary
+                                      ? Colors.black
+                                      : Colors.white,
+                                  fontSize: isMobile ? 8 : 9,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 0.5,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                    ],
-                  ),
+                          if (isEquipped)
+                            Positioned(
+                              top: 6,
+                              right: 6,
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: AppTheme.neonCyan,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppTheme.neonCyan.withValues(
+                                        alpha: 0.5,
+                                      ),
+                                      blurRadius: 8,
+                                    ),
+                                  ],
+                                ),
+                                child: const Icon(
+                                  Icons.check,
+                                  color: Colors.black,
+                                  size: 14,
+                                ),
+                              ),
+                            ),
+                          if (!isUnlocked)
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(
+                                  isMobile ? 12 : 16,
+                                ),
+                                color: Colors.black.withValues(alpha: 0.55),
+                              ),
+                              child: Center(
+                                child: Container(
+                                  padding: EdgeInsets.all(isMobile ? 8 : 10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withValues(alpha: 0.7),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: item.rarity.color,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.lock,
+                                    size: isMobile ? 18 : 24,
+                                    color: item.rarity.color,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ),
-
               // Info Area
               Expanded(
                 flex: 2,
@@ -883,12 +993,6 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
                               color: isUnlocked ? Colors.white : Colors.white70,
                               fontWeight: FontWeight.bold,
                               fontSize: isMobile ? 13 : 15,
-                              shadows: [
-                                Shadow(
-                                  color: Colors.black.withValues(alpha: 0.3),
-                                  blurRadius: 2,
-                                ),
-                              ],
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -907,21 +1011,18 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
                           ],
                         ],
                       ),
-
-                      // Action Button (Visual only, tap handled by card)
+                      // Status button
                       if (isUnlocked)
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal: 12,
+                            vertical: 6,
+                            horizontal: 10,
                           ),
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             gradient: isEquipped
                                 ? null
                                 : LinearGradient(
-                                    begin: Alignment.centerLeft,
-                                    end: Alignment.centerRight,
                                     colors: [
                                       AppTheme.neonCyan,
                                       AppTheme.neonMagenta,
@@ -930,7 +1031,7 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
                             color: isEquipped
                                 ? Colors.grey.withValues(alpha: 0.2)
                                 : null,
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(10),
                             border: isEquipped
                                 ? Border.all(
                                     color: Colors.grey.withValues(alpha: 0.4),
@@ -941,7 +1042,7 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
                             isEquipped ? 'EQUIPPED' : 'EQUIP',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: isMobile ? 11 : 12,
+                              fontSize: isMobile ? 10 : 11,
                               color: isEquipped ? Colors.white54 : Colors.black,
                             ),
                           ),
@@ -949,15 +1050,13 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
                       else
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            vertical: 8,
-                            horizontal: 12,
+                            vertical: 6,
+                            horizontal: 10,
                           ),
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             gradient: canAfford
                                 ? LinearGradient(
-                                    begin: Alignment.centerLeft,
-                                    end: Alignment.centerRight,
                                     colors: [
                                       Colors.amber.withValues(alpha: 0.2),
                                       Colors.orange.withValues(alpha: 0.2),
@@ -967,7 +1066,7 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
                             color: canAfford
                                 ? null
                                 : Colors.grey.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(10),
                             border: Border.all(
                               color: canAfford ? Colors.amber : Colors.grey,
                             ),
@@ -977,7 +1076,7 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
                             children: [
                               Icon(
                                 Icons.monetization_on,
-                                size: 14,
+                                size: 13,
                                 color: canAfford ? Colors.amber : Colors.grey,
                               ),
                               const SizedBox(width: 4),
@@ -985,7 +1084,7 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
                                 '${item.price}',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: isMobile ? 11 : 12,
+                                  fontSize: isMobile ? 10 : 11,
                                   color: canAfford ? Colors.amber : Colors.grey,
                                 ),
                               ),
@@ -1077,181 +1176,485 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
     );
   }
 
-  Widget _buildPurchaseDialog(LabItem item) {
+  void _showItemDetail(LabItem item) {
+    AudioManager().playButton();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _ItemDetailSheet(
+        item: item,
+        game: widget.game,
+        isUnlocked: _unlockedItems.contains(item.id),
+        isEquipped: _equippedConfig[item.category] == item.id,
+        onPurchase: () {
+          Navigator.pop(context);
+          _purchaseItem(item);
+        },
+        onEquip: () {
+          Navigator.pop(context);
+          _equipItem(item);
+        },
+      ),
+    );
+  }
+
+  Future<void> _purchaseItem(LabItem item) async {
+    if (widget.game.totalCoins.value >= item.price) {
+      int newBalance = widget.game.totalCoins.value - item.price;
+      widget.game.totalCoins.value = newBalance;
+      await SaveManager.saveTotalCoins(newBalance);
+
+      _unlockedItems.add(item.id);
+      await SaveManager.saveUnlockedLabItems(_unlockedItems);
+      AudioManager().playUnlockSound();
+
+      // Simple unlock celebration
+      if (mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            Future.delayed(const Duration(milliseconds: 1500), () {
+              if (mounted) Navigator.pop(context); // Auto-close
+            });
+            return Center(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 500),
+                padding: const EdgeInsets.all(32),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      item.rarity.glowColor.withValues(alpha: 0.8),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+                child: Icon(
+                  item.icon ?? Icons.science,
+                  size: 100,
+                  color: Colors.white,
+                ),
+              ),
+            );
+          },
+        );
+      }
+
+      if (_equippedConfig[item.category] == null ||
+          !_unlockedItems.contains(_equippedConfig[item.category])) {
+        await _equipItem(item);
+      } else {
+        setState(() {}); // Update to show unlocked status
+      }
+    } else {
+      AudioManager().playError();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Not enough coins! Need ${item.price - widget.game.totalCoins.value} more.',
+            ),
+            backgroundColor: Colors.red.withValues(alpha: 0.9),
+            duration: const Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _equipItem(LabItem item) async {
+    _equippedConfig[item.category] = item.id;
+    await SaveManager.saveLabConfig(_equippedConfig);
+    // Apply changes to the running game immediately
+    widget.game.applyLabConfig(_equippedConfig);
+    AudioManager().playButton();
+    setState(() {});
+  }
+}
+
+// ─── Item Detail Bottom Sheet ────────────────────────────────────────────────
+
+class _ItemDetailSheet extends StatelessWidget {
+  final LabItem item;
+  final ColorMixerGame game;
+  final bool isUnlocked;
+  final bool isEquipped;
+  final VoidCallback onPurchase;
+  final VoidCallback onEquip;
+
+  const _ItemDetailSheet({
+    required this.item,
+    required this.game,
+    required this.isUnlocked,
+    required this.isEquipped,
+    required this.onPurchase,
+    required this.onEquip,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final canAfford = game.totalCoins.value >= item.price;
     final isMobile = MediaQuery.of(context).size.width < 600;
 
-    return AlertDialog(
-      backgroundColor: const Color(0xFF0F172A),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: AppTheme.neonCyan, width: 1.5),
-      ),
-      elevation: 20,
-      shadowColor: AppTheme.neonCyan.withValues(alpha: 0.5),
-      title: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [AppTheme.neonCyan, AppTheme.neonMagenta],
+    return Container(
+      height: MediaQuery.of(context).size.height * (isMobile ? 0.85 : 0.7),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0F172A),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+        border: Border(top: BorderSide(color: item.rarity.color, width: 2)),
+        boxShadow: [
+          BoxShadow(
+            color: item.rarity.glowColor.withValues(alpha: 0.3),
+            blurRadius: 40,
+            offset: const Offset(0, -10),
           ),
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              Icons.shopping_cart,
-              color: Colors.black,
-              size: isMobile ? 20 : 24,
-            ),
-            SizedBox(width: isMobile ? 8 : 12),
-            Expanded(
-              child: Text(
-                'Confirm Purchase',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: isMobile ? 16 : 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
+        ],
       ),
-      content: Container(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Purchase ${item.name}?',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: isMobile ? 18 : 20,
-                fontWeight: FontWeight.bold,
-              ),
+      child: Column(
+        children: [
+          // Drag handle
+          Container(
+            margin: const EdgeInsets.only(top: 12, bottom: 8),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(2),
             ),
-            const SizedBox(height: 8),
-            Text(
-              item.description,
-              style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.7),
-                fontSize: isMobile ? 12 : 14,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.amber.withValues(alpha: 0.1),
-                    Colors.orange.withValues(alpha: 0.1),
-                  ],
-                ),
-                border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Cost:',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: isMobile ? 14 : 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.monetization_on,
-                        color: Colors.amber,
-                        size: isMobile ? 20 : 22,
+          ),
+
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+              children: [
+                // Hero Image
+                Container(
+                  height: isMobile ? 180 : 240,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    gradient: item.gradientColors.isNotEmpty
+                        ? LinearGradient(
+                            colors: item.gradientColors,
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          )
+                        : LinearGradient(
+                            colors: [
+                              item.placeholderColor,
+                              item.placeholderColor.withValues(alpha: 0.5),
+                            ],
+                          ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: item.rarity.glowColor.withValues(alpha: 0.4),
+                        blurRadius: 30,
+                        offset: const Offset(0, 10),
                       ),
-                      const SizedBox(width: 6),
-                      Text(
-                        '${item.price}',
-                        style: TextStyle(
-                          color: Colors.amber,
-                          fontWeight: FontWeight.bold,
-                          fontSize: isMobile ? 18 : 20,
+                    ],
+                  ),
+                  child: Stack(
+                    children: [
+                      Center(
+                        child: Icon(
+                          item.icon,
+                          size: 80,
+                          color: Colors.white.withValues(alpha: 0.4),
+                        ),
+                      ),
+                      // Rarity Badge Top Left
+                      Positioned(
+                        top: 16,
+                        left: 16,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: item.rarity.gradient,
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: item.rarity.glowColor,
+                                blurRadius: 10,
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            '${item.rarity.icon} ${item.rarity.label}',
+                            style: TextStyle(
+                              color: item.rarity == LabRarity.legendary
+                                  ? Colors.black
+                                  : Colors.white,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1,
+                              fontSize: 12,
+                            ),
+                          ),
                         ),
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 32),
+
+                // Name & Category
+                Text(
+                  item.name,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    shadows: [
+                      Shadow(
+                        color: item.rarity.color.withValues(alpha: 0.5),
+                        blurRadius: 10,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  item.category.toUpperCase(),
+                  style: TextStyle(
+                    color: AppTheme.neonCyan,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 2,
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Description & Lore
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.05),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.info_outline,
+                            color: Colors.white54,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'SPECIFICATIONS',
+                            style: TextStyle(
+                              color: Colors.white54,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        item.description,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          height: 1.4,
+                        ),
+                      ),
+                      if (item.lore.isNotEmpty) ...[
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          child: Divider(color: Colors.white10),
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.auto_stories,
+                              color: item.rarity.color,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'ARCHIVE DATA',
+                              style: TextStyle(
+                                color: item.rarity.color,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          item.lore,
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.7),
+                            fontSize: 14,
+                            height: 1.6,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 32),
+              ],
             ),
-          ],
-        ),
+          ),
+
+          // Action Area Bottom
+          Container(
+            padding: EdgeInsets.fromLTRB(
+              24,
+              16,
+              24,
+              MediaQuery.of(context).padding.bottom + 16,
+            ),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0F172A),
+              border: Border(
+                top: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.5),
+                  blurRadius: 20,
+                  offset: const Offset(0, -5),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                // Price Tag if not unlocked
+                if (!isUnlocked)
+                  Container(
+                    margin: const EdgeInsets.only(right: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 16,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.4),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: canAfford
+                            ? Colors.amber
+                            : Colors.redAccent.withValues(alpha: 0.5),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.monetization_on,
+                          color: canAfford ? Colors.amber : Colors.redAccent,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${item.price}',
+                          style: TextStyle(
+                            color: canAfford ? Colors.amber : Colors.redAccent,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                // Action Button
+                Expanded(
+                  child: InkWell(
+                    onTap: () {
+                      if (isEquipped) {
+                        Navigator.pop(
+                          context,
+                        ); // Do nothing if already equipped
+                      } else if (isUnlocked) {
+                        onEquip();
+                      } else if (canAfford) {
+                        onPurchase();
+                      }
+                    },
+                    borderRadius: BorderRadius.circular(16),
+                    child: Container(
+                      height: 60,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        gradient: isEquipped
+                            ? LinearGradient(
+                                colors: [
+                                  Colors.grey.withValues(alpha: 0.2),
+                                  Colors.grey.withValues(alpha: 0.3),
+                                ],
+                              )
+                            : (isUnlocked
+                                  ? LinearGradient(
+                                      colors: [
+                                        AppTheme.neonCyan,
+                                        AppTheme.neonMagenta,
+                                      ],
+                                    )
+                                  : (canAfford
+                                        ? LinearGradient(
+                                            colors: item.rarity.gradient,
+                                          )
+                                        : LinearGradient(
+                                            colors: [
+                                              Colors.red.withValues(alpha: 0.2),
+                                              Colors.black,
+                                            ],
+                                          ))),
+                        boxShadow: [
+                          if (!isEquipped && (isUnlocked || canAfford))
+                            BoxShadow(
+                              color:
+                                  (isUnlocked
+                                          ? AppTheme.neonCyan
+                                          : item.rarity.glowColor)
+                                      .withValues(alpha: 0.4),
+                              blurRadius: 15,
+                            ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Text(
+                          isEquipped
+                              ? 'ALREADY EQUIPPED'
+                              : (isUnlocked
+                                    ? 'EQUIP NOW'
+                                    : 'PURCHASE PROTOTYPE'),
+                          style: TextStyle(
+                            color: isEquipped
+                                ? Colors.white54
+                                : (item.rarity == LabRarity.legendary &&
+                                          !isUnlocked
+                                      ? Colors.black
+                                      : Colors.white),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
-      actions: [
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.withValues(alpha: 0.5)),
-          ),
-          child: TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.symmetric(
-                horizontal: isMobile ? 20 : 24,
-                vertical: isMobile ? 10 : 12,
-              ),
-            ),
-            child: Text(
-              'Cancel',
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: isMobile ? 14 : 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [AppTheme.neonCyan, AppTheme.neonMagenta],
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppTheme.neonCyan.withValues(alpha: 0.4),
-                blurRadius: 10,
-                offset: const Offset(0, 0),
-              ),
-            ],
-          ),
-          child: ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              foregroundColor: Colors.black,
-              shadowColor: Colors.transparent,
-              padding: EdgeInsets.symmetric(
-                horizontal: isMobile ? 20 : 24,
-                vertical: isMobile ? 10 : 12,
-              ),
-            ),
-            child: Text(
-              'Purchase',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: isMobile ? 14 : 16,
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
@@ -1373,27 +1776,39 @@ class _ParticlePainter extends CustomPainter {
 
 class GridPainter extends CustomPainter {
   final double opacity;
+  final Offset scrollOffset;
 
-  GridPainter({this.opacity = 0.5});
+  GridPainter({this.opacity = 0.5, this.scrollOffset = Offset.zero});
 
   @override
   void paint(Canvas canvas, Size size) {
+    canvas.save();
+
+    // Apply parallax translation, wrapping around the step size
+    const step = 40.0;
+    final dx = scrollOffset.dx % step;
+    final dy = scrollOffset.dy % step;
+    canvas.translate(dx, dy);
+
     final paint = Paint()
       ..color = AppTheme.neonCyan.withValues(alpha: 0.05 + opacity * 0.05)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1;
 
-    const step = 40.0;
-
-    for (double x = 0; x <= size.width; x += step) {
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
+    // Draw lines slightly beyond the visible area to account for translation
+    for (double x = -step; x <= size.width + step; x += step) {
+      canvas.drawLine(Offset(x, -step), Offset(x, size.height + step), paint);
     }
 
-    for (double y = 0; y <= size.height; y += step) {
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
+    for (double y = -step; y <= size.height + step; y += step) {
+      canvas.drawLine(Offset(-step, y), Offset(size.width + step, y), paint);
     }
+
+    canvas.restore();
   }
 
   @override
-  bool shouldRepaint(GridPainter oldDelegate) => oldDelegate.opacity != opacity;
+  bool shouldRepaint(GridPainter oldDelegate) =>
+      oldDelegate.opacity != opacity ||
+      oldDelegate.scrollOffset != scrollOffset;
 }
