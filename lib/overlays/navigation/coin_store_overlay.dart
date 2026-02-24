@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui';
 import 'package:color_mixing_deductive/core/coin_store.dart';
+import 'package:color_mixing_deductive/core/save_manager.dart';
 import 'package:color_mixing_deductive/helpers/audio_manager.dart';
 import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
@@ -27,6 +29,7 @@ class _CoinStoreOverlayState extends State<CoinStoreOverlay>
   bool _isProcessing = false;
   final Set<String> _claimedOneTime = {};
   List<Map<String, dynamic>> _purchaseHistory = [];
+  StreamSubscription<PurchaseResult>? _purchaseSub;
 
   @override
   void initState() {
@@ -42,6 +45,57 @@ class _CoinStoreOverlayState extends State<CoinStoreOverlay>
     )..repeat(reverse: true);
 
     _loadState();
+    _initBilling();
+  }
+
+  Future<void> _initBilling() async {
+    await CoinStoreService.instance.initialize();
+    if (!mounted) return;
+    // Refresh UI so real prices from Play are shown
+    setState(() {});
+    // Listen to purchase outcomes
+    _purchaseSub = CoinStoreService.instance.purchaseStream.listen(
+      _onPurchaseResult,
+    );
+  }
+
+  void _onPurchaseResult(PurchaseResult result) {
+    if (!mounted) return;
+    setState(() => _isProcessing = false);
+
+    if (result.success) {
+      // Award coins to game
+      final int newBalance = widget.game.totalCoins.value + result.coins;
+      widget.game.totalCoins.value = newBalance;
+      SaveManager.saveTotalCoins(newBalance);
+
+      AudioManager().playWin();
+      // Find the bundle that was just purchased
+      final bundle = kCoinBundles.firstWhere(
+        (b) => b.coins == result.coins,
+        orElse: () => kCoinBundles.first,
+      );
+      _purchaseHistory.insert(0, {
+        'bundle_id': bundle.id,
+        'bundle_name': bundle.name,
+        'coins': result.coins,
+        'timestamp': DateTime.now().toIso8601String(),
+      });
+      _showSuccessDialogForCoins(result.coins, bundle);
+    } else if (result.error != null && result.error != 'canceled') {
+      _showErrorSnackbar(result.error!);
+    }
+  }
+
+  void _showErrorSnackbar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppTheme.neonMagenta,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   Future<void> _loadState() async {
@@ -59,49 +113,44 @@ class _CoinStoreOverlayState extends State<CoinStoreOverlay>
   void dispose() {
     _shimmerController.dispose();
     _pulseController.dispose();
+    _purchaseSub?.cancel();
     super.dispose();
   }
 
   Future<void> _handlePurchase(CoinBundle bundle) async {
     if (_isProcessing) return;
 
-    if (bundle.isOneTime && _claimedOneTime.contains(bundle.id)) {
-      _showAlreadyClaimedDialog();
+    // ── Starter Pack (free, one-time) ─────────────────────────────────────
+    if (bundle.isOneTime) {
+      if (_claimedOneTime.contains(bundle.id)) {
+        _showAlreadyClaimedDialog();
+        return;
+      }
+      setState(() => _isProcessing = true);
+      final result = await CoinStoreService.instance.processStarterPack(bundle);
+      if (!mounted) return;
+      setState(() {
+        _isProcessing = false;
+        if (result.success) _claimedOneTime.add(bundle.id);
+      });
+      if (result.success) {
+        AudioManager().playWin();
+        _showSuccessDialogForCoins(bundle.coins, bundle);
+      } else {
+        _showAlreadyClaimedDialog();
+      }
       return;
     }
 
+    // ── Paid bundle — launch real Google Play billing flow ─────────────────
     setState(() => _isProcessing = true);
-
-    final result = await CoinStoreService.instance.processPurchase(
-      bundle,
-      widget.game,
-    );
-
-    if (!mounted) return;
-    setState(() {
-      _isProcessing = false;
-      if (result.success && bundle.isOneTime) {
-        _claimedOneTime.add(bundle.id);
-      }
-      if (result.success) {
-        _purchaseHistory.insert(0, {
-          'bundle_id': bundle.id,
-          'bundle_name': bundle.name,
-          'coins': bundle.coins,
-          'timestamp': DateTime.now().toIso8601String(),
-        });
-      }
-    });
-
-    if (result.success) {
-      AudioManager().playWin();
-      _showSuccessDialog(bundle);
-    } else {
-      _showAlreadyClaimedDialog();
-    }
+    // The result arrives asynchronously via purchaseStream → _onPurchaseResult
+    await CoinStoreService.instance.initiatePurchase(bundle);
+    // Leave _isProcessing = true until the stream resolves.
+    // The stream listener will set it back to false.
   }
 
-  void _showSuccessDialog(CoinBundle bundle) {
+  void _showSuccessDialogForCoins(int coins, CoinBundle bundle) {
     showDialog(
       context: context,
       barrierDismissible: false,

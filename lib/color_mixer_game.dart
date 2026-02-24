@@ -31,6 +31,7 @@ import 'package:color_mixing_deductive/components/effects/cracked_glass_overlay.
 import 'package:color_mixing_deductive/core/color_logic.dart';
 import 'package:color_mixing_deductive/core/level_manager.dart';
 import 'package:color_mixing_deductive/core/save_manager.dart';
+import 'package:color_mixing_deductive/core/coin_store.dart';
 import 'package:color_mixing_deductive/core/lives_manager.dart';
 import 'package:color_mixing_deductive/helpers/audio_manager.dart';
 import 'package:color_mixing_deductive/helpers/event_rarity_system.dart';
@@ -163,6 +164,10 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     unlockedAchievements = await SaveManager.loadAchievements();
     globalBlindMode = await SaveManager.loadBlindMode();
     randomEventsEnabled = await SaveManager.loadRandomEvents();
+
+    // Initialize IAP and attach the game so pending purchases are awarded locally
+    CoinStoreService.instance.attachGame(this);
+    CoinStoreService.instance.initialize();
 
     // Load helpers
     final savedHelpers = await SaveManager.loadHelpers();
