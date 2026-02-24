@@ -361,12 +361,42 @@ class _ShopOverlayState extends State<ShopOverlay> {
   }
 
   Widget _buildCoinsDisplay() {
-    return CoinsWidget(
-      coinsNotifier: widget.game.totalCoins,
-      useEnhancedStyle: false, // Use basic style to match original
-      iconSize: 20,
-      fontSize: 16,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    return GestureDetector(
+      onTap: () {
+        AudioManager().playButton();
+        widget.game.overlays.add('CoinStore');
+      },
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CoinsWidget(
+            coinsNotifier: widget.game.totalCoins,
+            useEnhancedStyle: false,
+            iconSize: 20,
+            fontSize: 16,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          ),
+          const SizedBox(width: 6),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: const LinearGradient(
+                colors: [Colors.amber, Colors.orange],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.amber.withValues(alpha: 0.4),
+                  blurRadius: 8,
+                ),
+              ],
+            ),
+            child: const Icon(Icons.add, color: Colors.white, size: 16),
+          ),
+        ],
+      ),
     );
   }
 
@@ -669,16 +699,89 @@ class ShopItemCard extends StatelessWidget {
           ),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppStrings.insufficientCredits.getString(context)),
-            backgroundColor: AppTheme.neonMagenta,
-            duration: const Duration(milliseconds: 1500),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+        _showInsufficientCreditsDialog(context);
       }
     }
+  }
+
+  void _showInsufficientCreditsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.primaryDark.withValues(alpha: 0.97),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: BorderSide(
+            color: Colors.amber.withValues(alpha: 0.5),
+            width: 1.5,
+          ),
+        ),
+        title: Row(
+          children: [
+            const Icon(
+              Icons.monetization_on_rounded,
+              color: Colors.amber,
+              size: 22,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              AppStrings.insufficientCredits.getString(context),
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              AppStrings.coinStoreSubtitle.getString(context),
+              style: const TextStyle(color: Colors.white70, fontSize: 13),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                  AudioManager().playButton();
+                  game.overlays.add('CoinStore');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.amber,
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                icon: const Icon(Icons.monetization_on_rounded, size: 18),
+                label: Text(
+                  AppStrings.getCoins.getString(context).toUpperCase(),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(
+              AppStrings.cancel.getString(context),
+              style: const TextStyle(color: Colors.white38),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

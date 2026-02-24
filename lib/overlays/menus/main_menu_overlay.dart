@@ -303,12 +303,56 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
   }
 
   Widget _buildCoinsDisplay() {
-    return CoinsWidget(
-      coinsNotifier: widget.game.totalCoins,
-      useEnhancedStyle: false, // Use basic style to match original
-      iconSize: 20,
-      fontSize: 16,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    return GestureDetector(
+      onTap: () {
+        AudioManager().playButton();
+        widget.game.overlays.add('CoinStore');
+      },
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CoinsWidget(
+            coinsNotifier: widget.game.totalCoins,
+            useEnhancedStyle: false,
+            iconSize: 20,
+            fontSize: 16,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          ),
+          const SizedBox(width: 6),
+          TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0.0, end: 1.0),
+            duration: const Duration(milliseconds: 800),
+            curve: Curves.elasticOut,
+            builder: (context, v, child) =>
+                Transform.scale(scale: v, child: child),
+            child: GestureDetector(
+              onTap: () {
+                AudioManager().playButton();
+                widget.game.overlays.add('CoinStore');
+              },
+              child: Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    colors: [Colors.amber, Colors.orange],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.amber.withValues(alpha: 0.5),
+                      blurRadius: 10,
+                    ),
+                  ],
+                ),
+                child: const Icon(Icons.add, color: Colors.white, size: 20),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

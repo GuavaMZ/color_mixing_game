@@ -7,7 +7,6 @@ import '../../helpers/audio_manager.dart';
 import '../../helpers/visual_effects.dart';
 import '../../components/ui/enhanced_button.dart';
 import '../../components/ui/animated_card.dart';
-import '../../components/ui/responsive_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 
@@ -370,40 +369,79 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
     if (stars == 2) coins = 50;
     if (stars == 1) coins = 20;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.amber.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: Colors.amber.withValues(alpha: 0.5),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(color: Colors.amber.withValues(alpha: 0.2), blurRadius: 10),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(
-            Icons.monetization_on_rounded,
-            color: Colors.amber,
-            size: 24,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            AppStrings.coinsEarned
-                .getString(context)
-                .replaceFirst('%s', coins.toString()),
-            style: AppTheme.buttonText(context).copyWith(
-              color: Colors.amberAccent,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
+    return TweenAnimationBuilder<int>(
+      tween: IntTween(begin: 0, end: coins),
+      duration: const Duration(milliseconds: 1200),
+      curve: Curves.easeOut,
+      builder: (context, value, child) {
+        return TweenAnimationBuilder<double>(
+          tween: Tween(begin: 0.8, end: 1.0),
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.elasticOut,
+          builder: (context, scale, _) {
+            return Transform.scale(
+              scale: scale,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.amber.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: Colors.amber.withValues(
+                      alpha: 0.3 + (value / coins) * 0.4,
+                    ),
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.amber.withValues(
+                        alpha: 0.1 + (value / coins) * 0.2,
+                      ),
+                      blurRadius: 10 + (value / coins) * 10,
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.monetization_on_rounded,
+                      color: Colors.amber,
+                      size: 24,
+                      shadows: [
+                        Shadow(
+                          color: Colors.amber.withValues(alpha: 0.6),
+                          blurRadius: 8,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      AppStrings.coinsEarned
+                          .getString(context)
+                          .replaceFirst('%s', '$value'),
+                      style: AppTheme.buttonText(context).copyWith(
+                        color: Colors.amberAccent,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        shadows: [
+                          Shadow(
+                            color: Colors.amber.withValues(alpha: 0.5),
+                            blurRadius: 8,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 

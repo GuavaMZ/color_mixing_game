@@ -353,6 +353,26 @@ mixin AppStrings {
   static const String step = "step";
   static const String of = "of";
 
+  // Coin Store
+  static const String coinStore = "coin_store";
+  static const String getCoins = "get_coins";
+  static const String buyNow = "buy_now";
+  static const String claimNow = "claim_now";
+  static const String mostPopular = "most_popular";
+  static const String bestValue = "best_value";
+  static const String oneTimeOffer = "one_time_offer";
+  static const String bonus = "bonus";
+  static const String purchaseSuccess = "purchase_success";
+  static const String alreadyClaimed = "already_claimed";
+  static const String alreadyClaimedDesc = "already_claimed_desc";
+  static const String restorePurchases = "restore_purchases";
+  static const String purchaseHistory = "purchase_history";
+  static const String noPurchasesYet = "no_purchases_yet";
+  static const String receiptVerified = "receipt_verified";
+  static const String coinsBonusText = "coins_bonus_text";
+  static const String enjoyYourCoins = "enjoy_your_coins";
+  static const String coinStoreSubtitle = "coin_store_subtitle";
+
   static const Map<String, dynamic> En = {
     // Colors
     redColor: 'Red',
@@ -708,6 +728,26 @@ mixin AppStrings {
     chaos: 'CHAOS',
     step: 'Step',
     of: 'of',
+
+    // Coin Store
+    coinStore: 'Coin Store',
+    getCoins: 'Get Coins',
+    buyNow: 'Buy Now',
+    claimNow: 'Claim!',
+    mostPopular: 'Most Popular',
+    bestValue: 'Best Value',
+    oneTimeOffer: 'One-Time Offer',
+    bonus: 'Bonus',
+    purchaseSuccess: 'Coins Credited!',
+    alreadyClaimed: 'Already Claimed',
+    alreadyClaimedDesc: 'You have already claimed this one-time offer.',
+    restorePurchases: 'View Purchase History',
+    purchaseHistory: 'Purchase History',
+    noPurchasesYet: 'No purchases yet.',
+    receiptVerified: 'Receipt Verified ✓',
+    coinsBonusText: 'Bonus coins included!',
+    enjoyYourCoins: 'Your coins have been added to your balance.',
+    coinStoreSubtitle: 'Coins unlock beakers, helpers & lab upgrades',
   };
 
   static const Map<String, dynamic> Ar = {
@@ -1065,6 +1105,26 @@ mixin AppStrings {
     extraDrops: 'قطرات إضافية',
     helpDrop: 'قطرة مساعدة',
     revealColor: 'كشف اللون',
+
+    // Coin Store
+    coinStore: 'متجر العملات',
+    getCoins: 'احصل على عملات',
+    buyNow: 'اشترِ الآن',
+    claimNow: 'احتسب!',
+    mostPopular: 'الأكثر شعبية',
+    bestValue: 'أفضل قيمة',
+    oneTimeOffer: 'عرض لمرة واحدة',
+    bonus: 'مكافأة',
+    purchaseSuccess: 'تم إضافة العملات!',
+    alreadyClaimed: 'تم الاستلام مسبقاً',
+    alreadyClaimedDesc: 'لقد استلمت هذا العرض من قبل.',
+    restorePurchases: 'سجل المشتريات',
+    purchaseHistory: 'سجل الشراء',
+    noPurchasesYet: 'لا توجد مشتريات بعد.',
+    receiptVerified: 'تم التحقق من الإيصال ✓',
+    coinsBonusText: 'عملات مكافأة مضمنة!',
+    enjoyYourCoins: 'تم إضافة عملاتك إلى رصيدك.',
+    coinStoreSubtitle: 'العملات تفتح الأكواب والمساعدات وترقيات المختبر',
   };
 
   static const Map<String, dynamic> Es = {

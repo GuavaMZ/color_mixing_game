@@ -618,7 +618,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       // The game has 'red', 'green', 'blue', 'white', 'black'. No explicit 'yellow' button mentioned in code?
       // RGB are primaries. Maybe user meant a specific button.
       // Assuming user meant "Red <-> Blue" swap for standard inversion.
-      // If "yellow" refers to something eI'll stick to Red/Blue swap for max confusion.
+      // If "yellow" refers to something else, I'll stick to Red/Blue swap for max confusion.
     }
 
     Color dropColor;

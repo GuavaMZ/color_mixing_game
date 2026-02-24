@@ -20,6 +20,7 @@ import 'package:color_mixing_deductive/overlays/menus/echo_game_over_overlay.dar
 import 'package:color_mixing_deductive/overlays/menus/chaos_win_overlay.dart';
 import 'package:color_mixing_deductive/overlays/menus/chaos_game_over_overlay.dart';
 import 'package:color_mixing_deductive/helpers/string_manager.dart';
+import 'package:color_mixing_deductive/overlays/navigation/coin_store_overlay.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -160,6 +161,7 @@ class _MyAppState extends State<MyApp> {
             'ChaosWin': (context, game) => ChaosWinOverlay(game: game),
             'ChaosGameOver': (context, game) =>
                 ChaosGameOverOverlay(game: game),
+            'CoinStore': (context, game) => CoinStoreOverlay(game: game),
           },
           initialActiveOverlays: const ['MainMenu', 'Transition'],
           loadingBuilder: (context) => Container(

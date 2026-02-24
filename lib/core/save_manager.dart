@@ -396,4 +396,27 @@ class SaveManager {
     }
     return [];
   }
+
+  // ─── Purchase History (IAP) ───────────────────────────────────────────────
+  static const String _purchaseHistoryKey = 'iap_purchase_history';
+
+  static Future<void> savePurchaseHistory(
+    List<Map<String, dynamic>> history,
+  ) async {
+    await SecurityService.write(_purchaseHistoryKey, jsonEncode(history));
+  }
+
+  static Future<List<Map<String, dynamic>>> loadPurchaseHistory() async {
+    final data = await SecurityService.read(_purchaseHistoryKey);
+    if (data != null) {
+      try {
+        final List<dynamic> decoded = jsonDecode(data);
+        return decoded.cast<Map<String, dynamic>>();
+      } catch (e) {
+        print('Error parsing purchase history: $e');
+        return [];
+      }
+    }
+    return [];
+  }
 }
