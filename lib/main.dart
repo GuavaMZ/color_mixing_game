@@ -29,6 +29,7 @@ import 'package:color_mixing_deductive/overlays/system/loading_overlay.dart';
 import 'package:color_mixing_deductive/overlays/system/statistics_overlay.dart';
 import 'package:color_mixing_deductive/overlays/navigation/daily_challenge_overlay.dart';
 import 'package:color_mixing_deductive/overlays/menus/daily_login_overlay.dart';
+import 'package:color_mixing_deductive/overlays/menus/mode_guide_overlay.dart';
 import 'package:color_mixing_deductive/overlays/system/blackout_overlay.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:color_mixing_deductive/core/ad_manager.dart';
@@ -162,6 +163,7 @@ class _MyAppState extends State<MyApp> {
             'ChaosGameOver': (context, game) =>
                 ChaosGameOverOverlay(game: game),
             'CoinStore': (context, game) => CoinStoreOverlay(game: game),
+            'ModeGuide': (context, game) => ModeGuideOverlay(game: game),
           },
           initialActiveOverlays: const ['MainMenu', 'Transition'],
           loadingBuilder: (context) => Container(

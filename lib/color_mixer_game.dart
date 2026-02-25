@@ -334,7 +334,25 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       // When offset reaches one full drop's volume, remove a logical drop
       if (_evaporationVisualOffset >= 1.0) {
         _evaporationVisualOffset -= 1.0;
-        if (totalDrops.value > 0) {
+        if (dropHistory.isNotEmpty) {
+          final evaporatedDrop = dropHistory.removeAt(0);
+          if (evaporatedDrop == 'red' && rDrops > 0) {
+            rDrops--;
+          } else if (evaporatedDrop == 'green' && gDrops > 0) {
+            gDrops--;
+          } else if (evaporatedDrop == 'blue' && bDrops > 0) {
+            bDrops--;
+          } else if (evaporatedDrop == 'white' && whiteDrops > 0) {
+            whiteDrops--;
+          } else if (evaporatedDrop == 'black' && blackDrops > 0) {
+            blackDrops--;
+          }
+
+          _audio.playSteam(); // Sound effect
+          if (dropHistory.isEmpty) {
+            _handleGameOver();
+          }
+        } else if (totalDrops.value > 0) {
           if (rDrops > 0) {
             rDrops--;
           } else if (gDrops > 0) {
@@ -348,7 +366,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
           }
 
           _audio.playSteam(); // Sound effect
-          if (totalDrops.value == 0) {
+          if (rDrops + gDrops + bDrops + whiteDrops + blackDrops == 0) {
             _handleGameOver();
           }
         }
@@ -599,7 +617,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
   List<String> dropHistory = [];
 
-  void addDrop(String colorType) {
+  void addDrop(String colorType, {bool ignoreInversion = false}) {
     if (_hasWon) return;
     if (rDrops + gDrops + bDrops + whiteDrops + blackDrops >= maxDrops) {
       dropsLimitReached.value = true;
@@ -607,12 +625,11 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     }
 
     _audio.playDrop();
-    dropHistory.add(colorType);
 
     // Map colorType to actual Color
     // Handle Inverse Controls
     String effectiveColorType = colorType;
-    if (isControlsInverted) {
+    if (isControlsInverted && !ignoreInversion) {
       if (colorType == 'red') {
         effectiveColorType = 'blue';
       } else if (colorType == 'blue')
@@ -625,6 +642,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       // Assuming user meant "Red <-> Blue" swap for standard inversion.
       // If "yellow" refers to something else, I'll stick to Red/Blue swap for max confusion.
     }
+
+    dropHistory.add(effectiveColorType);
 
     Color dropColor;
     if (effectiveColorType == 'red') {
@@ -765,7 +784,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
     if (colorToDrop != null) {
       if (!useHelper('help_drop')) return;
-      addDrop(colorToDrop);
+      addDrop(colorToDrop, ignoreInversion: true);
     } else {
       // Recipe is effectively fulfilled by current counts (or over-fulfilled).
       // If we are not winning, maybe we have extra drops of other colors?
@@ -878,11 +897,16 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       // Let's just reduce the visual level if we want it to be simple,
       // but for "Next Level", it should actually set the player back.
       double factor = amount / beaker.liquidLevel;
+      if (factor > 1.0) factor = 1.0;
+      if (factor < 0.0) factor = 0.0;
+
       rDrops = (rDrops * (1 - factor)).toInt();
       gDrops = (gDrops * (1 - factor)).toInt();
       bDrops = (bDrops * (1 - factor)).toInt();
       whiteDrops = (whiteDrops * (1 - factor)).toInt();
       blackDrops = (blackDrops * (1 - factor)).toInt();
+
+      dropHistory.clear(); // Cannot cleanly undo part of drops
 
       _updateGameState();
     }

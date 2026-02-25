@@ -50,7 +50,8 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
   }
 
   void _selectLevel(int index) {
-    final status = widget.game.levelManager.levelStars[index] ?? -1;
+    final levelId = widget.game.levelManager.levels[index].id;
+    final status = widget.game.levelManager.levelStars[levelId] ?? -1;
     if (status == -1) return; // Locked
 
     if (LivesManager().lives <= 0) {
@@ -312,11 +313,15 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
                               ),
                           itemCount: levels.length,
                           itemBuilder: (context, index) {
+                            final levelId = levels[index].id;
                             return _LevelCard(
                               index: index,
                               level: levels[index],
                               stars:
-                                  widget.game.levelManager.levelStars[index] ??
+                                  widget
+                                      .game
+                                      .levelManager
+                                      .levelStars[levelId] ??
                                   -1,
                               onTap: () => _selectLevel(index),
                               delay: index * 50,

@@ -203,6 +203,12 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                 onTap: () => _navTo('LabUpgrade'),
                 delay: 600,
               ),
+              _buildUtilButton(
+                icon: Icons.help_outline_rounded,
+                tooltip: AppStrings.modeGuidesTitle.getString(context),
+                onTap: () => _navTo('ModeGuide'),
+                delay: 600,
+              ),
             ],
           ),
         ),
@@ -452,8 +458,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
           gradient: AppTheme.primaryGradient,
           onTap: () {
             AudioManager().playButton();
-            widget.game.currentMode = GameMode.classic;
-            widget.game.transitionTo('MainMenu', 'LevelMap');
+            widget.game.selectModeAndStart(GameMode.classic);
           },
           delay: 0,
         ),
@@ -491,9 +496,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
           gradient: AppTheme.secondaryGradient,
           onTap: () {
             AudioManager().playButton();
-            widget.game.currentMode = GameMode.timeAttack;
-            widget.game.timeLeft = 30.0;
-            widget.game.transitionTo('MainMenu', 'LevelMap');
+            widget.game.selectModeAndStart(GameMode.timeAttack);
           },
           delay: 200,
         ),

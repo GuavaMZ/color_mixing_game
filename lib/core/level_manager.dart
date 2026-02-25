@@ -23,8 +23,8 @@ class LevelManager {
     timeAttackLevels = _generateTimeAttackLevels(100);
 
     // Default initialization (will be overwritten by initProgress)
-    for (int i = 0; i < 100; i++) {
-      timeAttackLevelStars[i] = i == 0 ? 0 : -1;
+    for (int i = 1; i <= 100; i++) {
+      timeAttackLevelStars[i] = i == 1 ? 0 : -1;
     }
   }
 
@@ -93,8 +93,8 @@ class LevelManager {
     if (classicLevelStars.containsKey(0) && !classicLevelStars.containsKey(1)) {
       classicLevelStars[1] = classicLevelStars[0]!;
     }
-    if (timeAttackLevelStars.isEmpty || (timeAttackLevelStars[0] ?? -1) == -1) {
-      timeAttackLevelStars[0] = 0;
+    if (timeAttackLevelStars.isEmpty || (timeAttackLevelStars[1] ?? -1) == -1) {
+      timeAttackLevelStars[1] = 0;
     }
   }
 

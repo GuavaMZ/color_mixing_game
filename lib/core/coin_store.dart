@@ -306,11 +306,14 @@ class CoinStoreService {
             await _storeReceipt(receipt);
             await _appendToHistory(bundle, bundle.coins);
 
-            // Award coins directly here, so it works even if UI is closed!
+            // Award coins independently of the game UI instance so they aren't lost in background
+            final int currentCoins = await SaveManager.loadTotalCoins();
+            final int newBalance = currentCoins + bundle.coins;
+            await SaveManager.saveTotalCoins(newBalance);
+
+            // Update UI if attached
             if (_game != null) {
-              final int newBalance = _game!.totalCoins.value + bundle.coins;
               _game!.totalCoins.value = newBalance;
-              await SaveManager.saveTotalCoins(newBalance);
             }
 
             _purchaseResultController.add(

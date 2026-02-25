@@ -332,6 +332,20 @@ mixin AppStrings {
   static const String error = "error";
   static const String success = "success";
   static const String jackpot = "jackpot";
+  static const String dailyLoginTitle = "daily_login_title";
+  static const String dailyLoginSubtitle = "daily_login_subtitle";
+  static const String claimDay = "claim_day";
+  static const String comeBackTomorrow = "come_back_tomorrow";
+  static const String dayLabel = "day_label";
+  static const String modeGuidesTitle = "mode_guides_title";
+  static const String classicGuideTitle = "classic_guide_title";
+  static const String classicGuideDesc = "classic_guide_desc";
+  static const String timeAttackGuideTitle = "time_attack_guide_title";
+  static const String timeAttackGuideDesc = "time_attack_guide_desc";
+  static const String colorEchoGuideTitle = "color_echo_guide_title";
+  static const String colorEchoGuideDesc = "color_echo_guide_desc";
+  static const String chaosLabGuideTitle = "chaos_lab_guide_title";
+  static const String chaosLabGuideDesc = "chaos_lab_guide_desc";
 
   static const String tip1 = "tip1";
   static const String tip2 = "tip2";
@@ -748,6 +762,25 @@ mixin AppStrings {
     coinsBonusText: 'Bonus coins included!',
     enjoyYourCoins: 'Your coins have been added to your balance.',
     coinStoreSubtitle: 'Coins unlock beakers, helpers & lab upgrades',
+
+    dailyLoginTitle: 'DAILY LOGIN',
+    dailyLoginSubtitle: 'Come back every day for better rewards!',
+    claimDay: 'CLAIM DAY %s',
+    comeBackTomorrow: 'COME BACK TOMORROW',
+    dayLabel: 'DAY %s',
+    modeGuidesTitle: 'MODE GUIDES',
+    classicGuideTitle: 'CLASSIC MODE',
+    classicGuideDesc:
+        'Mix colors to match the target within drop limits. High accuracy earns more stars and coins.',
+    timeAttackGuideTitle: 'TIME ATTACK',
+    timeAttackGuideDesc:
+        'Race against the clock! Fast mixes add time. See how many levels you can survive.',
+    colorEchoGuideTitle: 'COLOR ECHO',
+    colorEchoGuideDesc:
+        'The target color appears and vanishes. Memorize it and sync your mix to the phantom signal.',
+    chaosLabGuideTitle: 'CHAOS LAB',
+    chaosLabGuideDesc:
+        'Unstable conditions! Random events like Inversion and Evaporation occur every 15s. Adapt or fail.',
   };
 
   static const Map<String, dynamic> Ar = {
@@ -1125,6 +1158,25 @@ mixin AppStrings {
     coinsBonusText: 'عملات مكافأة مضمنة!',
     enjoyYourCoins: 'تم إضافة عملاتك إلى رصيدك.',
     coinStoreSubtitle: 'العملات تفتح الأكواب والمساعدات وترقيات المختبر',
+
+    dailyLoginTitle: 'مكافأة الدخول',
+    dailyLoginSubtitle: 'عد كل يوم للحصول على مكافآت أفضل!',
+    claimDay: 'استلم اليوم %s',
+    comeBackTomorrow: 'عد غداً',
+    dayLabel: 'اليوم %s',
+    modeGuidesTitle: 'دليل الأوضاع',
+    classicGuideTitle: 'الوضع الكلاسيكي',
+    classicGuideDesc:
+        'امزج الألوان لمطابقة الهدف ضمن حدود القطرات. الدقة العالية تمنحك المزيد من النجوم والعملات.',
+    timeAttackGuideTitle: 'هجوم الوقت',
+    timeAttackGuideDesc:
+        'سابق الزمن! المزج السريع يضيف وقتاً. انظر كم عدد المستويات التي يمكنك النجاة فيها.',
+    colorEchoGuideTitle: 'صدى الألوان',
+    colorEchoGuideDesc:
+        'يظهر لون الهدف ويختفي. احفظه ومزامنة مزيجك مع الإشارة الوهمية.',
+    chaosLabGuideTitle: 'مختبر الفوضى',
+    chaosLabGuideDesc:
+        'ظروف غير مستقرة! تحدث أحداث عشوائية مثل الانعكاس والتبخر كل 15 ثانية. تكيف أو افشل.',
   };
 
   static const Map<String, dynamic> Es = {
@@ -1491,6 +1543,25 @@ mixin AppStrings {
     extraDrops: 'Gotas Extra',
     helpDrop: 'Gotas de Ayuda',
     revealColor: 'Revelar Color',
+
+    dailyLoginTitle: 'LOGIN DIARIO',
+    dailyLoginSubtitle: '¡Vuelve cada día para obtener mejores recompensas!',
+    claimDay: 'RECLAMAR DÍA %s',
+    comeBackTomorrow: 'VUELVE MAÑANA',
+    dayLabel: 'DÍA %s',
+    modeGuidesTitle: 'GUÍAS DE MODO',
+    classicGuideTitle: 'MODO CLÁSICO',
+    classicGuideDesc:
+        'Mezcla colores para coincidir con el objetivo dentro de los límites de gotas. La alta precisión otorga más estrellas y monedas.',
+    timeAttackGuideTitle: 'ATAQUE DE TIEMPO',
+    timeAttackGuideDesc:
+        '¡Carrera contra el reloj! Las mezclas rápidas añaden tiempo. Mira cuántos niveles puedes sobrevivir.',
+    colorEchoGuideTitle: 'ECO DE COLOR',
+    colorEchoGuideDesc:
+        'El color objetivo aparece y desaparece. Memorízalo y sincroniza tu mezcla con la señal fantasma.',
+    chaosLabGuideTitle: 'LABORATORIO DEL CAOS',
+    chaosLabGuideDesc:
+        '¡Condiciones inestables! Eventos aleatorios como Inversión y Evaporación ocurren cada 15s. Adáptate o falla.',
   };
 
   static const Map<String, dynamic> Fr = {
@@ -1853,7 +1924,26 @@ mixin AppStrings {
     colorButtons: 'Boutons de Couleur',
     undo: 'Annuler',
     extraDrops: 'Gouttes Supplémentaires',
-    helpDrop: 'Goutte d\'Aide',
-    revealColor: 'Révéler la Couleur',
+    helpDrop: "Goutte d'Aide",
+    revealColor: "Révéler la Couleur",
+
+    dailyLoginTitle: "RECONN. QUOTID.",
+    dailyLoginSubtitle: "Revenez chaque jour pour de meilleures récompenses !",
+    claimDay: "RÉCUPÉRER JOUR %s",
+    comeBackTomorrow: "REVIENS DEMAIN",
+    dayLabel: "JOUR %s",
+    modeGuidesTitle: "GUIDES DES MODES",
+    classicGuideTitle: "MODE CLASSIQUE",
+    classicGuideDesc:
+        "Mélangez les couleurs pour correspondre à la cible dans la limite des gouttes. Une précision élevée rapporte plus d'étoiles et de pièces.",
+    timeAttackGuideTitle: "CONTRE LA MONTRE",
+    timeAttackGuideDesc:
+        "Course contre la montre ! Les mélanges rapides ajoutent du temps. Voyez à combien de niveaux vous pouvez survivre.",
+    colorEchoGuideTitle: "ÉCHO DE COULEUR",
+    colorEchoGuideDesc:
+        "La couleur cible apparaît et disparaît. Mémorisez-la et synchronisez votre mélange au signal fantôme.",
+    chaosLabGuideTitle: "LABO DU CHAOS",
+    chaosLabGuideDesc:
+        "Conditions instables ! Des événements aléatoires comme l'Inversion et l'Évaporation se produisent toutes les 15s. Adaptez-vous ou échouez.",
   };
 }

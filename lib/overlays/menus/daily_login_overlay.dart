@@ -4,6 +4,8 @@ import 'package:color_mixing_deductive/helpers/audio_manager.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
 import 'package:color_mixing_deductive/components/ui/animated_card.dart';
 import 'package:color_mixing_deductive/components/ui/enhanced_button.dart';
+import 'package:flutter_localization/flutter_localization.dart';
+import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:color_mixing_deductive/helpers/daily_login_manager.dart';
 
 class DailyLoginOverlay extends StatefulWidget {
@@ -43,10 +45,14 @@ class _DailyLoginOverlayState extends State<DailyLoginOverlay> {
     if (!_canClaim) return;
     AudioManager().playButton();
 
-    await DailyLoginManager.claimToday();
+    final rewarded = await DailyLoginManager.claimToday();
 
     // Update local state to reflect claimed status visually
     if (mounted) {
+      if (rewarded > 0) {
+        widget.game.totalCoins.value += rewarded;
+      }
+
       setState(() {
         _canClaim = false;
         // Keep _currentStreak the same so it shows as 'claimed' for today
@@ -84,7 +90,7 @@ class _DailyLoginOverlayState extends State<DailyLoginOverlay> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "DAILY LOGIN", // TODO: AppStrings.dailyLoginTitle
+                          AppStrings.dailyLoginTitle.getString(context),
                           style: AppTheme.heading2(
                             context,
                           ).copyWith(color: Colors.white, fontSize: 24),
@@ -103,7 +109,7 @@ class _DailyLoginOverlayState extends State<DailyLoginOverlay> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      "Come back every day for better rewards!", // TODO: Localization
+                      AppStrings.dailyLoginSubtitle.getString(context),
                       style: AppTheme.bodyMedium(
                         context,
                       ).copyWith(color: Colors.white60),
@@ -121,8 +127,10 @@ class _DailyLoginOverlayState extends State<DailyLoginOverlay> {
                       width: double.infinity,
                       child: EnhancedButton(
                         label: _canClaim
-                            ? "CLAIM DAY $_currentStreak"
-                            : "COME BACK TOMORROW",
+                            ? AppStrings.claimDay
+                                  .getString(context)
+                                  .replaceFirst('%s', '$_currentStreak')
+                            : AppStrings.comeBackTomorrow.getString(context),
                         icon: _canClaim
                             ? Icons.redeem_rounded
                             : Icons.check_circle_rounded,
@@ -219,7 +227,7 @@ class _DailyLoginOverlayState extends State<DailyLoginOverlay> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            "DAY $day",
+            AppStrings.dayLabel.getString(context).replaceFirst('%s', '$day'),
             style: TextStyle(
               color: textColor,
               fontWeight: FontWeight.bold,

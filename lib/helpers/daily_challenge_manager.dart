@@ -20,11 +20,12 @@ class DailyChallengeManager {
   /// Check if today's challenge is completed
   static Future<bool> isTodayCompleted() async {
     final prefs = await SharedPreferences.getInstance();
-    final lastDate = prefs.getString(_lastChallengeKey);
-    final completed = prefs.getBool(_completedTodayKey) ?? false;
+    final lastCompletedDate = prefs.getString(
+      _completedTodayKey,
+    ); // Stored as date now
     final today = _getTodayString();
 
-    return lastDate == today && completed;
+    return lastCompletedDate == today;
   }
 
   /// Get current streak
@@ -51,7 +52,7 @@ class DailyChallengeManager {
     final challenge = _generateChallenge();
     await prefs.setString(_currentChallengeKey, challenge.toJson());
     await prefs.setString(_lastChallengeKey, today);
-    await prefs.setBool(_completedTodayKey, false);
+    // Remove the old boolean false, we now use it as a date string when completed
 
     return challenge;
   }
@@ -60,19 +61,22 @@ class DailyChallengeManager {
   static Future<void> completeChallenge() async {
     final prefs = await SharedPreferences.getInstance();
     final today = _getTodayString();
-    final lastDate = prefs.getString(_lastChallengeKey);
+    final lastCompletedDate = prefs.getString(_completedTodayKey);
+
+    // Already completed today
+    if (lastCompletedDate == today) return;
 
     // Update streak
     int streak = prefs.getInt(_streakKey) ?? 0;
-    if (lastDate == _getYesterdayString()) {
+    if (lastCompletedDate == _getYesterdayString()) {
       streak++;
-    } else if (lastDate != today) {
-      streak = 1;
+    } else {
+      streak = 1; // It was neither yesterday nor today, so broke streak.
     }
 
     await prefs.setInt(_streakKey, streak);
-    await prefs.setBool(_completedTodayKey, true);
-    await prefs.setString(_lastChallengeKey, today);
+    // Mark completed today by storing the date
+    await prefs.setString(_completedTodayKey, today);
   }
 
   static DailyChallenge _generateChallenge() {

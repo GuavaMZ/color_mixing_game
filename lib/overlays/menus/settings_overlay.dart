@@ -211,17 +211,17 @@ class _SettingsOverlayState extends State<SettingsOverlay>
       return;
     }
 
-    if (code == 'totymz') {
+    if (code == 'lifesmzcmp080799') {
       LivesManager().addLives(3);
-      await SaveManager.markCodeAsRedeemed('totymz');
+      // await SaveManager.markCodeAsRedeemed('totymz');
       _audio.playWin();
       _showResultDialog(
         AppStrings.success.getString(context),
         AppStrings.codeRedeemedLives.getString(context),
       );
-    } else if (code == 'richie') {
+    } else if (code == 'richiemzcmp080799') {
       widget.game.addCoins(99999);
-      await SaveManager.markCodeAsRedeemed('richie');
+      // await SaveManager.markCodeAsRedeemed('richie');
       _audio.playWin();
       _showResultDialog(
         AppStrings.jackpot.getString(context),

@@ -81,9 +81,9 @@ class DailyLoginManager {
   }
 
   /// Claims today's reward, updates the streak, and awards the coins.
-  static Future<void> claimToday() async {
+  static Future<int> claimToday() async {
     if (!(await canClaimToday())) {
-      return; // Already claimed or not eligible
+      return 0; // Already claimed or not eligible
     }
 
     final prefs = await SharedPreferences.getInstance();
@@ -99,6 +99,8 @@ class DailyLoginManager {
     await prefs.setString(_lastLoginKey, today);
     await prefs.setInt(_loginStreakKey, streakToClaim);
     await prefs.setBool(_claimedTodayKey, true);
+
+    return rewardCoins;
   }
 
   static String _getTodayString() {
