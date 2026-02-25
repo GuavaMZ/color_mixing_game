@@ -212,6 +212,11 @@ mixin AppStrings {
   static const String tintedCategory = "tinted_category";
   static const String shadedCategory = "shaded_category";
   static const String complexCategory = "complex_category";
+  static const String searchSamples = "search_samples";
+  static const String progressLabel = "progress_label";
+  static const String copiedToClipboard = "copied_to_clipboard";
+  static const String complementaryColors = "complementary_colors";
+  static const String analogousColors = "analogous_colors";
   static const String analysisReport = "analysis_report";
   static const String synthesisFormula = "synthesis_formula";
 
@@ -611,6 +616,11 @@ mixin AppStrings {
     tintedCategory: 'Tinted',
     shadedCategory: 'Shaded',
     complexCategory: 'Complex',
+    searchSamples: "SEARCH DATABASE...",
+    progressLabel: "COMPLETION",
+    copiedToClipboard: "SYSTEM: DATA COPIED TO CLIPBOARD",
+    complementaryColors: "COMPLEMENTARY DATA",
+    analogousColors: "ANALOGOUS SEQUENCES",
     analysisReport: 'ANALYSIS REPORT',
     synthesisFormula: 'SYNTHESIS FORMULA',
 
@@ -1001,8 +1011,13 @@ mixin AppStrings {
     tintedCategory: 'فاتح',
     shadedCategory: 'مظلل',
     complexCategory: 'معقد',
+    searchSamples: "البحث في القاعدة...",
+    progressLabel: "اكتمل بنسبة",
+    copiedToClipboard: "تم نسخ البيانات",
+    complementaryColors: "الألوان المكملة",
+    analogousColors: "الألوان المتماثلة",
     analysisReport: 'تقرير التحليل',
-    synthesisFormula: 'تركيبة التصنيع',
+    synthesisFormula: 'صيغة التوليف',
 
     // Daily Challenge
     dayStreak: 'سلسلة أيام',

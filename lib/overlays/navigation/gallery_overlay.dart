@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:color_mixing_deductive/color_mixer_game.dart';
 import 'package:color_mixing_deductive/core/color_entry.dart';
@@ -29,6 +30,8 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
   String selectedCategory = 'All';
   SortOption currentSort = SortOption.id;
   int completedLevels = 0;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
   final List<String> categories = [
     'All',
@@ -44,6 +47,17 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
   void initState() {
     super.initState();
     _loadData();
+    _searchController.addListener(() {
+      setState(() {
+        _searchQuery = _searchController.text.toLowerCase();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadData() async {
@@ -124,7 +138,6 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
         break;
       case SortOption.brightness:
         filtered.sort((a, b) {
-          // Sort Dark -> Light
           double lumA = a.color.computeLuminance();
           double lumB = b.color.computeLuminance();
           return lumA.compareTo(lumB);
@@ -139,7 +152,50 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
         break;
     }
 
+    // 3. Search
+    if (_searchQuery.isNotEmpty) {
+      filtered = filtered
+          .where(
+            (c) =>
+                c.name.toLowerCase().contains(_searchQuery) ||
+                c.hexCode.toLowerCase().contains(_searchQuery),
+          )
+          .toList();
+    }
+
     return filtered;
+  }
+
+  double _calculateCategoryProgress(String category) {
+    List<ColorEntry> categoryColors;
+    if (category == 'All') {
+      categoryColors = allColors;
+    } else {
+      categoryColors = allColors
+          .where((c) => c.category.toLowerCase() == category.toLowerCase())
+          .toList();
+    }
+
+    if (categoryColors.isEmpty) return 0.0;
+
+    int unlocked = categoryColors
+        .where((c) => discoveredColors.contains(c.id))
+        .length;
+    return unlocked / categoryColors.length;
+  }
+
+  Color _getComplementaryColor(Color color) {
+    final hsv = HSVColor.fromColor(color);
+    final complementaryHue = (hsv.hue + 180) % 360;
+    return hsv.withHue(complementaryHue).toColor();
+  }
+
+  List<Color> _getAnalogousColors(Color color) {
+    final hsv = HSVColor.fromColor(color);
+    return [
+      hsv.withHue((hsv.hue - 30) % 360).toColor(),
+      hsv.withHue((hsv.hue + 30) % 360).toColor(),
+    ];
   }
 
   @override
@@ -156,6 +212,14 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
           // StarField Background
           const Positioned.fill(
             child: StarField(starCount: 60, color: Colors.white),
+          ),
+
+          // Scientific Grid
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.1,
+              child: CustomPaint(painter: _GridPainter()),
+            ),
           ),
 
           Positioned.fill(
@@ -243,23 +307,86 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
                         ),
                         const SizedBox(height: 12),
 
-                        // Category Tabs
-                        SizedBox(
-                          height: 40,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: categories.length,
-                            itemBuilder: (context, index) {
-                              final category = categories[index];
-                              final isSelected = category == selectedCategory;
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 8),
-                                child: _buildCategoryTab(category, isSelected),
-                              );
-                            },
-                          ),
+                        // Category Tabs and Progress
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: 40,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: categories.length,
+                                itemBuilder: (context, index) {
+                                  final category = categories[index];
+                                  final isSelected =
+                                      category == selectedCategory;
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 8),
+                                    child: _buildCategoryTab(
+                                      category,
+                                      isSelected,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            // Progress Bar for current category
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(4),
+                              child: LinearProgressIndicator(
+                                value: _calculateCategoryProgress(
+                                  selectedCategory,
+                                ),
+                                backgroundColor: Colors.white.withValues(
+                                  alpha: 0.1,
+                                ),
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppTheme.neonCyan.withValues(alpha: 0.5),
+                                ),
+                                minHeight: 4,
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 16),
+
+                        // Search Bar
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: AppTheme.cosmicGlass(
+                            borderRadius: 12,
+                            borderColor: AppTheme.neonCyan.withValues(
+                              alpha: 0.2,
+                            ),
+                          ),
+                          child: TextField(
+                            controller: _searchController,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
+                            decoration: InputDecoration(
+                              hintText: AppStrings.searchSamples.getString(
+                                context,
+                              ),
+                              hintStyle: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.3),
+                                fontSize: 13,
+                              ),
+                              prefixIcon: Icon(
+                                Icons.search_rounded,
+                                color: AppTheme.neonCyan.withValues(alpha: 0.5),
+                                size: 20,
+                              ),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                            ),
+                          ),
+                        ),
 
                         // Color Grid
                         Expanded(
@@ -447,14 +574,42 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // --- Lab Report Header ---
-                    Text(
-                      AppStrings.analysisReport.getString(context),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        color: Colors.white54,
-                        fontSize: 10,
-                        letterSpacing: 3,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          AppStrings.analysisReport.getString(context),
+                          style: const TextStyle(
+                            color: Colors.white54,
+                            fontSize: 10,
+                            letterSpacing: 2,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Clipboard.setData(
+                              ClipboardData(text: color.hexCode),
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  AppStrings.copiedToClipboard.getString(
+                                    context,
+                                  ),
+                                ),
+                                backgroundColor: AppTheme.primaryMedium,
+                                duration: const Duration(seconds: 1),
+                              ),
+                            );
+                            AudioManager().playButton();
+                          },
+                          child: Icon(
+                            Icons.copy_all_rounded,
+                            color: AppTheme.neonCyan.withValues(alpha: 0.5),
+                            size: 18,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 16),
 
@@ -563,6 +718,64 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
                         ),
                       ],
                     ),
+
+                    // --- Color Suggestions ---
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                AppStrings.complementaryColors.getString(
+                                  context,
+                                ),
+                                style: const TextStyle(
+                                  color: Colors.white38,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              _buildColorCircle(
+                                _getComplementaryColor(color.color),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                AppStrings.analogousColors.getString(context),
+                                style: const TextStyle(
+                                  color: Colors.white38,
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: _getAnalogousColors(color.color)
+                                    .map(
+                                      (c) => Padding(
+                                        padding: const EdgeInsets.only(
+                                          right: 8,
+                                        ),
+                                        child: _buildColorCircle(c),
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 24),
 
                     // --- Formula ---
@@ -633,6 +846,19 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildColorCircle(Color c) {
+    return Container(
+      width: 24,
+      height: 24,
+      decoration: BoxDecoration(
+        color: c,
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white24, width: 1.5),
+        boxShadow: [BoxShadow(color: c.withValues(alpha: 0.3), blurRadius: 4)],
       ),
     );
   }
@@ -716,6 +942,26 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
   }
 }
 
+class _GridPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.2)
+      ..strokeWidth = 0.5;
+
+    const spacing = 40.0;
+    for (double i = 0; i < size.width; i += spacing) {
+      canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
+    }
+    for (double i = 0; i < size.height; i += spacing) {
+      canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
 class _ColorNode extends StatefulWidget {
   final ColorEntry color;
   final bool isUnlocked;
@@ -737,22 +983,45 @@ class _ColorNodeState extends State<_ColorNode>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
+  late Animation<double> _pulseAnimation;
+  bool isRare = false;
 
   @override
   void initState() {
     super.initState();
+    isRare = widget.color.category.toLowerCase() == 'complex';
+
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
 
-    _scaleAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOutBack,
+    _scaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.4, curve: Curves.easeOutBack),
+      ),
     );
 
+    _pulseAnimation =
+        TweenSequence<double>([
+          TweenSequenceItem(tween: Tween(begin: 1.0, end: 1.05), weight: 50),
+          TweenSequenceItem(tween: Tween(begin: 1.05, end: 1.0), weight: 50),
+        ]).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: const Interval(0.4, 1.0, curve: Curves.easeInOut),
+          ),
+        );
+
     Future.delayed(Duration(milliseconds: widget.delay), () {
-      if (mounted) _controller.forward();
+      if (mounted) {
+        if (isRare && widget.isUnlocked) {
+          _controller.repeat(reverse: true);
+        } else {
+          _controller.forward();
+        }
+      }
     });
   }
 
@@ -764,46 +1033,59 @@ class _ColorNodeState extends State<_ColorNode>
 
   @override
   Widget build(BuildContext context) {
-    return ScaleTransition(
-      scale: _scaleAnimation,
-      child: GestureDetector(
-        onTap: widget.onTap,
-        child: Hero(
-          tag: 'color_${widget.color.id}',
-          child: Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: widget.isUnlocked
-                  ? widget.color.color
-                  : Colors.white.withValues(alpha: 0.05),
-              border: Border.all(
-                color: widget.isUnlocked
-                    ? Colors.white.withValues(alpha: 0.5)
-                    : Colors.white.withValues(alpha: 0.1),
-                width: 2,
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: _scaleAnimation.value * _pulseAnimation.value,
+          child: GestureDetector(
+            onTap: widget.onTap,
+            child: Hero(
+              tag: 'color_${widget.color.id}',
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: widget.isUnlocked
+                      ? widget.color.color
+                      : Colors.white.withValues(alpha: 0.05),
+                  border: Border.all(
+                    color: widget.isUnlocked
+                        ? Colors.white.withValues(alpha: isRare ? 0.8 : 0.5)
+                        : Colors.white.withValues(alpha: 0.1),
+                    width: isRare && widget.isUnlocked ? 3 : 2,
+                  ),
+                  boxShadow: widget.isUnlocked
+                      ? [
+                          BoxShadow(
+                            color: widget.color.color.withValues(
+                              alpha: isRare ? 0.8 : 0.6,
+                            ),
+                            blurRadius: isRare ? 15 : 12,
+                            spreadRadius: isRare ? 4 : 2,
+                          ),
+                        ]
+                      : [],
+                ),
+                child: Center(
+                  child: widget.isUnlocked
+                      ? (isRare
+                            ? const Icon(
+                                Icons.star_rounded,
+                                color: Colors.white,
+                                size: 12,
+                              )
+                            : null)
+                      : Icon(
+                          Icons.lock_rounded,
+                          color: Colors.white.withValues(alpha: 0.2),
+                          size: 16,
+                        ),
+                ),
               ),
-              boxShadow: widget.isUnlocked
-                  ? [
-                      BoxShadow(
-                        color: widget.color.color.withValues(alpha: 0.6),
-                        blurRadius: 12,
-                        spreadRadius: 2,
-                      ),
-                    ]
-                  : [],
-            ),
-            child: Center(
-              child: widget.isUnlocked
-                  ? null
-                  : Icon(
-                      Icons.lock_rounded,
-                      color: Colors.white.withValues(alpha: 0.2),
-                      size: 16,
-                    ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
