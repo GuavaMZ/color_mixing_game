@@ -50,8 +50,9 @@ class AmbientParticles extends Component with HasGameReference<ColorMixerGame> {
   void update(double dt) {
     super.update(dt);
 
+    final effectiveDt = game.reducedMotionEnabled ? dt * 0.1 : dt;
     for (var bubble in bubbles) {
-      bubble.update(dt, game.size);
+      bubble.update(effectiveDt, game.size);
     }
   }
 

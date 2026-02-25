@@ -176,6 +176,24 @@ class SaveManager {
     return data == 'true';
   }
 
+  static Future<void> saveHighContrast(bool enabled) async {
+    await SecurityService.write('high_contrast_enabled', enabled.toString());
+  }
+
+  static Future<bool> loadHighContrast() async {
+    final data = await SecurityService.read('high_contrast_enabled');
+    return data == 'true';
+  }
+
+  static Future<void> saveReducedMotion(bool enabled) async {
+    await SecurityService.write('reduced_motion_enabled', enabled.toString());
+  }
+
+  static Future<bool> loadReducedMotion() async {
+    final data = await SecurityService.read('reduced_motion_enabled');
+    return data == 'true';
+  }
+
   static Future<void> saveHelpers(Map<String, int> helpers) async {
     String encodedData = jsonEncode(helpers);
     await SecurityService.write('helper_counts', encodedData);

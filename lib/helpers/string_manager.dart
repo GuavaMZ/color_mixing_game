@@ -771,16 +771,16 @@ mixin AppStrings {
     modeGuidesTitle: 'MODE GUIDES',
     classicGuideTitle: 'CLASSIC MODE',
     classicGuideDesc:
-        'Mix colors to match the target within drop limits. High accuracy earns more stars and coins.',
+        'The gold standard of lab experimentation. Precisely mix Red, Green, and Blue chemicals to synthesize the target color. \n\n• Tip: Use Precision Drops for tricky levels.\n• Score: 100% accuracy yields 3 Stars and maximum Coin rewards.',
     timeAttackGuideTitle: 'TIME ATTACK',
     timeAttackGuideDesc:
-        'Race against the clock! Fast mixes add time. See how many levels you can survive.',
+        'Efficiency is paramount. Stabilize consecutive samples before the reactor overheats and time runs out. \n\n• Speed Bonus: Successful mixes inject coolant, extending your time.\n• Goal: Achieve the highest level streak possible.',
     colorEchoGuideTitle: 'COLOR ECHO',
     colorEchoGuideDesc:
-        'The target color appears and vanishes. Memorize it and sync your mix to the phantom signal.',
+        'A test of visual memory. The target sample appears briefly before fading into a "Phantom Signal". \n\n• Intuition: Focus on the core Hues before the signal vanishes.\n• Challenge: Reconstruct the color from memory for high-accuracy sync.',
     chaosLabGuideTitle: 'CHAOS LAB',
     chaosLabGuideDesc:
-        'Unstable conditions! Random events like Inversion and Evaporation occur every 15s. Adapt or fail.',
+        'The most volatile environment. Expect unpredictable anomalies every 15 seconds that defy standard physics. \n\n• Anomalies: Control Inversion, Rapid Evaporation, and Spectral Swaps.\n• Reward: High-risk experimentation yields boosted Coin multipliers.',
   };
 
   static const Map<String, dynamic> Ar = {
@@ -1167,16 +1167,16 @@ mixin AppStrings {
     modeGuidesTitle: 'دليل الأوضاع',
     classicGuideTitle: 'الوضع الكلاسيكي',
     classicGuideDesc:
-        'امزج الألوان لمطابقة الهدف ضمن حدود القطرات. الدقة العالية تمنحك المزيد من النجوم والعملات.',
+        'المعيار الذهبي لتجارب المختبر. امزج المواد الكيميائية الحمراء والخضراء والزرقاء بدقة لتركيب لون الهدف. \n\n• نصيحة: استخدم "قطرات الدقة" للمستويات الصعبة.\n• النتيجة: دقة 100٪ تمنحك 3 نجوم وأقصى مكافآت عملات.',
     timeAttackGuideTitle: 'هجوم الوقت',
     timeAttackGuideDesc:
-        'سابق الزمن! المزج السريع يضيف وقتاً. انظر كم عدد المستويات التي يمكنك النجاة فيها.',
+        'الكفاءة هي الأهم. استقر العينات المتتالية قبل أن يسخن المفاعل وينفد الوقت. \n\n• مكافأة السرعة: المزج الناجح يحقن سائل التبريد، مما يطيل وقتك.\n• الهدف: تحقيق أعلى سلسلة مستويات ممكنة.',
     colorEchoGuideTitle: 'صدى الألوان',
     colorEchoGuideDesc:
-        'يظهر لون الهدف ويختفي. احفظه ومزامنة مزيجك مع الإشارة الوهمية.',
+        'اختبار للذاكرة البصرية. تظهر عينة الهدف لفترة وجيزة قبل أن تتلاشى في "إشارة وهمية". \n\n• الحدس: ركز على الألوان الأساسية قبل اختفاء الإشارة.\n• التحدي: إعادة بناء اللون من الذاكرة لمزامنة عالية الدقة.',
     chaosLabGuideTitle: 'مختبر الفوضى',
     chaosLabGuideDesc:
-        'ظروف غير مستقرة! تحدث أحداث عشوائية مثل الانعكاس والتبخر كل 15 ثانية. تكيف أو افشل.',
+        'البيئة الأكثر تقلبًا. توقع شذوذات غير متوقعة كل 15 ثانية تتحدى الفيزياء القياسية. \n\n• الشذوذات: انعكاس التحكم، التبخر السريع، والتبديل الطيفي.\n• المكافأة: التجريب عالي المخاطر يمنح مضاعفات عملات معززة.',
   };
 
   static const Map<String, dynamic> Es = {
@@ -1552,16 +1552,16 @@ mixin AppStrings {
     modeGuidesTitle: 'GUÍAS DE MODO',
     classicGuideTitle: 'MODO CLÁSICO',
     classicGuideDesc:
-        'Mezcla colores para coincidir con el objetivo dentro de los límites de gotas. La alta precisión otorga más estrellas y monedas.',
+        'El estándar de oro de la experimentación de laboratorio. Mezcle con precisión químicos rojos, verdes y azules para sintetizar el color objetivo. \n\n• Consejo: Use Gotas de Precisión para niveles difíciles.\n• Puntaje: El 100% de precisión otorga 3 Estrellas y recompensas máximas.',
     timeAttackGuideTitle: 'ATAQUE DE TIEMPO',
     timeAttackGuideDesc:
-        '¡Carrera contra el reloj! Las mezclas rápidas añaden tiempo. Mira cuántos niveles puedes sobrevivir.',
+        'La eficiencia es primordial. Estabilice muestras consecutivas antes de que el reactor se sobrecaliente. \n\n• Bono de Velocidad: Las mezclas exitosas inyectan refrigerante, extendiendo su tiempo.\n• Objetivo: Lograr la racha de niveles más alta posible.',
     colorEchoGuideTitle: 'ECO DE COLOR',
     colorEchoGuideDesc:
-        'El color objetivo aparece y desaparece. Memorízalo y sincroniza tu mezcla con la señal fantasma.',
+        'Una prueba de memoria visual. La muestra objetivo aparece brevemente antes de desvanecerse en una "Señal Fantasma". \n\n• Intuición: Concéntrese en los tonos principales antes de que desaparezca.\n• Desafío: Reconstituya el color de memoria para una sincronización precisa.',
     chaosLabGuideTitle: 'LABORATORIO DEL CAOS',
     chaosLabGuideDesc:
-        '¡Condiciones inestables! Eventos aleatorios como Inversión y Evaporación ocurren cada 15s. Adáptate o falla.',
+        'El entorno más volátil. Espere anomalías impredecibles cada 15 segundos que desafían la física estándar. \n\n• Anomalías: Inversión de controles, evaporación rápida y cambios espectrales.\n• Recompensa: El riesgo rinde multiplicadores de monedas mejorados.',
   };
 
   static const Map<String, dynamic> Fr = {
@@ -1935,15 +1935,15 @@ mixin AppStrings {
     modeGuidesTitle: "GUIDES DES MODES",
     classicGuideTitle: "MODE CLASSIQUE",
     classicGuideDesc:
-        "Mélangez les couleurs pour correspondre à la cible dans la limite des gouttes. Une précision élevée rapporte plus d'étoiles et de pièces.",
+        "Le standard de l'expérimentation. Mélangez précisément les produits rouges, verts et bleus pour synthétiser la couleur cible. \n\n• Conseil : Utilisez les Gouttes de Précision pour les niveaux difficiles.\n• Score : 100% de précision rapporte 3 Étoiles et des récompenses maximales.",
     timeAttackGuideTitle: "CONTRE LA MONTRE",
     timeAttackGuideDesc:
-        "Course contre la montre ! Les mélanges rapides ajoutent du temps. Voyez à combien de niveaux vous pouvez survivre.",
+        "L'efficacité est primordiale. Stabilisez des échantillons consécutifs avant que le réacteur ne surchauffe. \n\n• Bonus Vitesse : Chaque mélange réussi injecte du liquide de refroidissement.\n• Objectif : Atteindre la plus longue série de niveaux possible.",
     colorEchoGuideTitle: "ÉCHO DE COULEUR",
     colorEchoGuideDesc:
-        "La couleur cible apparaît et disparaît. Mémorisez-la et synchronisez votre mélange au signal fantôme.",
+        "Un test de mémoire visuelle. L'échantillon cible apparaît brièvement avant de s'estomper en un 'Signal Fantôme'. \n\n• Intuition : Concentrez-vous sur les teintes avant que le signal ne disparaisse.\n• Défi : Reconstituez la couleur de mémoire pour une synchronisation précise.",
     chaosLabGuideTitle: "LABO DU CHAOS",
     chaosLabGuideDesc:
-        "Conditions instables ! Des événements aléatoires comme l'Inversion et l'Évaporation se produisent toutes les 15s. Adaptez-vous ou échouez.",
+        "L'environnement le plus instable. Attendez-vous à des anomalies imprévisibles toutes les 15 secondes. \n\n• Anomalies : Inversion des commandes, Évaporation rapide et Échanges spectraux.\n• Récompense : L'expérimentation à haut risque booste vos multiplicateurs.",
   };
 }

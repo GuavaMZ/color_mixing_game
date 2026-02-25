@@ -62,7 +62,10 @@ class _PauseMenuOverlayState extends State<PauseMenuOverlay>
 
   void _quit() {
     AudioManager().playButton();
-    LivesManager().consumeLife();
+    if (widget.game.currentMode != GameMode.colorEcho &&
+        widget.game.currentMode != GameMode.chaosLab) {
+      LivesManager().consumeLife();
+    }
     widget.game.returnToMainMenu();
   }
 
@@ -77,7 +80,10 @@ class _PauseMenuOverlayState extends State<PauseMenuOverlay>
 
     // Confirm Give Up -> Exit to Map
     _audio.playButton();
-    LivesManager().consumeLife();
+    if (widget.game.currentMode != GameMode.colorEcho &&
+        widget.game.currentMode != GameMode.chaosLab) {
+      LivesManager().consumeLife();
+    }
     final bool isEcho = widget.game.currentMode == GameMode.colorEcho;
     widget.game.currentMode = GameMode.none; // Stop timer
     widget.game.overlays.remove('PauseMenu');

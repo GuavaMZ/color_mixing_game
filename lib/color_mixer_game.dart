@@ -43,6 +43,7 @@ import 'dart:math';
 import 'package:flame/game.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
+import 'package:color_mixing_deductive/helpers/theme_constants.dart';
 import 'package:flutter/material.dart';
 
 enum GameMode { classic, timeAttack, colorEcho, chaosLab, none }
@@ -118,6 +119,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   StringLights? stringLights;
   List<String> unlockedAchievements = [];
   bool globalBlindMode = false;
+  bool highContrastEnabled = false;
+  bool reducedMotionEnabled = false;
 
   GameMode currentMode = GameMode.none;
   double timeLeft = 30.0;
@@ -163,6 +166,9 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     totalCoins.value = await SaveManager.loadTotalCoins();
     unlockedAchievements = await SaveManager.loadAchievements();
     globalBlindMode = await SaveManager.loadBlindMode();
+    highContrastEnabled = await SaveManager.loadHighContrast();
+    AppTheme.highContrastEnabled = highContrastEnabled;
+    reducedMotionEnabled = await SaveManager.loadReducedMotion();
     randomEventsEnabled = await SaveManager.loadRandomEvents();
 
     // Initialize IAP and attach the game so pending purchases are awarded locally
@@ -317,7 +323,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     // Earthquake Logic
     if (isEarthquake && !_hasWon) {
       // Simple random shake
-      double intensity = 5.0;
+      double intensity = reducedMotionEnabled ? 0.5 : 5.0;
       _earthquakeOffset.x = (_random.nextDouble() - 0.5) * intensity * 2;
       _earthquakeOffset.y = (_random.nextDouble() - 0.5) * intensity * 2;
       camera.viewfinder.position = _earthquakeOffset;
@@ -1149,7 +1155,10 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     } else {
       overlays.add('GameOver');
     }
-    LivesManager().consumeLife();
+
+    if (currentMode != GameMode.colorEcho && currentMode != GameMode.chaosLab) {
+      LivesManager().consumeLife();
+    }
   }
 
   int totalStars = 0;
@@ -1234,6 +1243,19 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   Future<void> toggleBlindMode(bool enabled) async {
     globalBlindMode = enabled;
     await SaveManager.saveBlindMode(enabled);
+    notifyListeners();
+  }
+
+  Future<void> toggleHighContrast(bool enabled) async {
+    highContrastEnabled = enabled;
+    AppTheme.highContrastEnabled = enabled;
+    await SaveManager.saveHighContrast(enabled);
+    notifyListeners();
+  }
+
+  Future<void> toggleReducedMotion(bool enabled) async {
+    reducedMotionEnabled = enabled;
+    await SaveManager.saveReducedMotion(enabled);
     notifyListeners();
   }
 

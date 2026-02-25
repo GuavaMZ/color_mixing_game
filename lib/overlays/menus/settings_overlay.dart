@@ -429,16 +429,16 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                                 ),
                               ),
 
-                              // Placeholder for Accessibility features - visual improvements
                               _SettingsTile(
                                 icon: Icons.contrast_rounded,
                                 title: AppStrings.highContrast.getString(
                                   context,
                                 ),
                                 trailing: _ToggleSwitch(
-                                  value: false, // Wire up later
+                                  value: widget.game.highContrastEnabled,
                                   onChanged: (value) {
                                     _audio.playButton();
+                                    widget.game.toggleHighContrast(value);
                                     setState(() {});
                                   },
                                 ),
@@ -450,9 +450,10 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                                   context,
                                 ),
                                 trailing: _ToggleSwitch(
-                                  value: false, // Wire up later
+                                  value: widget.game.reducedMotionEnabled,
                                   onChanged: (value) {
                                     _audio.playButton();
+                                    widget.game.toggleReducedMotion(value);
                                     setState(() {});
                                   },
                                 ),
@@ -467,7 +468,7 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                                     Text(
                                       _currentPatch != null
                                           ? '${AppStrings.patch.getString(context)} #$_currentPatch'
-                                          : 'v1.0.0',
+                                          : 'v1.2.0',
                                       style: TextStyle(
                                         color: Colors.white.withValues(
                                           alpha: 0.5,

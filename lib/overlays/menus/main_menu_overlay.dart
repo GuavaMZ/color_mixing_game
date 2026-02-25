@@ -128,7 +128,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16),
                     child: Text(
-                      'v1.1.0',
+                      'v1.2.0',
                       style: AppTheme.caption(
                         context,
                       ).copyWith(color: Colors.white.withValues(alpha: 0.3)),
@@ -475,10 +475,6 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
             end: Alignment.bottomRight,
           ),
           onTap: () {
-            if (LivesManager().lives <= 0) {
-              _showNoLivesDialog(context);
-              return;
-            }
             AudioManager().playButton();
             widget.game.currentMode = GameMode.colorEcho;
             widget.game.startLevel();
@@ -513,10 +509,6 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
             end: Alignment.bottomRight,
           ),
           onTap: () {
-            if (LivesManager().lives <= 0) {
-              _showNoLivesDialog(context);
-              return;
-            }
             AudioManager().playButton();
             widget.game.currentMode = GameMode.chaosLab;
             widget.game.startLevel();
@@ -701,64 +693,6 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
           ),
         );
       },
-    );
-  }
-
-  void _showNoLivesDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.primaryDark.withValues(alpha: 0.95),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-          side: const BorderSide(color: AppTheme.neonMagenta, width: 2),
-        ),
-        title: Text(
-          AppStrings.outOfLives.getString(context),
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w900,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.favorite_rounded,
-              color: AppTheme.neonMagenta,
-              size: 48,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              AppStrings.noLivesDesc.getString(context),
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.white70),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              "${AppStrings.nextLifeIn.getString(context)} ${LivesManager().timeUntilNextLife}",
-              style: const TextStyle(
-                color: AppTheme.neonCyan,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              AppStrings.ok.getString(context),
-              style: const TextStyle(
-                color: AppTheme.neonCyan,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 /// Centralized theme constants for consistent styling across the app
 class AppTheme {
+  static bool highContrastEnabled = false;
+
   // === COSMIC LABORATORY PALETTE ===
   static const Color primaryDark = Color(0xFF0B0E14); // Deepest Void
   static const Color primaryMedium = Color(0xFF15192B); // Deep Navy
@@ -79,25 +81,33 @@ class AppTheme {
     bool isInteractive = false,
   }) {
     return BoxDecoration(
-      gradient: glassGradient,
+      gradient: highContrastEnabled ? null : glassGradient,
+      color: highContrastEnabled ? primaryDark : null,
       borderRadius: BorderRadius.circular(borderRadius),
       border: Border.all(
-        color: borderColor ?? Colors.white.withValues(alpha: 0.15),
-        width: 1.5,
+        color:
+            borderColor ??
+            (highContrastEnabled
+                ? Colors.white
+                : Colors.white.withValues(alpha: 0.15)),
+        width: highContrastEnabled ? 3.0 : 1.5,
       ),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.5),
-          blurRadius: 20,
+          color: Colors.black.withValues(
+            alpha: highContrastEnabled ? 0.8 : 0.5,
+          ),
+          blurRadius: highContrastEnabled ? 0 : 20,
           offset: const Offset(0, 10),
         ),
         // Subtle inner rim light
-        BoxShadow(
-          color: Colors.white.withValues(alpha: 0.05),
-          blurRadius: 0,
-          spreadRadius: -1.5,
-        ),
-        if (isInteractive)
+        if (!highContrastEnabled)
+          const BoxShadow(
+            color: Colors.white,
+            blurRadius: 0,
+            spreadRadius: -1.5,
+          ),
+        if (isInteractive && !highContrastEnabled)
           BoxShadow(
             color: neonCyan.withValues(alpha: 0.15),
             blurRadius: 15,
@@ -153,23 +163,31 @@ class AppTheme {
     bool hasGlow = false,
     Color? glowColor,
   }) {
-    final effectiveBorderColor = borderColor == Colors.white
-        ? Colors.white.withValues(alpha: 0.3)
-        : borderColor;
+    final effectiveBorderColor = highContrastEnabled
+        ? Colors.white
+        : (borderColor == Colors.white
+              ? Colors.white.withValues(alpha: 0.3)
+              : borderColor);
 
     return BoxDecoration(
-      color:
-          fillColor?.withValues(alpha: 0.9) ??
-          primaryMedium.withValues(alpha: 0.8),
+      color: highContrastEnabled
+          ? primaryDark
+          : (fillColor?.withValues(alpha: 0.9) ??
+                primaryMedium.withValues(alpha: 0.8)),
       borderRadius: BorderRadius.circular(borderRadius),
-      border: Border.all(color: effectiveBorderColor, width: borderWidth),
+      border: Border.all(
+        color: effectiveBorderColor,
+        width: highContrastEnabled ? 3.0 : borderWidth,
+      ),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.6),
-          blurRadius: 15,
+          color: Colors.black.withValues(
+            alpha: highContrastEnabled ? 0.8 : 0.6,
+          ),
+          blurRadius: highContrastEnabled ? 0 : 15,
           offset: const Offset(0, 8),
         ),
-        if (hasGlow)
+        if (hasGlow && !highContrastEnabled)
           BoxShadow(
             color:
                 (glowColor ??
@@ -179,11 +197,12 @@ class AppTheme {
             spreadRadius: -1,
           ),
         // Inner Glow
-        BoxShadow(
-          color: Colors.white.withValues(alpha: 0.05),
-          offset: const Offset(1, 1),
-          blurRadius: 1,
-        ),
+        if (!highContrastEnabled)
+          BoxShadow(
+            color: Colors.white.withValues(alpha: 0.05),
+            offset: const Offset(1, 1),
+            blurRadius: 1,
+          ),
       ],
     );
   }
@@ -336,7 +355,7 @@ class ResponsiveHelper {
     T? desktop,
   }) {
     final width = screenWidth(context);
-    
+
     if (width >= 1200) return desktop ?? tablet ?? mobile; // Large desktop
     if (width >= 900) return (tablet ?? mobile); // Desktop/tablet
     if (width >= 600) return (tablet ?? mobile); // Tablet
