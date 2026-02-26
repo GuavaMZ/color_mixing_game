@@ -8,7 +8,8 @@ import '../../color_mixer_game.dart';
 
 /// A disaster effect where the beaker leaks liquid.
 /// The player must tap the cracks to fix them.
-class LeakingBeakerEffect extends Component with HasGameRef<ColorMixerGame> {
+class LeakingBeakerEffect extends Component
+    with HasGameReference<ColorMixerGame> {
   final List<_LeakPoint> _leaks = [];
   final Random _random = Random();
   double _leakTimer = 0;
@@ -32,7 +33,7 @@ class LeakingBeakerEffect extends Component with HasGameRef<ColorMixerGame> {
 
     for (final leak in _leaks) {
       // Liquid drains
-      gameRef.drainLiquid(0.005 * dt);
+      game.drainLiquid(0.005 * dt);
 
       // Spawn drip particles
       if (_random.nextDouble() < 0.2) {
@@ -42,7 +43,7 @@ class LeakingBeakerEffect extends Component with HasGameRef<ColorMixerGame> {
   }
 
   void _spawnLeak() {
-    final beaker = gameRef.beaker;
+    final beaker = game.beaker;
     final x =
         (beaker.size.x * 0.2) + _random.nextDouble() * (beaker.size.x * 0.6);
     final y =
@@ -57,8 +58,8 @@ class LeakingBeakerEffect extends Component with HasGameRef<ColorMixerGame> {
   }
 
   void _spawnDrip(Vector2 pos) {
-    final beaker = gameRef.beaker;
-    gameRef.add(
+    final beaker = game.beaker;
+    game.add(
       ParticleSystemComponent(
         particle: Particle.generate(
           count: 1,

@@ -270,10 +270,12 @@ class _ChaosGameOverOverlayState extends State<ChaosGameOverOverlay>
 
   String _getCauseOfFailure(BuildContext context) {
     if (widget.game.chaosStability <= 0) return "Containment Meltdown";
-    if (widget.game.timeLeft <= 0)
+    if (widget.game.timeLeft <= 0) {
       return AppStrings.timeExpired.getString(context);
-    if (widget.game.totalDrops.value >= widget.game.maxDrops)
+    }
+    if (widget.game.totalDrops.value >= widget.game.maxDrops) {
       return AppStrings.dropsExceeded.getString(context);
+    }
     return "Unknown System Error";
   }
 

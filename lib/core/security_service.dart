@@ -14,7 +14,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class SecurityService {
   static const _storage = FlutterSecureStorage(
     aOptions: AndroidOptions(
-      encryptedSharedPreferences: false, // Deprecated, will be ignored
+      // encryptedSharedPreferences is deprecated
     ),
     iOptions: IOSOptions(
       accessibility: KeychainAccessibility.first_unlock_this_device,
@@ -244,7 +244,7 @@ class SecurityService {
       final timestamp = data['t'] as int?;
       if (timestamp != null &&
           _sessionStart != null &&
-          timestamp > _sessionStart!) {
+          timestamp > DateTime.now().millisecondsSinceEpoch + 5000) {
         _logSecurityEvent('future_timestamp', key, extra: 't=$timestamp');
         return null;
       }
@@ -310,10 +310,12 @@ class SecurityService {
   static void _logSecurityEvent(String type, String key, {String? extra}) {
     // In production, send to analytics/crash reporting
     // For now, log with timestamp
-    final timestamp = DateTime.now().toIso8601String();
+    // final timestamp = DateTime.now().toIso8601String();
+    /*
     print(
       '[SecurityAlert] $timestamp | Type: $type | Key: $key${extra != null ? ' | Extra: $extra' : ''}',
     );
+    */
   }
 
   static final math.Random _random = math.Random();

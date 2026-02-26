@@ -304,7 +304,7 @@ class _ShopOverlayState extends State<ShopOverlay> {
             child: ResponsiveIconButton(
               onPressed: () {
                 AudioManager().playButton();
-                widget.game.overlays.remove('Shop');
+                widget.game.returnToMainMenu();
               },
               icon: Icons.arrow_back_rounded,
               color: Colors.white,
@@ -362,7 +362,7 @@ class _ShopOverlayState extends State<ShopOverlay> {
     return GestureDetector(
       onTap: () {
         AudioManager().playButton();
-        widget.game.overlays.add('CoinStore');
+        widget.game.transitionTo('Shop', 'CoinStore');
       },
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -747,7 +747,7 @@ class ShopItemCard extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(ctx).pop();
                   AudioManager().playButton();
-                  game.overlays.add('CoinStore');
+                  game.transitionTo('Shop', 'CoinStore');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.amber,

@@ -51,9 +51,7 @@ class _ModeGuideOverlayState extends State<ModeGuideOverlay>
 
   void _close() {
     AudioManager().playButton();
-    _controller.reverse().then((_) {
-      widget.game.overlays.remove('ModeGuide');
-    });
+    widget.game.returnToMainMenu();
   }
 
   @override

@@ -1,16 +1,16 @@
-import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:color_mixing_deductive/color_mixer_game.dart';
 import 'package:flutter/material.dart';
 
-class BlackoutEffect extends PositionComponent with HasGameRef<ColorMixerGame> {
+class BlackoutEffect extends PositionComponent
+    with HasGameReference<ColorMixerGame> {
   @override
   int get priority => 100; // Render on top of almost everything
 
   @override
   Future<void> onLoad() async {
     super.onLoad();
-    size = gameRef.size;
+    size = game.size;
   }
 
   @override
@@ -20,8 +20,8 @@ class BlackoutEffect extends PositionComponent with HasGameRef<ColorMixerGame> {
 
     // Define the "hole" area around the beaker
     // We add some padding/glow area
-    final beakerPos = gameRef.beaker.position;
-    final beakerSize = gameRef.beaker.size;
+    final beakerPos = game.beaker.position;
+    final beakerSize = game.beaker.size;
     final holeRect = Rect.fromCenter(
       center: Offset(beakerPos.x, beakerPos.y),
       width: beakerSize.x * 1.5,

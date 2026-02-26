@@ -392,7 +392,7 @@ mixin AppStrings {
   static const String enjoyYourCoins = "enjoy_your_coins";
   static const String coinStoreSubtitle = "coin_store_subtitle";
 
-  static const Map<String, dynamic> En = {
+  static const Map<String, dynamic> en = {
     // Colors
     redColor: 'Red',
     greenColor: 'Green',
@@ -793,7 +793,7 @@ mixin AppStrings {
         'The most volatile environment. Expect unpredictable anomalies every 15 seconds that defy standard physics. \n\n• Anomalies: Control Inversion, Rapid Evaporation, and Spectral Swaps.\n• Reward: High-risk experimentation yields boosted Coin multipliers.',
   };
 
-  static const Map<String, dynamic> Ar = {
+  static const Map<String, dynamic> ar = {
     // Colors
     redColor: 'أحمر',
     greenColor: 'أخضر',
@@ -1194,7 +1194,7 @@ mixin AppStrings {
         'البيئة الأكثر تقلبًا. توقع شذوذات غير متوقعة كل 15 ثانية تتحدى الفيزياء القياسية. \n\n• الشذوذات: انعكاس التحكم، التبخر السريع، والتبديل الطيفي.\n• المكافأة: التجريب عالي المخاطر يمنح مضاعفات عملات معززة.',
   };
 
-  static const Map<String, dynamic> Es = {
+  static const Map<String, dynamic> es = {
     // Colors
     redColor: 'Rojo',
     greenColor: 'Verde',
@@ -1579,7 +1579,7 @@ mixin AppStrings {
         'El entorno más volátil. Espere anomalías impredecibles cada 15 segundos que desafían la física estándar. \n\n• Anomalías: Inversión de controles, evaporación rápida y cambios espectrales.\n• Recompensa: El riesgo rinde multiplicadores de monedas mejorados.',
   };
 
-  static const Map<String, dynamic> Fr = {
+  static const Map<String, dynamic> fr = {
     // Colors
     redColor: 'Rouge',
     greenColor: 'Vert',

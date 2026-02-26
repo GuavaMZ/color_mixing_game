@@ -5,7 +5,8 @@ import '../../../helpers/audio_manager.dart';
 import '../../../color_mixer_game.dart';
 
 /// Cracked glass overlay for Chaos Lab Mode
-class CrackedGlassOverlay extends Component with HasGameRef<ColorMixerGame> {
+class CrackedGlassOverlay extends Component
+    with HasGameReference<ColorMixerGame> {
   final List<List<Offset>> _cracks = [];
   final Random _random = Random();
 
@@ -19,7 +20,7 @@ class CrackedGlassOverlay extends Component with HasGameRef<ColorMixerGame> {
   void _generateCracks() {
     if (parent == null) return;
 
-    final gameSize = gameRef.size;
+    final gameSize = game.size;
 
     // Create 2-3 impact points
     final impactPoints = [

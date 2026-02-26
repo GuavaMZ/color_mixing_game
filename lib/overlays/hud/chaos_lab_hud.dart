@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:color_mixing_deductive/color_mixer_game.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
 import 'package:color_mixing_deductive/helpers/audio_manager.dart';
@@ -154,7 +153,7 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
               top: MediaQuery.of(context).size.height * 0.45,
               child: ValueListenableBuilder<bool>(
                 valueListenable: widget.game.stabilityRecovered,
-                builder: (context, _, __) {
+                builder: (context, _, _) {
                   return _StabilityRecoveryToast(key: UniqueKey());
                 },
               ),
@@ -401,12 +400,15 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
             builder: (context, phase, child) {
               String phaseText = phase;
               Color phaseColor = _getIntensityColor(intensity);
-              if (phase == 'STABLE')
+              if (phase == 'STABLE') {
                 phaseText = AppStrings.phaseStable.getString(context);
-              if (phase == 'CAUTION')
+              }
+              if (phase == 'CAUTION') {
                 phaseText = AppStrings.phaseCaution.getString(context);
-              if (phase == 'CRITICAL')
+              }
+              if (phase == 'CRITICAL') {
                 phaseText = AppStrings.phaseCritical.getString(context);
+              }
 
               return Text(
                 phaseText,
@@ -664,12 +666,15 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
   }
 
   String _getCurrentDisasterText() {
-    if (widget.game.isBlackout)
+    if (widget.game.isBlackout) {
       return AppStrings.powerFailureDetected.getString(context).toUpperCase();
-    if (widget.game.isMirrored)
+    }
+    if (widget.game.isMirrored) {
       return AppStrings.opticalAxisInverted.getString(context).toUpperCase();
-    if (widget.game.hasWind)
+    }
+    if (widget.game.hasWind) {
       return AppStrings.highPressureLeak.getString(context).toUpperCase();
+    }
     return AppStrings.stabilityDecreasing.getString(context).toUpperCase();
   }
 }

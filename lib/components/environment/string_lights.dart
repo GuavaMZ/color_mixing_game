@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import '../../../core/lab_catalog.dart';
 import '../../../color_mixer_game.dart';
 
-class StringLights extends PositionComponent with HasGameRef<ColorMixerGame> {
+class StringLights extends PositionComponent
+    with HasGameReference<ColorMixerGame> {
   LabItem? currentConfig;
   double _time = 0;
 
@@ -120,8 +121,8 @@ class StringLights extends PositionComponent with HasGameRef<ColorMixerGame> {
 
   // Force re-calculate if size changes dynamically
   void _checkDimensions() {
-    if (gameRef.size.x != size.x) {
-      size = Vector2(gameRef.size.x, 200);
+    if (game.size.x != size.x) {
+      size = Vector2(game.size.x, 200);
       _calculateWireAndBulbs();
     }
   }

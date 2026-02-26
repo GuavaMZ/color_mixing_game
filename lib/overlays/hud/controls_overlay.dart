@@ -495,10 +495,11 @@ class ControlsOverlay extends StatelessWidget {
                             : () {
                                 String effectiveType = type;
                                 if (game.isControlsInverted) {
-                                  if (type == 'red')
+                                  if (type == 'red') {
                                     effectiveType = 'blue';
-                                  else if (type == 'blue')
+                                  } else if (type == 'blue') {
                                     effectiveType = 'red';
+                                  }
                                 }
                                 game.addDrop(effectiveType);
                               },
@@ -718,7 +719,7 @@ class _MatchPercentageDisplay extends StatelessWidget {
       builder: (context, animatedValue, child) {
         return Semantics(
           label:
-              '${AppStrings.precentageMatch.getString(context)}: ${displayValue}',
+              '${AppStrings.precentageMatch.getString(context)}: $displayValue',
           child: Column(
             children: [
               Text(

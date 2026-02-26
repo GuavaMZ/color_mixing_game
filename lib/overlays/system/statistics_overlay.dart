@@ -35,7 +35,7 @@ class StatisticsOverlay extends StatelessWidget {
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
                       onPressed: () {
                         AudioManager().playButton();
-                        game.overlays.remove('Statistics');
+                        game.returnToMainMenu();
                       },
                     ),
                     const SizedBox(width: 8),

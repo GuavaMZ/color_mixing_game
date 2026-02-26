@@ -1,10 +1,9 @@
 import 'dart:math';
-import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:color_mixing_deductive/components/gameplay/beaker.dart';
 
-class SurfaceSteam extends PositionComponent with HasGameRef {
+class SurfaceSteam extends PositionComponent with HasGameReference {
   final Beaker beaker;
   final Random _random = Random();
   double _timer = 0;

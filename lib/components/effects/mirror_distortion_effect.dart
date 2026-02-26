@@ -2,7 +2,8 @@ import 'package:flame/components.dart';
 import '../../color_mixer_game.dart';
 
 /// A chaotic effect that periodically flips the game world horizontally or vertically.
-class MirrorDistortionEffect extends Component with HasGameRef<ColorMixerGame> {
+class MirrorDistortionEffect extends Component
+    with HasGameReference<ColorMixerGame> {
   double _timer = 0;
   bool _isFlippedX = false;
   bool _isFlippedY = false;
@@ -10,14 +11,14 @@ class MirrorDistortionEffect extends Component with HasGameRef<ColorMixerGame> {
   @override
   void onMount() {
     super.onMount();
-    gameRef.isMirrored = true;
+    game.isMirrored = true;
     _applyFlip();
   }
 
   @override
   void onRemove() {
-    gameRef.isMirrored = false;
-    gameRef.camera.viewfinder.transform.scale = Vector2.all(1.0);
+    game.isMirrored = false;
+    game.camera.viewfinder.transform.scale = Vector2.all(1.0);
     super.onRemove();
   }
 
@@ -29,7 +30,7 @@ class MirrorDistortionEffect extends Component with HasGameRef<ColorMixerGame> {
     // Flip again every 2-3 seconds
     if (_timer >= 2.5) {
       _timer = 0;
-      if (gameRef.random.nextBool()) {
+      if (game.random.nextBool()) {
         _isFlippedX = !_isFlippedX;
       } else {
         _isFlippedY = !_isFlippedY;
@@ -39,7 +40,7 @@ class MirrorDistortionEffect extends Component with HasGameRef<ColorMixerGame> {
   }
 
   void _applyFlip() {
-    gameRef.camera.viewfinder.transform.scale = Vector2(
+    game.camera.viewfinder.transform.scale = Vector2(
       _isFlippedX ? -1.0 : 1.0,
       _isFlippedY ? -1.0 : 1.0,
     );

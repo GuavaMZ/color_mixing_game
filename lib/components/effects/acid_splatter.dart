@@ -6,7 +6,7 @@ import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
 
 class AcidBlob extends PositionComponent
-    with TapCallbacks, HasGameRef<ColorMixerGame> {
+    with TapCallbacks, HasGameReference<ColorMixerGame> {
   double opacity = 0.9;
   final Paint _paint = Paint();
   final Random _random = Random();
@@ -72,7 +72,7 @@ class AcidBlob extends PositionComponent
   }
 }
 
-class AcidSplatter extends Component with HasGameRef<ColorMixerGame> {
+class AcidSplatter extends Component with HasGameReference<ColorMixerGame> {
   final Random _random = Random();
 
   @override
@@ -85,7 +85,7 @@ class AcidSplatter extends Component with HasGameRef<ColorMixerGame> {
   void _spawnBlobs() {
     // Spawn 5-8 random blobs
     int count = 5 + _random.nextInt(4);
-    final gameSize = gameRef.size;
+    final gameSize = game.size;
 
     for (int i = 0; i < count; i++) {
       double x = gameSize.x * 0.1 + _random.nextDouble() * gameSize.x * 0.8;

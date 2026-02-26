@@ -6,7 +6,7 @@ import '../../helpers/string_manager.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 
 class InvertedControlsEffect extends PositionComponent
-    with HasGameRef<ColorMixerGame> {
+    with HasGameReference<ColorMixerGame> {
   double _time = 0;
 
   @override
@@ -17,7 +17,7 @@ class InvertedControlsEffect extends PositionComponent
     // Let's go with a semi-transparent "SWAP" overlay in the middle of the screen.
 
     anchor = Anchor.center;
-    position = Vector2(gameRef.size.x / 2, gameRef.size.y * 0.45);
+    position = Vector2(game.size.x / 2, game.size.y * 0.45);
     size = Vector2(200, 100);
   }
 
@@ -88,7 +88,7 @@ class InvertedControlsEffect extends PositionComponent
 
     textPaint.render(
       canvas,
-      AppStrings.controlsSwapped.getString(gameRef.buildContext!).toUpperCase(),
+      AppStrings.controlsSwapped.getString(game.buildContext!).toUpperCase(),
       Vector2(size.x / 2, size.y + 20),
       anchor: Anchor.center,
     );

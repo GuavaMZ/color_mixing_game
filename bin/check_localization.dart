@@ -2,10 +2,10 @@ import 'package:color_mixing_deductive/helpers/string_manager.dart';
 
 void main() {
   final List<Map<String, dynamic>> maps = [
-    AppStrings.En,
-    AppStrings.Ar,
-    AppStrings.Es,
-    AppStrings.Fr,
+    AppStrings.en,
+    AppStrings.ar,
+    AppStrings.es,
+    AppStrings.fr,
   ];
   final List<String> names = ['En', 'Ar', 'Es', 'Fr'];
 
@@ -15,6 +15,7 @@ void main() {
     allKeys.addAll(map.keys);
   }
 
+  // ignore: avoid_print
   print('Total unique keys found in maps: ${allKeys.length}');
 
   bool overallPass = true;
@@ -38,12 +39,16 @@ void main() {
   }
 
   if (overallPass) {
+    // ignore: avoid_print
     print('\n[SUCCESS] All language maps are synchronized!');
   } else {
+    // ignore: avoid_print
     print('\n[ERROR] Localization mismatch detected:');
     missingReport.forEach((name, missing) {
+      // ignore: avoid_print
       print('\nMap $name is missing ${missing.length} keys:');
       for (var key in missing) {
+        // ignore: avoid_print
         print('  - $key');
       }
     });

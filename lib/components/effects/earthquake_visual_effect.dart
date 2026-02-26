@@ -3,7 +3,8 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../../color_mixer_game.dart';
 
-class EarthquakeVisualEffect extends Component with HasGameRef<ColorMixerGame> {
+class EarthquakeVisualEffect extends Component
+    with HasGameReference<ColorMixerGame> {
   final Random _random = Random();
   final List<_DustParticle> _particles = [];
 
@@ -15,7 +16,7 @@ class EarthquakeVisualEffect extends Component with HasGameRef<ColorMixerGame> {
     if (_random.nextDouble() < 0.2) {
       _particles.add(
         _DustParticle(
-          position: Vector2(_random.nextDouble() * gameRef.size.x, -10),
+          position: Vector2(_random.nextDouble() * game.size.x, -10),
           velocity: Vector2(
             (_random.nextDouble() - 0.5) * 50,
             100 + _random.nextDouble() * 200,
@@ -56,8 +57,8 @@ class EarthquakeVisualEffect extends Component with HasGameRef<ColorMixerGame> {
 
       // Draw a random jagged line to simulate a glass crack flicker
       final start = Offset(
-        _random.nextDouble() * gameRef.size.x,
-        _random.nextDouble() * gameRef.size.y,
+        _random.nextDouble() * game.size.x,
+        _random.nextDouble() * game.size.y,
       );
       final path = Path()..moveTo(start.dx, start.dy);
       for (int i = 0; i < 3; i++) {

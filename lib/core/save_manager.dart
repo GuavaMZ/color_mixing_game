@@ -58,7 +58,7 @@ class SaveManager {
       if (value != null) {
         await SecurityService.write(key, value);
         await prefs.remove(key);
-        print('Migrated $key to secure storage.');
+        // print('Migrated $key to secure storage.');
       }
     }
   }
@@ -125,7 +125,7 @@ class SaveManager {
           (key, value) => MapEntry(int.parse(key), value as int),
         );
       } catch (e) {
-        print('Error parsing progress data: $e');
+        // print('Error parsing progress data: $e');
         return {0: 0};
       }
     }
@@ -296,7 +296,7 @@ class SaveManager {
       try {
         return (jsonDecode(data) as List).cast<String>();
       } catch (e) {
-        print('Error parsing skins: $e');
+        // print('Error parsing skins: $e');
         return [];
       }
     }
@@ -326,7 +326,7 @@ class SaveManager {
       try {
         return (jsonDecode(data) as List).cast<String>();
       } catch (e) {
-        print('Error parsing achievements: $e');
+        // print('Error parsing achievements: $e');
         return [];
       }
     }
@@ -408,7 +408,7 @@ class SaveManager {
 
         return decoded.map((key, value) => MapEntry(key, value as int));
       } catch (e) {
-        print('Error parsing helpers: $e');
+        // print('Error parsing helpers: $e');
       }
     }
     return {'extra_drops': 0, 'help_drop': 0, 'reveal_color': 0, 'undo': 0};
@@ -459,7 +459,7 @@ class SaveManager {
         Map<String, dynamic> decoded = jsonDecode(data);
         return decoded.map((key, value) => MapEntry(key, value as String));
       } catch (e) {
-        print('Error parsing lab config: $e');
+        // print('Error parsing lab config: $e');
       }
     }
 
@@ -491,7 +491,7 @@ class SaveManager {
       try {
         return (jsonDecode(data) as List).cast<String>();
       } catch (e) {
-        print('Error parsing unlocked items: $e');
+        // print('Error parsing unlocked items: $e');
       }
     }
 
@@ -520,7 +520,7 @@ class SaveManager {
         final List<dynamic> decoded = jsonDecode(data);
         return decoded.map((id) => int.parse(id.toString())).toSet();
       } catch (e) {
-        print('Error parsing discovered colors: $e');
+        // print('Error parsing discovered colors: $e');
       }
     }
     return {};
@@ -646,7 +646,7 @@ class SaveManager {
         final List<dynamic> decoded = jsonDecode(data);
         return decoded.cast<Map<String, dynamic>>();
       } catch (e) {
-        print('Error parsing purchase history: $e');
+        // print('Error parsing purchase history: $e');
         return [];
       }
     }

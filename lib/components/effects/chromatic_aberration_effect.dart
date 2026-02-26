@@ -6,7 +6,7 @@ import '../../color_mixer_game.dart';
 /// A post-processing-like effect that simulates chromatic aberration
 /// by drawing overlapping shifted layers (simplified version).
 class ChromaticAberrationEffect extends Component
-    with HasGameRef<ColorMixerGame> {
+    with HasGameReference<ColorMixerGame> {
   double _timer = 0;
   double _intensity = 0;
 
@@ -24,7 +24,7 @@ class ChromaticAberrationEffect extends Component
     // Real Chromatic Aberration needs to capture the screen.
     // Simplified version: We can draw an overlay that looks glitchy.
 
-    final rect = Rect.fromLTWH(0, 0, gameRef.size.x, gameRef.size.y);
+    final rect = Rect.fromLTWH(0, 0, game.size.x, game.size.y);
 
     // Draw red shift
     canvas.save();

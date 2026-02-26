@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/particles.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +7,7 @@ class Fireworks extends PositionComponent {
   final Random _rnd = Random();
   double _timer = 0;
 
-  Fireworks({Vector2? size}) : super(size: size);
+  Fireworks({super.size});
 
   @override
   void update(double dt) {

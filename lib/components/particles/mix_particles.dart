@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import '../../color_mixer_game.dart';
 
 /// Enhanced particles that appear when drops mix in the beaker
-class MixParticles extends PositionComponent with HasGameRef<ColorMixerGame> {
+class MixParticles extends PositionComponent
+    with HasGameReference<ColorMixerGame> {
   final Color dropColor;
   final Vector2 mixPosition;
   final List<_MixParticle> _particles = [];
@@ -50,7 +51,7 @@ class MixParticles extends PositionComponent with HasGameRef<ColorMixerGame> {
     _lifetime += dt;
 
     for (var particle in _particles) {
-      particle.update(dt, gameRef.isGravityFlux);
+      particle.update(dt, game.isGravityFlux);
     }
 
     if (_lifetime >= maxLifetime) {

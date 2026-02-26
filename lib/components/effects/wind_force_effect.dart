@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../../color_mixer_game.dart';
 
 /// A disaster effect that pushes drops and shows wind particles.
-class WindForceEffect extends Component with HasGameRef<ColorMixerGame> {
+class WindForceEffect extends Component with HasGameReference<ColorMixerGame> {
   final Random _random = Random();
   double _particleTimer = 0;
   double _forceDirection = 1.0; // 1.0 for right, -1.0 for left
@@ -14,14 +14,14 @@ class WindForceEffect extends Component with HasGameRef<ColorMixerGame> {
   @override
   void onMount() {
     super.onMount();
-    gameRef.hasWind = true;
+    game.hasWind = true;
     _forceDirection = _random.nextBool() ? 1.0 : -1.0;
   }
 
   @override
   void onRemove() {
-    gameRef.hasWind = false;
-    gameRef.windForce = 0;
+    game.hasWind = false;
+    game.windForce = 0;
     super.onRemove();
   }
 
@@ -38,7 +38,7 @@ class WindForceEffect extends Component with HasGameRef<ColorMixerGame> {
     }
 
     // Apply force to game
-    gameRef.windForce = _forceDirection * (50.0 + _random.nextDouble() * 30.0);
+    game.windForce = _forceDirection * (50.0 + _random.nextDouble() * 30.0);
 
     // Spawn wind particles
     if (_particleTimer > 0.05) {
@@ -48,11 +48,11 @@ class WindForceEffect extends Component with HasGameRef<ColorMixerGame> {
   }
 
   void _spawnWindParticle() {
-    final gameSize = gameRef.size;
+    final gameSize = game.size;
     final startX = _forceDirection > 0 ? -20.0 : gameSize.x + 20.0;
     final y = _random.nextDouble() * gameSize.y;
 
-    gameRef.add(
+    game.add(
       ParticleSystemComponent(
         particle: Particle.generate(
           count: 1,

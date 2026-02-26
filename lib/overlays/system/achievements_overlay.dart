@@ -182,7 +182,7 @@ class _AchievementsOverlayState extends State<AchievementsOverlay> {
                         label: AppStrings.gotIt.getString(context),
                         onTap: () {
                           AudioManager().playButton();
-                          widget.game.overlays.remove('Achievements');
+                          widget.game.returnToMainMenu();
                         },
                       ),
                     ),
@@ -213,7 +213,7 @@ class _AchievementsOverlayState extends State<AchievementsOverlay> {
               icon: const Icon(Icons.close_rounded, color: Colors.white70),
               onPressed: () {
                 AudioManager().playButton();
-                widget.game.overlays.remove('Achievements');
+                widget.game.returnToMainMenu();
               },
             ),
           ],

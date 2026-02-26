@@ -34,7 +34,7 @@ class Spark {
 }
 
 /// Electrical sparks effect for Chaos Lab Mode
-class ElectricalSparks extends Component with HasGameRef<ColorMixerGame> {
+class ElectricalSparks extends Component with HasGameReference<ColorMixerGame> {
   final List<Spark> _sparks = [];
   final Random _random = Random();
   double _burstTimer = 0;
@@ -72,7 +72,7 @@ class ElectricalSparks extends Component with HasGameRef<ColorMixerGame> {
   void _createSparkBurst() {
     if (parent == null) return;
 
-    final gameSize = gameRef.size;
+    final gameSize = game.size;
 
     // Spark locations (near control panel area - bottom)
     final sparkPoints = [

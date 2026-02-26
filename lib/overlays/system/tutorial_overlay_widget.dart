@@ -114,7 +114,7 @@ class _TutorialOverlayWidgetState extends State<TutorialOverlayWidget>
     final screenSize = MediaQuery.of(context).size;
 
     return Material(
-      color: Colors.black.withOpacity(0.85),
+      color: Colors.black.withValues(alpha: 0.85),
       child: Stack(
         children: [
           // Tap to continue hint
@@ -129,9 +129,11 @@ class _TutorialOverlayWidgetState extends State<TutorialOverlayWidget>
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
+                  color: Colors.white.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppTheme.neonCyan.withOpacity(0.3)),
+                  border: Border.all(
+                    color: AppTheme.neonCyan.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -167,18 +169,18 @@ class _TutorialOverlayWidgetState extends State<TutorialOverlayWidget>
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        const Color(0xFF667eea).withOpacity(0.95),
-                        const Color(0xFF764ba2).withOpacity(0.95),
+                        const Color(0xFF667eea).withValues(alpha: 0.95),
+                        const Color(0xFF764ba2).withValues(alpha: 0.95),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: AppTheme.neonCyan.withOpacity(0.5),
+                      color: AppTheme.neonCyan.withValues(alpha: 0.5),
                       width: 2,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppTheme.neonCyan.withOpacity(0.3),
+                        color: AppTheme.neonCyan.withValues(alpha: 0.3),
                         blurRadius: 20,
                         spreadRadius: 2,
                       ),
@@ -191,7 +193,7 @@ class _TutorialOverlayWidgetState extends State<TutorialOverlayWidget>
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(step.icon, size: 48, color: Colors.white),

@@ -222,7 +222,7 @@ class _CoinStoreOverlayState extends State<CoinStoreOverlay>
           ResponsiveIconButton(
             onPressed: () {
               AudioManager().playButton();
-              widget.game.overlays.remove('CoinStore');
+              widget.game.returnToMainMenu();
             },
             icon: Icons.arrow_back_rounded,
             color: Colors.white,
@@ -1008,7 +1008,7 @@ class _PurchaseHistorySheet extends StatelessWidget {
                 : ListView.separated(
                     padding: const EdgeInsets.all(16),
                     itemCount: history.length,
-                    separatorBuilder: (_, __) =>
+                    separatorBuilder: (_, _) =>
                         const Divider(color: Colors.white12),
                     itemBuilder: (_, i) {
                       final entry = history[i];

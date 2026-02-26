@@ -7,7 +7,7 @@ import '../../helpers/theme_constants.dart';
 import '../../color_mixer_game.dart';
 
 /// Glitch effect overlay for Chaos Lab Mode
-class GlitchEffect extends Component with HasGameRef<ColorMixerGame> {
+class GlitchEffect extends Component with HasGameReference<ColorMixerGame> {
   final Random _random = Random();
   double _glitchTimer = 0;
   double _nextGlitchTime = 2.0;
@@ -56,8 +56,8 @@ class GlitchEffect extends Component with HasGameRef<ColorMixerGame> {
           for (int i = 0; i < 3; i++) {
             _glitchBlocks.add(
               Rect.fromLTWH(
-                _random.nextDouble() * gameRef.size.x,
-                _random.nextDouble() * gameRef.size.y,
+                _random.nextDouble() * game.size.x,
+                _random.nextDouble() * game.size.y,
                 50 + _random.nextDouble() * 150,
                 10 + _random.nextDouble() * 40,
               ),
@@ -83,7 +83,7 @@ class GlitchEffect extends Component with HasGameRef<ColorMixerGame> {
 
     if (!_isGlitching || parent == null) return;
 
-    final gameSize = gameRef.size;
+    final gameSize = game.size;
 
     // 1. Digital Color Split (Chromatic Aberration)
     // Red channel offset (Shift Left)

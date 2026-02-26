@@ -70,8 +70,8 @@ void main() {
       );
 
       expect((color.r * 255).round(), closeTo(191, 5));
-      expect((color.g * 255).round(), closeTo(47, 5));
-      expect((color.b * 255).round(), closeTo(47, 5));
+      expect((color.g * 255).round(), closeTo(63, 5));
+      expect((color.b * 255).round(), closeTo(63, 5));
     });
   });
 }

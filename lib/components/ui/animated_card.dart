@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vector_math/vector_math_64.dart' show Vector3;
 import '../../helpers/theme_constants.dart';
 
 class AnimatedCard extends StatefulWidget {
@@ -100,7 +101,9 @@ class _AnimatedCardState extends State<AnimatedCard>
             final transform = Matrix4.identity()
               ..setEntry(3, 2, 0.001) // perspective
               ..rotateX(_isHovered ? 0.05 : 0) // slight tilt X
-              ..scale(_scale.value);
+              ..scaleByVector3(
+                Vector3(_scale.value, _scale.value, _scale.value),
+              );
 
             final effectiveGlowColor =
                 widget.glowColor ?? widget.borderColor ?? AppTheme.neonCyan;

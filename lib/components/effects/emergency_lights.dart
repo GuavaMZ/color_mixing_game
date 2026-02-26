@@ -5,7 +5,7 @@ import '../../helpers/audio_manager.dart';
 import '../../color_mixer_game.dart';
 
 /// Emergency alarm lights that flicker in the corners during Chaos Lab Mode
-class EmergencyLights extends Component with HasGameRef<ColorMixerGame> {
+class EmergencyLights extends Component with HasGameReference<ColorMixerGame> {
   final Random _random = Random();
   double _flickerTimer = 0;
   double _nextFlickerTime = 0.2;
@@ -42,7 +42,7 @@ class EmergencyLights extends Component with HasGameRef<ColorMixerGame> {
 
     if (parent == null) return;
 
-    final gameSize = gameRef.size;
+    final gameSize = game.size;
     final lightRadius = 120.0;
 
     _lightPaint.color = Colors.red.withValues(alpha: _opacity * 0.3);

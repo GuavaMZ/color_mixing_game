@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import '../../color_mixer_game.dart';
 
 class GravityFluxEffect extends PositionComponent
-    with HasGameRef<ColorMixerGame> {
+    with HasGameReference<ColorMixerGame> {
   final Random _random = Random();
   final List<_FluxLine> _lines = [];
   double _timer = 0;
@@ -14,7 +14,7 @@ class GravityFluxEffect extends PositionComponent
   @override
   Future<void> onLoad() async {
     super.onLoad();
-    size = gameRef.beaker.size;
+    size = game.beaker.size;
     position = Vector2.zero(); // Will be child of Beaker
 
     // Initialize some lines

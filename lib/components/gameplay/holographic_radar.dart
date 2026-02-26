@@ -1,10 +1,11 @@
 import 'dart:math';
-import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import '../../color_mixer_game.dart';
 import '../../helpers/theme_constants.dart';
 
-class HolographicRadar extends PositionComponent with HasGameRef {
+class HolographicRadar extends PositionComponent
+    with HasGameReference<ColorMixerGame> {
   final double radius;
   double _rotation = 0;
   double _time = 0;

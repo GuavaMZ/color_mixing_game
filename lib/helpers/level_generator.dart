@@ -1,18 +1,9 @@
-import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 
 // Standalone runner for generating levels.json
 void main() {
   final generator = LevelGenerator();
-  final levels = generator.generateLevels(500);
-
-  // Create output file
-  final file = File('assets/levels.json');
-  final jsonContent = jsonEncode({'levels': levels});
-
-  file.writeAsStringSync(jsonContent);
-  print('Successfully generated ${levels.length} levels to assets/levels.json');
+  generator.generateLevels(500);
 }
 
 class LevelGenerator {
@@ -105,7 +96,7 @@ class LevelGenerator {
         'isBlindMode': last['isBlindMode'],
         'hint': last['hint'],
       });
-      print("Filled missing level ${levels.length} with duplicate.");
+      // print("Filled missing level ${levels.length} with duplicate.");
     }
 
     return levels;
@@ -189,9 +180,7 @@ class LevelGenerator {
     }
 
     if (generated < count) {
-      print(
-        "Warning: Could not generate unique levels for phase $phaseName. Generated $generated/$count",
-      );
+      // print("Warning: Could not generate unique levels for phase $phaseName. Generated $generated/$count");
     }
 
     return phaseLevels;
@@ -234,12 +223,13 @@ class LevelGenerator {
     if (type == 0) {
       // Primary
       int c = _rng.nextInt(3);
-      if (c == 0)
+      if (c == 0) {
         r = _rng.nextInt(3) + 1;
-      else if (c == 1)
+      } else if (c == 1) {
         g = _rng.nextInt(3) + 1;
-      else
+      } else {
         b = _rng.nextInt(3) + 1;
+      }
     } else if (type == 1) {
       // Secondary 1:1
       int val = _rng.nextInt(3) + 1;
@@ -255,19 +245,21 @@ class LevelGenerator {
       int val1 = _rng.nextInt(3) + 2; // 2, 3, or 4
       int val2 = 1;
 
-      if (main == 0)
+      if (main == 0) {
         r = val1;
-      else if (main == 1)
+      } else if (main == 1) {
         g = val1;
-      else
+      } else {
         b = val1;
+      }
 
-      if (sec == 0)
+      if (sec == 0) {
         r = val2;
-      else if (sec == 1)
+      } else if (sec == 1) {
         g = val2;
-      else
+      } else {
         b = val2;
+      }
     } else {
       // Ratio 3:2
       int main = _rng.nextInt(3);
@@ -276,19 +268,21 @@ class LevelGenerator {
       int val1 = 3;
       int val2 = 2;
 
-      if (main == 0)
+      if (main == 0) {
         r = val1;
-      else if (main == 1)
+      } else if (main == 1) {
         g = val1;
-      else
+      } else {
         b = val1;
+      }
 
-      if (sec == 0)
+      if (sec == 0) {
         r = val2;
-      else if (sec == 1)
+      } else if (sec == 1) {
         g = val2;
-      else
+      } else {
         b = val2;
+      }
     }
     return {'red': r, 'green': g, 'blue': b, 'white': 0, 'black': 0};
   }
@@ -306,20 +300,22 @@ class LevelGenerator {
     if (r == 0 && g == 0) {
       g = baseVal1;
       b = baseVal1;
-    } else if (r > 0 && g == 0)
+    } else if (r > 0 && g == 0) {
       b = baseVal2;
-    else if (r == 0 && g > 0)
+    } else if (r == 0 && g > 0) {
       b = baseVal2;
+    }
 
     if (r == 0 && g == 0 && b == 0) r = 1;
 
     // Apply tint or shade
     bool isTint = _rng.nextBool();
     int strength = _rng.nextInt(3) + 1; // 1 to 3
-    if (isTint)
+    if (isTint) {
       w = strength;
-    else
+    } else {
       k = strength;
+    }
 
     return {'red': r, 'green': g, 'blue': b, 'white': w, 'black': k};
   }
@@ -345,12 +341,13 @@ class LevelGenerator {
     } else if (type == 1) {
       // One color + grey (W+K)
       int c = _rng.nextInt(3);
-      if (c == 0)
+      if (c == 0) {
         r = _rng.nextInt(3) + 1;
-      else if (c == 1)
+      } else if (c == 1) {
         g = _rng.nextInt(3) + 1;
-      else
+      } else {
         b = _rng.nextInt(3) + 1;
+      }
 
       w = _rng.nextInt(2) + 1;
       k = _rng.nextInt(2) + 1;
@@ -365,10 +362,11 @@ class LevelGenerator {
 
       // Prevent muddy (w & k together in complex)
       if (w > 0 && k > 0) {
-        if (_rng.nextBool())
+        if (_rng.nextBool()) {
           w = 0;
-        else
+        } else {
           k = 0;
+        }
       }
     }
     return {'red': r, 'green': g, 'blue': b, 'white': w, 'black': k};
@@ -406,10 +404,11 @@ class LevelGenerator {
     // Allow up to 4 colors
     if (w > 0 && k > 0) {
       // Reduce chance of both W and K
-      if (_rng.nextBool())
+      if (_rng.nextBool()) {
         w = 0;
-      else
+      } else {
         k = 0;
+      }
     }
     if (r + g + b == 0) r = 2;
     return {'red': r, 'green': g, 'blue': b, 'white': w, 'black': k};

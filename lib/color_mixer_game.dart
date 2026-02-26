@@ -480,12 +480,13 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     // Factor in mode-specific base rewards
     int baseCoins = 0;
     if (currentMode == GameMode.classic || currentMode == GameMode.timeAttack) {
-      if (stars == 3)
+      if (stars == 3) {
         baseCoins = 100;
-      else if (stars == 2)
+      } else if (stars == 2) {
         baseCoins = 50;
-      else if (stars == 1)
+      } else if (stars == 1) {
         baseCoins = 20;
+      }
     } else {
       baseCoins = stars * 10; // Default fallback
     }
@@ -650,8 +651,9 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     if (isControlsInverted && !ignoreInversion) {
       if (colorType == 'red') {
         effectiveColorType = 'blue';
-      } else if (colorType == 'blue')
+      } else if (colorType == 'blue') {
         effectiveColorType = 'red';
+      }
       // Can also swap others if desired, e.g. green/yellow? Green is secondary?
       // Let's stick to Red/Blue as per request "red button adds blue, and the yellow button adds red"
       // Wait, request said "yellow button adds red".
@@ -1148,8 +1150,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     if (mode == GameMode.timeAttack) {
       timeLeft = 30.0;
     }
-    overlays.remove('MainMenu');
-    overlays.add('LevelMap');
+    transitionTo('MainMenu', 'LevelMap');
     notifyListeners();
   }
 
@@ -1279,24 +1280,41 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   }
 
   void returnToMainMenu() {
-    currentMode = GameMode.none;
-    _audio.playMenuMusic();
+    void performCleanup() {
+      currentMode = GameMode.none;
+      _audio.playMenuMusic();
 
-    // Clear any temporary game overlays
-    overlays.remove('PauseMenu');
-    overlays.remove('GameOver');
-    overlays.remove('WinMenu');
-    overlays.remove('EchoWin');
-    overlays.remove('EchoGameOver');
-    overlays.remove('ChaosWin');
-    overlays.remove('ChaosGameOver');
-    overlays.remove('Controls');
-    overlays.remove('LevelMap');
-    overlays.remove('ColorEchoHUD');
-    overlays.remove('ChaosLabHUD');
+      // Clear any temporary game overlays
+      overlays.remove('PauseMenu');
+      overlays.remove('GameOver');
+      overlays.remove('WinMenu');
+      overlays.remove('EchoWin');
+      overlays.remove('EchoGameOver');
+      overlays.remove('ChaosWin');
+      overlays.remove('ChaosGameOver');
+      overlays.remove('Controls');
+      overlays.remove('LevelMap');
+      overlays.remove('ColorEchoHUD');
+      overlays.remove('ChaosLabHUD');
+      overlays.remove('Shop');
+      overlays.remove('Gallery');
+      overlays.remove('Achievements');
+      overlays.remove('Statistics');
+      overlays.remove('DailyChallenge');
+      overlays.remove('Settings');
+      overlays.remove('LabUpgrade');
+      overlays.remove('CoinStore');
+      overlays.remove('ModeGuide');
 
-    overlays.add('MainMenu');
-    notifyListeners();
+      overlays.add('MainMenu');
+      notifyListeners();
+    }
+
+    if (_transitionCallback != null) {
+      _transitionCallback!(performCleanup);
+    } else {
+      performCleanup();
+    }
   }
 
   void addHelper(String helperId, int amount) {
@@ -1692,18 +1710,19 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   }
 }
 
-class AnomalyWarning extends PositionComponent with HasGameRef<ColorMixerGame> {
+class AnomalyWarning extends PositionComponent
+    with HasGameReference<ColorMixerGame> {
   late TextComponent _text;
   double _timer = 0;
 
   @override
   Future<void> onLoad() async {
     super.onLoad();
-    position = Vector2(gameRef.size.x / 2, gameRef.size.y * 0.2);
+    position = Vector2(game.size.x / 2, game.size.y * 0.2);
     anchor = Anchor.center;
 
     _text = TextComponent(
-      text: AppStrings.anomalyDetected.getString(gameRef.buildContext!),
+      text: AppStrings.anomalyDetected.getString(game.buildContext!),
       textRenderer: TextPaint(
         style: const TextStyle(
           color: Colors.redAccent,

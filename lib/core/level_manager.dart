@@ -174,10 +174,12 @@ class LevelManager {
   }
 
   String _generateSmartHint(int r, int g, int b, int w, int k) {
-    if (w > 0 && r == 0 && g == 0 && b == 0 && k == 0)
+    if (w > 0 && r == 0 && g == 0 && b == 0 && k == 0) {
       return AppStrings.hintPureWhite;
-    if (k > 0 && r == 0 && g == 0 && b == 0 && w == 0)
+    }
+    if (k > 0 && r == 0 && g == 0 && b == 0 && w == 0) {
       return AppStrings.hintPureBlack;
+    }
 
     if (w > 0 && w >= r && w >= g && w >= b) return AppStrings.hintNeedsWhite;
     if (k > 0 && k >= r && k >= g && k >= b) return AppStrings.hintNeedsBlack;

@@ -1,11 +1,11 @@
 import 'dart:math';
-import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/particles.dart';
 import 'package:flutter/material.dart';
 import '../../color_mixer_game.dart';
 
-class PouringEffect extends PositionComponent with HasGameRef<ColorMixerGame> {
+class PouringEffect extends PositionComponent
+    with HasGameReference<ColorMixerGame> {
   final Color color;
   final double targetY;
   final double sourceY;
@@ -61,7 +61,7 @@ class PouringEffect extends PositionComponent with HasGameRef<ColorMixerGame> {
 
     final particle = ParticleSystemComponent(
       position: Vector2(
-        position.x + (gameRef.hasWind ? gameRef.windForce * 0.5 : 0),
+        position.x + (game.hasWind ? game.windForce * 0.5 : 0),
         targetY,
       ),
       particle: Particle.generate(
@@ -76,7 +76,7 @@ class PouringEffect extends PositionComponent with HasGameRef<ColorMixerGame> {
           return AcceleratedParticle(
             position: Vector2.zero(),
             speed: Vector2(
-              cos(angle) * speed + (gameRef.hasWind ? gameRef.windForce : 0),
+              cos(angle) * speed + (game.hasWind ? game.windForce : 0),
               sin(angle) * speed,
             ),
             acceleration: Vector2(0, 400), // Gravity
@@ -143,9 +143,7 @@ class PouringEffect extends PositionComponent with HasGameRef<ColorMixerGame> {
     double offsetBottom = sin(_time * 25 + 2) * 2.0;
 
     // Wind bend
-    double windShift = gameRef.hasWind
-        ? gameRef.windForce * (progress * 1.5)
-        : 0;
+    double windShift = game.hasWind ? game.windForce * (progress * 1.5) : 0;
     offsetBottom += windShift;
 
     path.moveTo(-topWidth / 2 + offsetTop, currentTop);

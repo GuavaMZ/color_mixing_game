@@ -1142,7 +1142,7 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
             child: ResponsiveIconButton(
               onPressed: () {
                 AudioManager().playButton();
-                widget.game.overlays.remove('LabUpgrade');
+                widget.game.returnToMainMenu();
               },
               icon: Icons.arrow_back,
               color: Colors.black,
@@ -1215,7 +1215,7 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
           barrierDismissible: false,
           builder: (context) {
             Future.delayed(const Duration(milliseconds: 1500), () {
-              if (mounted) Navigator.pop(context); // Auto-close
+              if (context.mounted) Navigator.pop(context); // Auto-close
             });
             return Center(
               child: AnimatedContainer(

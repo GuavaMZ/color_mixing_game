@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import '../../../color_mixer_game.dart';
@@ -220,7 +219,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
 
   void _navTo(String overlay) {
     AudioManager().playButton();
-    widget.game.overlays.add(overlay);
+    widget.game.transitionTo('MainMenu', overlay);
   }
 
   Widget _buildUtilButton({
@@ -314,7 +313,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
     return GestureDetector(
       onTap: () {
         AudioManager().playButton();
-        widget.game.overlays.add('CoinStore');
+        widget.game.transitionTo('MainMenu', 'CoinStore');
       },
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -336,7 +335,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
             child: GestureDetector(
               onTap: () {
                 AudioManager().playButton();
-                widget.game.overlays.add('CoinStore');
+                widget.game.transitionTo('MainMenu', 'CoinStore');
               },
               child: Container(
                 width: 34,

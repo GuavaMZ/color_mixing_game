@@ -97,10 +97,10 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     _localization.init(
       mapLocales: [
-        const MapLocale('en', AppStrings.En),
-        const MapLocale('ar', AppStrings.Ar),
-        const MapLocale('es', AppStrings.Es),
-        const MapLocale('fr', AppStrings.Fr),
+        MapLocale('en', AppStrings.en),
+        MapLocale('ar', AppStrings.ar),
+        MapLocale('es', AppStrings.es),
+        MapLocale('fr', AppStrings.fr),
       ],
       initLanguageCode: 'en',
     );

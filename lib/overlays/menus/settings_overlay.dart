@@ -143,10 +143,8 @@ class _SettingsOverlayState extends State<SettingsOverlay>
   }
 
   void _close() {
-    _audio.playButton();
-    _controller.reverse().then((_) {
-      widget.game.overlays.remove('Settings');
-    });
+    AudioManager().playButton();
+    widget.game.returnToMainMenu();
   }
 
   void _showRedeemDialog(BuildContext context) {
@@ -278,11 +276,9 @@ class _SettingsOverlayState extends State<SettingsOverlay>
       child: Stack(
         children: [
           // Backdrop with Blur
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-              child: Container(color: Colors.black.withValues(alpha: 0.5)),
-            ),
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: Container(color: Colors.black.withValues(alpha: 0.5)),
           ),
 
           // Content
@@ -503,8 +499,7 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                           icon: Icons.school_rounded,
                           onTap: () {
                             _audio.playButton();
-                            widget.game.overlays.remove('Settings');
-                            widget.game.overlays.add('Tutorial');
+                            widget.game.transitionTo('Settings', 'Tutorial');
                           },
                         ),
                       ),

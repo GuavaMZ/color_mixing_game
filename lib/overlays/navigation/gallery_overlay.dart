@@ -258,7 +258,7 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
                             ResponsiveIconButton(
                               onPressed: () {
                                 AudioManager().playButton();
-                                widget.game.overlays.remove('Gallery');
+                                widget.game.returnToMainMenu();
                               },
                               icon: Icons.arrow_back_rounded,
                               color: Colors.white,

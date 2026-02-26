@@ -105,7 +105,7 @@ class DailyChallengeOverlay extends StatelessWidget {
                         label: AppStrings.gotIt.getString(context),
                         onTap: () {
                           AudioManager().playButton();
-                          game.overlays.remove('DailyChallenge');
+                          game.returnToMainMenu();
                         },
                       ),
                     ),
@@ -131,7 +131,7 @@ class DailyChallengeOverlay extends StatelessWidget {
           icon: const Icon(Icons.close_rounded, color: Colors.white70),
           onPressed: () {
             AudioManager().playButton();
-            game.overlays.remove('DailyChallenge');
+            game.returnToMainMenu();
           },
         ),
       ],
@@ -276,7 +276,7 @@ class DailyChallengeOverlay extends StatelessWidget {
               ),
             ],
           ),
-          if (customContent != null) customContent,
+          ?customContent,
         ],
       ),
     );
