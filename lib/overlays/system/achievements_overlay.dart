@@ -6,9 +6,8 @@ import '../../../color_mixer_game.dart';
 import '../../helpers/string_manager.dart';
 import '../../helpers/theme_constants.dart';
 import '../../helpers/audio_manager.dart';
-import '../../helpers/visual_effects.dart'; // StarField
-import '../../components/ui/responsive_components.dart'; // ResponsiveIconButton
-import '../../components/ui/animated_card.dart'; // AnimatedCard
+import '../../components/ui/animated_card.dart';
+import '../../components/ui/enhanced_button.dart';
 
 class AchievementData {
   final String id;
@@ -128,56 +127,68 @@ class _AchievementsOverlayState extends State<AchievementsOverlay> {
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          // Blur Background
+          // Backdrop with Blur
           Positioned.fill(
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      AppTheme.primaryDark.withValues(alpha: 0.8),
-                      AppTheme.primaryMedium.withValues(alpha: 0.9),
-                    ],
-                  ),
-                ),
-              ),
+              child: Container(color: Colors.black.withValues(alpha: 0.7)),
             ),
           ),
 
-          // StarField
-          const Positioned.fill(
-            child: StarField(starCount: 50, color: Colors.white),
-          ),
-
-          SafeArea(
-            child: Column(
-              children: [
-                _buildHeader(context),
-                Expanded(
-                  child: ListView.builder(
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 10,
+          // Content
+          Center(
+            child: Container(
+              margin: EdgeInsets.symmetric(
+                horizontal: ResponsiveHelper.spacing(context, 24),
+                vertical: ResponsiveHelper.spacing(context, 40),
+              ),
+              constraints: BoxConstraints(
+                maxWidth: 600,
+                maxHeight: MediaQuery.of(context).size.height * 0.85,
+              ),
+              child: AnimatedCard(
+                onTap: () {}, // For glow
+                hasGlow: true,
+                borderRadius: 32,
+                fillColor: AppTheme.primaryDark.withValues(alpha: 0.9),
+                borderColor: AppTheme.neonCyan,
+                padding: EdgeInsets.all(ResponsiveHelper.spacing(context, 24)),
+                child: Column(
+                  children: [
+                    _buildHeader(context),
+                    const SizedBox(height: 24),
+                    Expanded(
+                      child: ListView.builder(
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: AchievementsOverlay.allAchievements.length,
+                        itemBuilder: (context, index) {
+                          final achievement =
+                              AchievementsOverlay.allAchievements[index];
+                          final isUnlocked = widget.game.unlockedAchievements
+                              .contains(achievement.id);
+                          return _AchievementCard(
+                            achievement: achievement,
+                            isUnlocked: isUnlocked,
+                            delay: index * 40,
+                          );
+                        },
+                      ),
                     ),
-                    itemCount: AchievementsOverlay.allAchievements.length,
-                    itemBuilder: (context, index) {
-                      final achievement =
-                          AchievementsOverlay.allAchievements[index];
-                      final isUnlocked = widget.game.unlockedAchievements
-                          .contains(achievement.id);
-                      return _AchievementCard(
-                        achievement: achievement,
-                        isUnlocked: isUnlocked,
-                        delay: index * 40, // Slightly faster staggered delay
-                      );
-                    },
-                  ),
+                    const SizedBox(height: 16),
+                    // Footer
+                    SizedBox(
+                      width: double.infinity,
+                      child: EnhancedButton(
+                        label: AppStrings.gotIt.getString(context),
+                        onTap: () {
+                          AudioManager().playButton();
+                          widget.game.overlays.remove('Achievements');
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ],
@@ -189,101 +200,77 @@ class _AchievementsOverlayState extends State<AchievementsOverlay> {
     final int unlockedCount = widget.game.unlockedAchievements.length;
     final int totalCount = AchievementsOverlay.allAchievements.length;
 
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        children: [
-          Row(
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              AppStrings.achievementsTitle.getString(context),
+              style: AppTheme.heading2(context),
+            ),
+            IconButton(
+              icon: const Icon(Icons.close_rounded, color: Colors.white70),
+              onPressed: () {
+                AudioManager().playButton();
+                widget.game.overlays.remove('Achievements');
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        // Progress Bar
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppTheme.neonCyan.withValues(alpha: 0.2)),
+          ),
+          child: Row(
             children: [
-              ResponsiveIconButton(
-                onPressed: () {
-                  AudioManager().playButton();
-                  widget.game.overlays.remove('Achievements');
-                },
-                icon: Icons.arrow_back_rounded,
-                color: Colors.white,
-                backgroundColor: Colors.white.withValues(alpha: 0.1),
-              ),
-              const SizedBox(width: 16),
               Expanded(
-                child: Hero(
-                  tag: 'achievements_title',
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    decoration: AppTheme.cosmicCard(
-                      borderRadius: 20,
-                      fillColor: AppTheme.primaryDark.withValues(alpha: 0.6),
-                      borderColor: AppTheme.neonCyan.withValues(alpha: 0.3),
+                child: Stack(
+                  children: [
+                    Container(
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
                     ),
-                    child: Center(
-                      child: Text(
-                        AppStrings.achievementsTitle
-                            .getString(context)
-                            .toUpperCase(),
-                        style: AppTheme.heading3(context).copyWith(
-                          color: AppTheme.neonCyan,
-                          letterSpacing: 3.0,
-                          fontSize: 22,
+                    FractionallySizedBox(
+                      widthFactor: unlockedCount / totalCount,
+                      child: Container(
+                        height: 8,
+                        decoration: BoxDecoration(
+                          gradient: AppTheme.primaryGradient,
+                          borderRadius: BorderRadius.circular(4),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.neonCyan.withValues(alpha: 0.5),
+                              blurRadius: 8,
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 16),
+              Text(
+                '$unlockedCount / $totalCount',
+                style: AppTheme.bodyLarge(context).copyWith(
+                  color: AppTheme.neonCyan,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          // Progress Bar
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: AppTheme.cosmicGlass(
-              borderRadius: 16,
-              borderColor: AppTheme.neonCyan.withValues(alpha: 0.1),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Stack(
-                    children: [
-                      Container(
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                      FractionallySizedBox(
-                        widthFactor: unlockedCount / totalCount,
-                        child: Container(
-                          height: 8,
-                          decoration: BoxDecoration(
-                            gradient: AppTheme.primaryGradient,
-                            borderRadius: BorderRadius.circular(4),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppTheme.neonCyan.withValues(alpha: 0.5),
-                                blurRadius: 8,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Text(
-                  '$unlockedCount / $totalCount',
-                  style: AppTheme.buttonText(
-                    context,
-                    isLarge: true,
-                  ).copyWith(color: AppTheme.neonCyan, letterSpacing: 1.5),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -349,107 +336,82 @@ class _AchievementCardState extends State<_AchievementCard>
         );
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        child: AnimatedCard(
-          onTap: () {
-            if (widget.isUnlocked) {
-              AudioManager().playButton();
-            }
-          },
-          fillColor: widget.isUnlocked
-              ? widget.achievement.color.withValues(alpha: 0.1)
-              : AppTheme.primaryDark.withValues(alpha: 0.4),
-          borderColor: widget.isUnlocked
-              ? widget.achievement.color.withValues(alpha: 0.5)
-              : Colors.white.withValues(alpha: 0.05),
-          hasGlow: widget.isUnlocked,
-          glowColor: widget.achievement.color,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: widget.isUnlocked
+                ? widget.achievement.color.withValues(alpha: 0.3)
+                : Colors.white12,
+          ),
+        ),
+        child: Row(
+          children: [
+            // Icon Badge
+            Stack(
+              alignment: Alignment.center,
               children: [
-                // Icon Badge
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    // Outer Glow for unlocked
-                    if (widget.isUnlocked)
-                      _BadgeGlow(color: widget.achievement.color),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: widget.isUnlocked
-                            ? widget.achievement.color.withValues(alpha: 0.15)
-                            : Colors.black.withValues(alpha: 0.4),
-                        border: Border.all(
-                          color: widget.isUnlocked
-                              ? widget.achievement.color
-                              : Colors.white12,
-                          width: 2.5,
-                        ),
-                        boxShadow: widget.isUnlocked
-                            ? [
-                                BoxShadow(
-                                  color: widget.achievement.color.withValues(
-                                    alpha: 0.4,
-                                  ),
-                                  blurRadius: 15,
-                                  spreadRadius: 1,
-                                ),
-                              ]
-                            : [],
-                      ),
-                      child: Icon(
-                        widget.isUnlocked
-                            ? widget.achievement.icon
-                            : Icons.lock_rounded,
-                        color: widget.isUnlocked
-                            ? Colors.white
-                            : Colors.white24,
-                        size: 30,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(width: 20),
-                // Text Content
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.achievement.title.getString(context),
-                        style: AppTheme.buttonText(context, isLarge: true)
-                            .copyWith(
-                              color: widget.isUnlocked
-                                  ? Colors.white
-                                  : Colors.white38,
-                              fontSize: 18,
-                            ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        widget.achievement.description.getString(context),
-                        style: TextStyle(
-                          color: widget.isUnlocked
-                              ? Colors.white70
-                              : Colors.white24,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
                 if (widget.isUnlocked)
-                  const Icon(
-                    Icons.check_circle_rounded,
-                    color: Colors.greenAccent,
+                  _BadgeGlow(color: widget.achievement.color),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: widget.isUnlocked
+                        ? widget.achievement.color.withValues(alpha: 0.15)
+                        : Colors.black.withValues(alpha: 0.4),
+                    border: Border.all(
+                      color: widget.isUnlocked
+                          ? widget.achievement.color
+                          : Colors.white12,
+                      width: 2.5,
+                    ),
+                  ),
+                  child: Icon(
+                    widget.isUnlocked
+                        ? widget.achievement.icon
+                        : Icons.lock_rounded,
+                    color: widget.isUnlocked ? Colors.white : Colors.white24,
                     size: 24,
                   ),
+                ),
               ],
             ),
-          ),
+            const SizedBox(width: 16),
+            // Text Content
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.achievement.title.getString(context),
+                    style: AppTheme.bodyLarge(context).copyWith(
+                      color: widget.isUnlocked ? Colors.white : Colors.white38,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    widget.achievement.description.getString(context),
+                    style: TextStyle(
+                      color: widget.isUnlocked
+                          ? Colors.white70
+                          : Colors.white24,
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (widget.isUnlocked)
+              const Icon(
+                Icons.check_circle_rounded,
+                color: AppTheme.success,
+                size: 20,
+              ),
+          ],
         ),
       ),
     );
@@ -489,8 +451,8 @@ class _BadgeGlowState extends State<_BadgeGlow>
       animation: _controller,
       builder: (context, child) {
         return Container(
-          width: 60,
-          height: 60,
+          width: 50,
+          height: 50,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             gradient: RadialGradient(
@@ -510,8 +472,8 @@ class _BadgeGlowState extends State<_BadgeGlow>
         children: List.generate(4, (index) {
           final angle = (index * math.pi / 2);
           return Positioned(
-            left: 30 + 25 * math.cos(angle) - 2,
-            top: 30 + 25 * math.sin(angle) - 2,
+            left: 25 + 20 * math.cos(angle) - 2,
+            top: 25 + 20 * math.sin(angle) - 2,
             child: Container(
               width: 4,
               height: 4,
