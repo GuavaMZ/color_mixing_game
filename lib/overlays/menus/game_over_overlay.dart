@@ -117,11 +117,10 @@ class GameOverOverlay extends StatelessWidget {
                           isOutlined: true,
                           onTap: () {
                             AudioManager().playButton();
-                            game.overlays.remove('GameOver');
                             if (game.currentMode == GameMode.colorEcho) {
                               game.returnToMainMenu();
                             } else {
-                              game.overlays.add('LevelMap');
+                              game.navigateToPage('LevelMap', isReverse: true);
                             }
                           },
                         ),

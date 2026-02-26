@@ -1,12 +1,10 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
-import '../../../color_mixer_game.dart';
+import '../../color_mixer_game.dart';
 import '../../helpers/string_manager.dart';
 import '../../helpers/theme_constants.dart';
 import '../../helpers/audio_manager.dart';
 import '../../components/ui/animated_card.dart';
-import '../../components/ui/enhanced_button.dart';
 
 class ModeGuideOverlay extends StatefulWidget {
   final ColorMixerGame game;
@@ -20,7 +18,6 @@ class _ModeGuideOverlayState extends State<ModeGuideOverlay>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
 
   @override
   void initState() {
@@ -34,11 +31,6 @@ class _ModeGuideOverlayState extends State<ModeGuideOverlay>
       begin: 0.0,
       end: 1.0,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
-
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.1),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
     _controller.forward();
   }
@@ -60,118 +52,127 @@ class _ModeGuideOverlayState extends State<ModeGuideOverlay>
       opacity: _fadeAnimation,
       child: Stack(
         children: [
-          // Backdrop with Blur
+          // Standard Background Gradient
           Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Container(color: Colors.black.withValues(alpha: 0.7)),
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: AppTheme.backgroundGradient,
+              ),
             ),
           ),
 
           // Content
-          Center(
-            child: SlideTransition(
-              position: _slideAnimation,
-              child: Container(
-                margin: EdgeInsets.symmetric(
-                  horizontal: ResponsiveHelper.spacing(context, 24),
-                  vertical: ResponsiveHelper.spacing(context, 40),
-                ),
-                constraints: BoxConstraints(
-                  maxWidth: 600,
-                  maxHeight: MediaQuery.of(context).size.height * 0.85,
-                ),
-                child: AnimatedCard(
-                  onTap: () {}, // For glow
-                  hasGlow: true,
-                  borderRadius: 32,
-                  fillColor: AppTheme.primaryDark.withValues(alpha: 0.9),
-                  borderColor: AppTheme.neonCyan,
-                  padding: EdgeInsets.all(
-                    ResponsiveHelper.spacing(context, 24),
-                  ),
-                  child: Column(
-                    children: [
-                      // Header
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            AppStrings.modeGuidesTitle.getString(context),
-                            style: AppTheme.heading2(context),
+          SafeArea(
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: ResponsiveHelper.spacing(context, 20),
+                vertical: ResponsiveHelper.spacing(context, 20),
+              ),
+              child: AnimatedCard(
+                onTap: () {}, // For glow
+                hasGlow: true,
+                borderRadius: 24,
+                fillColor: AppTheme.primaryDark.withValues(alpha: 0.7),
+                borderColor: AppTheme.neonCyan.withValues(alpha: 0.3),
+                padding: EdgeInsets.all(ResponsiveHelper.spacing(context, 20)),
+                child: Column(
+                  children: [
+                    // Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          AppStrings.modeGuidesTitle.getString(context),
+                          style: AppTheme.heading2(context),
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.close_rounded,
+                            color: Colors.white70,
                           ),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.close_rounded,
-                              color: Colors.white70,
+                          onPressed: _close,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+
+                    // Guides List
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        child: Column(
+                          children: [
+                            _buildGuideSection(
+                              title: AppStrings.classicGuideTitle.getString(
+                                context,
+                              ),
+                              description: AppStrings.classicGuideDesc
+                                  .getString(context),
+                              icon: Icons.palette_rounded,
+                              color: AppTheme.neonCyan,
                             ),
-                            onPressed: _close,
-                          ),
-                        ],
+                            const SizedBox(height: 16),
+                            _buildGuideSection(
+                              title: AppStrings.timeAttackGuideTitle.getString(
+                                context,
+                              ),
+                              description: AppStrings.timeAttackGuideDesc
+                                  .getString(context),
+                              icon: Icons.timer_rounded,
+                              color: AppTheme.electricYellow,
+                            ),
+                            const SizedBox(height: 16),
+                            _buildGuideSection(
+                              title: AppStrings.colorEchoGuideTitle.getString(
+                                context,
+                              ),
+                              description: AppStrings.colorEchoGuideDesc
+                                  .getString(context),
+                              icon: Icons.waves_rounded,
+                              color: AppTheme.neonMagenta,
+                            ),
+                            const SizedBox(height: 16),
+                            _buildGuideSection(
+                              title: AppStrings.chaosLabGuideTitle.getString(
+                                context,
+                              ),
+                              description: AppStrings.chaosLabGuideDesc
+                                  .getString(context),
+                              icon: Icons.science_rounded,
+                              color: AppTheme.success,
+                            ),
+                            const SizedBox(height: 24),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 24),
-
-                      // Guides List
-                      Expanded(
-                        child: SingleChildScrollView(
-                          physics: const BouncingScrollPhysics(),
-                          child: Column(
-                            children: [
-                              _buildGuideSection(
-                                title: AppStrings.classicGuideTitle.getString(
-                                  context,
-                                ),
-                                description: AppStrings.classicGuideDesc
-                                    .getString(context),
-                                icon: Icons.palette_rounded,
-                                color: AppTheme.neonCyan,
+                    ),
+                    // Footer Action
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: TextButton(
+                        onPressed: _close,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            gradient: AppTheme.primaryGradient,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Center(
+                            child: Text(
+                              AppStrings.gotIt.getString(context),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
                               ),
-                              const SizedBox(height: 16),
-                              _buildGuideSection(
-                                title: AppStrings.timeAttackGuideTitle
-                                    .getString(context),
-                                description: AppStrings.timeAttackGuideDesc
-                                    .getString(context),
-                                icon: Icons.timer_rounded,
-                                color: AppTheme.electricYellow,
-                              ),
-                              const SizedBox(height: 16),
-                              _buildGuideSection(
-                                title: AppStrings.colorEchoGuideTitle.getString(
-                                  context,
-                                ),
-                                description: AppStrings.colorEchoGuideDesc
-                                    .getString(context),
-                                icon: Icons.waves_rounded,
-                                color: AppTheme.neonMagenta,
-                              ),
-                              const SizedBox(height: 16),
-                              _buildGuideSection(
-                                title: AppStrings.chaosLabGuideTitle.getString(
-                                  context,
-                                ),
-                                description: AppStrings.chaosLabGuideDesc
-                                    .getString(context),
-                                icon: Icons.science_rounded,
-                                color: AppTheme.success,
-                              ),
-                              const SizedBox(height: 24),
-                            ],
+                            ),
                           ),
                         ),
                       ),
-
-                      // Footer Action
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        width: double.infinity,
-                        child: EnhancedButton(
-                          label: AppStrings.gotIt.getString(context),
-                          onTap: _close,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),

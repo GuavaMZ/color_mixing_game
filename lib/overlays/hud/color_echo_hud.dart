@@ -48,7 +48,11 @@ class ColorEchoHUD extends StatelessWidget {
                       ResponsiveIconButton(
                         onPressed: () {
                           AudioManager().playButton();
-                          game.transitionTo('ColorEchoHUD', 'MainMenu');
+                          game.transitionTo(
+                            'ColorEchoHUD',
+                            'MainMenu',
+                            isReverse: true,
+                          );
                         },
                         icon: Icons.arrow_back_ios_new_rounded,
                         color: AppTheme.neonCyan,

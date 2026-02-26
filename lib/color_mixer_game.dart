@@ -135,18 +135,24 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   Vector2 _earthquakeOffset = Vector2.zero();
   Vector2 get earthquakeOffset => _earthquakeOffset;
 
-  void Function(VoidCallback)? _transitionCallback;
+  void Function(VoidCallback, {bool isReverse})? _transitionCallback;
 
-  void setTransitionCallback(void Function(VoidCallback) callback) {
+  void setTransitionCallback(
+    void Function(VoidCallback, {bool isReverse}) callback,
+  ) {
     _transitionCallback = callback;
   }
 
-  void transitionTo(String overlayToRemove, String overlayToAdd) {
+  void transitionTo(
+    String overlayToRemove,
+    String overlayToAdd, {
+    bool isReverse = false,
+  }) {
     if (_transitionCallback != null) {
       _transitionCallback!(() {
         overlays.remove(overlayToRemove);
         overlays.add(overlayToAdd);
-      });
+      }, isReverse: isReverse);
     } else {
       overlays.remove(overlayToRemove);
       overlays.add(overlayToAdd);
@@ -1117,8 +1123,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       levelManager.currentLevelIndex = nextLevelIndex;
       startLevel(); // Initialize and start the next level
     } else {
-      // Game Completed? Back to map
-      overlays.add('LevelMap');
+      navigateToPage('LevelMap', isReverse: true);
     }
     notifyListeners();
   }
@@ -1279,43 +1284,60 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     return false;
   }
 
-  void returnToMainMenu() {
+  void navigateToPage(String pageName, {bool isReverse = false}) {
     void performCleanup() {
-      currentMode = GameMode.none;
-      _audio.playMenuMusic();
+      // If navigating to MainMenu, reset mode and music
+      if (pageName == 'MainMenu') {
+        currentMode = GameMode.none;
+        _audio.playMenuMusic();
+      }
 
-      // Clear any temporary game overlays
-      overlays.remove('PauseMenu');
-      overlays.remove('GameOver');
-      overlays.remove('WinMenu');
-      overlays.remove('EchoWin');
-      overlays.remove('EchoGameOver');
-      overlays.remove('ChaosWin');
-      overlays.remove('ChaosGameOver');
-      overlays.remove('Controls');
-      overlays.remove('LevelMap');
-      overlays.remove('ColorEchoHUD');
-      overlays.remove('ChaosLabHUD');
-      overlays.remove('Shop');
-      overlays.remove('Gallery');
-      overlays.remove('Achievements');
-      overlays.remove('Statistics');
-      overlays.remove('DailyChallenge');
-      overlays.remove('Settings');
-      overlays.remove('LabUpgrade');
-      overlays.remove('CoinStore');
-      overlays.remove('ModeGuide');
+      // Clear any temporary game and menu overlays
+      final toRemove = [
+        'PauseMenu',
+        'GameOver',
+        'WinMenu',
+        'EchoWin',
+        'EchoGameOver',
+        'ChaosWin',
+        'ChaosGameOver',
+        'Controls',
+        'LevelMap',
+        'ColorEchoHUD',
+        'ChaosLabHUD',
+        'Shop',
+        'Gallery',
+        'Achievements',
+        'Statistics',
+        'DailyChallenge',
+        'Settings',
+        'LabUpgrade',
+        'CoinStore',
+        'ModeGuide',
+        'Tutorial',
+        'DailyLogin',
+      ];
 
-      overlays.add('MainMenu');
+      for (final overlay in toRemove) {
+        if (overlay != pageName) {
+          overlays.remove(overlay);
+        }
+      }
+
+      // Force re-initialization of the target page
+      overlays.remove(pageName);
+      overlays.add(pageName);
       notifyListeners();
     }
 
     if (_transitionCallback != null) {
-      _transitionCallback!(performCleanup);
+      _transitionCallback!(performCleanup, isReverse: isReverse);
     } else {
       performCleanup();
     }
   }
+
+  void returnToMainMenu() => navigateToPage('MainMenu', isReverse: true);
 
   void addHelper(String helperId, int amount) {
     Map<String, int> newCounts = Map<String, int>.from(helperCounts.value);

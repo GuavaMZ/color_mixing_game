@@ -1,5 +1,4 @@
 import 'dart:math' as math;
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import '../../../color_mixer_game.dart';
@@ -120,78 +119,101 @@ class AchievementsOverlay extends StatefulWidget {
   State<AchievementsOverlay> createState() => _AchievementsOverlayState();
 }
 
-class _AchievementsOverlayState extends State<AchievementsOverlay> {
+class _AchievementsOverlayState extends State<AchievementsOverlay>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Stack(
-        children: [
-          // Backdrop with Blur
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Container(color: Colors.black),
-            ),
-          ),
-
-          // Content
-          Center(
-            child: Container(
-              margin: EdgeInsets.symmetric(
-                horizontal: ResponsiveHelper.spacing(context, 24),
-                vertical: ResponsiveHelper.spacing(context, 40),
-              ),
-              constraints: BoxConstraints(
-                maxWidth: 600,
-                maxHeight: MediaQuery.of(context).size.height * 0.85,
-              ),
-              child: AnimatedCard(
-                onTap: () {}, // For glow
-                hasGlow: true,
-                borderRadius: 32,
-                fillColor: AppTheme.primaryDark.withValues(alpha: 0.9),
-                borderColor: AppTheme.neonCyan,
-                padding: EdgeInsets.all(ResponsiveHelper.spacing(context, 24)),
-                child: Column(
-                  children: [
-                    _buildHeader(context),
-                    const SizedBox(height: 24),
-                    Expanded(
-                      child: ListView.builder(
-                        physics: const BouncingScrollPhysics(),
-                        itemCount: AchievementsOverlay.allAchievements.length,
-                        itemBuilder: (context, index) {
-                          final achievement =
-                              AchievementsOverlay.allAchievements[index];
-                          final isUnlocked = widget.game.unlockedAchievements
-                              .contains(achievement.id);
-                          return _AchievementCard(
-                            achievement: achievement,
-                            isUnlocked: isUnlocked,
-                            delay: index * 40,
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    // Footer
-                    SizedBox(
-                      width: double.infinity,
-                      child: EnhancedButton(
-                        label: AppStrings.gotIt.getString(context),
-                        onTap: () {
-                          AudioManager().playButton();
-                          widget.game.returnToMainMenu();
-                        },
-                      ),
-                    ),
-                  ],
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          children: [
+            // Standard Background Gradient
+            Positioned.fill(
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: AppTheme.backgroundGradient,
                 ),
               ),
             ),
-          ),
-        ],
+
+            // Content
+            SafeArea(
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: ResponsiveHelper.spacing(context, 20),
+                  vertical: ResponsiveHelper.spacing(context, 20),
+                ),
+                child: AnimatedCard(
+                  onTap: () {}, // For glow
+                  hasGlow: true,
+                  borderRadius: 24,
+                  fillColor: AppTheme.primaryDark.withValues(alpha: 0.7),
+                  borderColor: AppTheme.neonCyan.withValues(alpha: 0.3),
+                  padding: EdgeInsets.all(
+                    ResponsiveHelper.spacing(context, 20),
+                  ),
+                  child: Column(
+                    children: [
+                      _buildHeader(context),
+                      const SizedBox(height: 24),
+                      Expanded(
+                        child: ListView.builder(
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: AchievementsOverlay.allAchievements.length,
+                          itemBuilder: (context, index) {
+                            final achievement =
+                                AchievementsOverlay.allAchievements[index];
+                            final isUnlocked = widget.game.unlockedAchievements
+                                .contains(achievement.id);
+                            return _AchievementCard(
+                              achievement: achievement,
+                              isUnlocked: isUnlocked,
+                              delay: index * 40,
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      // Footer
+                      SizedBox(
+                        width: double.infinity,
+                        child: EnhancedButton(
+                          label: AppStrings.gotIt.getString(context),
+                          onTap: () {
+                            AudioManager().playButton();
+                            widget.game.returnToMainMenu();
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -88,9 +88,9 @@ class _PauseMenuOverlayState extends State<PauseMenuOverlay>
     widget.game.currentMode = GameMode.none; // Stop timer
     widget.game.overlays.remove('PauseMenu');
     if (isEcho) {
-      widget.game.transitionTo('ColorEchoHUD', 'MainMenu');
+      widget.game.returnToMainMenu();
     } else {
-      widget.game.transitionTo('Controls', 'LevelMap');
+      widget.game.navigateToPage('LevelMap', isReverse: true);
     }
   }
 

@@ -67,7 +67,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
   Future<void> _checkDailyLogin() async {
     final canClaim = await DailyLoginManager.canClaimToday();
     if (canClaim && mounted) {
-      widget.game.overlays.add('DailyLogin');
+      widget.game.transitionTo('MainMenu', 'DailyLogin');
     }
   }
 

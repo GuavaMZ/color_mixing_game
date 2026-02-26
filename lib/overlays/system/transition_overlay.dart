@@ -21,23 +21,26 @@ class _TransitionOverlayState extends State<TransitionOverlay>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(
-        milliseconds: 1000,
-      ), // Longer for the iris effect
+      duration: const Duration(milliseconds: 700),
       vsync: this,
     );
-    _animation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOutQuart),
+    _animation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOutQuart,
     );
 
-    widget.game.setTransitionCallback(_startTransition);
+    widget.game.setTransitionCallback((cb, {bool isReverse = false}) {
+      _startTransition(cb);
+    });
   }
 
   void _startTransition(VoidCallback onMidpoint) {
+    if (!mounted) return;
     _onMidpoint = onMidpoint;
-    _controller.forward().then((_) {
-      if (_onMidpoint != null) _onMidpoint!();
-      Future.delayed(const Duration(milliseconds: 200), () {
+    _controller.forward(from: 0.0).then((_) {
+      if (!mounted) return;
+      _onMidpoint?.call();
+      Future.delayed(const Duration(milliseconds: 150), () {
         if (mounted) _controller.reverse();
       });
     });
@@ -51,37 +54,19 @@ class _TransitionOverlayState extends State<TransitionOverlay>
 
   @override
   Widget build(BuildContext context) {
-    return IgnorePointer(
-      ignoring: true,
-      child: AnimatedBuilder(
-        animation: _animation,
-        builder: (context, child) {
-          if (_animation.value == 0) return const SizedBox.shrink();
-
-          return Stack(
-            children: [
-              // Main Blade Iris
-              CustomPaint(
-                painter: _IrisPainter(progress: _animation.value),
-                size: Size.infinite,
-              ),
-
-              // Digital Scanlines and Glow
-              Center(
-                child: Container(
-                  width: double.infinity,
-                  height: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(
-                      alpha: _animation.value * 0.4,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, _) {
+        final v = _animation.value;
+        if (v == 0) return const SizedBox.shrink();
+        return IgnorePointer(
+          ignoring: v > 0.1,
+          child: CustomPaint(
+            painter: _IrisPainter(progress: v),
+            size: Size.infinite,
+          ),
+        );
+      },
     );
   }
 }
@@ -93,54 +78,47 @@ class _IrisPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final maxRadius =
+    final maxR =
         math.sqrt(size.width * size.width + size.height * size.height) / 2;
+    final holeR = maxR * (1.0 - progress);
 
-    // Smooth the iris transition
-    // At progress 1.0, it should be fully closed
-    final holeRadius = maxRadius * (1.0 - progress);
+    // Dark background with iris hole cut out
+    canvas.drawPath(
+      Path()
+        ..addRect(Rect.fromLTWH(0, 0, size.width, size.height))
+        ..addOval(Rect.fromCircle(center: center, radius: holeR))
+        ..fillType = PathFillType.evenOdd,
+      Paint()..color = AppTheme.primaryDark,
+    );
 
-    final bgPaint = Paint()..color = AppTheme.primaryDark;
-
-    // Draw background everywhere except the hole
-    final path = Path()
-      ..addRect(Rect.fromLTWH(0, 0, size.width, size.height))
-      ..addOval(Rect.fromCircle(center: center, radius: holeRadius))
-      ..fillType = PathFillType.evenOdd;
-
-    canvas.drawPath(path, bgPaint);
-
-    // Decorative Hexagonal Rings
-    final ringPaint = Paint()
-      ..color = AppTheme.neonCyan.withValues(alpha: progress * 0.6)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0;
+    // Subtle dark overlay on top
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      Paint()..color = Colors.black.withValues(alpha: progress * 0.3),
+    );
 
     if (progress > 0.1) {
-      // Draw 3 hex rings that close in
+      // Decorative neon hex rings around the iris edge
+      final ringPaint = Paint()
+        ..color = AppTheme.neonCyan.withValues(alpha: progress * 0.6)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5;
+
       for (int i = 0; i < 3; i++) {
-        final r = holeRadius + (i * 30 * progress) + 10;
-        _drawPolygon(canvas, center, 6, r, progress * 2 + (i * 0.2), ringPaint);
+        final r = holeR + (i * 28 * progress) + 8;
+        final rot = progress * 1.5 + i * 0.2;
+        _drawHex(canvas, center, r, rot, ringPaint);
       }
     }
-
-    // Iris Blades (Simulated with simple radial lines if needed, but hex looks cooler)
   }
 
-  void _drawPolygon(
-    Canvas canvas,
-    Offset center,
-    int sides,
-    double radius,
-    double rotation,
-    Paint paint,
-  ) {
+  void _drawHex(Canvas canvas, Offset center, double r, double rot, Paint p) {
+    const sides = 6;
     final path = Path();
     final angle = (2 * math.pi) / sides;
-
     for (int i = 0; i < sides; i++) {
-      final x = center.dx + radius * math.cos(i * angle + rotation);
-      final y = center.dy + radius * math.sin(i * angle + rotation);
+      final x = center.dx + r * math.cos(i * angle + rot);
+      final y = center.dy + r * math.sin(i * angle + rot);
       if (i == 0) {
         path.moveTo(x, y);
       } else {
@@ -148,10 +126,9 @@ class _IrisPainter extends CustomPainter {
       }
     }
     path.close();
-    canvas.drawPath(path, paint);
+    canvas.drawPath(path, p);
   }
 
   @override
-  bool shouldRepaint(_IrisPainter oldDelegate) =>
-      oldDelegate.progress != progress;
+  bool shouldRepaint(_IrisPainter old) => old.progress != progress;
 }

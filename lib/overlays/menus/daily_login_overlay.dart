@@ -60,7 +60,7 @@ class _DailyLoginOverlayState extends State<DailyLoginOverlay> {
     }
 
     // Show a quick success dialog or just pop
-    widget.game.overlays.remove('DailyLogin');
+    widget.game.returnToMainMenu();
   }
 
   @override
@@ -102,7 +102,7 @@ class _DailyLoginOverlayState extends State<DailyLoginOverlay> {
                           ),
                           onPressed: () {
                             AudioManager().playButton();
-                            widget.game.overlays.remove('DailyLogin');
+                            widget.game.returnToMainMenu();
                           },
                         ),
                       ],

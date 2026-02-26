@@ -63,9 +63,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
   }
 
   void _close() {
-    _controller.reverse().then((_) {
-      widget.game.overlays.remove('Tutorial');
-    });
+    widget.game.navigateToPage('Settings', isReverse: true);
   }
 
   @override

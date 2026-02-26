@@ -1,5 +1,4 @@
 import 'dart:math' as math;
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:color_mixing_deductive/helpers/audio_manager.dart';
@@ -10,111 +9,139 @@ import 'package:color_mixing_deductive/components/ui/animated_card.dart';
 import 'package:color_mixing_deductive/components/ui/enhanced_button.dart';
 import '../../../color_mixer_game.dart';
 
-class DailyChallengeOverlay extends StatelessWidget {
+class DailyChallengeOverlay extends StatefulWidget {
   final ColorMixerGame game;
   const DailyChallengeOverlay({super.key, required this.game});
 
   @override
+  State<DailyChallengeOverlay> createState() => _DailyChallengeOverlayState();
+}
+
+class _DailyChallengeOverlayState extends State<DailyChallengeOverlay>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Stack(
-        children: [
-          // Backdrop with Blur (Mode Guide Style)
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Container(color: Colors.black),
-            ),
-          ),
-
-          // Content Container
-          Center(
-            child: Container(
-              margin: EdgeInsets.symmetric(
-                horizontal: ResponsiveHelper.spacing(context, 24),
-                vertical: ResponsiveHelper.spacing(context, 40),
-              ),
-              constraints: BoxConstraints(
-                maxWidth: 600,
-                maxHeight: MediaQuery.of(context).size.height * 0.85,
-              ),
-              child: AnimatedCard(
-                onTap: () {}, // For glow
-                hasGlow: true,
-                borderRadius: 32,
-                fillColor: AppTheme.primaryDark.withValues(alpha: 0.9),
-                borderColor: AppTheme.neonCyan,
-                padding: EdgeInsets.all(ResponsiveHelper.spacing(context, 24)),
-                child: Column(
-                  children: [
-                    _buildHeader(context),
-                    const SizedBox(height: 24),
-                    Expanded(
-                      child: FutureBuilder<DailyChallenge>(
-                        future: DailyChallengeManager.getTodaysChallenge(),
-                        builder: (context, snapshot) {
-                          if (!snapshot.hasData) {
-                            return const Center(
-                              child: CircularProgressIndicator(
-                                color: AppTheme.neonCyan,
-                              ),
-                            );
-                          }
-
-                          final challenge = snapshot.data!;
-
-                          return FutureBuilder<bool>(
-                            future: DailyChallengeManager.isTodayCompleted(),
-                            builder: (context, completedSnapshot) {
-                              final isCompleted =
-                                  completedSnapshot.data ?? false;
-
-                              return SingleChildScrollView(
-                                physics: const BouncingScrollPhysics(),
-                                child: Column(
-                                  children: [
-                                    // Streak Section
-                                    _buildStreakSection(context),
-                                    const SizedBox(height: 16),
-
-                                    // Challenge Card Section
-                                    _buildChallengeSection(
-                                      context,
-                                      challenge,
-                                      isCompleted,
-                                    ),
-                                    const SizedBox(height: 16),
-
-                                    // Instructions Section
-                                    _buildInstructionsSection(context),
-                                    const SizedBox(height: 24),
-                                  ],
-                                ),
-                              );
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    // Footer
-                    SizedBox(
-                      width: double.infinity,
-                      child: EnhancedButton(
-                        label: AppStrings.gotIt.getString(context),
-                        onTap: () {
-                          AudioManager().playButton();
-                          game.returnToMainMenu();
-                        },
-                      ),
-                    ),
-                  ],
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(
+          children: [
+            // Standard Background Gradient
+            Positioned.fill(
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: AppTheme.backgroundGradient,
                 ),
               ),
             ),
-          ),
-        ],
+
+            // Content Container
+            SafeArea(
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: ResponsiveHelper.spacing(context, 20),
+                  vertical: ResponsiveHelper.spacing(context, 20),
+                ),
+                child: AnimatedCard(
+                  onTap: () {}, // For glow
+                  hasGlow: true,
+                  borderRadius: 24,
+                  fillColor: AppTheme.primaryDark.withValues(alpha: 0.7),
+                  borderColor: AppTheme.neonCyan.withValues(alpha: 0.3),
+                  padding: EdgeInsets.all(
+                    ResponsiveHelper.spacing(context, 20),
+                  ),
+                  child: Column(
+                    children: [
+                      _buildHeader(context),
+                      const SizedBox(height: 24),
+                      Expanded(
+                        child: FutureBuilder<DailyChallenge>(
+                          future: DailyChallengeManager.getTodaysChallenge(),
+                          builder: (context, snapshot) {
+                            if (!snapshot.hasData) {
+                              return const Center(
+                                child: CircularProgressIndicator(
+                                  color: AppTheme.neonCyan,
+                                ),
+                              );
+                            }
+
+                            final challenge = snapshot.data!;
+
+                            return FutureBuilder<bool>(
+                              future: DailyChallengeManager.isTodayCompleted(),
+                              builder: (context, completedSnapshot) {
+                                final isCompleted =
+                                    completedSnapshot.data ?? false;
+
+                                return SingleChildScrollView(
+                                  physics: const BouncingScrollPhysics(),
+                                  child: Column(
+                                    children: [
+                                      // Streak Section
+                                      _buildStreakSection(context),
+                                      const SizedBox(height: 16),
+
+                                      // Challenge Card Section
+                                      _buildChallengeSection(
+                                        context,
+                                        challenge,
+                                        isCompleted,
+                                      ),
+                                      const SizedBox(height: 16),
+
+                                      // Instructions Section
+                                      _buildInstructionsSection(context),
+                                      const SizedBox(height: 24),
+                                    ],
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      // Footer
+                      SizedBox(
+                        width: double.infinity,
+                        child: EnhancedButton(
+                          label: AppStrings.gotIt.getString(context),
+                          onTap: () {
+                            AudioManager().playButton();
+                            widget.game.returnToMainMenu();
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -131,7 +158,7 @@ class DailyChallengeOverlay extends StatelessWidget {
           icon: const Icon(Icons.close_rounded, color: Colors.white70),
           onPressed: () {
             AudioManager().playButton();
-            game.returnToMainMenu();
+            widget.game.returnToMainMenu();
           },
         ),
       ],

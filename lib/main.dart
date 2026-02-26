@@ -149,66 +149,24 @@ class _MyAppState extends State<MyApp> {
           surface: Color(0xFF16213E),
         ),
       ),
-      home: PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (didPop, result) async {
-          if (didPop) return;
-          final shouldPop = await _showExitDialog(context);
-          if (shouldPop == true && mounted) {
-            SystemNavigator.pop();
-          }
-        },
-        child: GameWidget<ColorMixerGame>(
-          game: ColorMixerGame(),
-          overlayBuilderMap: {
-            'Controls': (context, game) => ControlsOverlay(game: game),
-            'WinMenu': (context, game) => WinMenuOverlay(game: game),
-            'LevelMap': (context, game) => LevelMapOverlay(game: game),
-            'MainMenu': (context, game) => MainMenuOverlay(game: game),
-            'Settings': (context, game) => SettingsOverlay(game: game),
-            'Transition': (context, game) => TransitionOverlay(game: game),
-            'GameOver': (context, game) => GameOverOverlay(game: game),
-            'Shop': (context, game) => ShopOverlay(game: game),
-            'ColorEchoHUD': (context, game) => ColorEchoHUD(game: game),
-            'ChaosLabHUD': (context, game) => ChaosLabHUD(game: game),
-            'PauseMenu': (context, game) => PauseMenuOverlay(game: game),
-            'Tutorial': (context, game) => TutorialOverlay(game: game),
-            'Achievement': (context, game) => AchievementNotification(
-              onDismiss: () => game.overlays.remove('Achievement'),
-              title: AppStrings.achievement1Title.getString(context),
-              subtitle: AppStrings.achievement1Desc.getString(context),
-              icon: Icons.science_rounded,
-            ),
-            'Achievements': (context, game) => AchievementsOverlay(game: game),
-            'Gallery': (context, game) => GalleryOverlay(game: game),
-            'Loading': (context, game) => const LoadingOverlay(),
-            'Statistics': (context, game) => StatisticsOverlay(game: game),
-            'DailyChallenge': (context, game) =>
-                DailyChallengeOverlay(game: game),
-            'DailyLogin': (context, game) => DailyLoginOverlay(game: game),
-            'Blackout': (context, game) => BlackoutOverlay(game: game),
-            'LabUpgrade': (context, game) => LabUpgradeHub(game: game),
-            'EchoWin': (context, game) => EchoWinOverlay(game: game),
-            'EchoGameOver': (context, game) => EchoGameOverOverlay(game: game),
-            'ChaosWin': (context, game) => ChaosWinOverlay(game: game),
-            'ChaosGameOver': (context, game) =>
-                ChaosGameOverOverlay(game: game),
-            'CoinStore': (context, game) => CoinStoreOverlay(game: game),
-            'ModeGuide': (context, game) => ModeGuideOverlay(game: game),
-          },
-          initialActiveOverlays: const ['MainMenu', 'Transition'],
-          loadingBuilder: (context) => Container(
-            color: const Color(0xFF1A1A2E),
-            child: const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF667eea)),
-              ),
-            ),
-          ),
-        ),
-      ),
+      home: const _GameSection(),
     );
   }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// _GameSection — owns the game instance and layers TransitionOverlay on top
+// using a plain Flutter Stack so it is ALWAYS rendered above every Flame overlay.
+// ────────────────────────────────────────────────────────────────────────────
+class _GameSection extends StatefulWidget {
+  const _GameSection();
+
+  @override
+  State<_GameSection> createState() => _GameSectionState();
+}
+
+class _GameSectionState extends State<_GameSection> {
+  final ColorMixerGame _game = ColorMixerGame();
 
   Future<bool?> _showExitDialog(BuildContext context) {
     return showDialog<bool>(
@@ -241,6 +199,77 @@ class _MyAppState extends State<MyApp> {
               style: const TextStyle(color: Colors.white),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final shouldPop = await _showExitDialog(context);
+        if (shouldPop == true && mounted) {
+          SystemNavigator.pop();
+        }
+      },
+      child: Stack(
+        children: [
+          // ── Layer 1: Game + all Flame overlays (screens) ──────────────────
+          GameWidget<ColorMixerGame>(
+            game: _game,
+            overlayBuilderMap: {
+              'Controls': (context, game) => ControlsOverlay(game: game),
+              'WinMenu': (context, game) => WinMenuOverlay(game: game),
+              'LevelMap': (context, game) => LevelMapOverlay(game: game),
+              'MainMenu': (context, game) => MainMenuOverlay(game: game),
+              'Settings': (context, game) => SettingsOverlay(game: game),
+              'GameOver': (context, game) => GameOverOverlay(game: game),
+              'Shop': (context, game) => ShopOverlay(game: game),
+              'ColorEchoHUD': (context, game) => ColorEchoHUD(game: game),
+              'ChaosLabHUD': (context, game) => ChaosLabHUD(game: game),
+              'PauseMenu': (context, game) => PauseMenuOverlay(game: game),
+              'Tutorial': (context, game) => TutorialOverlay(game: game),
+              'Achievement': (context, game) => AchievementNotification(
+                onDismiss: () => game.overlays.remove('Achievement'),
+                title: AppStrings.achievement1Title.getString(context),
+                subtitle: AppStrings.achievement1Desc.getString(context),
+                icon: Icons.science_rounded,
+              ),
+              'Achievements': (context, game) =>
+                  AchievementsOverlay(game: game),
+              'Gallery': (context, game) => GalleryOverlay(game: game),
+              'Loading': (context, game) => const LoadingOverlay(),
+              'Statistics': (context, game) => StatisticsOverlay(game: game),
+              'DailyChallenge': (context, game) =>
+                  DailyChallengeOverlay(game: game),
+              'DailyLogin': (context, game) => DailyLoginOverlay(game: game),
+              'Blackout': (context, game) => BlackoutOverlay(game: game),
+              'LabUpgrade': (context, game) => LabUpgradeHub(game: game),
+              'EchoWin': (context, game) => EchoWinOverlay(game: game),
+              'EchoGameOver': (context, game) =>
+                  EchoGameOverOverlay(game: game),
+              'ChaosWin': (context, game) => ChaosWinOverlay(game: game),
+              'ChaosGameOver': (context, game) =>
+                  ChaosGameOverOverlay(game: game),
+              'CoinStore': (context, game) => CoinStoreOverlay(game: game),
+              'ModeGuide': (context, game) => ModeGuideOverlay(game: game),
+            },
+            initialActiveOverlays: const ['MainMenu'],
+            loadingBuilder: (context) => Container(
+              color: const Color(0xFF1A1A2E),
+              child: const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF667eea)),
+                ),
+              ),
+            ),
+          ),
+
+          // ── Layer 2: Transition — always on top of every screen ───────────
+          TransitionOverlay(game: _game),
         ],
       ),
     );
