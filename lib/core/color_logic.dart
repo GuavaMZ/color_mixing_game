@@ -44,18 +44,26 @@ class ColorLogic {
 
     Color baseColor = Color.fromARGB(255, r.toInt(), g.toInt(), b.toInt());
 
-    // 2. Apply Tint (White)
-    // Strength depends on ratio of white drops to total drops
-    if (whiteDrops > 0) {
-      double tintStrength = whiteDrops / totalDrops;
-      baseColor = Color.lerp(baseColor, Colors.white, tintStrength)!;
-    }
+    // 2 & 3. Apply Tint (White) and Shade (Black) proportionately
+    if (whiteDrops > 0 || blackDrops > 0) {
+      double colorWeight = totalColorDrops / totalDrops;
+      double whiteWeight = whiteDrops / totalDrops;
+      double blackWeight = blackDrops / totalDrops;
 
-    // 3. Apply Shade (Black)
-    // Strength depends on ratio of black drops to total drops
-    if (blackDrops > 0) {
-      double shadeStrength = blackDrops / totalDrops;
-      baseColor = Color.lerp(baseColor, Colors.black, shadeStrength)!;
+      // Base color contributes its weighted amount
+      double finalR =
+          (r * colorWeight) + (255 * whiteWeight) + (0 * blackWeight);
+      double finalG =
+          (g * colorWeight) + (255 * whiteWeight) + (0 * blackWeight);
+      double finalB =
+          (b * colorWeight) + (255 * whiteWeight) + (0 * blackWeight);
+
+      baseColor = Color.fromARGB(
+        255,
+        finalR.toInt(),
+        finalG.toInt(),
+        finalB.toInt(),
+      );
     }
 
     return baseColor;

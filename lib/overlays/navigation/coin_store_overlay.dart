@@ -152,9 +152,11 @@ class _CoinStoreOverlayState extends State<CoinStoreOverlay>
       body: Stack(
         children: [
           // Background
-          Container(
-            decoration: const BoxDecoration(
-              gradient: AppTheme.backgroundGradient,
+          Positioned.fill(
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: AppTheme.backgroundGradient,
+              ),
             ),
           ),
           const Positioned.fill(

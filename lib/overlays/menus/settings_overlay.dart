@@ -113,17 +113,20 @@ class _SettingsOverlayState extends State<SettingsOverlay>
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
+              final successStr = AppStrings.success.getString(context);
+              final downloadedStr = AppStrings.updateDownloaded.getString(
+                context,
+              );
+              final errorStr = AppStrings.error.getString(context);
               try {
                 await _shorebird.update();
-                _showResultDialog(
-                  AppStrings.success.getString(context),
-                  AppStrings.updateDownloaded.getString(context),
-                );
+                if (mounted) {
+                  _showResultDialog(successStr, downloadedStr);
+                }
               } catch (e) {
-                _showResultDialog(
-                  AppStrings.error.getString(context),
-                  '${AppStrings.error.getString(context)}: $e',
-                );
+                if (mounted) {
+                  _showResultDialog(errorStr, '$errorStr: $e');
+                }
               }
             },
             child: Text(AppStrings.download.getString(context)),
@@ -203,6 +206,7 @@ class _SettingsOverlayState extends State<SettingsOverlay>
 
   Future<void> _handleRedeem(String code) async {
     bool redeemed = await SaveManager.isCodeRedeemed(code);
+    if (!mounted) return;
     if (redeemed) {
       _showResultDialog(
         AppStrings.alreadyRedeemed.getString(context),
@@ -213,22 +217,26 @@ class _SettingsOverlayState extends State<SettingsOverlay>
 
     if (code == 'lifesmzcmp080799') {
       LivesManager().addLives(3);
-      // await SaveManager.markCodeAsRedeemed('totymz');
+      await SaveManager.markCodeAsRedeemed(code);
       _audio.playWin();
-      _showResultDialog(
-        AppStrings.success.getString(context),
-        AppStrings.codeRedeemedLives.getString(context),
-      );
+      if (mounted) {
+        _showResultDialog(
+          AppStrings.success.getString(context),
+          AppStrings.codeRedeemedLives.getString(context),
+        );
+      }
     } else if (code == 'richiemzcmp080799') {
       widget.game.addCoins(99999);
-      // await SaveManager.markCodeAsRedeemed('richie');
+      await SaveManager.markCodeAsRedeemed(code);
       _audio.playWin();
-      _showResultDialog(
-        AppStrings.jackpot.getString(context),
-        AppStrings.codeRedeemedCoins.getString(context),
-      );
+      if (mounted) {
+        _showResultDialog(
+          AppStrings.jackpot.getString(context),
+          AppStrings.codeRedeemedCoins.getString(context),
+        );
+      }
     } else {
-      _audio.playButton(); // Play some sound
+      _audio.playButton();
       _showResultDialog(
         AppStrings.invalidCode.getString(context),
         AppStrings.invalidCodeDesc.getString(context),
@@ -553,6 +561,7 @@ class _SettingsTile extends StatelessWidget {
     required this.trailing,
   });
 
+  @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),

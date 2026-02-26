@@ -145,6 +145,8 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Container(
+          width: double.infinity,
+          height: double.infinity,
           decoration: const BoxDecoration(gradient: AppTheme.cosmicBackground),
           child: Stack(
             children: [
@@ -283,7 +285,7 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
                               Switch(
                                 value: widget.game.randomEventsEnabled,
                                 onChanged: _toggleRandomEvents,
-                                activeColor: AppTheme.neonMagenta,
+                                activeThumbColor: AppTheme.neonMagenta,
                                 activeTrackColor: AppTheme.neonMagenta
                                     .withValues(alpha: 0.3),
                                 inactiveThumbColor: Colors.white24,

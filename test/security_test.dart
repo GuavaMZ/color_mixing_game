@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:color_mixing_deductive/core/save_manager.dart';
+import 'package:color_mixing_deductive/core/security_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -13,6 +14,7 @@ void main() {
     // 2. Setup Mock Secure Storage (channel mock)
     // This intercepts the MethodChannel used by FlutterSecureStorage
     FlutterSecureStorage.setMockInitialValues({});
+    await SecurityService.initialize();
 
     // 3. Call loadTotalStars - should trigger migration
     final stars = await SaveManager.loadTotalStars();
@@ -31,6 +33,7 @@ void main() {
 
   test('SaveManager integrity check passes on valid data', () async {
     FlutterSecureStorage.setMockInitialValues({});
+    await SecurityService.initialize();
 
     // We save data first to generate valid hash
     await SaveManager.saveTotalCoins(999);

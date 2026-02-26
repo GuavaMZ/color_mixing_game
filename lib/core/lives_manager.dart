@@ -127,9 +127,7 @@ class LivesManager extends ChangeNotifier {
       return;
     }
 
-    if (_nextRegenTime == null) {
-      _nextRegenTime = DateTime.now().add(regenDuration);
-    }
+    _nextRegenTime ??= DateTime.now().add(regenDuration);
 
     // Refresh UI every second for countdown
     _regenTimer = Timer.periodic(const Duration(seconds: 1), (timer) {

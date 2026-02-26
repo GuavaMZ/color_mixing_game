@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class ColorNameGenerator {
   static final Map<int, String> _classicLevelNames = {
     1: "Crimson Red",

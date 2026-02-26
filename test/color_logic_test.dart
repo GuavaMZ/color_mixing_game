@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:color_mixing_deductive/core/color_logic.dart';
 
@@ -6,9 +5,9 @@ void main() {
   group('ColorLogic 5-Color Mixing Tests', () {
     test('Pure Red mixing', () {
       final color = ColorLogic.createMixedColor(5, 0, 0);
-      expect(color.red, 255);
-      expect(color.green, 0);
-      expect(color.blue, 0);
+      expect((color.r * 255).round(), 255);
+      expect((color.g * 255).round(), 0);
+      expect((color.b * 255).round(), 0);
     });
 
     test('Red + White (Tint)', () {
@@ -18,9 +17,15 @@ void main() {
       // Result = lerp(Red, White, 0.5) = (255, 127, 127).
       final color = ColorLogic.createMixedColor(5, 0, 0, whiteDrops: 5);
 
-      expect(color.red, 255); // Red stays 255 because White adds 255
-      expect(color.green, closeTo(127, 2)); // 0 -> 255 lerp 0.5 = 127.5
-      expect(color.blue, closeTo(127, 2));
+      expect(
+        (color.r * 255).round(),
+        255,
+      ); // Red stays 255 because White adds 255
+      expect(
+        (color.g * 255).round(),
+        closeTo(127, 2),
+      ); // 0 -> 255 lerp 0.5 = 127.5
+      expect((color.b * 255).round(), closeTo(127, 2));
     });
 
     test('Red + Black (Shade)', () {
@@ -30,9 +35,12 @@ void main() {
       // Result = lerp(Red, Black, 0.5) = (127, 0, 0).
       final color = ColorLogic.createMixedColor(5, 0, 0, blackDrops: 5);
 
-      expect(color.red, closeTo(127, 2)); // 255->0 lerp 0.5 = 127.5
-      expect(color.green, 0);
-      expect(color.blue, 0);
+      expect(
+        (color.r * 255).round(),
+        closeTo(127, 2),
+      ); // 255->0 lerp 0.5 = 127.5
+      expect((color.g * 255).round(), 0);
+      expect((color.b * 255).round(), 0);
     });
 
     test('Red + White + Black (Grey Scale or Tone)', () {
@@ -61,9 +69,9 @@ void main() {
         blackDrops: 5,
       );
 
-      expect(color.red, closeTo(191, 5));
-      expect(color.green, closeTo(47, 5));
-      expect(color.blue, closeTo(47, 5));
+      expect((color.r * 255).round(), closeTo(191, 5));
+      expect((color.g * 255).round(), closeTo(47, 5));
+      expect((color.b * 255).round(), closeTo(47, 5));
     });
   });
 }

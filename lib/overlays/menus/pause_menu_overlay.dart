@@ -101,18 +101,20 @@ class _PauseMenuOverlayState extends State<PauseMenuOverlay>
       body: Stack(
         children: [
           // Darken background with StarField
-          FadeTransition(
-            opacity: _fadeAnimation,
-            child: Stack(
-              children: [
-                GestureDetector(
-                  onTap: _resume,
-                  child: Container(color: Colors.black.withValues(alpha: 0.7)),
-                ),
-                const IgnorePointer(
-                  child: StarField(starCount: 40, color: Colors.white),
-                ),
-              ],
+          Positioned.fill(
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: Stack(
+                children: [
+                  GestureDetector(
+                    onTap: _resume,
+                    child: Container(color: Colors.black),
+                  ),
+                  const IgnorePointer(
+                    child: StarField(starCount: 40, color: Colors.white),
+                  ),
+                ],
+              ),
             ),
           ),
 

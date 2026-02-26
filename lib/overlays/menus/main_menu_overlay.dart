@@ -89,9 +89,11 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
       body: Stack(
         children: [
           // Background - Deep Cosmic Gradient
-          Container(
-            decoration: const BoxDecoration(
-              gradient: AppTheme.backgroundGradient,
+          Positioned.fill(
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: AppTheme.backgroundGradient,
+              ),
             ),
           ),
 

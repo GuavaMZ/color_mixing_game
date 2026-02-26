@@ -14,9 +14,9 @@ class ColorScience {
   /// Convert an sRGB [Color] to CIE L*a*b* (D65 illuminant).
   static List<double> rgbToLab(Color c) {
     // 1. Linearize sRGB → XYZ
-    double r = _linearize(c.red / 255.0);
-    double g = _linearize(c.green / 255.0);
-    double b = _linearize(c.blue / 255.0);
+    double r = _linearize((c.r * 255.0).round().clamp(0, 255) / 255.0);
+    double g = _linearize((c.g * 255.0).round().clamp(0, 255) / 255.0);
+    double b = _linearize((c.b * 255.0).round().clamp(0, 255) / 255.0);
 
     // sRGB → XYZ (D65)
     double x = (0.4124564 * r + 0.3575761 * g + 0.1804375 * b) / 0.95047;

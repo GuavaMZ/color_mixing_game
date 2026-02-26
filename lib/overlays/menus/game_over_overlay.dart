@@ -20,7 +20,7 @@ class GameOverOverlay extends StatelessWidget {
       body: Stack(
         children: [
           // Background
-          Container(color: Colors.black.withValues(alpha: 0.8)),
+          Positioned.fill(child: Container(color: Colors.black)),
           const StarField(starCount: 50, color: Colors.white),
 
           Center(

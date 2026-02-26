@@ -255,14 +255,13 @@ class _StarParticle {
   double x;
   double y;
   double scale;
-  double rotation;
+  double rotation = 0.0;
   double rotationSpeed;
 
   _StarParticle({
     required this.x,
     required this.y,
     required this.scale,
-    this.rotation = 0,
     required this.rotationSpeed,
   });
 }

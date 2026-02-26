@@ -209,6 +209,7 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
+          Positioned.fill(child: Container(color: Colors.black)),
           // StarField Background
           const Positioned.fill(
             child: StarField(starCount: 60, color: Colors.white),
@@ -695,7 +696,7 @@ class _GalleryOverlayState extends State<GalleryOverlay> {
                         Expanded(
                           child: _buildMetricTile(
                             AppStrings.compRGB.getString(context),
-                            "${color.color.red}, ${color.color.green}, ${color.color.blue}",
+                            "${(color.color.r * 255).round()}, ${(color.color.g * 255).round()}, ${(color.color.b * 255).round()}",
                           ),
                         ),
                         const SizedBox(width: 12),

@@ -9,7 +9,6 @@ class AdManager {
 
   BannerAd? _bannerAd;
   InterstitialAd? _interstitialAd;
-  bool _isBannerAdReady = false;
   bool _isInterstitialAdReady = false;
 
   // Test Ad Unit IDs
@@ -50,12 +49,10 @@ class AdManager {
       size: AdSize.banner,
       listener: BannerAdListener(
         onAdLoaded: (ad) {
-          _isBannerAdReady = true;
           onAdLoaded(ad);
         },
         onAdFailedToLoad: (ad, err) {
           debugPrint('Banner Ad failed to load: $err');
-          _isBannerAdReady = false;
           ad.dispose();
         },
       ),

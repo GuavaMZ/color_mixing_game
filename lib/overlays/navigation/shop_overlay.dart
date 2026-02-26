@@ -160,22 +160,20 @@ class _ShopOverlayState extends State<ShopOverlay> {
         child: Stack(
           children: [
             // Enhanced background with animated particles
-            Container(
-              decoration: BoxDecoration(
-                gradient: AppTheme.backgroundGradient.colors.length > 1
-                    ? LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          AppTheme.backgroundGradient.colors.first.withValues(
-                            alpha: 0.7,
-                          ),
-                          AppTheme.backgroundGradient.colors.last.withValues(
-                            alpha: 0.7,
-                          ),
-                        ],
-                      )
-                    : AppTheme.backgroundGradient,
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: AppTheme.backgroundGradient.colors.length > 1
+                      ? LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            AppTheme.backgroundGradient.colors.first,
+                            AppTheme.backgroundGradient.colors.last,
+                          ],
+                        )
+                      : AppTheme.backgroundGradient,
+                ),
               ),
             ),
 

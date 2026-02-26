@@ -19,7 +19,7 @@ enum BeakerType {
   triangle,
 }
 
-class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
+class Beaker extends PositionComponent with HasGameReference<ColorMixerGame> {
   Color currentColor = Colors.white.withValues(alpha: .2);
   Color _targetColor = Colors.white.withValues(alpha: .2);
   double liquidLevel = 0.0;
@@ -111,9 +111,8 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
     }
 
     // Meltdown Shake
-    if (gameRef.currentMode == GameMode.chaosLab &&
-        gameRef.chaosStability < 0.4) {
-      final chaosFactor = (1.0 - gameRef.chaosStability / 0.4).clamp(0.0, 1.0);
+    if (game.currentMode == GameMode.chaosLab && game.chaosStability < 0.4) {
+      final chaosFactor = (1.0 - game.chaosStability / 0.4).clamp(0.0, 1.0);
       _shakeLevel = max(_shakeLevel, chaosFactor * 0.5);
     }
 
@@ -493,9 +492,9 @@ class Beaker extends PositionComponent with HasGameRef<ColorMixerGame> {
   }
 
   void _drawBlindModeSymbols(Canvas canvas, Vector2 size, double liquidTop) {
-    final r = currentColor.red;
-    final g = currentColor.green;
-    final b = currentColor.blue;
+    final r = (currentColor.r * 255).round();
+    final g = (currentColor.g * 255).round();
+    final b = (currentColor.b * 255).round();
     const threshold = 50;
 
     final centerY = (liquidTop + size.y) / 2;

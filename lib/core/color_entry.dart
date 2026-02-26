@@ -20,7 +20,7 @@ class ColorEntry {
 
   /// Get Hex Code (e.g., #FF0000)
   String get hexCode {
-    return '#${color.value.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
+    return '#${color.toARGB32().toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
   }
 
   /// Get HSV Color
@@ -28,9 +28,9 @@ class ColorEntry {
 
   /// Get CMYK Values (C, M, Y, K) as percentage integers
   List<int> get cmyk {
-    double r = color.red / 255.0;
-    double g = color.green / 255.0;
-    double b = color.blue / 255.0;
+    double r = (color.r * 255.0).round().clamp(0, 255) / 255.0;
+    double g = (color.g * 255.0).round().clamp(0, 255) / 255.0;
+    double b = (color.b * 255.0).round().clamp(0, 255) / 255.0;
 
     double k =
         1.0 - [r, g, b].reduce((curr, next) => curr > next ? curr : next);
@@ -52,7 +52,7 @@ class ColorEntry {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'color': color.value,
+      'color': color.toARGB32(),
       'recipe': recipe,
       'category': category,
       'name': name,

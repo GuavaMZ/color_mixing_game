@@ -333,9 +333,9 @@ class ColorPaletteGenerator {
 
   /// Calculate perceptual distance between two colors
   static double _colorDistance(Color a, Color b) {
-    int rDiff = (a.red - b.red).abs();
-    int gDiff = (a.green - b.green).abs();
-    int bDiff = (a.blue - b.blue).abs();
+    int rDiff = ((a.r * 255).round() - (b.r * 255).round()).abs();
+    int gDiff = ((a.g * 255).round() - (b.g * 255).round()).abs();
+    int bDiff = ((a.b * 255).round() - (b.b * 255).round()).abs();
     return (rDiff + gDiff + bDiff) / 3.0;
   }
 

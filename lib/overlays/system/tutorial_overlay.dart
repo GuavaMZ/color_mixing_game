@@ -85,7 +85,7 @@ class _TutorialOverlayState extends State<TutorialOverlay>
           Positioned.fill(
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-              child: Container(color: Colors.black.withValues(alpha: 0.4)),
+              child: Container(color: Colors.black),
             ),
           ),
 

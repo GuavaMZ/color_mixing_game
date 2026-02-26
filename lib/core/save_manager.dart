@@ -233,8 +233,6 @@ class SaveManager {
       return false;
     }
 
-    await _enforceRateLimit('total_coins');
-
     final current = await loadTotalCoins();
     final newBalance = current + amount;
 
@@ -260,8 +258,6 @@ class SaveManager {
       );
       return false;
     }
-
-    await _enforceRateLimit('total_coins');
 
     final current = await loadTotalCoins();
     if (current < amount) {

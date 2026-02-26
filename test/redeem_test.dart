@@ -1,19 +1,16 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:color_mixing_deductive/core/save_manager.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:color_mixing_deductive/core/security_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  const MethodChannel channel = MethodChannel(
-    'plugins.flutter.io/shared_preferences',
-  );
-
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     FlutterSecureStorage.setMockInitialValues({});
+    await SecurityService.initialize();
   });
 
   group('Redeem System Tests', () {

@@ -25,7 +25,6 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
   List<String> _unlockedItems = [];
   Map<String, String> _equippedConfig = {};
   bool _isLoading = true;
-  bool _isSidebarCollapsed = false;
 
   late AnimationController _fadeController;
   late AnimationController _sidebarController;
@@ -97,17 +96,6 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
     AudioManager().playButton();
   }
 
-  void _toggleSidebar() {
-    setState(() {
-      _isSidebarCollapsed = !_isSidebarCollapsed;
-    });
-    if (_isSidebarCollapsed) {
-      _sidebarController.forward();
-    } else {
-      _sidebarController.reverse();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -126,15 +114,14 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
       body: Stack(
         children: [
           // Enhanced background with animated particles
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  const Color(0xFF0F172A).withValues(alpha: 0.9),
-                  const Color(0xFF1E293B).withValues(alpha: 0.95),
-                ],
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [const Color(0xFF0F172A), const Color(0xFF1E293B)],
+                ),
               ),
             ),
           ),
