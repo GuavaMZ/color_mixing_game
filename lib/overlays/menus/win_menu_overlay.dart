@@ -364,10 +364,7 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
   }
 
   Widget _buildCoinsEarnedDisplay(BuildContext context, int stars) {
-    int coins = 0;
-    if (stars == 3) coins = 100;
-    if (stars == 2) coins = 50;
-    if (stars == 1) coins = 20;
+    int coins = widget.game.lastEarnedCoins;
 
     return TweenAnimationBuilder<int>(
       tween: IntTween(begin: 0, end: coins),

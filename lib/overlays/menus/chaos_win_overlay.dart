@@ -54,7 +54,6 @@ class _ChaosWinOverlayState extends State<ChaosWinOverlay>
     final rating = _getContainmentRating(context, stability);
     final ratingColor = _getRatingColor(stability);
     final wavelength = ColorScience.estimateWavelength(widget.game.targetColor);
-    final bonus = (30 * stability).toInt();
 
     return Stack(
       children: [
@@ -193,7 +192,7 @@ class _ChaosWinOverlayState extends State<ChaosWinOverlay>
                               _buildDataRow(
                                 context,
                                 AppStrings.chaosBonus.getString(context),
-                                "+$bonus lblCredits",
+                                "+${widget.game.lastEarnedCoins} lblCredits",
                                 AppTheme.electricYellow,
                               ),
                             ],

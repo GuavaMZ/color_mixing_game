@@ -173,6 +173,7 @@ mixin AppStrings {
 
   // Coins earned template
   static const String coinsEarned = "coins_earned_text";
+  static const String coinsEarnedShort = "coins_earned_short";
 
   // Pause Menu
   static const String menu = "menu";
@@ -328,7 +329,6 @@ mixin AppStrings {
   static const String codeRedeemedLives = "code_redeemed_lives";
   static const String codeRedeemedCoins = "code_redeemed_coins";
   static const String accessibility = "accessibility";
-  static const String highContrast = "high_contrast";
   static const String reducedMotion = "reduced_motion";
   static const String appVersion = "app_version";
   static const String patch = "patch";
@@ -535,6 +535,7 @@ mixin AppStrings {
     achievement12Desc: 'Complete a level using exactly one Stability Matrix.',
     anomalyDetected: 'ANOMALY DETECTED',
     coinsEarned: '+%s Coins',
+    coinsEarnedShort: '+%s',
 
     // Tutorial
     tutorial: 'Tutorial',
@@ -726,7 +727,6 @@ mixin AppStrings {
     codeRedeemedLives: 'Code redeemed! +3 Lives added.',
     codeRedeemedCoins: 'Code redeemed! +99999 Coins added.',
     accessibility: 'Accessibility',
-    highContrast: 'High Contrast',
     reducedMotion: 'Reduced Motion',
     appVersion: 'App Version',
     patch: 'Patch',
@@ -931,6 +931,7 @@ mixin AppStrings {
     achievement12Desc: 'أكمل مستوى باستخدام مصفوفة استقرار واحدة بالضبط.',
     anomalyDetected: 'تم رصد خلل!',
     coinsEarned: '+%s عملات',
+    coinsEarnedShort: '+%s',
 
     // Tutorial
     tutorial: 'التعليمات',
@@ -1121,7 +1122,6 @@ mixin AppStrings {
     codeRedeemedLives: 'تم استخدام الكود! أضيفت +3 أرواح.',
     codeRedeemedCoins: 'تم استخدام الكود! أضيفت +99999 عملة.',
     accessibility: 'إمكانية الوصول',
-    highContrast: 'تباين عالٍ',
     reducedMotion: 'حركة مخففة',
     appVersion: 'إصدار التطبيق',
     patch: 'باتش',
@@ -1336,6 +1336,7 @@ mixin AppStrings {
         'Completa un nivel usando exactamente una Matriz de Estabilidad.',
     anomalyDetected: '¡ANOMALÍA DETECTADA!',
     coinsEarned: '+%s Monedas',
+    coinsEarnedShort: '+%s',
 
     // Tutorial
     tutorial: 'Tutorial',
@@ -1526,7 +1527,6 @@ mixin AppStrings {
     codeRedeemedLives: '¡Código canjeado! +3 Vidas añadidas.',
     codeRedeemedCoins: '¡Código canjeado! +99999 Monedas añadidas.',
     accessibility: 'Accesibilidad',
-    highContrast: 'Alto Contraste',
     reducedMotion: 'Movimiento Reducido',
     appVersion: 'Versión de la App',
     patch: 'Parche',
@@ -1717,6 +1717,7 @@ mixin AppStrings {
         'Terminez un niveau en utilisant exactement une Matrice de Stabilité.',
     anomalyDetected: 'ANOMALIE DÉTECTÉE !',
     coinsEarned: '+%s Pièces',
+    coinsEarnedShort: '+%s',
 
     // Tutorial
     tutorial: 'Tutoriel',
@@ -1908,7 +1909,6 @@ mixin AppStrings {
     codeRedeemedLives: 'Code utilisé ! +3 Vies ajoutées.',
     codeRedeemedCoins: 'Code utilisé ! +99999 Pièces ajoutées.',
     accessibility: 'Accessibilité',
-    highContrast: 'Contraste Élevé',
     reducedMotion: 'Mouvement Réduit',
     appVersion: 'Version de l\'App',
     patch: 'Correctif',

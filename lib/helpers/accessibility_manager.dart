@@ -11,10 +11,6 @@ class AccessibilityManager {
   ColorblindMode _colorblindMode = ColorblindMode.none;
   ColorblindMode get colorblindMode => _colorblindMode;
 
-  // High contrast mode
-  bool _highContrastMode = false;
-  bool get highContrastMode => _highContrastMode;
-
   // Reduced motion
   bool _reducedMotion = false;
   bool get reducedMotion => _reducedMotion;
@@ -26,8 +22,6 @@ class AccessibilityManager {
       _colorblindMode = ColorblindMode.values[modeIndex ? 1 : 0];
     }
 
-    _highContrastMode =
-        await SaveManager.getBool('high_contrast_mode') ?? false;
     _reducedMotion = await SaveManager.getBool('reduced_motion') ?? false;
   }
 
@@ -35,12 +29,6 @@ class AccessibilityManager {
   Future<void> setColorblindMode(ColorblindMode mode) async {
     _colorblindMode = mode;
     await SaveManager.saveBool('colorblind_mode_index', mode.index > 0);
-  }
-
-  /// Toggle high contrast mode
-  Future<void> setHighContrastMode(bool enabled) async {
-    _highContrastMode = enabled;
-    await SaveManager.saveBool('high_contrast_mode', enabled);
   }
 
   /// Toggle reduced motion

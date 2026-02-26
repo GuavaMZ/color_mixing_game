@@ -27,7 +27,6 @@ class _CoinStoreOverlayState extends State<CoinStoreOverlay>
   late AnimationController _shimmerController;
   late AnimationController _pulseController;
   bool _isProcessing = false;
-  final Set<String> _claimedOneTime = {};
   List<Map<String, dynamic>> _purchaseHistory = [];
   StreamSubscription<PurchaseResult>? _purchaseSub;
 
@@ -99,11 +98,9 @@ class _CoinStoreOverlayState extends State<CoinStoreOverlay>
   }
 
   Future<void> _loadState() async {
-    final claimed = await CoinStoreService.instance.isStarterPackClaimed();
     final history = await CoinStoreService.instance.loadPurchaseHistory();
     if (mounted) {
       setState(() {
-        if (claimed) _claimedOneTime.add('starter_pack');
         _purchaseHistory = history;
       });
     }
@@ -120,28 +117,6 @@ class _CoinStoreOverlayState extends State<CoinStoreOverlay>
   Future<void> _handlePurchase(CoinBundle bundle) async {
     if (_isProcessing) return;
 
-    // ── Starter Pack (free, one-time) ─────────────────────────────────────
-    if (bundle.isOneTime) {
-      if (_claimedOneTime.contains(bundle.id)) {
-        _showAlreadyClaimedDialog();
-        return;
-      }
-      setState(() => _isProcessing = true);
-      final result = await CoinStoreService.instance.processStarterPack(bundle);
-      if (!mounted) return;
-      setState(() {
-        _isProcessing = false;
-        if (result.success) _claimedOneTime.add(bundle.id);
-      });
-      if (result.success) {
-        AudioManager().playWin();
-        _showSuccessDialogForCoins(bundle.coins, bundle);
-      } else {
-        _showAlreadyClaimedDialog();
-      }
-      return;
-    }
-
     // ── Paid bundle — launch real Google Play billing flow ─────────────────
     setState(() => _isProcessing = true);
     // The result arrives asynchronously via purchaseStream → _onPurchaseResult
@@ -157,44 +132,6 @@ class _CoinStoreOverlayState extends State<CoinStoreOverlay>
       builder: (ctx) => _PurchaseSuccessDialog(
         bundle: bundle,
         onDismiss: () => Navigator.of(ctx).pop(),
-      ),
-    );
-  }
-
-  void _showAlreadyClaimedDialog() {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: AppTheme.primaryDark.withValues(alpha: 0.97),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-          side: BorderSide(
-            color: AppTheme.neonMagenta.withValues(alpha: 0.6),
-            width: 1.5,
-          ),
-        ),
-        title: Text(
-          AppStrings.alreadyClaimed.getString(context),
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w900,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        content: Text(
-          AppStrings.alreadyClaimedDesc.getString(context),
-          style: const TextStyle(color: Colors.white70),
-          textAlign: TextAlign.center,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(
-              AppStrings.ok.getString(context),
-              style: const TextStyle(color: AppTheme.neonCyan),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -246,7 +183,6 @@ class _CoinStoreOverlayState extends State<CoinStoreOverlay>
                       ...kCoinBundles.map(
                         (bundle) => _CoinBundleCard(
                           bundle: bundle,
-                          isClaimed: _claimedOneTime.contains(bundle.id),
                           isProcessing: _isProcessing,
                           shimmerController: _shimmerController,
                           pulseController: _pulseController,
@@ -439,7 +375,6 @@ class _CoinStoreOverlayState extends State<CoinStoreOverlay>
 
 class _CoinBundleCard extends StatelessWidget {
   final CoinBundle bundle;
-  final bool isClaimed;
   final bool isProcessing;
   final AnimationController shimmerController;
   final AnimationController pulseController;
@@ -447,7 +382,6 @@ class _CoinBundleCard extends StatelessWidget {
 
   const _CoinBundleCard({
     required this.bundle,
-    required this.isClaimed,
     required this.isProcessing,
     required this.shimmerController,
     required this.pulseController,
@@ -456,21 +390,15 @@ class _CoinBundleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isDisabled = isClaimed && bundle.isOneTime;
-
     Color accentColor = _getAccentColor();
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: AnimatedCard(
-        onTap: isDisabled || isProcessing ? () {} : onTap,
+        onTap: isProcessing ? () {} : onTap,
         hasGlow: bundle.isMostPopular || bundle.isBestValue,
-        fillColor: isDisabled
-            ? Colors.black.withValues(alpha: 0.2)
-            : Colors.black.withValues(alpha: 0.35),
-        borderColor: isDisabled
-            ? Colors.white.withValues(alpha: 0.1)
-            : accentColor.withValues(alpha: 0.5),
+        fillColor: Colors.black.withValues(alpha: 0.35),
+        borderColor: accentColor.withValues(alpha: 0.5),
         borderWidth: bundle.isMostPopular || bundle.isBestValue ? 2 : 1.5,
         child: Stack(
           children: [
@@ -484,7 +412,7 @@ class _CoinBundleCard extends StatelessWidget {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        accentColor.withValues(alpha: isDisabled ? 0.03 : 0.12),
+                        accentColor.withValues(alpha: 0.12),
                         Colors.transparent,
                       ],
                     ),
@@ -494,7 +422,7 @@ class _CoinBundleCard extends StatelessWidget {
             ),
 
             // Shimmer effect for featured bundles
-            if ((bundle.isMostPopular || bundle.isBestValue) && !isDisabled)
+            if ((bundle.isMostPopular || bundle.isBestValue))
               Positioned.fill(
                 child: AnimatedBuilder(
                   animation: shimmerController,
@@ -527,15 +455,15 @@ class _CoinBundleCard extends StatelessWidget {
               child: Row(
                 children: [
                   // Emoji & coin count
-                  _buildCoinDisplay(context, accentColor, isDisabled),
+                  _buildCoinDisplay(context, accentColor),
 
                   const SizedBox(width: 16),
 
                   // Name & bonus
-                  Expanded(child: _buildInfoSection(context, isDisabled)),
+                  Expanded(child: _buildInfoSection(context)),
 
                   // Price / Action button
-                  _buildActionButton(context, accentColor, isDisabled),
+                  _buildActionButton(context, accentColor),
                 ],
               ),
             ),
@@ -553,55 +481,6 @@ class _CoinBundleCard extends StatelessWidget {
                 AppStrings.bestValue.getString(context),
                 const Color(0xFF00D4AA),
               ),
-            if (bundle.isOneTime && !isClaimed)
-              _buildBadge(
-                context,
-                AppStrings.oneTimeOffer.getString(context),
-                AppTheme.neonMagenta,
-              ),
-
-            // Claimed overlay
-            if (isDisabled)
-              Positioned.fill(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Container(
-                    color: Colors.black.withValues(alpha: 0.4),
-                    child: Center(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.7),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.white24),
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.check_circle_rounded,
-                              color: Colors.white54,
-                              size: 16,
-                            ),
-                            SizedBox(width: 6),
-                            Text(
-                              'Claimed',
-                              style: TextStyle(
-                                color: Colors.white54,
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
           ],
         ),
       ),
@@ -609,7 +488,6 @@ class _CoinBundleCard extends StatelessWidget {
   }
 
   Color _getAccentColor() {
-    if (bundle.id == 'starter_pack') return AppTheme.neonMagenta;
     if (bundle.id == 'basic_bundle') return AppTheme.neonCyan;
     if (bundle.id == 'popular_bundle') return const Color(0xFFFF6B35);
     if (bundle.id == 'mega_bundle') return const Color(0xFF00D4AA);
@@ -617,11 +495,7 @@ class _CoinBundleCard extends StatelessWidget {
     return Colors.white;
   }
 
-  Widget _buildCoinDisplay(
-    BuildContext context,
-    Color accent,
-    bool isDisabled,
-  ) {
+  Widget _buildCoinDisplay(BuildContext context, Color accent) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -630,16 +504,16 @@ class _CoinBundleCard extends StatelessWidget {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
+            const Icon(
               Icons.monetization_on_rounded,
-              color: isDisabled ? Colors.white24 : Colors.amber,
+              color: Colors.amber,
               size: 14,
             ),
             const SizedBox(width: 2),
             Text(
               _formatCoins(bundle.coins),
-              style: TextStyle(
-                color: isDisabled ? Colors.white38 : Colors.white,
+              style: const TextStyle(
+                color: Colors.white,
                 fontWeight: FontWeight.w900,
                 fontSize: 13,
               ),
@@ -650,15 +524,15 @@ class _CoinBundleCard extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoSection(BuildContext context, bool isDisabled) {
+  Widget _buildInfoSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           bundle.name,
-          style: TextStyle(
-            color: isDisabled ? Colors.white38 : Colors.white,
+          style: const TextStyle(
+            color: Colors.white,
             fontWeight: FontWeight.w800,
             fontSize: 16,
             letterSpacing: 0.5,
@@ -685,58 +559,37 @@ class _CoinBundleCard extends StatelessWidget {
             ),
           ),
         ],
-        if (bundle.isOneTime) ...[
-          const SizedBox(height: 4),
-          Text(
-            AppStrings.oneTimeOffer.getString(context),
-            style: TextStyle(
-              color: AppTheme.neonMagenta.withValues(alpha: 0.8),
-              fontSize: 11,
-            ),
-          ),
-        ],
       ],
     );
   }
 
-  Widget _buildActionButton(
-    BuildContext context,
-    Color accent,
-    bool isDisabled,
-  ) {
-    final String label = bundle.isOneTime
-        ? AppStrings.claimNow.getString(context)
-        : bundle.displayPrice;
+  Widget _buildActionButton(BuildContext context, Color accent) {
+    final String label = bundle.displayPrice;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       decoration: BoxDecoration(
-        gradient: isDisabled
-            ? null
-            : LinearGradient(
-                colors: [
-                  accent.withValues(alpha: 0.8),
-                  accent.withValues(alpha: 0.5),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-        color: isDisabled ? Colors.white.withValues(alpha: 0.05) : null,
+        gradient: LinearGradient(
+          colors: [
+            accent.withValues(alpha: 0.8),
+            accent.withValues(alpha: 0.5),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(14),
-        boxShadow: isDisabled
-            ? null
-            : [
-                BoxShadow(
-                  color: accent.withValues(alpha: 0.35),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+        boxShadow: [
+          BoxShadow(
+            color: accent.withValues(alpha: 0.35),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Text(
         label,
-        style: TextStyle(
-          color: isDisabled ? Colors.white24 : Colors.white,
+        style: const TextStyle(
+          color: Colors.white,
           fontWeight: FontWeight.w900,
           fontSize: 13,
           letterSpacing: 0.5,

@@ -31,12 +31,22 @@ import 'package:color_mixing_deductive/overlays/navigation/daily_challenge_overl
 import 'package:color_mixing_deductive/overlays/menus/daily_login_overlay.dart';
 import 'package:color_mixing_deductive/overlays/menus/mode_guide_overlay.dart';
 import 'package:color_mixing_deductive/overlays/system/blackout_overlay.dart';
+import 'package:color_mixing_deductive/overlays/system/premium_splash_overlay.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:color_mixing_deductive/core/ad_manager.dart';
+import 'package:color_mixing_deductive/core/security_service.dart';
+import 'package:color_mixing_deductive/core/runtime_integrity_checker.dart';
+import 'package:color_mixing_deductive/core/security_audit_logger.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shorebird_code_push/shorebird_code_push.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize security services first
+  await SecurityService.initialize();
+  await RuntimeIntegrityChecker.initialize();
+  await SecurityAuditLogger.initialize();
 
   // Set preferred orientations for mobile
   await SystemChrome.setPreferredOrientations([
@@ -94,7 +104,23 @@ class _MyAppState extends State<MyApp> {
       initLanguageCode: 'en',
     );
     _localization.onTranslatedLanguage = _onTranslatedLanguage;
+
+    // Log app start for security audit
+    SecurityAuditLogger.log(
+      'app_started',
+      'Application started',
+      severity: SecurityEventSeverity.info,
+      metadata: {'version': '1.2.0+3', 'debug_mode': kDebugMode},
+    );
+
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    // Cleanup security services
+    SecurityAuditLogger.dispose();
+    super.dispose();
   }
 
   void _onTranslatedLanguage(Locale? locale) {
@@ -164,8 +190,10 @@ class _MyAppState extends State<MyApp> {
                 ChaosGameOverOverlay(game: game),
             'CoinStore': (context, game) => CoinStoreOverlay(game: game),
             'ModeGuide': (context, game) => ModeGuideOverlay(game: game),
+            'PremiumSplash': (context, game) =>
+                PremiumSplashOverlay(game: game),
           },
-          initialActiveOverlays: const ['MainMenu', 'Transition'],
+          initialActiveOverlays: const ['PremiumSplash', 'Transition'],
           loadingBuilder: (context) => Container(
             color: const Color(0xFF1A1A2E),
             child: const Center(

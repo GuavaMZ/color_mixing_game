@@ -43,7 +43,6 @@ import 'dart:math';
 import 'package:flame/game.dart';
 import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
-import 'package:color_mixing_deductive/helpers/theme_constants.dart';
 import 'package:flutter/material.dart';
 
 enum GameMode { classic, timeAttack, colorEcho, chaosLab, none }
@@ -97,6 +96,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
   final ValueNotifier<double> matchPercentage = ValueNotifier<double>(0.0);
   final ValueNotifier<int> totalDrops = ValueNotifier<int>(0);
+  int lastEarnedCoins = 0; // For UI synchronization
   final ValueNotifier<bool> dropsLimitReached = ValueNotifier<bool>(false);
   final ValueNotifier<int> totalCoins = ValueNotifier<int>(0);
   final ValueNotifier<Map<String, int>> helperCounts =
@@ -119,7 +119,6 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   StringLights? stringLights;
   List<String> unlockedAchievements = [];
   bool globalBlindMode = false;
-  bool highContrastEnabled = false;
   bool reducedMotionEnabled = false;
 
   GameMode currentMode = GameMode.none;
@@ -166,8 +165,6 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     totalCoins.value = await SaveManager.loadTotalCoins();
     unlockedAchievements = await SaveManager.loadAchievements();
     globalBlindMode = await SaveManager.loadBlindMode();
-    highContrastEnabled = await SaveManager.loadHighContrast();
-    AppTheme.highContrastEnabled = highContrastEnabled;
     reducedMotionEnabled = await SaveManager.loadReducedMotion();
     randomEventsEnabled = await SaveManager.loadRandomEvents();
 
@@ -480,8 +477,19 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     // Check for Level 10 rewards
     _checkLevelReward();
 
-    // Award combo bonus coins
-    int baseCoins = stars * 10;
+    // Factor in mode-specific base rewards
+    int baseCoins = 0;
+    if (currentMode == GameMode.classic || currentMode == GameMode.timeAttack) {
+      if (stars == 3)
+        baseCoins = 100;
+      else if (stars == 2)
+        baseCoins = 50;
+      else if (stars == 1)
+        baseCoins = 20;
+    } else {
+      baseCoins = stars * 10; // Default fallback
+    }
+
     int comboMultiplier = 1;
     if (comboCount.value >= 10) {
       comboMultiplier = 5;
@@ -490,8 +498,10 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     } else if (comboCount.value >= 3) {
       comboMultiplier = 2;
     }
-    int bonusCoins = baseCoins * (comboMultiplier - 1);
-    addCoins(baseCoins + bonusCoins);
+    int bonusCoins = (baseCoins * (comboMultiplier - 1)).toInt();
+    int totalAwarded = baseCoins + bonusCoins;
+    lastEarnedCoins = totalAwarded;
+    addCoins(totalAwarded);
 
     // Save progress immediately
     if (currentMode == GameMode.classic || currentMode == GameMode.timeAttack) {
@@ -516,6 +526,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
         // Base 50, Streak 1.0x multiplier
         int echoCoins = (50 * (1 + echoStreak * 1.0)).toInt();
+        lastEarnedCoins = echoCoins;
         addCoins(echoCoins);
 
         // Milestone reward
@@ -528,7 +539,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
         // Chaos base 50 + 10x per round depth
         int chaosBaseCoins = 50 + (chaosRound * 10);
         int chaosBonus = (chaosBaseCoins * chaosStability).toInt();
-        addCoins(chaosBaseCoins + chaosBonus);
+        lastEarnedCoins = chaosBaseCoins + chaosBonus;
+        addCoins(lastEarnedCoins);
         chaosRound++;
 
         // Chaos Survivor bonus
@@ -1243,13 +1255,6 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   Future<void> toggleBlindMode(bool enabled) async {
     globalBlindMode = enabled;
     await SaveManager.saveBlindMode(enabled);
-    notifyListeners();
-  }
-
-  Future<void> toggleHighContrast(bool enabled) async {
-    highContrastEnabled = enabled;
-    AppTheme.highContrastEnabled = enabled;
-    await SaveManager.saveHighContrast(enabled);
     notifyListeners();
   }
 

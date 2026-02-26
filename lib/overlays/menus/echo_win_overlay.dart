@@ -158,6 +158,13 @@ class _EchoWinOverlayState extends State<EchoWinOverlay>
                                 widget.game.echoScore.toInt().toString(),
                                 AppTheme.neonMagenta,
                               ),
+                              const SizedBox(height: 12),
+                              _buildDataRow(
+                                context,
+                                AppStrings.coinsEarnedShort.getString(context),
+                                "+${widget.game.lastEarnedCoins}",
+                                Colors.amber,
+                              ),
                             ],
                           ),
                         ),

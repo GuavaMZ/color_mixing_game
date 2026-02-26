@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 /// Centralized theme constants for consistent styling across the app
 class AppTheme {
-  static bool highContrastEnabled = false;
-
   // === COSMIC LABORATORY PALETTE ===
   static const Color primaryDark = Color(0xFF0B0E14); // Deepest Void
   static const Color primaryMedium = Color(0xFF15192B); // Deep Navy
@@ -81,33 +79,25 @@ class AppTheme {
     bool isInteractive = false,
   }) {
     return BoxDecoration(
-      gradient: highContrastEnabled ? null : glassGradient,
-      color: highContrastEnabled ? primaryDark : null,
+      gradient: glassGradient,
       borderRadius: BorderRadius.circular(borderRadius),
       border: Border.all(
-        color:
-            borderColor ??
-            (highContrastEnabled
-                ? Colors.white
-                : Colors.white.withValues(alpha: 0.15)),
-        width: highContrastEnabled ? 3.0 : 1.5,
+        color: borderColor ?? Colors.white.withValues(alpha: 0.15),
+        width: 1.5,
       ),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(
-            alpha: highContrastEnabled ? 0.8 : 0.5,
-          ),
-          blurRadius: highContrastEnabled ? 0 : 20,
+          color: Colors.black.withValues(alpha: 0.5),
+          blurRadius: 20,
           offset: const Offset(0, 10),
         ),
         // Subtle inner rim light
-        if (!highContrastEnabled)
-          const BoxShadow(
-            color: Colors.white,
-            blurRadius: 0,
-            spreadRadius: -1.5,
-          ),
-        if (isInteractive && !highContrastEnabled)
+        BoxShadow(
+          color: Colors.white.withValues(alpha: 0.05),
+          blurRadius: 0,
+          spreadRadius: -1.5,
+        ),
+        if (isInteractive)
           BoxShadow(
             color: neonCyan.withValues(alpha: 0.15),
             blurRadius: 15,
@@ -163,31 +153,23 @@ class AppTheme {
     bool hasGlow = false,
     Color? glowColor,
   }) {
-    final effectiveBorderColor = highContrastEnabled
-        ? Colors.white
-        : (borderColor == Colors.white
-              ? Colors.white.withValues(alpha: 0.3)
-              : borderColor);
+    final effectiveBorderColor = borderColor == Colors.white
+        ? Colors.white.withValues(alpha: 0.3)
+        : borderColor;
 
     return BoxDecoration(
-      color: highContrastEnabled
-          ? primaryDark
-          : (fillColor?.withValues(alpha: 0.9) ??
-                primaryMedium.withValues(alpha: 0.8)),
+      color:
+          fillColor?.withValues(alpha: 0.9) ??
+          primaryMedium.withValues(alpha: 0.8),
       borderRadius: BorderRadius.circular(borderRadius),
-      border: Border.all(
-        color: effectiveBorderColor,
-        width: highContrastEnabled ? 3.0 : borderWidth,
-      ),
+      border: Border.all(color: effectiveBorderColor, width: borderWidth),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(
-            alpha: highContrastEnabled ? 0.8 : 0.6,
-          ),
-          blurRadius: highContrastEnabled ? 0 : 15,
+          color: Colors.black.withValues(alpha: 0.6),
+          blurRadius: 15,
           offset: const Offset(0, 8),
         ),
-        if (hasGlow && !highContrastEnabled)
+        if (hasGlow)
           BoxShadow(
             color:
                 (glowColor ??
@@ -197,12 +179,11 @@ class AppTheme {
             spreadRadius: -1,
           ),
         // Inner Glow
-        if (!highContrastEnabled)
-          BoxShadow(
-            color: Colors.white.withValues(alpha: 0.05),
-            offset: const Offset(1, 1),
-            blurRadius: 1,
-          ),
+        BoxShadow(
+          color: Colors.white.withValues(alpha: 0.05),
+          offset: const Offset(1, 1),
+          blurRadius: 1,
+        ),
       ],
     );
   }

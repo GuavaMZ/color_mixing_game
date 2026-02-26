@@ -430,21 +430,6 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                               ),
 
                               _SettingsTile(
-                                icon: Icons.contrast_rounded,
-                                title: AppStrings.highContrast.getString(
-                                  context,
-                                ),
-                                trailing: _ToggleSwitch(
-                                  value: widget.game.highContrastEnabled,
-                                  onChanged: (value) {
-                                    _audio.playButton();
-                                    widget.game.toggleHighContrast(value);
-                                    setState(() {});
-                                  },
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              _SettingsTile(
                                 icon: Icons.motion_photos_off_rounded,
                                 title: AppStrings.reducedMotion.getString(
                                   context,
