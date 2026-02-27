@@ -110,6 +110,16 @@ class ControlsOverlay extends StatelessWidget {
                 child: _buildPowerUpDock(context),
               ),
 
+              // Active Random Event HUD Badge
+              if (game.currentMode == GameMode.classic ||
+                  game.currentMode == GameMode.timeAttack)
+                Positioned(
+                  bottom: ResponsiveHelper.safePadding(context).bottom + 180,
+                  left: 0,
+                  right: 0,
+                  child: Center(child: _ActiveEventBadge(game: game)),
+                ),
+
               // Bottom controls area (Control Panel)
               Align(
                 alignment: Alignment.bottomCenter,
@@ -1062,6 +1072,167 @@ class _ComboDisplay extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.2,
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Active Event HUD Badge ───────────────────────────────────────────────────
+
+class _ActiveEventBadge extends StatelessWidget {
+  final ColorMixerGame game;
+  const _ActiveEventBadge({required this.game});
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<String?>(
+      valueListenable: game.activeEventLabel,
+      builder: (context, label, _) {
+        if (label == null) return const SizedBox.shrink();
+
+        return ValueListenableBuilder<double>(
+          valueListenable: game.activeEventProgress,
+          builder: (context, progress, _) {
+            // Determine color based on whether it's a positive or negative event
+            final isPositive = game.isTimeFreeze || game.isDoubleCoinActive;
+            final color = isPositive ? AppTheme.success : AppTheme.neonMagenta;
+
+            return AnimatedOpacity(
+              opacity: 1.0,
+              duration: const Duration(milliseconds: 300),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryDark.withValues(alpha: 0.92),
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(
+                    color: color.withValues(alpha: 0.7),
+                    width: 1.5,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: color.withValues(alpha: 0.3),
+                      blurRadius: 12,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Event label row
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Pulsing dot
+                        _PulsingDot(color: color),
+                        const SizedBox(width: 8),
+                        Text(
+                          label.toUpperCase(),
+                          style: TextStyle(
+                            color: color,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.5,
+                            decoration: TextDecoration.none,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 5),
+
+                    // Shrinking progress bar
+                    SizedBox(
+                      width: 140,
+                      height: 3,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(2),
+                        child: Stack(
+                          children: [
+                            Container(color: color.withValues(alpha: 0.15)),
+                            FractionallySizedBox(
+                              widthFactor: progress.clamp(0.0, 1.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: color,
+                                  borderRadius: BorderRadius.circular(2),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: color.withValues(alpha: 0.6),
+                                      blurRadius: 4,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class _PulsingDot extends StatefulWidget {
+  final Color color;
+  const _PulsingDot({required this.color});
+
+  @override
+  State<_PulsingDot> createState() => _PulsingDotState();
+}
+
+class _PulsingDotState extends State<_PulsingDot>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _ctrl;
+  late Animation<double> _anim;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 700),
+    )..repeat(reverse: true);
+    _anim = Tween(
+      begin: 0.4,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _anim,
+      builder: (_, __) => Container(
+        width: 7,
+        height: 7,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: widget.color.withValues(alpha: _anim.value),
+          boxShadow: [
+            BoxShadow(
+              color: widget.color.withValues(alpha: _anim.value * 0.7),
+              blurRadius: 5,
             ),
           ],
         ),

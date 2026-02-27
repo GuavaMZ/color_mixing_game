@@ -44,6 +44,7 @@ dependencies:
   in_app_purchase: ^3.2.3
   flutter_native_splash: ^2.4.7
   device_info_plus: ^11.0.0
+  flutter_svg: ^2.2.3
 
 dev_dependencies:
   flutter_test:

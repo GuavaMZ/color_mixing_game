@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:vector_math/vector_math_64.dart' show Vector3;
 
 /// Scientific color analysis utilities for Color Lab.
 ///
@@ -50,7 +51,7 @@ class ColorScience {
     final dA = labA[1] - labB[1];
     final dB = labA[2] - labB[2];
 
-    return sqrt(dL * dL + dA * dA + dB * dB);
+    return Vector3(dL, dA, dB).length;
   }
 
   static double _linearize(double v) {

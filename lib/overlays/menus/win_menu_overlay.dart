@@ -266,6 +266,12 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
                       // Coins Earned Display
                       _buildCoinsEarnedDisplay(context, stars),
 
+                      // +30% Event Bonus badge (shown when applicable)
+                      if (widget.game.randomEventBonusApplied) ...[
+                        const SizedBox(height: 8),
+                        _buildEventBonusBadge(context),
+                      ],
+
                       SizedBox(height: ResponsiveHelper.spacing(context, 20)),
 
                       // Stats container
@@ -437,6 +443,61 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
               ),
             );
           },
+        );
+      },
+    );
+  }
+
+  /// +30% Random Event Bonus badge
+  Widget _buildEventBonusBadge(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.elasticOut,
+      builder: (context, scale, _) {
+        return Transform.scale(
+          scale: scale,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppTheme.success.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: AppTheme.success.withValues(alpha: 0.6),
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.success.withValues(alpha: 0.25),
+                  blurRadius: 12,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '⚡',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    decoration: TextDecoration.none,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  '+30% EVENT BONUS',
+                  style: TextStyle(
+                    color: AppTheme.success,
+                    fontSize: ResponsiveHelper.fontSize(context, 12),
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.5,
+                    decoration: TextDecoration.none,
+                  ),
+                ),
+              ],
+            ),
+          ),
         );
       },
     );

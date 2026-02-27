@@ -31,6 +31,7 @@ import 'package:color_mixing_deductive/overlays/navigation/daily_challenge_overl
 import 'package:color_mixing_deductive/overlays/menus/daily_login_overlay.dart';
 import 'package:color_mixing_deductive/overlays/menus/mode_guide_overlay.dart';
 import 'package:color_mixing_deductive/overlays/system/blackout_overlay.dart';
+import 'package:color_mixing_deductive/overlays/system/random_event_alert_overlay.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:color_mixing_deductive/core/ad_manager.dart';
 import 'package:color_mixing_deductive/core/security_service.dart';
@@ -256,6 +257,8 @@ class _GameSectionState extends State<_GameSection> {
                   ChaosGameOverOverlay(game: game),
               'CoinStore': (context, game) => CoinStoreOverlay(game: game),
               'ModeGuide': (context, game) => ModeGuideOverlay(game: game),
+              'RandomEventAlert': (context, game) =>
+                  RandomEventAlertOverlay(game: game),
             },
             initialActiveOverlays: const ['MainMenu'],
             loadingBuilder: (context) => Container(

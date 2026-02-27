@@ -14,13 +14,31 @@ class EventConfig {
   final EventRarity rarity;
   final double baseDuration; // Base duration in seconds
   final bool isPositive; // Whether this is a beneficial event
+  final String label; // Display name shown in the alert
+  final String icon; // Emoji icon shown in the alert
 
   const EventConfig({
     required this.id,
     required this.rarity,
     required this.baseDuration,
     this.isPositive = false,
+    required this.label,
+    required this.icon,
   });
+
+  /// Human-readable rarity label
+  String get rarityLabel {
+    switch (rarity) {
+      case EventRarity.common:
+        return 'COMMON';
+      case EventRarity.uncommon:
+        return 'UNCOMMON';
+      case EventRarity.rare:
+        return 'RARE';
+      case EventRarity.epic:
+        return 'EPIC';
+    }
+  }
 }
 
 /// Manages random event selection with weighted probabilities
@@ -30,33 +48,61 @@ class EventRaritySystem {
   /// All available events with their configurations
   static const List<EventConfig> events = [
     // Common Events (50% total, ~6.25% each)
-    EventConfig(id: 'glitch', rarity: EventRarity.common, baseDuration: 6.0),
-    EventConfig(id: 'unstable', rarity: EventRarity.common, baseDuration: 6.0),
+    EventConfig(
+      id: 'glitch',
+      rarity: EventRarity.common,
+      baseDuration: 6.0,
+      label: 'System Glitch',
+      icon: '⚡',
+    ),
+    EventConfig(
+      id: 'unstable',
+      rarity: EventRarity.common,
+      baseDuration: 6.0,
+      label: 'Unstable Mixture',
+      icon: '🧪',
+    ),
     EventConfig(
       id: 'earthquake',
       rarity: EventRarity.common,
       baseDuration: 5.0,
+      label: 'Seismic Tremor',
+      icon: '🌍',
     ),
-    EventConfig(id: 'ui_glitch', rarity: EventRarity.common, baseDuration: 7.0),
+    EventConfig(
+      id: 'ui_glitch',
+      rarity: EventRarity.common,
+      baseDuration: 7.0,
+      label: 'UI Corruption',
+      icon: '💻',
+    ),
     EventConfig(
       id: 'evaporation_short',
       rarity: EventRarity.common,
       baseDuration: 5.0,
+      label: 'Rapid Evaporation',
+      icon: '💨',
     ),
     EventConfig(
       id: 'inverted_short',
       rarity: EventRarity.common,
       baseDuration: 6.0,
+      label: 'Inverted Controls',
+      icon: '🔄',
     ),
     EventConfig(
       id: 'color_blind_short',
       rarity: EventRarity.common,
       baseDuration: 6.0,
+      label: 'Color Blindness',
+      icon: '👁',
     ),
     EventConfig(
       id: 'gravity_flux',
       rarity: EventRarity.common,
       baseDuration: 7.0,
+      label: 'Gravity Flux',
+      icon: '🌀',
     ),
 
     // Uncommon Events (30% total, ~6% each)
@@ -64,14 +110,36 @@ class EventRaritySystem {
       id: 'blackout',
       rarity: EventRarity.uncommon,
       baseDuration: 10.0,
+      label: 'Lab Blackout',
+      icon: '🔦',
     ),
-    EventConfig(id: 'mirror', rarity: EventRarity.uncommon, baseDuration: 10.0),
-    EventConfig(id: 'wind', rarity: EventRarity.uncommon, baseDuration: 10.0),
-    EventConfig(id: 'leak', rarity: EventRarity.uncommon, baseDuration: 12.0),
+    EventConfig(
+      id: 'mirror',
+      rarity: EventRarity.uncommon,
+      baseDuration: 10.0,
+      label: 'Mirror Dimension',
+      icon: '🪞',
+    ),
+    EventConfig(
+      id: 'wind',
+      rarity: EventRarity.uncommon,
+      baseDuration: 10.0,
+      label: 'Wind Force',
+      icon: '🌬',
+    ),
+    EventConfig(
+      id: 'leak',
+      rarity: EventRarity.uncommon,
+      baseDuration: 12.0,
+      label: 'Beaker Leak',
+      icon: '💧',
+    ),
     EventConfig(
       id: 'evaporation_long',
       rarity: EventRarity.uncommon,
       baseDuration: 10.0,
+      label: 'Mass Evaporation',
+      icon: '☁',
     ),
 
     // Rare Events (15% total, ~7.5% each)
@@ -80,12 +148,16 @@ class EventRaritySystem {
       rarity: EventRarity.rare,
       baseDuration: 12.0,
       isPositive: true,
+      label: 'Time Freeze',
+      icon: '❄',
     ),
     EventConfig(
       id: 'double_coins',
       rarity: EventRarity.rare,
       baseDuration: 15.0,
       isPositive: true,
+      label: 'Double Coins',
+      icon: '💰',
     ),
 
     // Epic Events (5% total)
@@ -93,6 +165,8 @@ class EventRaritySystem {
       id: 'chaos_cascade',
       rarity: EventRarity.epic,
       baseDuration: 18.0,
+      label: 'Chaos Cascade',
+      icon: '☠',
     ),
   ];
 

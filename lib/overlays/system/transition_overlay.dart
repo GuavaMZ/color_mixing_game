@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../../color_mixer_game.dart';
+import 'package:vector_math/vector_math_64.dart' show Vector2;
 import '../../helpers/theme_constants.dart';
 
 class TransitionOverlay extends StatefulWidget {
@@ -78,8 +79,7 @@ class _IrisPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final maxR =
-        math.sqrt(size.width * size.width + size.height * size.height) / 2;
+    final maxR = Vector2(size.width, size.height).length / 2;
     final holeR = maxR * (1.0 - progress);
 
     // Dark background with iris hole cut out

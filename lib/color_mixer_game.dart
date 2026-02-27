@@ -37,11 +37,8 @@ import 'package:color_mixing_deductive/helpers/audio_manager.dart';
 import 'package:color_mixing_deductive/helpers/event_rarity_system.dart';
 import 'package:color_mixing_deductive/helpers/haptic_manager.dart';
 import 'package:color_mixing_deductive/helpers/statistics_manager.dart';
-import 'package:color_mixing_deductive/helpers/string_manager.dart';
-import 'package:flutter_localization/flutter_localization.dart';
 import 'dart:math';
 import 'package:flame/game.dart';
-import 'package:flame/components.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 
@@ -86,17 +83,62 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   final ValueNotifier<String> chaosPhase = ValueNotifier<String>('STABLE');
   final ValueNotifier<bool> stabilityRecovered = ValueNotifier<bool>(false);
 
+  /// Returns true if the user is actively playing a level.
+  bool get isActivelyPlayingLevel {
+    if (_hasWon || _hasLost) return false;
+
+    // If any of these menus are open, we are not actively playing
+    final nonPlayOverlays = [
+      'MainMenu',
+      'PauseMenu',
+      'Settings',
+      'LevelMap',
+      'Shop',
+      'Gallery',
+      'ModeGuide',
+      'Statistics',
+      'DailyChallenge',
+      'DailyLogin',
+      'LabUpgrade',
+      'RandomEventAlert', // Also don't decrement while the alert is playing
+    ];
+
+    for (final overlay in nonPlayOverlays) {
+      if (overlays.isActive(overlay)) return false;
+    }
+
+    // Must be in a mode that has a HUD active (or Tutorial)
+    return overlays.isActive('Controls') ||
+        overlays.isActive('ColorEchoHUD') ||
+        overlays.isActive('ChaosLabHUD') ||
+        overlays.isActive('Tutorial');
+  }
+
+  // --- Particle Settings
+  int currentLevelIndex = 0;
   final Random _random = Random();
   Random get random => _random;
 
   int maxDrops = 20;
   final LevelManager levelManager = LevelManager();
   final AudioManager _audio = AudioManager();
-  Color? _lastBeakerColor;
+
+  // Mode States
+  GameMode currentMode = GameMode.none;
+  double timeLeft = 30.0;
+  double maxTime = 30.0; // Added for progress calculation
+  bool isTimeUp = false;
+
+  // Hint System
+  final ValueNotifier<String?> currentHint = ValueNotifier<String?>(null);
+  bool hasUsedHint = false;
+  final int hintCost = 50;
 
   final ValueNotifier<double> matchPercentage = ValueNotifier<double>(0.0);
   final ValueNotifier<int> totalDrops = ValueNotifier<int>(0);
   int lastEarnedCoins = 0; // For UI synchronization
+  bool randomEventBonusApplied =
+      false; // Whether 1.3x bonus was applied this win
   final ValueNotifier<bool> dropsLimitReached = ValueNotifier<bool>(false);
   final ValueNotifier<int> totalCoins = ValueNotifier<int>(0);
   final ValueNotifier<Map<String, int>> helperCounts =
@@ -107,10 +149,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   int highestCombo = 0;
   final Map<String, int> helpersUsedInLevel = {}; // New field
 
-  // Hint System
-  final ValueNotifier<String?> currentHint = ValueNotifier<String?>(null);
-  bool hasUsedHint = false;
-  final int hintCost = 50;
+  int totalStars = 0;
+  Color _lastBeakerColor = Colors.transparent;
 
   late BackgroundGradient backgroundGradient;
   late AmbientParticles ambientParticles;
@@ -121,15 +161,37 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   bool globalBlindMode = false;
   bool reducedMotionEnabled = false;
 
-  GameMode currentMode = GameMode.none;
-  double timeLeft = 30.0;
-  double maxTime = 30.0; // Added for progress calculation
-  bool isTimeUp = false;
+  List<BeakerType> unlockedSkins = [BeakerType.classic];
+
+  // Random Events State
   bool randomEventsEnabled = false;
   double _eventTimer = 0;
 
   // Random Event States
   double _evaporationVisualOffset = 0.0; // Visual level to subtract
+
+  // Active event tracking (for HUD badge)
+  final ValueNotifier<EventConfig?> pendingEvent = ValueNotifier<EventConfig?>(
+    null,
+  );
+  final ValueNotifier<String?> activeEventLabel = ValueNotifier<String?>(null);
+  final ValueNotifier<double> activeEventProgress = ValueNotifier<double>(0.0);
+  double _activeEventDuration = 0.0;
+  double _activeEventElapsed = 0.0;
+  bool _randomEventOccurredThisLevel = false;
+
+  bool get isAnyRandomEventActive =>
+      isBlackout ||
+      isEvaporating ||
+      isControlsInverted ||
+      isUiGlitching ||
+      isEarthquake ||
+      isColorBlindEvent ||
+      isGravityFlux ||
+      isMirrored ||
+      hasWind ||
+      isTimeFreeze ||
+      isDoubleCoinActive;
 
   // Earthquake shake offset
   Vector2 _earthquakeOffset = Vector2.zero();
@@ -384,23 +446,35 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     }
 
     // Random Events Logic (Chaos Director)
-    if (currentMode == GameMode.chaosLab && !_hasWon) {
-      _eventTimer -= dt;
-      if (_eventTimer <= 0) {
-        _triggerChaosMeltdown();
-        // Stability based frequency: more events as stability drops
-        _eventTimer = 5.0 + (chaosStability * 15.0);
+    if (isActivelyPlayingLevel) {
+      if (currentMode == GameMode.chaosLab && !_hasWon) {
+        _eventTimer -= dt;
+        if (_eventTimer <= 0) {
+          _triggerChaosMeltdown();
+          // Stability based frequency: more events as stability drops
+          _eventTimer = 5.0 + (chaosStability * 15.0);
+        }
+      } else if (randomEventsEnabled &&
+          (currentMode == GameMode.classic ||
+              currentMode == GameMode.timeAttack) &&
+          !_hasWon) {
+        _eventTimer -= dt;
+        if (_eventTimer <= 0) {
+          _triggerRandomEvent();
+          _eventTimer = 10.0 + _random.nextDouble() * 5.0;
+        }
       }
-    } else if (randomEventsEnabled &&
-        currentMode == GameMode.classic &&
-        !_hasWon) {
-      _eventTimer -= dt;
-      if (_eventTimer <= 0) {
-        _triggerRandomEvent();
-        _eventTimer = 10.0 + _random.nextDouble() * 5.0;
+
+      // Active event progress tracking for HUD badge
+      if (isAnyRandomEventActive &&
+          _activeEventDuration > 0 &&
+          (currentMode == GameMode.classic ||
+              currentMode == GameMode.timeAttack)) {
+        _activeEventElapsed += dt;
+        activeEventProgress.value =
+            1.0 - (_activeEventElapsed / _activeEventDuration).clamp(0.0, 1.0);
       }
     }
-
     // Check win condition ONLY if color changed
     if (!_hasWon && beaker.currentColor != _lastBeakerColor) {
       _lastBeakerColor = beaker.currentColor;
@@ -507,6 +581,15 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     }
     int bonusCoins = (baseCoins * (comboMultiplier - 1)).toInt();
     int totalAwarded = baseCoins + bonusCoins;
+
+    // Apply Random Event Bonus (1.3x) if enabled and occurred
+    if (randomEventsEnabled && _randomEventOccurredThisLevel) {
+      totalAwarded = (totalAwarded * 1.3).round();
+      randomEventBonusApplied = true;
+    } else {
+      randomEventBonusApplied = false;
+    }
+
     lastEarnedCoins = totalAwarded;
     addCoins(totalAwarded);
 
@@ -977,6 +1060,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     isColorBlindEvent = false;
     isDoubleCoinActive = false;
     _evaporationVisualOffset = 0.0;
+    _randomEventOccurredThisLevel = false;
+    randomEventBonusApplied = false;
     helpersUsedInLevel.clear();
     _lastBeakerColor = Colors.transparent;
 
@@ -1178,9 +1263,6 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       LivesManager().consumeLife();
     }
   }
-
-  int totalStars = 0;
-  List<BeakerType> unlockedSkins = [BeakerType.classic];
 
   void addCoins(int amount) {
     totalCoins.value += amount;
@@ -1566,29 +1648,39 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
     if (isEffectActive) return;
 
-    // Show visual warning
-    add(AnomalyWarning());
+    // Determine mode string for duration calculation
+    String modeString = 'classic';
+    if (currentMode == GameMode.chaosLab) {
+      modeString = 'chaosLab';
+    } else if (currentMode == GameMode.timeAttack) {
+      modeString = 'timeAttack';
+    }
 
-    // Delay actual effect slightly
-    Future.delayed(const Duration(milliseconds: 1500), () {
+    // Select event now so the alert overlay can display its name
+    final event = EventRaritySystem.getRandomEvent();
+    pendingEvent.value = event;
+
+    // Track that an event occurred this level for the reward multiplier
+    _randomEventOccurredThisLevel = true;
+
+    // Show visual warning
+    overlays.add('RandomEventAlert');
+
+    // Delay actual effect slightly to let the built-in alert finish (2.2 seconds)
+    Future.delayed(const Duration(milliseconds: 2200), () {
       if (currentMode != GameMode.classic &&
           currentMode != GameMode.timeAttack &&
           currentMode != GameMode.chaosLab) {
         return;
       }
 
-      // Use new rarity system to select event
-      final event = EventRaritySystem.getRandomEvent();
-
-      // Determine mode string for duration calculation
-      String modeString = 'classic';
-      if (currentMode == GameMode.chaosLab) {
-        modeString = 'chaosLab';
-      } else if (currentMode == GameMode.timeAttack) {
-        modeString = 'timeAttack';
-      }
-
       final duration = EventRaritySystem.getDuration(event, modeString);
+
+      // Set active event details for HUD badge
+      activeEventLabel.value = event.label;
+      activeEventProgress.value = 1.0;
+      _activeEventDuration = duration;
+      _activeEventElapsed = 0.0;
 
       // Trigger event based on ID
       switch (event.id) {
@@ -1684,6 +1776,12 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
       // Auto-remove effect after duration
       Future.delayed(Duration(milliseconds: (duration * 1000).toInt()), () {
+        // Clear active event HUD
+        activeEventLabel.value = null;
+        activeEventProgress.value = 0.0;
+        _activeEventDuration = 0.0;
+        _activeEventElapsed = 0.0;
+
         // Reset Logic Flags
         isBlackout = false;
         isEvaporating = false;
@@ -1729,66 +1827,5 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
         }
       });
     });
-  }
-}
-
-class AnomalyWarning extends PositionComponent
-    with HasGameReference<ColorMixerGame> {
-  late TextComponent _text;
-  double _timer = 0;
-
-  @override
-  Future<void> onLoad() async {
-    super.onLoad();
-    position = Vector2(game.size.x / 2, game.size.y * 0.2);
-    anchor = Anchor.center;
-
-    _text = TextComponent(
-      text: AppStrings.anomalyDetected.getString(game.buildContext!),
-      textRenderer: TextPaint(
-        style: const TextStyle(
-          color: Colors.redAccent,
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 4.0,
-          shadows: [
-            Shadow(color: Colors.red, blurRadius: 10, offset: Offset(0, 0)),
-          ],
-        ),
-      ),
-      anchor: Anchor.center,
-    );
-
-    add(_text);
-  }
-
-  @override
-  void update(double dt) {
-    super.update(dt);
-    _timer += dt;
-
-    // Pulse effect
-    _text.scale = Vector2.all(1.0 + sin(_timer * 10) * 0.1);
-    _text.textRenderer = TextPaint(
-      style:
-          const TextStyle(
-            color: Colors.redAccent,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 4.0,
-            shadows: [
-              Shadow(color: Colors.red, blurRadius: 10, offset: Offset(0, 0)),
-            ],
-          ).copyWith(
-            color: Colors.redAccent.withValues(
-              alpha: (sin(_timer * 15) + 1) / 2,
-            ),
-          ),
-    );
-
-    // Remove after 2 seconds
-    if (_timer >= 2.0) {
-      removeFromParent();
-    }
   }
 }
