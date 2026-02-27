@@ -486,7 +486,7 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  '+30% EVENT BONUS',
+                  AppStrings.eventBonusTagText.getString(context),
                   style: TextStyle(
                     color: AppTheme.success,
                     fontSize: ResponsiveHelper.fontSize(context, 12),
@@ -587,7 +587,7 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
             icon: Icons.waves_rounded,
             iconColor: Colors.purpleAccent,
             label: AppStrings.wavelengthLabel.getString(context),
-            value: '$wavelength nm · $spectralRegion',
+            value: '$wavelength nm · ${spectralRegion.getString(context)}',
           ),
 
           const SizedBox(height: 8),
@@ -704,7 +704,7 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        fact,
+                        fact.getString(context),
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.8),
                           fontSize: ResponsiveHelper.fontSize(context, 11),

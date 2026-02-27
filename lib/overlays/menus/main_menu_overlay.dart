@@ -127,6 +127,10 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
 
                   // Footer
                   Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: _buildTermsAcceptance(),
+                  ),
+                  Padding(
                     padding: const EdgeInsets.only(bottom: 16),
                     child: Text(
                       'v1.2.0',
@@ -694,6 +698,162 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
           ),
         );
       },
+    );
+  }
+
+  Widget _buildTermsAcceptance() {
+    final statement = AppStrings.termsAcceptanceStatement.getString(context);
+    final label = AppStrings.termsOfUseLabel.getString(context);
+
+    // Split statement at %s
+    final parts = statement.split('%s');
+
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        Text(
+          parts[0],
+          style: AppTheme.caption(
+            context,
+          ).copyWith(color: Colors.white.withValues(alpha: 0.5)),
+        ),
+        GestureDetector(
+          onTap: () => _showTermsDialog(context),
+          child: Text(
+            label,
+            style: AppTheme.caption(context).copyWith(
+              color: AppTheme.neonCyan,
+              decoration: TextDecoration.underline,
+              decorationColor: AppTheme.neonCyan,
+            ),
+          ),
+        ),
+        if (parts.length > 1)
+          Text(
+            parts[1],
+            style: AppTheme.caption(
+              context,
+            ).copyWith(color: Colors.white.withValues(alpha: 0.5)),
+          ),
+      ],
+    );
+  }
+
+  void _showTermsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.primaryDark,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: AppTheme.neonCyan, width: 2),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.gavel_rounded, color: AppTheme.neonCyan),
+            const SizedBox(width: 12),
+            Text(
+              AppStrings.termsOfUseLabel.getString(context),
+              style: AppTheme.heading2(context).copyWith(fontSize: 24),
+            ),
+          ],
+        ),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildTermsSection(
+                  "1. Acceptance of Terms",
+                  "By using Color Lab, you agree to be bound by these Terms. If you disagree, do not use the App.",
+                ),
+                _buildTermsSection(
+                  "2. License Grant",
+                  "We grant you a personal, non-exclusive, limited license for non-commercial entertainment purposes.",
+                ),
+                _buildTermsSection(
+                  "3. Restrictions",
+                  "You agree not to reverse engineer, decompile, or disassemble the App, or use it for any illegal purpose.",
+                ),
+                _buildTermsSection(
+                  "4. Intellectual Property",
+                  "All rights, title, and interest in and to the App (code, graphics) are owned by DV Zeyad.",
+                ),
+                _buildTermsSection(
+                  "5. Virtual Currency",
+                  "Coins and items have no real-world value, are non-refundable, and cannot be exchanged for real money.",
+                ),
+                _buildTermsSection(
+                  "6. Disclaimer of Warranties",
+                  "The App is provided 'AS IS' without warranties of any kind regarding its performance or reliability.",
+                ),
+                _buildTermsSection(
+                  "7. Limitation of Liability",
+                  "DV Zeyad shall not be liable for any indirect, incidental, or consequential damages arising from use.",
+                ),
+                _buildTermsSection(
+                  "8. Governing Law",
+                  "These Terms are governed by and construed in accordance with the laws of the developer's jurisdiction.",
+                ),
+                _buildTermsSection(
+                  "9. Changes to Terms",
+                  "We reserve the right to modify these Terms at any time by updating the effective date.",
+                ),
+                _buildTermsSection(
+                  "10. Contact Information",
+                  "For questions, contact us at: elqutamy.zeyad8@gmail.com",
+                ),
+                const Divider(color: Colors.white24, height: 32),
+                Text(
+                  "Last Updated: February 27, 2026",
+                  style: AppTheme.caption(
+                    context,
+                  ).copyWith(fontStyle: FontStyle.italic),
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              AppStrings.ok.getString(context),
+              style: TextStyle(
+                color: AppTheme.neonCyan,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTermsSection(String title, String body) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            body,
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
+          ),
+        ],
+      ),
     );
   }
 }

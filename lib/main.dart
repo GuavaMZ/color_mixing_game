@@ -33,6 +33,7 @@ import 'package:color_mixing_deductive/overlays/menus/mode_guide_overlay.dart';
 import 'package:color_mixing_deductive/overlays/system/blackout_overlay.dart';
 import 'package:color_mixing_deductive/overlays/system/random_event_alert_overlay.dart';
 import 'package:color_mixing_deductive/overlays/system/intro_splash_overlay.dart';
+import 'package:color_mixing_deductive/overlays/system/premium_loading_screen.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:color_mixing_deductive/core/ad_manager.dart';
 import 'package:color_mixing_deductive/core/security_service.dart';
@@ -263,14 +264,8 @@ class _GameSectionState extends State<_GameSection> {
               'IntroSplash': (context, game) => IntroSplashOverlay(game: game),
             },
             initialActiveOverlays: const ['IntroSplash'],
-            loadingBuilder: (context) => Container(
-              color: const Color(0xFF1A1A2E),
-              child: const Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF667eea)),
-                ),
-              ),
-            ),
+            loadingBuilder: (context) =>
+                PremiumLoadingScreen(progress: _game.loadingProgress),
           ),
 
           // ── Layer 2: Transition — always on top of every screen ───────────

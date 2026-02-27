@@ -117,7 +117,9 @@ class StatisticsOverlay extends StatelessWidget {
                                 title: AppStrings.favoriteMode.getString(
                                   context,
                                 ),
-                                value: modeSnapshot.data ?? 'None',
+                                value:
+                                    modeSnapshot.data ??
+                                    AppStrings.none.getString(context),
                                 color: Colors.pink,
                               );
                             },

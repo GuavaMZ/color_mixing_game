@@ -9,6 +9,7 @@ import 'package:color_mixing_deductive/helpers/visual_effects.dart'; // StarFiel
 import 'package:color_mixing_deductive/components/ui/responsive_components.dart'; // ResponsiveIconButton
 import 'package:color_mixing_deductive/components/ui/animated_card.dart'; // AnimatedCard
 import 'package:color_mixing_deductive/components/ui/coins_widget.dart'; // CoinsWidget
+import 'package:color_mixing_deductive/helpers/string_manager.dart';
 
 class LabUpgradeHub extends StatefulWidget {
   final ColorMixerGame game;
@@ -198,26 +199,31 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
             children: [
               _buildMobileTab(
                 context,
-                'Surface',
+                AppStrings.lhubSurface,
                 'surface',
                 Icons.table_restaurant,
               ),
               _buildMobileTab(
                 context,
-                'Lighting',
+                AppStrings.lhubLighting,
                 'lighting',
                 Icons.lightbulb_outline,
               ),
               _buildMobileTab(
                 context,
-                'Background',
+                AppStrings.lhubBackground,
                 'background',
                 Icons.wallpaper,
               ),
-              _buildMobileTab(context, 'Stand', 'stand', Icons.science),
               _buildMobileTab(
                 context,
-                'Overhead',
+                AppStrings.lhubStand,
+                'stand',
+                Icons.science,
+              ),
+              _buildMobileTab(
+                context,
+                AppStrings.lhubOverhead,
                 'string_lights',
                 Icons.wb_incandescent,
               ),
@@ -333,7 +339,9 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      (isMobile ? 'LAB UPGRADES' : 'LAB UPGRADE HUB')
+                      (isMobile
+                              ? AppStrings.lhubLabUpgrades
+                              : AppStrings.lhubLabUpgradeHub)
                           .toUpperCase(),
                       style: AppTheme.heading1(context).copyWith(
                         fontSize: isMobile ? 12 : (isTablet ? 16 : 18),
@@ -366,7 +374,7 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
                             ),
                           ),
                           child: Text(
-                            '🔬 ${completion.toStringAsFixed(0)}% COMPLETE',
+                            '🔬 ${completion.toStringAsFixed(0)}% ${AppStrings.lhubComplete}',
                             style: TextStyle(
                               color: AppTheme.neonCyan,
                               fontSize: isMobile ? 9 : 11,
@@ -451,7 +459,7 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
                       Icon(Icons.dashboard, color: AppTheme.neonCyan, size: 20),
                       const SizedBox(width: 8),
                       Text(
-                        'Categories',
+                        AppStrings.lhubCategories,
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -463,26 +471,31 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
                 ),
                 const SizedBox(height: 16),
                 _buildTab(
-                  'Work Surface',
+                  AppStrings.lhubSurface,
                   'surface',
                   Icons.table_restaurant,
                   isTablet,
                 ),
                 _buildTab(
-                  'Lighting',
+                  AppStrings.lhubLighting,
                   'lighting',
                   Icons.lightbulb_outline,
                   isTablet,
                 ),
                 _buildTab(
-                  'Background',
+                  AppStrings.lhubBackground,
                   'background',
                   Icons.wallpaper,
                   isTablet,
                 ),
-                _buildTab('Beaker Stand', 'stand', Icons.science, isTablet),
                 _buildTab(
-                  'Overhead Lights',
+                  AppStrings.lhubStand,
+                  'stand',
+                  Icons.science,
+                  isTablet,
+                ),
+                _buildTab(
+                  AppStrings.lhubOverhead,
                   'string_lights',
                   Icons.wb_incandescent,
                   isTablet,
@@ -507,7 +520,7 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
                       ),
                     ),
                     child: Text(
-                      'Customize your lab environment',
+                      AppStrings.lhubCustomizeLabDesc,
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.7),
                         fontSize: 11,
@@ -713,7 +726,7 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
       child: items.isEmpty
           ? Center(
               child: Text(
-                'No items available',
+                AppStrings.lhubNoItems,
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.5),
                   fontSize: isMobile ? 14 : 16,
@@ -1038,7 +1051,9 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
                                 : null,
                           ),
                           child: Text(
-                            isEquipped ? 'EQUIPPED' : 'EQUIP',
+                            isEquipped
+                                ? AppStrings.lhubEquipped
+                                : AppStrings.lhubEquip,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: isMobile ? 10 : 11,
@@ -1162,7 +1177,7 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
                 ),
               ),
               child: Text(
-                'Enhance your laboratory experience',
+                AppStrings.lhubEnhanceExp,
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.8),
                   fontSize: 12,
@@ -1253,7 +1268,10 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Not enough coins! Need ${item.price - widget.game.totalCoins.value} more.',
+              AppStrings.lhubNotEnoughCoins.replaceAll(
+                '%s',
+                '${item.price - widget.game.totalCoins.value}',
+              ),
             ),
             backgroundColor: Colors.red.withValues(alpha: 0.9),
             duration: const Duration(seconds: 2),
@@ -1451,7 +1469,7 @@ class _ItemDetailSheet extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            'SPECIFICATIONS',
+                            AppStrings.lhubSpecifications,
                             style: TextStyle(
                               color: Colors.white54,
                               fontWeight: FontWeight.bold,
@@ -1483,7 +1501,7 @@ class _ItemDetailSheet extends StatelessWidget {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'ARCHIVE DATA',
+                              AppStrings.lhubArchiveData,
                               style: TextStyle(
                                 color: item.rarity.color,
                                 fontWeight: FontWeight.bold,
@@ -1629,10 +1647,10 @@ class _ItemDetailSheet extends StatelessWidget {
                       child: Center(
                         child: Text(
                           isEquipped
-                              ? 'ALREADY EQUIPPED'
+                              ? AppStrings.lhubAlreadyEquipped
                               : (isUnlocked
-                                    ? 'EQUIP NOW'
-                                    : 'PURCHASE PROTOTYPE'),
+                                    ? AppStrings.lhubEquipNow
+                                    : AppStrings.lhubPurchasePrototype),
                           style: TextStyle(
                             color: isEquipped
                                 ? Colors.white54

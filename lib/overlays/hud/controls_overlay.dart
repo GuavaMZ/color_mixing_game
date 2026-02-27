@@ -1134,7 +1134,7 @@ class _ActiveEventBadge extends StatelessWidget {
                         _PulsingDot(color: color),
                         const SizedBox(width: 8),
                         Text(
-                          label.toUpperCase(),
+                          label.getString(context).toUpperCase(),
                           style: TextStyle(
                             color: color,
                             fontSize: 11,

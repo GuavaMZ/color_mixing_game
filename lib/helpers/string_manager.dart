@@ -315,6 +315,7 @@ mixin AppStrings {
   static const String compCMYK = "comp_cmyk";
   static const String noUpdateAvailable = "no_update_available";
   static const String latestVersion = "latest_version";
+  static const String full = "full";
   static const String updateAvailable = "update_available";
   static const String updateDesc = "update_desc";
   static const String later = "later";
@@ -391,6 +392,207 @@ mixin AppStrings {
   static const String coinsBonusText = "coins_bonus_text";
   static const String enjoyYourCoins = "enjoy_your_coins";
   static const String coinStoreSubtitle = "coin_store_subtitle";
+
+  // New UI & Events
+  static const String initializingLabArchives = "initializing_lab_archives";
+  static const String labArchivesInitialized = "lab_archives_initialized";
+  static const String presents = "presents";
+  static const String positiveAnomaly = "positive_anomaly";
+  static const String incomingAnomaly = "incoming_anomaly";
+  static const String bonusEventTag = "bonus_event_tag";
+  static const String positiveAnomalyFlavor = "positive_anomaly_flavor";
+  static const String negativeAnomalyFlavor = "negative_anomaly_flavor";
+  static const String rarityCommon = "rarity_common";
+  static const String rarityUncommon = "rarity_uncommon";
+  static const String rarityRare = "rarity_rare";
+  static const String rarityEpic = "rarity_epic";
+  static const String rarityLegendary = "rarity_legendary";
+  static const String termsAcceptanceStatement = "terms_acceptance_statement";
+  static const String termsOfUseLabel = "terms_of_use_label";
+
+  // Event Labels
+  static const String eventGlitch = "event_glitch";
+  static const String eventUnstable = "event_unstable";
+  static const String eventEarthquake = "event_earthquake";
+  static const String eventUiGlitch = "event_ui_glitch";
+  static const String eventEvaporationShort = "event_evaporation_short";
+  static const String eventInvertedShort = "event_inverted_short";
+  static const String eventColorBlindShort = "event_color_blind_short";
+  static const String eventGravityFlux = "event_gravity_flux";
+  static const String eventBlackout = "event_blackout";
+  static const String eventMirror = "event_mirror";
+  static const String eventWind = "event_wind";
+  static const String eventLeak = "event_leak";
+  static const String eventDigitalSpike = "event_digital_spike";
+  static const String eventEvaporationLong = "event_evaporation_long";
+  static const String eventTimeFreeze = "event_time_freeze";
+  static const String eventDoubleCoins = "event_double_coins";
+  static const String eventChaosCascade = "event_chaos_cascade";
+  static const String eventSystemMeltdown = "event_system_meltdown";
+
+  // Lab Report & Science
+  static const String eventBonusTagText = "event_bonus_tag_text";
+  static const String spectralRed = "spectral_red";
+  static const String spectralOrange = "spectral_orange";
+  static const String spectralYellow = "spectral_yellow";
+  static const String spectralGreen = "spectral_green";
+  static const String spectralBlue = "spectral_blue";
+  static const String spectralIndigo = "spectral_indigo";
+  static const String spectralViolet = "spectral_violet";
+
+  // Color Facts (Keys mapped to original content)
+  static const String factRed1 = "fact_red_1";
+  static const String factRed2 = "fact_red_2";
+  static const String factRed3 = "fact_red_3";
+  static const String factRed4 = "fact_red_4";
+  static const String factYellow1 = "fact_yellow_1";
+  static const String factYellow2 = "fact_yellow_2";
+  static const String factYellow3 = "fact_yellow_3";
+  static const String factYellow4 = "fact_yellow_4";
+  static const String factGreen1 = "fact_green_1";
+  static const String factGreen2 = "fact_green_2";
+  static const String factGreen3 = "fact_green_3";
+  static const String factGreen4 = "fact_green_4";
+  static const String factBlue1 = "fact_blue_1";
+  static const String factBlue2 = "fact_blue_2";
+  static const String factBlue3 = "fact_blue_3";
+  static const String factBlue4 = "fact_blue_4";
+  static const String factViolet1 = "fact_violet_1";
+  static const String factViolet2 = "fact_violet_2";
+  static const String factViolet3 = "fact_violet_3";
+  static const String factViolet4 = "fact_violet_4";
+  static const String factGeneral1 = "fact_general_1";
+  static const String factGeneral2 = "fact_general_2";
+  static const String factGeneral3 = "fact_general_3";
+  static const String factGeneral4 = "fact_general_4";
+  static const String factGeneral5 = "fact_general_5";
+
+  // Lab Upgrade Hub UI
+  static const String lhubLabUpgrades = "lhub_lab_upgrades";
+  static const String lhubLabUpgradeHub = "lhub_lab_upgrade_hub";
+  static const String lhubComplete = "lhub_complete";
+  static const String lhubCategories = "lhub_categories";
+  static const String lhubSurface = "lhub_surface";
+  static const String lhubLighting = "lhub_lighting";
+  static const String lhubBackground = "lhub_background";
+  static const String lhubStand = "lhub_stand";
+  static const String lhubOverhead = "lhub_overhead";
+  static const String lhubEnhanceExp = "lhub_enhance_exp";
+  static const String lhubNoItems = "lhub_no_items";
+  static const String lhubSpecifications = "lhub_specifications";
+  static const String lhubArchiveData = "lhub_archive_data";
+  static const String lhubAlreadyEquipped = "lhub_already_equipped";
+  static const String lhubEquipNow = "lhub_equip_now";
+  static const String lhubPurchasePrototype = "lhub_purchase_prototype";
+  static const String lhubEquipped = "lhub_equipped";
+  static const String lhubEquip = "lhub_equip";
+  static const String lhubNotEnoughCoins = "lhub_not_enough_coins";
+  static const String lhubCustomizeLabDesc = "lhub_customize_lab_desc";
+
+  // Item Catalog Keys
+  static const String itemSteelName = "item_steel_name";
+  static const String itemSteelDesc = "item_steel_desc";
+  static const String itemSteelLore = "item_steel_lore";
+  static const String itemMarbleName = "item_marble_name";
+  static const String itemMarbleDesc = "item_marble_desc";
+  static const String itemMarbleLore = "item_marble_lore";
+  static const String itemTitaniumName = "item_titanium_name";
+  static const String itemTitaniumDesc = "item_titanium_desc";
+  static const String itemTitaniumLore = "item_titanium_lore";
+  static const String itemCyberName = "item_cyber_name";
+  static const String itemCyberDesc = "item_cyber_desc";
+  static const String itemCyberLore = "item_cyber_lore";
+  static const String itemObsidianName = "item_obsidian_name";
+  static const String itemObsidianDesc = "item_obsidian_desc";
+  static const String itemObsidianLore = "item_obsidian_lore";
+  static const String itemCrystalName = "item_crystal_name";
+  static const String itemCrystalDesc = "item_crystal_desc";
+  static const String itemCrystalLore = "item_crystal_lore";
+  static const String itemAuroraName = "item_aurora_name";
+  static const String itemAuroraDesc = "item_aurora_desc";
+  static const String itemAuroraLore = "item_aurora_lore";
+
+  static const String itemLightBasicName = "item_light_basic_name";
+  static const String itemLightBasicDesc = "item_light_basic_desc";
+  static const String itemLightBasicLore = "item_light_basic_lore";
+  static const String itemLightWarmName = "item_light_warm_name";
+  static const String itemLightWarmDesc = "item_light_warm_desc";
+  static const String itemLightWarmLore = "item_light_warm_lore";
+  static const String itemLightNeonName = "item_light_neon_name";
+  static const String itemLightNeonDesc = "item_light_neon_desc";
+  static const String itemLightNeonLore = "item_light_neon_lore";
+  static const String itemLightRgbName = "item_light_rgb_name";
+  static const String itemLightRgbDesc = "item_light_rgb_desc";
+  static const String itemLightRgbLore = "item_light_rgb_lore";
+  static const String itemLightPlasmaName = "item_light_plasma_name";
+  static const String itemLightPlasmaDesc = "item_light_plasma_desc";
+  static const String itemLightPlasmaLore = "item_light_plasma_lore";
+  static const String itemLightBioName = "item_light_bio_name";
+  static const String itemLightBioDesc = "item_light_bio_desc";
+  static const String itemLightBioLore = "item_light_bio_lore";
+  static const String itemLightSolarName = "item_light_solar_name";
+  static const String itemLightSolarDesc = "item_light_solar_desc";
+  static const String itemLightSolarLore = "item_light_solar_lore";
+
+  static const String itemBgDefaultName = "item_bg_default_name";
+  static const String itemBgDefaultDesc = "item_bg_default_desc";
+  static const String itemBgDefaultLore = "item_bg_default_lore";
+  static const String itemBgNatureName = "item_bg_nature_name";
+  static const String itemBgNatureDesc = "item_bg_nature_desc";
+  static const String itemBgNatureLore = "item_bg_nature_lore";
+  static const String itemBgCyberName = "item_bg_cyber_name";
+  static const String itemBgCyberDesc = "item_bg_cyber_desc";
+  static const String itemBgCyberLore = "item_bg_cyber_lore";
+  static const String itemBgVolcanoName = "item_bg_volcano_name";
+  static const String itemBgVolcanoDesc = "item_bg_volcano_desc";
+  static const String itemBgVolcanoLore = "item_bg_volcano_lore";
+  static const String itemBgFuturisticName = "item_bg_futuristic_name";
+  static const String itemBgFuturisticDesc = "item_bg_futuristic_desc";
+  static const String itemBgFuturisticLore = "item_bg_futuristic_lore";
+  static const String itemBgUnderwaterName = "item_bg_underwater_name";
+  static const String itemBgUnderwaterDesc = "item_bg_underwater_desc";
+  static const String itemBgUnderwaterLore = "item_bg_underwater_lore";
+  static const String itemBgSpaceName = "item_bg_space_name";
+  static const String itemBgSpaceDesc = "item_bg_space_desc";
+  static const String itemBgSpaceLore = "item_bg_space_lore";
+
+  static const String itemStandBasicName = "item_stand_basic_name";
+  static const String itemStandBasicDesc = "item_stand_basic_desc";
+  static const String itemStandBasicLore = "item_stand_basic_lore";
+  static const String itemStandChromeName = "item_stand_chrome_name";
+  static const String itemStandChromeDesc = "item_stand_chrome_desc";
+  static const String itemStandChromeLore = "item_stand_chrome_lore";
+  static const String itemStandWoodName = "item_stand_wood_name";
+  static const String itemStandWoodDesc = "item_stand_wood_desc";
+  static const String itemStandWoodLore = "item_stand_wood_lore";
+  static const String itemStandHoloName = "item_stand_holo_name";
+  static const String itemStandHoloDesc = "item_stand_holo_desc";
+  static const String itemStandHoloLore = "item_stand_holo_lore";
+  static const String itemStandCrystalName = "item_stand_crystal_name";
+  static const String itemStandCrystalDesc = "item_stand_crystal_desc";
+  static const String itemStandCrystalLore = "item_stand_crystal_lore";
+  static const String itemStandLevitateName = "item_stand_levitate_name";
+  static const String itemStandLevitateDesc = "item_stand_levitate_desc";
+  static const String itemStandLevitateLore = "item_stand_levitate_lore";
+  static const String itemStandObsidianName = "item_stand_obsidian_name";
+  static const String itemStandObsidianDesc = "item_stand_obsidian_desc";
+  static const String itemStandObsidianLore = "item_stand_obsidian_lore";
+
+  static const String itemLNoneName = "item_l_none_name";
+  static const String itemLNoneDesc = "item_l_none_desc";
+  static const String itemLNoneLore = "item_l_none_lore";
+  static const String itemLWarmName = "item_l_warm_name";
+  static const String itemLWarmDesc = "item_l_warm_desc";
+  static const String itemLWarmLore = "item_l_warm_lore";
+  static const String itemLNeonName = "item_l_neon_name";
+  static const String itemLNeonDesc = "item_l_neon_desc";
+  static const String itemLNeonLore = "item_l_neon_lore";
+  static const String itemLBioName = "item_l_bio_name";
+  static const String itemLBioDesc = "item_l_bio_desc";
+  static const String itemLBioLore = "item_l_bio_lore";
+  static const String itemLStarlightName = "item_l_starlight_name";
+  static const String itemLStarlightDesc = "item_l_starlight_desc";
+  static const String itemLStarlightLore = "item_l_starlight_lore";
 
   static const Map<String, dynamic> en = {
     // Colors
@@ -712,6 +914,7 @@ mixin AppStrings {
     compCMYK: 'CMYK',
     noUpdateAvailable: 'No update available',
     latestVersion: 'You are on the latest version.',
+    full: 'Full',
     updateAvailable: 'Update Available',
     updateDesc: 'A new update is available. Do you want to download it now?',
     later: 'Later',
@@ -791,6 +994,266 @@ mixin AppStrings {
     chaosLabGuideTitle: 'CHAOS LAB',
     chaosLabGuideDesc:
         'The most volatile environment. Expect unpredictable anomalies every 15 seconds that defy standard physics. \n\n• Anomalies: Control Inversion, Rapid Evaporation, and Spectral Swaps.\n• Reward: High-risk experimentation yields boosted Coin multipliers.',
+
+    // New strings
+    initializingLabArchives: 'INITIALIZING LAB ARCHIVES...',
+    labArchivesInitialized: 'LAB ARCHIVES INITIALIZED',
+    presents: 'Presents',
+    positiveAnomaly: '✦ POSITIVE ANOMALY',
+    incomingAnomaly: '⚠ INCOMING ANOMALY',
+    bonusEventTag: 'BONUS EVENT',
+    positiveAnomalyFlavor: 'A rare opportunity has emerged in the lab!',
+    negativeAnomalyFlavor: 'Brace yourself — conditions are deteriorating!',
+    rarityCommon: '● COMMON',
+    rarityUncommon: '◆ UNCOMMON',
+    rarityRare: '★ RARE',
+    rarityEpic: '☠ EPIC',
+
+    // Events
+    eventGlitch: 'System Glitch',
+    eventUnstable: 'Unstable Mixture',
+    eventEarthquake: 'Seismic Tremor',
+    eventUiGlitch: 'UI Corruption',
+    eventEvaporationShort: 'Rapid Evaporation',
+    eventInvertedShort: 'Inverted Controls',
+    eventColorBlindShort: 'Color Blindness',
+    eventGravityFlux: 'Gravity Flux',
+    eventBlackout: 'Lab Blackout',
+    eventMirror: 'Mirror Dimension',
+    eventWind: 'Wind Force',
+    eventLeak: 'Beaker Leak',
+    eventDigitalSpike: 'Digital Spike',
+    eventEvaporationLong: 'Mass Evaporation',
+    eventTimeFreeze: 'Time Freeze',
+    eventDoubleCoins: 'Double Coins',
+    eventChaosCascade: 'Chaos Cascade',
+    eventSystemMeltdown: 'System Meltdown',
+
+    eventBonusTagText: '+30% EVENT BONUS',
+    spectralRed: 'Red',
+    spectralOrange: 'Orange',
+    spectralYellow: 'Yellow',
+    spectralGreen: 'Green',
+    spectralBlue: 'Blue',
+    spectralIndigo: 'Indigo',
+    spectralViolet: 'Violet',
+
+    factRed1:
+        'Red light has the longest wavelength (~700 nm) of any visible color.',
+    factRed2:
+        'Red is the first color humans historically named after black and white.',
+    factRed3:
+        'Your eye has more cone cells sensitive to red (L-cones) than any other type.',
+    factRed4: 'Mars appears red due to iron oxide (rust) on its surface.',
+    factYellow1:
+        'Yellow is the most visible color from a distance — that\'s why taxis are yellow!',
+    factYellow2: 'Sodium street lamps emit a nearly pure yellow at 589 nm.',
+    factYellow3:
+        'The human eye can distinguish more shades of green and yellow than any other color.',
+    factYellow4: 'Orange was named after the fruit, not the other way around.',
+    factGreen1:
+        'Plants are green because chlorophyll reflects green wavelengths (~530 nm).',
+    factGreen2:
+        'Human eyes have the highest sensitivity around 555 nm — bright green.',
+    factGreen3:
+        'Night vision goggles display in green because our eyes resolve more green shades.',
+    factGreen4:
+        'The word "green" comes from the Old English "grēne", meaning "to grow".',
+    factBlue1:
+        'The sky appears blue due to Rayleigh scattering of shorter wavelengths.',
+    factBlue2:
+        'Blue is the rarest colour in nature — very few organisms produce blue pigment.',
+    factBlue3:
+        'Blue LEDs won the 2014 Nobel Prize in Physics (Akasaki, Amano & Nakamura).',
+    factBlue4:
+        'Ancient civilizations rarely had a word for "blue" — it was one of the last colors named.',
+    factViolet1:
+        'Violet light has the shortest visible wavelength (~380 nm) and highest energy.',
+    factViolet2:
+        'True purple does not exist in the rainbow — it requires mixing red and blue.',
+    factViolet3:
+        'Tyrian purple dye was once worth more than gold — made from sea snail mucus.',
+    factViolet4:
+        'UV "black lights" emit light just beyond violet, making fluorescent colors glow.',
+    factGeneral1:
+        'White light contains all wavelengths of the visible spectrum (380–780 nm).',
+    factGeneral2:
+        'The CIE L*a*b* color space was designed to be perceptually uniform in 1976.',
+    factGeneral3:
+        'A healthy human eye can distinguish roughly 10 million different colors.',
+    factGeneral4:
+        'Color mixing with light (additive: RGB) differs from mixing paint (subtractive: CMY).',
+    factGeneral5: 'The color wheel was invented by Sir Isaac Newton in 1666.',
+
+    // Lab Upgrade Hub
+    lhubLabUpgrades: 'Lab Upgrades',
+    lhubLabUpgradeHub: 'Lab Upgrade Hub',
+    lhubComplete: 'COMPLETE',
+    lhubCategories: 'Categories',
+    lhubSurface: 'Surface',
+    lhubLighting: 'Lighting',
+    lhubBackground: 'Background',
+    lhubStand: 'Stand',
+    lhubOverhead: 'Overhead',
+    lhubEnhanceExp: 'Enhance your laboratory experience',
+    lhubNoItems: 'No items available',
+    lhubSpecifications: 'SPECIFICATIONS',
+    lhubArchiveData: 'ARCHIVE DATA',
+    lhubAlreadyEquipped: 'ALREADY EQUIPPED',
+    lhubEquipNow: 'EQUIP NOW',
+    lhubPurchasePrototype: 'PURCHASE PROTOTYPE',
+    lhubEquipped: 'EQUIPPED',
+    lhubEquip: 'EQUIP',
+    lhubNotEnoughCoins: 'Not enough coins! Need %s more.',
+    lhubCustomizeLabDesc: 'Customize your lab environment',
+
+    // Items
+    itemSteelName: 'Cryo-Steel Plate',
+    itemSteelDesc: 'Ultra-chilled industrial steel with micro-grooved texture',
+    itemSteelLore:
+        'Standard-issue across all Tier-1 research stations. The micro-grooves channel spilled reagents away from sensitive equipment.',
+    itemMarbleName: 'Ionic Marble Slab',
+    itemMarbleDesc: 'Molecularly-bonded marble with conductive gold veins',
+    itemMarbleLore:
+        'Quarried from the deep mines of Carinthia-7. The gold veins are not decorative — they form a natural Faraday cage against spectral interference.',
+    itemTitaniumName: 'Fusion Titanium',
+    itemTitaniumDesc: 'Aura-forged titanium alloy with heat-shielded coating',
+    itemTitaniumLore:
+        'Forged in the plasma cores of orbital foundries. Withstands temperatures exceeding 3,000°K without deformation.',
+    itemCyberName: 'Vector-Grid Hex',
+    itemCyberDesc: 'Quantum-synced hexagonal lattice with reactive pulses',
+    itemCyberLore:
+        'Each hexagonal cell contains a miniature quantum processor. The lattice reacts to chromatic anomalies before they become visible to the naked eye.',
+    itemObsidianName: 'Void-Glass Slab',
+    itemObsidianDesc:
+        'Zero-reflection obsidian forged in a volcanic pressure-chamber',
+    itemObsidianLore:
+        'Created in the caldera of Mount Erebus under 40,000 atmospheres. Absorbs 99.97% of all light — the closest thing to a portable void.',
+    itemCrystalName: 'Prism-Matrix Glass',
+    itemCrystalDesc:
+        'High-refractive crystal lattice for light-purity experiments',
+    itemCrystalLore:
+        'Grown over 200 years in zero-gravity crystallization chambers. Each facet refracts light into its 147 constituent wavelengths.',
+    itemAuroraName: 'Spectral Aurora Plate',
+    itemAuroraDesc: 'Photonic-reactive surface that mimics the northern lights',
+    itemAuroraLore:
+        'Embedded with captured aurora borealis particles from the Svalbard Rift. The surface shifts through the entire visible spectrum in real time.',
+
+    itemLightBasicName: 'Standard Fluorescent',
+    itemLightBasicDesc: 'Basic overhead fluorescent lighting',
+    itemLightBasicLore:
+        'The humble workhorse of every research facility. Reliable, if uninspiring.',
+    itemLightWarmName: 'Warm Amber',
+    itemLightWarmDesc: 'Cozy warm amber lighting for a relaxed atmosphere',
+    itemLightWarmLore:
+        'Calibrated to 2700K color temperature. Studies show chemists working under amber light achieve 12% higher accuracy.',
+    itemLightNeonName: 'Neon Blue & Purple',
+    itemLightNeonDesc: 'Dramatic neon lighting with color-shifting effects',
+    itemLightNeonLore:
+        'Originally developed for deep-sea research stations where natural light never reaches. The shifting wavelengths keep the mind alert.',
+    itemLightRgbName: 'RGB Dynamic',
+    itemLightRgbDesc:
+        'Programmable RGB lighting that adapts to your experiments',
+    itemLightRgbLore:
+        'AI-driven adaptive illumination that auto-calibrates based on the chromatic profile of the active experiment.',
+    itemLightPlasmaName: 'Plasma Arc',
+    itemLightPlasmaDesc:
+        'High-voltage plasma arc lighting with electric crackle',
+    itemLightPlasmaLore:
+        'Channeling 50,000 volts through argon gas produces the purest white light known to science. Also looks incredible.',
+    itemLightBioName: 'Bioluminescent',
+    itemLightBioDesc: 'Organic bioluminescent lighting with natural glow',
+    itemLightBioLore:
+        'Cultivated from deep-ocean jellyfish DNA spliced with firefly luciferase. A living light source that breathes with your lab.',
+    itemLightSolarName: 'Solar Spectrum',
+    itemLightSolarDesc:
+        'Full-spectrum solar simulation for true color accuracy',
+    itemLightSolarLore:
+        'Replicates the exact photon distribution of Sol at high noon. The gold standard for chromatic research, literally.',
+
+    itemBgDefaultName: 'Standard Lab',
+    itemBgDefaultDesc: 'Clean, professional laboratory environment',
+    itemBgDefaultLore:
+        'Where every great experiment begins. Simple, functional, proven.',
+    itemBgNatureName: 'Botanical Garden',
+    itemBgNatureDesc: 'Serene greenhouse laboratory surrounded by nature',
+    itemBgNatureLore:
+        'Built within the canopy of the Amazonian Bio-Reserve. Over 300 plant species contribute to natural air purification.',
+    itemBgCyberName: 'Cyberpunk City',
+    itemBgCyberDesc: 'Neon-lit urban skyline with holographic billboards',
+    itemBgCyberLore:
+        'Perched atop the Neo-Shanghai Arcology. The holographic advertisements outside make for surprisingly effective spectral calibration targets.',
+    itemBgVolcanoName: 'Volcanic Observatory',
+    itemBgVolcanoDesc: 'Dramatic crater-side lab with molten lava flows below',
+    itemBgVolcanoLore:
+        'The extreme heat gradient creates unique optical phenomena. Colors behave differently here — every experiment is an adventure.',
+    itemBgFuturisticName: 'High-Tech Facility',
+    itemBgFuturisticDesc:
+        'Cutting-edge research facility with holographic displays',
+    itemBgFuturisticLore:
+        'The Prometheus Initiative\'s flagship laboratory. Every surface is a potential display, every wall a window into data.',
+    itemBgUnderwaterName: 'Deep Sea Research',
+    itemBgUnderwaterDesc:
+        'Underwater laboratory with bioluminescent marine life',
+    itemBgUnderwaterLore:
+        'Located at the Mariana Trench\'s Edge. Bioluminescent creatures drift past the reinforced viewports, casting ever-changing colored light.',
+    itemBgSpaceName: 'Deep Space Station',
+    itemBgSpaceDesc: 'Orbiting space station lab with nebula vistas',
+    itemBgSpaceLore:
+        'Station Kepler-442b orbits a dying star. The nebula outside provides a natural prism, splitting starlight into colors that don\'t exist on Earth.',
+
+    itemStandBasicName: 'Standard Stand',
+    itemStandBasicDesc: 'Basic metal laboratory stand',
+    itemStandBasicLore:
+        'Functional. Reliable. Nothing fancy — and that\'s exactly the point.',
+    itemStandChromeName: 'Chrome Finish',
+    itemStandChromeDesc: 'Polished chrome stand with modern aesthetic',
+    itemStandChromeLore:
+        'Triple-electroplated chromium finish. Reflects the beaker\'s contents with mirror-like clarity.',
+    itemStandWoodName: 'Wooden Artisan',
+    itemStandWoodDesc: 'Handcrafted wooden stand with natural grain',
+    itemStandWoodLore:
+        'Carved from 500-year-old Sequoia heartwood by master craftsman Elias Vorn. No two are exactly alike.',
+    itemStandHoloName: 'Holographic',
+    itemStandHoloDesc: 'Floating holographic projection stand',
+    itemStandHoloLore:
+        'The beaker appears to float within a hard-light holographic cradle. The projection field also acts as a secondary containment system.',
+    itemStandCrystalName: 'Crystal Pedestal',
+    itemStandCrystalDesc: 'Translucent crystal pedestal with prismatic glow',
+    itemStandCrystalLore:
+        'A single flawless crystal, laser-cut along its natural cleavage planes. Internal inclusions refract light into miniature rainbows.',
+    itemStandLevitateName: 'Anti-Gravity',
+    itemStandLevitateDesc: 'Magnetic levitation stand with zero contact',
+    itemStandLevitateLore:
+        'Superconducting magnets cooled to near absolute zero create a stable levitation field. The beaker floats, untouched by anything.',
+    itemStandObsidianName: 'Obsidian Throne',
+    itemStandObsidianDesc: 'Imposing dark volcanic rock stand with ember veins',
+    itemStandObsidianLore:
+        'Carved from a single block of volcanic glass from the summit of Olympus Mons. Ember veins pulse with geothermal energy from within.',
+
+    itemLNoneName: 'No Lights',
+    itemLNoneDesc: 'Remove overhead string lights',
+    itemLNoneLore: 'Standard laboratory protocol: clear airspace.',
+    itemLWarmName: 'Tungsten Glow',
+    itemLWarmDesc: 'Warm, cozy overhead tungsten string lights',
+    itemLWarmLore:
+        'Provides a comforting, low-temperature amber glow to ease the mind during long synthesis sessions.',
+    itemLNeonName: 'Neon Cyber-String',
+    itemLNeonDesc: 'Bright alternating cyan and magenta lights',
+    itemLNeonLore:
+        'Salvaged from an orbital arcade. The high-frequency flicker keeps you sharp and awake.',
+    itemLBioName: 'Isotope Pulser',
+    itemLBioDesc: 'Slow-pulsing radioactive green suspended orbs',
+    itemLBioLore:
+        'Contains trace amounts of Tritium-3. The rhythmic pulsing syncs with local geiger counters for a calming ambiance.',
+    itemLStarlightName: 'Astral Thread',
+    itemLStarlightDesc:
+        'Intense, sharply twinkling true-white stellar fragments',
+    itemLStarlightLore:
+        'Microscopic shards of a white dwarf star suspended in a magnetic containment string. Emits pure, undistorted photons.',
+    rarityLegendary: 'LEGENDARY',
+    termsAcceptanceStatement: 'By playing, you agree to our %s',
+    termsOfUseLabel: 'Terms of Use',
   };
 
   static const Map<String, dynamic> ar = {
@@ -1107,6 +1570,7 @@ mixin AppStrings {
     compCMYK: 'CMYK',
     noUpdateAvailable: 'لا توجد تحديثات متاحة',
     latestVersion: 'أنت على أحدث إصدار.',
+    full: 'ممتلئ',
     updateAvailable: 'تحديث متاح',
     updateDesc: 'يتوفر تحديث جديد. هل تريد تنزيله الآن؟',
     later: 'لاحقاً',
@@ -1192,6 +1656,112 @@ mixin AppStrings {
     chaosLabGuideTitle: 'مختبر الفوضى',
     chaosLabGuideDesc:
         'البيئة الأكثر تقلبًا. توقع شذوذات غير متوقعة كل 15 ثانية تتحدى الفيزياء القياسية. \n\n• الشذوذات: انعكاس التحكم، التبخر السريع، والتبديل الطيفي.\n• المكافأة: التجريب عالي المخاطر يمنح مضاعفات عملات معززة.',
+
+    // New strings
+    initializingLabArchives: 'جاري تهيئة أرشيف المختبر...',
+    labArchivesInitialized: 'تم تهيئة أرشيف المختبر',
+    presents: 'يقدم',
+    positiveAnomaly: '✦ شذوذ إيجابي',
+    incomingAnomaly: '⚠ شذوذ قادم',
+    bonusEventTag: 'حدث مكافأة',
+    positiveAnomalyFlavor: 'ظهرت فرصة نادرة في المختبر!',
+    negativeAnomalyFlavor: 'استعد - الظروف آخذة في التدهور!',
+    rarityCommon: '● شائع',
+    rarityUncommon: '◆ غير شائع',
+    rarityRare: '★ نادر',
+    rarityEpic: '☠ أسطوري',
+
+    // Events
+    eventGlitch: 'خلل في النظام',
+    eventUnstable: 'خليط غير مستقر',
+    eventEarthquake: 'هزة ززلزالية',
+    eventUiGlitch: 'فساد واجهة المستخدم',
+    eventEvaporationShort: 'تبخر سريع',
+    eventInvertedShort: 'عكس عناصر التحكم',
+    eventColorBlindShort: 'عمى الألوان',
+    eventGravityFlux: 'تدفق الجاذبية',
+    eventBlackout: 'تعتيم المختبر',
+    eventMirror: 'البعد المرآتي',
+    eventWind: 'قوة الرياح',
+    eventLeak: 'تسرب الكأس',
+    eventDigitalSpike: 'طفرة رقمية',
+    eventEvaporationLong: 'تبخر هائل',
+    eventTimeFreeze: 'تجميد الوقت',
+    eventDoubleCoins: 'عملات مضاعفة',
+    eventChaosCascade: 'شلال الفوضى',
+    eventSystemMeltdown: 'انهيار النظام',
+
+    eventBonusTagText: '+30% مكافأة الحدث',
+    spectralRed: 'أحمر',
+    spectralOrange: 'برتقالي',
+    spectralYellow: 'أصفر',
+    spectralGreen: 'أخضر',
+    spectralBlue: 'أزرق',
+    spectralIndigo: 'نيلي',
+    spectralViolet: 'بنفسجي',
+
+    factRed1: 'الضوء الأحمر له أطول طول موجي (~700 نانومتر) من أي لون مرئي.',
+    factRed2: 'الأحمر هو أول لون سماه البشر تاريخياً بعد الأبيض والأسود.',
+    factRed3: 'عينك تحتوي على خلايا مخروطية حساسة للأحمر أكثر من أي نوع آخر.',
+    factRed4: 'يظهر المريخ باللون الأحمر بسبب أكسيد الحديد (الصدأ) على سطحه.',
+    factYellow1:
+        'الأصفر هو اللون الأكثر وضوحاً من مسافة بعيدة - لهذا السبب سيارات الأجرة صفراء!',
+    factYellow2:
+        'مصابيح الشوارع بالصوديوم تنبعث منها أصفر نقي تقريباً عند 589 نانومتر.',
+    factYellow3:
+        'يمكن للعين البشرية تمييز ظلال من الأخضر والأصفر أكثر من أي لون آخر.',
+    factYellow4:
+        'تمت تسمية اللون البرتقالي تيمناً بفاكهة البرتقال، وليس العكس.',
+    factGreen1:
+        'النباتات خضراء لأن الكلوروفيل يعكس الأطوال الموجية الخضراء (~530 نانومتر).',
+    factGreen2: 'العيون البشرية لديها أعلى حساسية حول 555 نانومتر - أخضر ساطع.',
+    factGreen3:
+        'نظارات الرؤية الليلية تعرض باللون الأخضر لأن أعيننا تميز ظلالاً خضراء أكثر.',
+    factGreen4: 'كلمة "أخضر" تأتي من الإنجليزية القديمة "grēne"، وتعني "ينمو".',
+    factBlue1: 'تظهر السماء زرقاء بسبب تشتت رايلي للأطوال الموجية القصيرة.',
+    factBlue2:
+        'الأزرق هو أندر لون في الطبيعة - قليل جداً من الكائنات تنتج صبغة زرقاء.',
+    factBlue3: 'فازت مصابيح LED الزرقاء بجائزة نوبل في الفيزياء لعام 2014.',
+    factBlue4:
+        'الحضارات القديمة نادراً ما كان لديها كلمة لـ "الأزرق" - كان من أواخر الألوان التي تمت تسميتها.',
+    factViolet1:
+        'الضوء البنفسجي له أقصر طول موجي مرئي (~380 نانومتر) وأعلى طاقة.',
+    factViolet2:
+        'الأرجواني الحقيقي غير موجود في قوس قزح - فهو يتطلب مزج الأحمر والأزرق.',
+    factViolet3: 'صبغة الأرجوان الصوري كانت ذات يوم تساوي أكثر من الذهب.',
+    factViolet4: 'أضواء الأشعة فوق البنفسجية تجعل الألوان الفلورية تتوهج.',
+    factGeneral1:
+        'يحتوي الضوء الأبيض على جميع الأطوال الموجية للطيف المرئي (380-780 نانومتر).',
+    factGeneral2:
+        'تم تصميم فضاء الألوان CIE L*a*b* ليكون موحداً إدراكياً في عام 1976.',
+    factGeneral3:
+        'يمكن للعين البشرية السليمة تمييز ما يقرب من 10 ملايين لون مختلف.',
+    factGeneral4: 'يختلف مزج الألوان بالضوء عن مزج الألوان بالطلاء.',
+    factGeneral5: 'اخترع السير إسحاق نيوتن عجلة الألوان في عام 1666.',
+
+    // Lab Upgrade Hub
+    lhubLabUpgrades: 'تطويرات المختبر',
+    lhubLabUpgradeHub: 'مركز تطوير المختبر',
+    lhubComplete: 'مكتمل',
+    lhubCategories: 'الفئات',
+    lhubSurface: 'السطح',
+    lhubLighting: 'الإضاءة',
+    lhubBackground: 'الخلفية',
+    lhubStand: 'ستاند',
+    lhubOverhead: 'إضاءة علوية',
+    lhubEnhanceExp: 'عزز تجربتك في المختبر',
+    lhubNoItems: 'لا توجد عناصر متاحة',
+    lhubSpecifications: 'المواصفات',
+    lhubArchiveData: 'بيانات الأرشيف',
+    lhubAlreadyEquipped: 'مجهز بالفعل',
+    lhubEquipNow: 'تجهيز الآن',
+    lhubPurchasePrototype: 'شراء النموذج الأولي',
+    lhubEquipped: 'مجهز',
+    lhubEquip: 'تجهيز',
+    lhubNotEnoughCoins: 'غير كافٍ! تحتاج %s أكثر.',
+    lhubCustomizeLabDesc: 'خصص بيئة مختبرك',
+    termsAcceptanceStatement: 'باللعب، أنت توافق على %s',
+    termsOfUseLabel: 'شروط الاستخدام',
   };
 
   static const Map<String, dynamic> es = {
@@ -1511,6 +2081,7 @@ mixin AppStrings {
     compCMYK: 'CMYK',
     noUpdateAvailable: 'No hay actualizaciones disponibles',
     latestVersion: 'Estás en la última versión.',
+    full: 'Lleno',
     updateAvailable: 'Actualización Disponible',
     updateDesc:
         'Hay una nueva actualización disponible. ¿Quieres descargarla ahora?',
@@ -1577,6 +2148,124 @@ mixin AppStrings {
     chaosLabGuideTitle: 'LABORATORIO DEL CAOS',
     chaosLabGuideDesc:
         'El entorno más volátil. Espere anomalías impredecibles cada 15 segundos que desafían la física estándar. \n\n• Anomalías: Inversión de controles, evaporación rápida y cambios espectrales.\n• Recompensa: El riesgo rinde multiplicadores de monedas mejorados.',
+
+    // Lab Upgrade Hub
+    lhubLabUpgrades: 'Mejoras de Lab',
+    lhubLabUpgradeHub: 'Centro de Mejoras',
+    lhubComplete: 'COMPLETO',
+    lhubCategories: 'Categorías',
+    lhubSurface: 'Superficie',
+    lhubLighting: 'Iluminación',
+    lhubBackground: 'Fondo',
+    lhubStand: 'Soporte',
+    lhubOverhead: 'Luces Superiores',
+    lhubEnhanceExp: 'Mejora tu experiencia de laboratorio',
+    lhubNoItems: 'No hay artículos disponibles',
+    lhubSpecifications: 'ESPECIFICACIONES',
+    lhubArchiveData: 'DATOS DE ARCHIVO',
+    lhubAlreadyEquipped: 'YA EQUIPADO',
+    lhubEquipNow: 'EQUIPAR AHORA',
+    lhubPurchasePrototype: 'COMPRAR PROTOTIPO',
+    lhubEquipped: 'EQUIPADO',
+    lhubEquip: 'EQUIPAR',
+    lhubNotEnoughCoins: '¡No hay suficientes monedas! Faltan %s.',
+    lhubCustomizeLabDesc: 'Personaliza tu entorno de laboratorio',
+
+    // New strings
+    initializingLabArchives: 'INICIALIZANDO ARCHIVOS DE LABORATORIO...',
+    labArchivesInitialized: 'ARCHIVOS DE LABORATORIO INICIALIZADOS',
+    presents: 'Presenta',
+    positiveAnomaly: '✦ ANOMALÍA POSITIVA',
+    incomingAnomaly: '⚠ ANOMALÍA ENTRANTE',
+    bonusEventTag: 'EVENTO DE BONO',
+    positiveAnomalyFlavor:
+        '¡Ha surgido una oportunidad rara en el laboratorio!',
+    negativeAnomalyFlavor: '¡Prepárate! ¡Las condiciones están deteriorándose!',
+    rarityCommon: '● COMÚN',
+    rarityUncommon: '◆ POCO COMÚN',
+    rarityRare: '★ RARO',
+    rarityEpic: '☠ ÉPICO',
+    rarityLegendary: 'LEYENDARIO',
+
+    // Events
+    eventGlitch: 'Fallo del Sistema',
+    eventUnstable: 'Mezcla Inestable',
+    eventEarthquake: 'Temblor Sísmico',
+    eventUiGlitch: 'Corrupción de UI',
+    eventEvaporationShort: 'Evaporación Rápida',
+    eventInvertedShort: 'Controles Invertidos',
+    eventColorBlindShort: 'Daltonismo',
+    eventGravityFlux: 'Flujo de Gravedad',
+    eventBlackout: 'Apagón del Laboratorio',
+    eventMirror: 'Dimensión Espejo',
+    eventWind: 'Fuerza del Viento',
+    eventLeak: 'Fuga en el Vaso',
+    eventDigitalSpike: 'Pico Digital',
+    eventEvaporationLong: 'Evaporación Masiva',
+    eventTimeFreeze: 'Tiempo Congelado',
+    eventDoubleCoins: 'Doble Monedas',
+    eventChaosCascade: 'Cascada de Caos',
+    eventSystemMeltdown: 'Colapso del Sistema',
+
+    eventBonusTagText: '+30% BONO DE EVENTO',
+    spectralRed: 'Rojo',
+    spectralOrange: 'Naranja',
+    spectralYellow: 'Amarillo',
+    spectralGreen: 'Verde',
+    spectralBlue: 'Azul',
+    spectralIndigo: 'Índigo',
+    spectralViolet: 'Violeta',
+
+    factRed1:
+        'La luz roja tiene la longitud de onda más larga (~700 nm) de cualquier color visible.',
+    factRed2:
+        'El rojo es el primer color que los humanos nombraron históricamente después del blanco y el negro.',
+    factRed3:
+        'Tu ojo tiene más células cono sensibles al rojo (conos L) que cualquier otro tipo.',
+    factRed4:
+        'Marte aparece rojo debido al óxido de hierro (óxido) en su superficie.',
+    factYellow1:
+        'El amarillo es el color más visible desde la distancia; ¡por eso los taxis son amarillos!',
+    factYellow2:
+        'Las lámparas de sodio de las calles emiten un amarillo casi puro a 589 nm.',
+    factYellow3:
+        'El ojo humano puede distinguir más tonos de verde y amarillo que cualquier otro color.',
+    factYellow4: 'El naranja fue nombrado por la fruta, no al revés.',
+    factGreen1:
+        'Las plantas son verdes porque la clorofila refleja las longitudes de onda verdes (~530 nm).',
+    factGreen2:
+        'Los ojos humanos tienen la mayor sensibilidad alrededor de 555 nm: verde brillante.',
+    factGreen3:
+        'Las gafas de visión nocturna muestran en verde porque nuestros ojos resuelven más tonos verdes.',
+    factGreen4:
+        'La palabra "verde" proviene del inglés antiguo "grēne", que significa "crecer".',
+    factBlue1:
+        'El cielo aparece azul debido a la dispersión de Rayleigh de las longitudes de onda más cortas.',
+    factBlue2:
+        'El azul es el color más raro en la naturaleza: muy pocos organismos producen pigmento azul.',
+    factBlue3: 'Los LED azules ganaron el Premio Nobel de Física 2014.',
+    factBlue4:
+        'Las civilizaciones antiguas rara vez tenían una palabra para el "azul"; fue uno de los últimos colores nombrados.',
+    factViolet1:
+        'La luz violeta tiene la longitud de onda visible más corta (~380 nm) y la mayor energía.',
+    factViolet2:
+        'El púrpura verdadero no existe en el arco iris; requiere mezclar rojo y azul.',
+    factViolet3:
+        'El tinte púrpura de Tiro valía una vez más que el oro, hecho de moco de caracol marino.',
+    factViolet4:
+        'Las "luces negras" UV emiten luz justo más allá del violeta, haciendo que los colores fluorescentes brillen.',
+    factGeneral1:
+        'La luz blanca contiene todas las longitudes de onda del espectro visible (380–780 nm).',
+    factGeneral2:
+        'El espacio de color CIE L*a*b* fue diseñado para ser perceptualmente uniforme en 1976.',
+    factGeneral3:
+        'Un ojo humano sano puede distinguir aproximadamente 10 millones de colores diferentes.',
+    factGeneral4:
+        'La mezcla de colores con luz (aditiva: RGB) difiere de la mezcla de pintura (sustractiva: CMY).',
+    factGeneral5:
+        'La rueda de colores fue inventada por Sir Isaac Newton en 1666.',
+    termsAcceptanceStatement: 'Al jugar, aceptas nuestros %s',
+    termsOfUseLabel: 'Términos de uso',
   };
 
   static const Map<String, dynamic> fr = {
@@ -1626,6 +2315,29 @@ mixin AppStrings {
     blindMode: 'Mode Aveugle',
     on: 'Activé',
     off: 'Désactivé',
+    full: 'Plein',
+
+    // Lab Upgrade Hub
+    lhubLabUpgrades: 'Améliorations du Laboratoire',
+    lhubLabUpgradeHub: 'Centre d\'Amélioration',
+    lhubComplete: 'COMPLÉTÉ',
+    lhubCategories: 'Catégories',
+    lhubSurface: 'Surface',
+    lhubLighting: 'Éclairage',
+    lhubBackground: 'Arrière-plan',
+    lhubStand: 'Support',
+    lhubOverhead: 'Plafond',
+    lhubEnhanceExp: 'Améliorez votre expérience de laboratoire',
+    lhubNoItems: 'Aucun article disponible',
+    lhubSpecifications: 'SPÉCIFICATIONS',
+    lhubArchiveData: 'DONNÉES D\'ARCHIVE',
+    lhubAlreadyEquipped: 'DÉJÀ ÉQUIPÉ',
+    lhubEquipNow: 'ÉQUIPER MAINTENANT',
+    lhubPurchasePrototype: 'ACHETER LE PROTOTYPE',
+    lhubEquipped: 'ÉQUIPÉ',
+    lhubEquip: 'ÉQUIPER',
+    lhubNotEnoughCoins: 'Pas assez de pièces ! Il en faut encore %s.',
+    lhubCustomizeLabDesc: 'Personnalisez votre environnement de laboratoire',
 
     // Game states
     paused: 'Pause',
@@ -1957,8 +2669,102 @@ mixin AppStrings {
     colorEchoGuideTitle: "ÉCHO DE COULEUR",
     colorEchoGuideDesc:
         "Un test de mémoire visuelle. L'échantillon cible apparaît brièvement avant de s'estomper en un 'Signal Fantôme'. \n\n• Intuition : Concentrez-vous sur les teintes avant que le signal ne disparaisse.\n• Défi : Reconstituez la couleur de mémoire pour une synchronisation précise.",
-    chaosLabGuideTitle: "LABO DU CHAOS",
     chaosLabGuideDesc:
         "L'environnement le plus instable. Attendez-vous à des anomalies imprévisibles toutes les 15 secondes. \n\n• Anomalies : Inversion des commandes, Évaporation rapide et Échanges spectraux.\n• Récompense : L'expérimentation à haut risque booste vos multiplicateurs.",
+
+    // New strings
+    initializingLabArchives: 'INITIALISATION DES ARCHIVES DU LABO...',
+    labArchivesInitialized: 'ARCHIVES DU LABO INITIALISÉES',
+    presents: 'Présente',
+    positiveAnomaly: '✦ ANOMALIE POSITIVE',
+    incomingAnomaly: '⚠ ANOMALIE ENTRANTE',
+    bonusEventTag: 'ÉVÉNEMENT BONUS',
+    positiveAnomalyFlavor: 'Une opportunité rare a émergé dans le labo !',
+    negativeAnomalyFlavor: 'Préparez-vous — les conditions se détériorent !',
+    rarityCommon: '● COMMUN',
+    rarityUncommon: '◆ PEU COMMUN',
+    rarityRare: '★ RARE',
+    rarityEpic: '☠ ÉPIQUE',
+    rarityLegendary: 'LÉGENDAIRE',
+
+    // Events
+    eventGlitch: 'Glitch Système',
+    eventUnstable: 'Mélange Instable',
+    eventEarthquake: 'Tremblement Sismique',
+    eventUiGlitch: 'Corruption d\'Interface',
+    eventEvaporationShort: 'Évaporation Rapide',
+    eventInvertedShort: 'Commandes Inversées',
+    eventColorBlindShort: 'Daltonisme',
+    eventGravityFlux: 'Flux de Gravité',
+    eventBlackout: 'Coupure de Courant',
+    eventMirror: 'Dimension Miroir',
+    eventWind: 'Force du Vent',
+    eventLeak: 'Fuite du Bécher',
+    eventDigitalSpike: 'Pic Digital',
+    eventEvaporationLong: 'Évaporation Massive',
+    eventTimeFreeze: 'Temps Figé',
+    eventDoubleCoins: 'Double Pièces',
+    eventChaosCascade: 'Cascade de Chaos',
+    eventSystemMeltdown: 'Effondrement du Système',
+
+    eventBonusTagText: '+30% BONUS D\'ÉVÉNEMENT',
+    spectralRed: 'Rouge',
+    spectralOrange: 'Orange',
+    spectralYellow: 'Jaune',
+    spectralGreen: 'Vert',
+    spectralBlue: 'Bleu',
+    spectralIndigo: 'Indigo',
+    spectralViolet: 'Violet',
+
+    factRed1:
+        'La lumière rouge a la plus longue longueur d\'onde (~700 nm) de toutes les couleurs visibles.',
+    factRed2:
+        'Le rouge est la première couleur que les humains ont nommée historiquement après le noir et le blanc.',
+    factRed3:
+        'Votre œil possède plus de cellules cônes sensibles au rouge (cônes L) que tout autre type.',
+    factRed4:
+        'Mars apparaît rouge en raison de l\'oxyde de fer (rouille) à sa surface.',
+    factYellow1:
+        'Le jaune est la couleur la plus visible de loin — c\'est pourquoi les taxis sont jaunes !',
+    factYellow2:
+        'Les lampes de rue au sodium émettent un jaune presque pur à 589 nm.',
+    factYellow3:
+        'L\'œil humain peut distinguer plus de nuances de vert et de jaune que toute autre couleur.',
+    factYellow4: 'L\'orange a été nommé d\'après le fruit, et non l\'inverse.',
+    factGreen1:
+        'Les plantes sont vertes parce que la chlorophylle réfléchit les longueurs d\'onde vertes (~530 nm).',
+    factGreen2:
+        'Les yeux humains ont la plus grande sensibilité autour de 555 nm — vert brillant.',
+    factGreen3:
+        'Les lunettes de vision nocturne affichent en vert car nos yeux résolvent plus de nuances de vert.',
+    factGreen4:
+        'Le mot "vert" vient du vieil anglais "grēne", qui signifie "croître".',
+    factBlue1:
+        'Le ciel apparaît bleu en raison de la diffusion de Rayleigh des longueurs d\'onde plus courtes.',
+    factBlue2:
+        'Le bleu est la couleur la plus rare dans la nature — très peu d\'organismes produisent du pigment bleu.',
+    factBlue3: 'Les LED bleues ont remporté le prix Nobel de physique 2014.',
+    factBlue4:
+        'Les civilisations anciennes avaient rarement un mot pour le "bleu" — c\'était l\'une des dernières couleurs nommées.',
+    factViolet1:
+        'La lumière violette a la longueur d\'onde visible la plus courte (~380 nm) et l\'énergie la plus élevée.',
+    factViolet2:
+        "Le vrai violet n'existe pas dans l'arc-en-ciel — il nécessite de mélanger le rouge et le bleu.",
+    factViolet3:
+        'La teinture pourpre de Tyr valait autrefois plus que l\'or — fabriquée à partir de mucus d\'escargot de mer.',
+    factViolet4:
+        'Les "lumières noires" UV émettent de la lumière juste au-delà du violet, faisant briller les couleurs fluorescentes.',
+    factGeneral1:
+        'La lumière blanche contient toutes les longueurs d\'onde du spectre visible (380–780 nm).',
+    factGeneral2:
+        "L'espace colorimétrique CIE L*a*b* a été conçu pour être perceptuellement uniforme en 1976.",
+    factGeneral3:
+        'Un œil humain sain peut distinguer environ 10 millions de couleurs différentes.',
+    factGeneral4:
+        'Le mélange des couleurs avec la lumière (additif : RGB) diffère du mélange de peinture (soustractif : CMY).',
+    factGeneral5:
+        'La roue des couleurs a été inventée par Sir Isaac Newton en 1666.',
+    termsAcceptanceStatement: 'En jouant, vous acceptez nos %s',
+    termsOfUseLabel: "Conditions d'utilisation",
   };
 }

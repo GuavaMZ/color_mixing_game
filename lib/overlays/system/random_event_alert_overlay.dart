@@ -1,8 +1,11 @@
 import 'dart:math';
 import 'package:color_mixing_deductive/color_mixer_game.dart';
+import 'package:color_mixing_deductive/helpers/audio_manager.dart';
 import 'package:color_mixing_deductive/helpers/event_rarity_system.dart';
 import 'package:color_mixing_deductive/helpers/haptic_manager.dart';
+import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter/material.dart';
 
 /// Cinematic random event alert overlay.
@@ -52,6 +55,7 @@ class _RandomEventAlertOverlayState extends State<RandomEventAlertOverlay>
     _pulseController.repeat(reverse: true);
 
     HapticManager().vibrate();
+    AudioManager().playAnomalyWarning();
 
     // Transition to phase 2 after 1.0 s
     Future.delayed(const Duration(milliseconds: 1000), () {
@@ -151,8 +155,8 @@ class _RandomEventAlertOverlayState extends State<RandomEventAlertOverlay>
                       ),
                       child: Text(
                         _event?.isPositive == true
-                            ? '✦ POSITIVE ANOMALY'
-                            : '⚠  INCOMING ANOMALY',
+                            ? '✦ ${AppStrings.positiveAnomaly.getString(context).toUpperCase()}'
+                            : '⚠  ${AppStrings.incomingAnomaly.getString(context).toUpperCase()}',
                         style: TextStyle(
                           color: _event?.isPositive == true
                               ? AppTheme.success
@@ -336,7 +340,7 @@ class _EventBanner extends StatelessWidget {
               const SizedBox(width: 14),
               Flexible(
                 child: Text(
-                  event.label.toUpperCase(),
+                  event.labelKey.getString(context).toUpperCase(),
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 22,
@@ -365,7 +369,10 @@ class _EventBanner extends StatelessWidget {
               _RarityBadge(rarity: event.rarity, color: color),
               if (event.isPositive) ...[
                 const SizedBox(width: 8),
-                _buildTag('BONUS EVENT', AppTheme.success),
+                _buildTag(
+                  AppStrings.bonusEventTag.getString(context).toUpperCase(),
+                  AppTheme.success,
+                ),
               ],
             ],
           ),
@@ -391,8 +398,8 @@ class _EventBanner extends StatelessWidget {
           // Flavor sub-text
           Text(
             event.isPositive
-                ? 'A rare opportunity has emerged in the lab!'
-                : 'Brace yourself — conditions are deteriorating!',
+                ? AppStrings.positiveAnomalyFlavor.getString(context)
+                : AppStrings.negativeAnomalyFlavor.getString(context),
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.65),
               fontSize: 12,
@@ -437,13 +444,13 @@ class _RarityBadge extends StatelessWidget {
   String get _label {
     switch (rarity) {
       case EventRarity.common:
-        return '● COMMON';
+        return AppStrings.rarityCommon;
       case EventRarity.uncommon:
-        return '◆ UNCOMMON';
+        return AppStrings.rarityUncommon;
       case EventRarity.rare:
-        return '★ RARE';
+        return AppStrings.rarityRare;
       case EventRarity.epic:
-        return '☠ EPIC';
+        return AppStrings.rarityEpic;
     }
   }
 
@@ -464,7 +471,7 @@ class _RarityBadge extends StatelessWidget {
         ],
       ),
       child: Text(
-        _label,
+        _label.getString(context).toUpperCase(),
         style: TextStyle(
           color: color,
           fontSize: 11,

@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
+import '../helpers/string_manager.dart';
 
 /// Scientific color analysis utilities for Color Lab.
 ///
@@ -93,15 +94,15 @@ class ColorScience {
     return 560; // Mid-spectrum average for non-spectral
   }
 
-  /// Return a human-readable spectral region name.
+  /// Return a human-readable spectral region name key.
   static String getSpectralRegion(int wavelength) {
-    if (wavelength >= 620) return 'Red';
-    if (wavelength >= 590) return 'Orange';
-    if (wavelength >= 570) return 'Yellow';
-    if (wavelength >= 495) return 'Green';
-    if (wavelength >= 475) return 'Blue';
-    if (wavelength >= 450) return 'Indigo';
-    return 'Violet';
+    if (wavelength >= 620) return AppStrings.spectralRed;
+    if (wavelength >= 590) return AppStrings.spectralOrange;
+    if (wavelength >= 570) return AppStrings.spectralYellow;
+    if (wavelength >= 495) return AppStrings.spectralGreen;
+    if (wavelength >= 475) return AppStrings.spectralBlue;
+    if (wavelength >= 450) return AppStrings.spectralIndigo;
+    return AppStrings.spectralViolet;
   }
 
   // ───────────────────────────────────────────────────────────────
@@ -188,7 +189,7 @@ class ColorScience {
   //  "Did You Know?" Color Facts
   // ───────────────────────────────────────────────────────────────
 
-  /// Get a color-science fact relevant to the given color.
+  /// Get a color-science fact relevant to the given color (localization key).
   static String getColorFact(Color color) {
     final hsv = HSVColor.fromColor(color);
     final hue = hsv.hue;
@@ -200,52 +201,52 @@ class ColorScience {
     if (hue <= 30 || hue >= 330) {
       // Red / Pink
       facts = [
-        'Red light has the longest wavelength (~700 nm) of any visible color.',
-        'Red is the first color humans historically named after black and white.',
-        'Your eye has more cone cells sensitive to red (L-cones) than any other type.',
-        'Mars appears red due to iron oxide (rust) on its surface.',
+        AppStrings.factRed1,
+        AppStrings.factRed2,
+        AppStrings.factRed3,
+        AppStrings.factRed4,
       ];
     } else if (hue <= 70) {
       // Orange / Yellow
       facts = [
-        'Yellow is the most visible color from a distance — that\'s why taxis are yellow!',
-        'Sodium street lamps emit a nearly pure yellow at 589 nm.',
-        'The human eye can distinguish more shades of green and yellow than any other color.',
-        'Orange was named after the fruit, not the other way around.',
+        AppStrings.factYellow1,
+        AppStrings.factYellow2,
+        AppStrings.factYellow3,
+        AppStrings.factYellow4,
       ];
     } else if (hue <= 160) {
       // Green
       facts = [
-        'Plants are green because chlorophyll reflects green wavelengths (~530 nm).',
-        'Human eyes have the highest sensitivity around 555 nm — bright green.',
-        'Night vision goggles display in green because our eyes resolve more green shades.',
-        'The word "green" comes from the Old English "grēne", meaning "to grow".',
+        AppStrings.factGreen1,
+        AppStrings.factGreen2,
+        AppStrings.factGreen3,
+        AppStrings.factGreen4,
       ];
     } else if (hue <= 260) {
       // Blue / Cyan
       facts = [
-        'The sky appears blue due to Rayleigh scattering of shorter wavelengths.',
-        'Blue is the rarest colour in nature — very few organisms produce blue pigment.',
-        'Blue LEDs won the 2014 Nobel Prize in Physics (Akasaki, Amano & Nakamura).',
-        'Ancient civilizations rarely had a word for "blue" — it was one of the last colors named.',
+        AppStrings.factBlue1,
+        AppStrings.factBlue2,
+        AppStrings.factBlue3,
+        AppStrings.factBlue4,
       ];
     } else {
       // Purple / Violet
       facts = [
-        'Violet light has the shortest visible wavelength (~380 nm) and highest energy.',
-        'True purple does not exist in the rainbow — it requires mixing red and blue.',
-        'Tyrian purple dye was once worth more than gold — made from sea snail mucus.',
-        'UV "black lights" emit light just beyond violet, making fluorescent colors glow.',
+        AppStrings.factViolet1,
+        AppStrings.factViolet2,
+        AppStrings.factViolet3,
+        AppStrings.factViolet4,
       ];
     }
 
-    // Mix in 2 general facts
+    // Mix in general facts
     final general = [
-      'White light contains all wavelengths of the visible spectrum (380–780 nm).',
-      'The CIE L*a*b* color space was designed to be perceptually uniform in 1976.',
-      'A healthy human eye can distinguish roughly 10 million different colors.',
-      'Color mixing with light (additive: RGB) differs from mixing paint (subtractive: CMY).',
-      'The color wheel was invented by Sir Isaac Newton in 1666.',
+      AppStrings.factGeneral1,
+      AppStrings.factGeneral2,
+      AppStrings.factGeneral3,
+      AppStrings.factGeneral4,
+      AppStrings.factGeneral5,
     ];
 
     final allFacts = [...facts, ...general];

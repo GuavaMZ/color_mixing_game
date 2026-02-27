@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:color_mixing_deductive/helpers/string_manager.dart';
 
 /// Event rarity levels for random events
 enum EventRarity {
@@ -14,7 +15,7 @@ class EventConfig {
   final EventRarity rarity;
   final double baseDuration; // Base duration in seconds
   final bool isPositive; // Whether this is a beneficial event
-  final String label; // Display name shown in the alert
+  final String labelKey; // Localization key for display name
   final String icon; // Emoji icon shown in the alert
 
   const EventConfig({
@@ -22,21 +23,21 @@ class EventConfig {
     required this.rarity,
     required this.baseDuration,
     this.isPositive = false,
-    required this.label,
+    required this.labelKey,
     required this.icon,
   });
 
-  /// Human-readable rarity label
-  String get rarityLabel {
+  /// Human-readable rarity label key
+  String get rarityKey {
     switch (rarity) {
       case EventRarity.common:
-        return 'COMMON';
+        return AppStrings.rarityCommon;
       case EventRarity.uncommon:
-        return 'UNCOMMON';
+        return AppStrings.rarityUncommon;
       case EventRarity.rare:
-        return 'RARE';
+        return AppStrings.rarityRare;
       case EventRarity.epic:
-        return 'EPIC';
+        return AppStrings.rarityEpic;
     }
   }
 }
@@ -52,56 +53,56 @@ class EventRaritySystem {
       id: 'glitch',
       rarity: EventRarity.common,
       baseDuration: 6.0,
-      label: 'System Glitch',
+      labelKey: AppStrings.eventGlitch,
       icon: '⚡',
     ),
     EventConfig(
       id: 'unstable',
       rarity: EventRarity.common,
       baseDuration: 6.0,
-      label: 'Unstable Mixture',
+      labelKey: AppStrings.eventUnstable,
       icon: '🧪',
     ),
     EventConfig(
       id: 'earthquake',
       rarity: EventRarity.common,
       baseDuration: 5.0,
-      label: 'Seismic Tremor',
+      labelKey: AppStrings.eventEarthquake,
       icon: '🌍',
     ),
     EventConfig(
       id: 'ui_glitch',
       rarity: EventRarity.common,
       baseDuration: 7.0,
-      label: 'UI Corruption',
+      labelKey: AppStrings.eventUiGlitch,
       icon: '💻',
     ),
     EventConfig(
       id: 'evaporation_short',
       rarity: EventRarity.common,
       baseDuration: 5.0,
-      label: 'Rapid Evaporation',
+      labelKey: AppStrings.eventEvaporationShort,
       icon: '💨',
     ),
     EventConfig(
       id: 'inverted_short',
       rarity: EventRarity.common,
       baseDuration: 6.0,
-      label: 'Inverted Controls',
+      labelKey: AppStrings.eventInvertedShort,
       icon: '🔄',
     ),
     EventConfig(
       id: 'color_blind_short',
       rarity: EventRarity.common,
       baseDuration: 6.0,
-      label: 'Color Blindness',
+      labelKey: AppStrings.eventColorBlindShort,
       icon: '👁',
     ),
     EventConfig(
       id: 'gravity_flux',
       rarity: EventRarity.common,
       baseDuration: 7.0,
-      label: 'Gravity Flux',
+      labelKey: AppStrings.eventGravityFlux,
       icon: '🌀',
     ),
 
@@ -110,42 +111,42 @@ class EventRaritySystem {
       id: 'blackout',
       rarity: EventRarity.uncommon,
       baseDuration: 10.0,
-      label: 'Lab Blackout',
+      labelKey: AppStrings.eventBlackout,
       icon: '🔦',
     ),
     EventConfig(
       id: 'mirror',
       rarity: EventRarity.uncommon,
       baseDuration: 10.0,
-      label: 'Mirror Dimension',
+      labelKey: AppStrings.eventMirror,
       icon: '🪞',
     ),
     EventConfig(
       id: 'wind',
       rarity: EventRarity.uncommon,
       baseDuration: 10.0,
-      label: 'Wind Force',
+      labelKey: AppStrings.eventWind,
       icon: '🌬',
     ),
     EventConfig(
       id: 'leak',
       rarity: EventRarity.uncommon,
       baseDuration: 12.0,
-      label: 'Beaker Leak',
+      labelKey: AppStrings.eventLeak,
       icon: '💧',
     ),
     EventConfig(
       id: 'digital_spike',
       rarity: EventRarity.uncommon,
       baseDuration: 8.0,
-      label: 'Digital Spike',
+      labelKey: AppStrings.eventDigitalSpike,
       icon: '⚡',
     ),
     EventConfig(
       id: 'evaporation_long',
       rarity: EventRarity.uncommon,
       baseDuration: 10.0,
-      label: 'Mass Evaporation',
+      labelKey: AppStrings.eventEvaporationLong,
       icon: '☁',
     ),
 
@@ -155,7 +156,7 @@ class EventRaritySystem {
       rarity: EventRarity.rare,
       baseDuration: 12.0,
       isPositive: true,
-      label: 'Time Freeze',
+      labelKey: AppStrings.eventTimeFreeze,
       icon: '❄',
     ),
     EventConfig(
@@ -163,7 +164,7 @@ class EventRaritySystem {
       rarity: EventRarity.rare,
       baseDuration: 15.0,
       isPositive: true,
-      label: 'Double Coins',
+      labelKey: AppStrings.eventDoubleCoins,
       icon: '💰',
     ),
 
@@ -172,14 +173,14 @@ class EventRaritySystem {
       id: 'chaos_cascade',
       rarity: EventRarity.epic,
       baseDuration: 18.0,
-      label: 'Chaos Cascade',
+      labelKey: AppStrings.eventChaosCascade,
       icon: '☠',
     ),
     EventConfig(
       id: 'system_meltdown',
       rarity: EventRarity.epic,
       baseDuration: 20.0,
-      label: 'System Meltdown',
+      labelKey: AppStrings.eventSystemMeltdown,
       icon: '🔥',
     ),
   ];

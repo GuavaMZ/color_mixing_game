@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../helpers/string_manager.dart';
 
 // ─── Rarity Tier System ──────────────────────────────────────────────────────
 
@@ -11,13 +12,13 @@ enum LabRarity {
   String get label {
     switch (this) {
       case LabRarity.common:
-        return 'COMMON';
+        return AppStrings.rarityCommon;
       case LabRarity.rare:
-        return 'RARE';
+        return AppStrings.rarityRare;
       case LabRarity.epic:
-        return 'EPIC';
+        return AppStrings.rarityEpic;
       case LabRarity.legendary:
-        return 'LEGENDARY';
+        return AppStrings.rarityLegendary;
     }
   }
 
@@ -117,10 +118,9 @@ class LabCatalog {
     // ═══════════════════════════════════════════════════════════════════════════
     LabItem(
       id: 'surface_steel',
-      name: 'Cryo-Steel Plate',
-      description: 'Ultra-chilled industrial steel with micro-grooved texture',
-      lore:
-          'Standard-issue across all Tier-1 research stations. The micro-grooves channel spilled reagents away from sensitive equipment.',
+      name: AppStrings.itemSteelName,
+      description: AppStrings.itemSteelDesc,
+      lore: AppStrings.itemSteelLore,
       price: 0,
       category: 'surface',
       placeholderColor: Colors.grey,
@@ -130,10 +130,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'surface_marble',
-      name: 'Ionic Marble Slab',
-      description: 'Molecularly-bonded marble with conductive gold veins',
-      lore:
-          'Quarried from the deep mines of Carinthia-7. The gold veins are not decorative — they form a natural Faraday cage against spectral interference.',
+      name: AppStrings.itemMarbleName,
+      description: AppStrings.itemMarbleDesc,
+      lore: AppStrings.itemMarbleLore,
       price: 1200,
       category: 'surface',
       placeholderColor: Colors.white,
@@ -143,10 +142,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'surface_titanium',
-      name: 'Fusion Titanium',
-      description: 'Aura-forged titanium alloy with heat-shielded coating',
-      lore:
-          'Forged in the plasma cores of orbital foundries. Withstands temperatures exceeding 3,000°K without deformation.',
+      name: AppStrings.itemTitaniumName,
+      description: AppStrings.itemTitaniumDesc,
+      lore: AppStrings.itemTitaniumLore,
       price: 2400,
       category: 'surface',
       placeholderColor: Color(0xFFB0B0B0),
@@ -157,10 +155,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'surface_cyber',
-      name: 'Vector-Grid Hex',
-      description: 'Quantum-synced hexagonal lattice with reactive pulses',
-      lore:
-          'Each hexagonal cell contains a miniature quantum processor. The lattice reacts to chromatic anomalies before they become visible to the naked eye.',
+      name: AppStrings.itemCyberName,
+      description: AppStrings.itemCyberDesc,
+      lore: AppStrings.itemCyberLore,
       price: 3600,
       category: 'surface',
       placeholderColor: Colors.cyan,
@@ -171,11 +168,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'surface_obsidian',
-      name: 'Void-Glass Slab',
-      description:
-          'Zero-reflection obsidian forged in a volcanic pressure-chamber',
-      lore:
-          'Created in the caldera of Mount Erebus under 40,000 atmospheres. Absorbs 99.97% of all light — the closest thing to a portable void.',
+      name: AppStrings.itemObsidianName,
+      description: AppStrings.itemObsidianDesc,
+      lore: AppStrings.itemObsidianLore,
       price: 4800,
       category: 'surface',
       placeholderColor: Color(0xFF1A1A1A),
@@ -186,11 +181,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'surface_crystal',
-      name: 'Prism-Matrix Glass',
-      description:
-          'High-refractive crystal lattice for light-purity experiments',
-      lore:
-          'Grown over 200 years in zero-gravity crystallization chambers. Each facet refracts light into its 147 constituent wavelengths.',
+      name: AppStrings.itemCrystalName,
+      description: AppStrings.itemCrystalDesc,
+      lore: AppStrings.itemCrystalLore,
       price: 6000,
       category: 'surface',
       placeholderColor: Color(0xFFE1F5FE),
@@ -201,10 +194,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'surface_aurora',
-      name: 'Spectral Aurora Plate',
-      description: 'Photonic-reactive surface that mimics the northern lights',
-      lore:
-          'Embedded with captured aurora borealis particles from the Svalbard Rift. The surface shifts through the entire visible spectrum in real time.',
+      name: AppStrings.itemAuroraName,
+      description: AppStrings.itemAuroraDesc,
+      lore: AppStrings.itemAuroraLore,
       price: 8400,
       category: 'surface',
       placeholderColor: Color(0xFF00E5FF),
@@ -219,10 +211,9 @@ class LabCatalog {
     // ═══════════════════════════════════════════════════════════════════════════
     LabItem(
       id: 'light_basic',
-      name: 'Standard Fluorescent',
-      description: 'Basic overhead fluorescent lighting',
-      lore:
-          'The humble workhorse of every research facility. Reliable, if uninspiring.',
+      name: AppStrings.itemLightBasicName,
+      description: AppStrings.itemLightBasicDesc,
+      lore: AppStrings.itemLightBasicLore,
       price: 0,
       category: 'lighting',
       placeholderColor: Colors.yellow,
@@ -231,10 +222,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'light_warm',
-      name: 'Warm Amber',
-      description: 'Cozy warm amber lighting for a relaxed atmosphere',
-      lore:
-          'Calibrated to 2700K color temperature. Studies show chemists working under amber light achieve 12% higher accuracy.',
+      name: AppStrings.itemLightWarmName,
+      description: AppStrings.itemLightWarmDesc,
+      lore: AppStrings.itemLightWarmLore,
       price: 1500,
       category: 'lighting',
       placeholderColor: Colors.orange,
@@ -244,10 +234,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'light_neon_blue',
-      name: 'Neon Blue & Purple',
-      description: 'Dramatic neon lighting with color-shifting effects',
-      lore:
-          'Originally developed for deep-sea research stations where natural light never reaches. The shifting wavelengths keep the mind alert.',
+      name: AppStrings.itemLightNeonName,
+      description: AppStrings.itemLightNeonDesc,
+      lore: AppStrings.itemLightNeonLore,
       price: 2100,
       category: 'lighting',
       placeholderColor: Colors.purpleAccent,
@@ -262,10 +251,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'light_rgb',
-      name: 'RGB Dynamic',
-      description: 'Programmable RGB lighting that adapts to your experiments',
-      lore:
-          'AI-driven adaptive illumination that auto-calibrates based on the chromatic profile of the active experiment.',
+      name: AppStrings.itemLightRgbName,
+      description: AppStrings.itemLightRgbDesc,
+      lore: AppStrings.itemLightRgbLore,
       price: 4500,
       category: 'lighting',
       placeholderColor: Color(0xFFFF00FF),
@@ -276,10 +264,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'light_plasma',
-      name: 'Plasma Arc',
-      description: 'High-voltage plasma arc lighting with electric crackle',
-      lore:
-          'Channeling 50,000 volts through argon gas produces the purest white light known to science. Also looks incredible.',
+      name: AppStrings.itemLightPlasmaName,
+      description: AppStrings.itemLightPlasmaDesc,
+      lore: AppStrings.itemLightPlasmaLore,
       price: 6000,
       category: 'lighting',
       placeholderColor: Color(0xFFE040FB),
@@ -290,10 +277,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'light_bio',
-      name: 'Bioluminescent',
-      description: 'Organic bioluminescent lighting with natural glow',
-      lore:
-          'Cultivated from deep-ocean jellyfish DNA spliced with firefly luciferase. A living light source that breathes with your lab.',
+      name: AppStrings.itemLightBioName,
+      description: AppStrings.itemLightBioDesc,
+      lore: AppStrings.itemLightBioLore,
       price: 7500,
       category: 'lighting',
       placeholderColor: Color(0xFF00FF88),
@@ -304,10 +290,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'light_solar',
-      name: 'Solar Spectrum',
-      description: 'Full-spectrum solar simulation for true color accuracy',
-      lore:
-          'Replicates the exact photon distribution of Sol at high noon. The gold standard for chromatic research, literally.',
+      name: AppStrings.itemLightSolarName,
+      description: AppStrings.itemLightSolarDesc,
+      lore: AppStrings.itemLightSolarLore,
       price: 9000,
       category: 'lighting',
       placeholderColor: Color(0xFFFFD600),
@@ -322,9 +307,9 @@ class LabCatalog {
     // ═══════════════════════════════════════════════════════════════════════════
     LabItem(
       id: 'bg_default',
-      name: 'Standard Lab',
-      description: 'Clean, professional laboratory environment',
-      lore: 'Where every great experiment begins. Simple, functional, proven.',
+      name: AppStrings.itemBgDefaultName,
+      description: AppStrings.itemBgDefaultDesc,
+      lore: AppStrings.itemBgDefaultLore,
       price: 0,
       category: 'background',
       placeholderColor: Colors.blueGrey,
@@ -333,10 +318,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'bg_nature',
-      name: 'Botanical Garden',
-      description: 'Serene greenhouse laboratory surrounded by nature',
-      lore:
-          'Built within the canopy of the Amazonian Bio-Reserve. Over 300 plant species contribute to natural air purification.',
+      name: AppStrings.itemBgNatureName,
+      description: AppStrings.itemBgNatureDesc,
+      lore: AppStrings.itemBgNatureLore,
       price: 3000,
       category: 'background',
       placeholderColor: Colors.green,
@@ -347,10 +331,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'bg_cyber',
-      name: 'Cyberpunk City',
-      description: 'Neon-lit urban skyline with holographic billboards',
-      lore:
-          'Perched atop the Neo-Shanghai Arcology. The holographic advertisements outside make for surprisingly effective spectral calibration targets.',
+      name: AppStrings.itemBgCyberName,
+      description: AppStrings.itemBgCyberDesc,
+      lore: AppStrings.itemBgCyberLore,
       price: 3600,
       category: 'background',
       placeholderColor: Color(0xFFFF00FF),
@@ -361,10 +344,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'bg_volcano',
-      name: 'Volcanic Observatory',
-      description: 'Dramatic crater-side lab with molten lava flows below',
-      lore:
-          'The extreme heat gradient creates unique optical phenomena. Colors behave differently here — every experiment is an adventure.',
+      name: AppStrings.itemBgVolcanoName,
+      description: AppStrings.itemBgVolcanoDesc,
+      lore: AppStrings.itemBgVolcanoLore,
       price: 4500,
       category: 'background',
       placeholderColor: Color(0xFFBF360C),
@@ -375,10 +357,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'bg_futuristic',
-      name: 'High-Tech Facility',
-      description: 'Cutting-edge research facility with holographic displays',
-      lore:
-          'The Prometheus Initiative\'s flagship laboratory. Every surface is a potential display, every wall a window into data.',
+      name: AppStrings.itemBgFuturisticName,
+      description: AppStrings.itemBgFuturisticDesc,
+      lore: AppStrings.itemBgFuturisticLore,
       price: 5400,
       category: 'background',
       placeholderColor: Colors.black,
@@ -389,10 +370,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'bg_underwater',
-      name: 'Deep Sea Research',
-      description: 'Underwater laboratory with bioluminescent marine life',
-      lore:
-          'Located at the Mariana Trench\'s Edge. Bioluminescent creatures drift past the reinforced viewports, casting ever-changing colored light.',
+      name: AppStrings.itemBgUnderwaterName,
+      description: AppStrings.itemBgUnderwaterDesc,
+      lore: AppStrings.itemBgUnderwaterLore,
       price: 7500,
       category: 'background',
       placeholderColor: Color(0xFF006064),
@@ -403,10 +383,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'bg_space',
-      name: 'Deep Space Station',
-      description: 'Orbiting space station lab with nebula vistas',
-      lore:
-          'Station Kepler-442b orbits a dying star. The nebula outside provides a natural prism, splitting starlight into colors that don\'t exist on Earth.',
+      name: AppStrings.itemBgSpaceName,
+      description: AppStrings.itemBgSpaceDesc,
+      lore: AppStrings.itemBgSpaceLore,
       price: 9000,
       category: 'background',
       placeholderColor: Color(0xFF0D0D2B),
@@ -421,10 +400,9 @@ class LabCatalog {
     // ═══════════════════════════════════════════════════════════════════════════
     LabItem(
       id: 'stand_basic',
-      name: 'Standard Stand',
-      description: 'Basic metal laboratory stand',
-      lore:
-          'Functional. Reliable. Nothing fancy — and that\'s exactly the point.',
+      name: AppStrings.itemStandBasicName,
+      description: AppStrings.itemStandBasicDesc,
+      lore: AppStrings.itemStandBasicLore,
       price: 0,
       category: 'stand',
       placeholderColor: Colors.grey,
@@ -433,10 +411,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'stand_chrome',
-      name: 'Chrome Finish',
-      description: 'Polished chrome stand with modern aesthetic',
-      lore:
-          'Triple-electroplated chromium finish. Reflects the beaker\'s contents with mirror-like clarity.',
+      name: AppStrings.itemStandChromeName,
+      description: AppStrings.itemStandChromeDesc,
+      lore: AppStrings.itemStandChromeLore,
       price: 900,
       category: 'stand',
       placeholderColor: Color(0xFFE0E0E0),
@@ -446,10 +423,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'stand_wood',
-      name: 'Wooden Artisan',
-      description: 'Handcrafted wooden stand with natural grain',
-      lore:
-          'Carved from 500-year-old Sequoia heartwood by master craftsman Elias Vorn. No two are exactly alike.',
+      name: AppStrings.itemStandWoodName,
+      description: AppStrings.itemStandWoodDesc,
+      lore: AppStrings.itemStandWoodLore,
       price: 1500,
       category: 'stand',
       placeholderColor: Color(0xFF8D6E63),
@@ -460,10 +436,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'stand_holo',
-      name: 'Holographic',
-      description: 'Floating holographic projection stand',
-      lore:
-          'The beaker appears to float within a hard-light holographic cradle. The projection field also acts as a secondary containment system.',
+      name: AppStrings.itemStandHoloName,
+      description: AppStrings.itemStandHoloDesc,
+      lore: AppStrings.itemStandHoloLore,
       price: 3000,
       category: 'stand',
       placeholderColor: Color(0xFF00E5FF),
@@ -474,10 +449,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'stand_crystal',
-      name: 'Crystal Pedestal',
-      description: 'Translucent crystal pedestal with prismatic glow',
-      lore:
-          'A single flawless crystal, laser-cut along its natural cleavage planes. Internal inclusions refract light into miniature rainbows.',
+      name: AppStrings.itemStandCrystalName,
+      description: AppStrings.itemStandCrystalDesc,
+      lore: AppStrings.itemStandCrystalLore,
       price: 4500,
       category: 'stand',
       placeholderColor: Color(0xFF80DEEA),
@@ -488,10 +462,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'stand_levitate',
-      name: 'Anti-Gravity',
-      description: 'Magnetic levitation stand with zero contact',
-      lore:
-          'Superconducting magnets cooled to near absolute zero create a stable levitation field. The beaker floats, untouched by anything.',
+      name: AppStrings.itemStandLevitateName,
+      description: AppStrings.itemStandLevitateDesc,
+      lore: AppStrings.itemStandLevitateLore,
       price: 6000,
       category: 'stand',
       placeholderColor: Color(0xFFAA00FF),
@@ -502,10 +475,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'stand_obsidian',
-      name: 'Obsidian Throne',
-      description: 'Imposing dark volcanic rock stand with ember veins',
-      lore:
-          'Carved from a single block of volcanic glass from the summit of Olympus Mons. Ember veins pulse with geothermal energy from within.',
+      name: AppStrings.itemStandObsidianName,
+      description: AppStrings.itemStandObsidianDesc,
+      lore: AppStrings.itemStandObsidianLore,
       price: 7500,
       category: 'stand',
       placeholderColor: Color(0xFF212121),
@@ -520,9 +492,9 @@ class LabCatalog {
     // ═══════════════════════════════════════════════════════════════════════════
     LabItem(
       id: 'lights_none',
-      name: 'No Lights',
-      description: 'Remove overhead string lights',
-      lore: 'Standard laboratory protocol: clear airspace.',
+      name: AppStrings.itemLNoneName,
+      description: AppStrings.itemLNoneDesc,
+      lore: AppStrings.itemLNoneLore,
       price: 0,
       category: 'string_lights',
       placeholderColor: Colors.transparent,
@@ -531,10 +503,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'lights_warm',
-      name: 'Tungsten Glow',
-      description: 'Warm, cozy overhead tungsten string lights',
-      lore:
-          'Provides a comforting, low-temperature amber glow to ease the mind during long synthesis sessions.',
+      name: AppStrings.itemLWarmName,
+      description: AppStrings.itemLWarmDesc,
+      lore: AppStrings.itemLWarmLore,
       price: 1500,
       category: 'string_lights',
       placeholderColor: Color(0xFFFFD54F),
@@ -544,10 +515,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'lights_neon',
-      name: 'Neon Cyber-String',
-      description: 'Bright alternating cyan and magenta lights',
-      lore:
-          'Salvaged from an orbital arcade. The high-frequency flicker keeps you sharp and awake.',
+      name: AppStrings.itemLNeonName,
+      description: AppStrings.itemLNeonDesc,
+      lore: AppStrings.itemLNeonLore,
       price: 3200,
       category: 'string_lights',
       placeholderColor: Color(0xFF00FFFF),
@@ -558,10 +528,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'lights_bio',
-      name: 'Isotope Pulser',
-      description: 'Slow-pulsing radioactive green suspended orbs',
-      lore:
-          'Contains trace amounts of Tritium-3. The rhythmic pulsing syncs with local geiger counters for a calming ambiance.',
+      name: AppStrings.itemLBioName,
+      description: AppStrings.itemLBioDesc,
+      lore: AppStrings.itemLBioLore,
       price: 5500,
       category: 'string_lights',
       placeholderColor: Color(0xFF00FF00),
@@ -572,10 +541,9 @@ class LabCatalog {
     ),
     LabItem(
       id: 'lights_starlight',
-      name: 'Astral Thread',
-      description: 'Intense, sharply twinkling true-white stellar fragments',
-      lore:
-          'Microscopic shards of a white dwarf star suspended in a magnetic containment string. Emits pure, undistorted photons.',
+      name: AppStrings.itemLStarlightName,
+      description: AppStrings.itemLStarlightDesc,
+      lore: AppStrings.itemLStarlightLore,
       price: 8500,
       category: 'string_lights',
       placeholderColor: Colors.white,

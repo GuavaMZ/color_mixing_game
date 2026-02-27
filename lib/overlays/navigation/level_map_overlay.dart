@@ -108,14 +108,20 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
             const SizedBox(height: 20),
             AnimatedBuilder(
               animation: LivesManager(),
-              builder: (context, _) => Text(
-                "${AppStrings.nextLifeIn.getString(context)}${LivesManager().timeUntilNextLife}",
-                style: const TextStyle(
-                  color: AppTheme.neonCyan,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
-              ),
+              builder: (context, _) {
+                final time = LivesManager().timeUntilNextLife;
+                final displayTime = time == AppStrings.full
+                    ? AppStrings.full.getString(context)
+                    : time;
+                return Text(
+                  "${AppStrings.nextLifeIn.getString(context)}$displayTime",
+                  style: const TextStyle(
+                    color: AppTheme.neonCyan,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                );
+              },
             ),
           ],
         ),

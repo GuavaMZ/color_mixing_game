@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:color_mixing_deductive/core/security_service.dart';
+import 'package:color_mixing_deductive/helpers/string_manager.dart';
 
 class LivesManager extends ChangeNotifier {
   static const int maxLives = 5;
@@ -160,7 +161,7 @@ class LivesManager extends ChangeNotifier {
   }
 
   String get timeUntilNextLife {
-    if (_nextRegenTime == null) return "Full";
+    if (_nextRegenTime == null) return AppStrings.full;
     final diff = _nextRegenTime!.difference(DateTime.now());
     if (diff.isNegative) return "00:00";
     final minutes = diff.inMinutes.toString().padLeft(2, '0');

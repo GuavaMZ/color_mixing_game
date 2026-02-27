@@ -177,6 +177,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   );
   final ValueNotifier<String?> activeEventLabel = ValueNotifier<String?>(null);
   final ValueNotifier<double> activeEventProgress = ValueNotifier<double>(0.0);
+  final ValueNotifier<double> loadingProgress = ValueNotifier<double>(0.0);
   double _activeEventDuration = 0.0;
   double _activeEventElapsed = 0.0;
   bool _randomEventOccurredThisLevel = false;
@@ -229,21 +230,25 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     // تحميل التقدم المحفوظ من الهاتف
     // تحميل التقدم المحفوظ من الهاتف
     await levelManager.initProgress();
+    loadingProgress.value = 0.1;
     await LivesManager().init();
+    loadingProgress.value = 0.2;
     totalStars = await SaveManager.loadTotalStars();
     totalCoins.value = await SaveManager.loadTotalCoins();
     unlockedAchievements = await SaveManager.loadAchievements();
     globalBlindMode = await SaveManager.loadBlindMode();
     reducedMotionEnabled = await SaveManager.loadReducedMotion();
     randomEventsEnabled = await SaveManager.loadRandomEvents();
+    loadingProgress.value = 0.3;
 
-    // Initialize IAP and attach the game so pending purchases are awarded locally
     CoinStoreService.instance.attachGame(this);
     CoinStoreService.instance.initialize();
+    loadingProgress.value = 0.4;
 
     // Load helpers
     final savedHelpers = await SaveManager.loadHelpers();
     helperCounts.value = Map<String, int>.from(savedHelpers);
+    loadingProgress.value = 0.5;
 
     // Load skins
     final savedSkins = await SaveManager.loadPurchasedSkins();
@@ -258,6 +263,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     if (!unlockedSkins.contains(BeakerType.classic)) {
       unlockedSkins.add(BeakerType.classic);
     }
+    loadingProgress.value = 0.6;
 
     // Load Lab Configuration
     final labConfig = await SaveManager.loadLabConfig();
@@ -283,6 +289,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       'string_lights',
       labConfig['string_lights'] ?? 'lights_none',
     );
+    loadingProgress.value = 0.8;
 
     // Add background gradient first (rendered first)
     backgroundGradient = BackgroundGradient(
@@ -299,6 +306,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       configColors: lightItem?.gradientColors,
     );
     add(ambientParticles);
+    loadingProgress.value = 1.0;
 
     // Add string lights
     stringLights = StringLights(
@@ -1678,7 +1686,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       final duration = EventRaritySystem.getDuration(event, modeString);
 
       // Set active event details for HUD badge
-      activeEventLabel.value = event.label;
+      activeEventLabel.value = event.labelKey;
       activeEventProgress.value = 1.0;
       _activeEventDuration = duration;
       _activeEventElapsed = 0.0;
@@ -1692,10 +1700,12 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
           break;
         case 'unstable':
           beaker.add(UnstableBeakerEffect());
+          _audio.playSpark();
           break;
         case 'earthquake':
           isEarthquake = true;
           add(EarthquakeVisualEffect());
+          _audio.playCrack();
           break;
         case 'ui_glitch':
           isUiGlitching = true;
@@ -1720,6 +1730,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
         case 'gravity_flux':
           isGravityFlux = true;
           beaker.add(GravityFluxEffect());
+          _audio.playSpark();
           break;
 
         // Uncommon Events
@@ -1730,10 +1741,16 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
           _audio.playAlarm();
           break;
         case 'mirror':
-          if (!isMirrored) add(MirrorDistortionEffect());
+          if (!isMirrored) {
+            add(MirrorDistortionEffect());
+            _audio.playGlitch();
+          }
           break;
         case 'wind':
-          if (!hasWind) add(WindForceEffect());
+          if (!hasWind) {
+            add(WindForceEffect());
+            _audio.playSteam();
+          }
           break;
         case 'digital_spike':
           add(GlitchEffect(intensity: 1.8));
@@ -1742,6 +1759,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
         case 'leak':
           if (!children.any((c) => c is LeakingBeakerEffect)) {
             add(LeakingBeakerEffect());
+            _audio.playSteam();
           }
           break;
         case 'evaporation_long':

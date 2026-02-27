@@ -147,6 +147,9 @@ class AudioManager {
   /// Play alarm sound
   void playAlarm() => playSfx(alarmSound, volume: 0.3);
 
+  /// Play cinematic anomaly warning sound
+  void playAnomalyWarning() => playSfx(alarmSound, volume: 0.5);
+
   /// Play steam hiss sound
   void playSteam() => playSfx(steamSound, volume: 0.5);
 

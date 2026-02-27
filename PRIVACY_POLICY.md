@@ -1,6 +1,6 @@
 # Color Lab - Privacy Policy
 
-**Last Updated:** February 25, 2026
+**Last Updated:** February 27, 2026
 
 ## Introduction
 

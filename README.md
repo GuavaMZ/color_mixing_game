@@ -12,7 +12,7 @@ A premium color-mixing puzzle game with a cosmic laboratory theme. Mix colors to
 - **Classic Mode**: 300 progressive levels with increasing difficulty
 - **Time Attack**: Race against the clock to match colors
 - **Color Echo**: Random challenging targets for advanced players
-- **Chaos Lab**: Unstable laboratory with random events and disasters
+- **Chaos Lab**: Unstable laboratory with cinematic random events (Anomalies), glitch effects, and boosted rewards (x1.3)
 
 ### 🎨 Core Gameplay
 - Intuitive RGB color mixing with White and Black modifiers
@@ -53,7 +53,8 @@ A premium color-mixing puzzle game with a cosmic laboratory theme. Mix colors to
 - Cosmic laboratory aesthetic with glassmorphism
 - Dynamic particle effects and animations
 - Adaptive background music per game mode
-- Professional sound effects
+- Professional sound effects with atmospheric synchronization
+- Premium startup experience with animated loading state
 - Smooth 60 FPS gameplay
 
 ## 📱 Technical Details
@@ -162,12 +163,11 @@ Color Lab supports 4 languages:
 ## 🔒 Privacy
 
 Color Lab respects your privacy:
-- **No personal data collection**
-- **No internet required** (fully offline)
-- **No ads or tracking**
-- All data stored locally on your device
+- **Minimal personal data collection** (handled by third-party services like AdMob)
+- **Offline-First**: Core gameplay works fully without internet
+- All game progress and settings stored securely on your device
 
-See [PRIVACY_POLICY.md](PRIVACY_POLICY.md) for details.
+See [PRIVACY_POLICY.md](PRIVACY_POLICY.md) and [TERMS_OF_USE.md](TERMS_OF_USE.md) for details.
 
 ## 📝 License
 
@@ -176,7 +176,7 @@ Copyright © 2026 DV Zeyad. All rights reserved.
 ## 📧 Contact
 
 - **Developer**: DV Zeyad
-- **Email**: dvzeyad@gmail.com
+- **Email**: elqutamy.zeyad8@gmail.com
 
 ## 🙏 Acknowledgments
 
