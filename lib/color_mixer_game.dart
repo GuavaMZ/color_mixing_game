@@ -101,6 +101,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       'DailyLogin',
       'LabUpgrade',
       'RandomEventAlert', // Also don't decrement while the alert is playing
+      'IntroSplash',
     ];
 
     for (final overlay in nonPlayOverlays) {
@@ -1734,6 +1735,10 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
         case 'wind':
           if (!hasWind) add(WindForceEffect());
           break;
+        case 'digital_spike':
+          add(GlitchEffect(intensity: 1.8));
+          _audio.playGlitch();
+          break;
         case 'leak':
           if (!children.any((c) => c is LeakingBeakerEffect)) {
             add(LeakingBeakerEffect());
@@ -1769,6 +1774,14 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
             });
           }
           _audio.playAlarm();
+          break;
+        case 'system_meltdown':
+          isBlackout = true;
+          add(BlackoutEffect());
+          overlays.add('Blackout');
+          add(GlitchEffect(intensity: 2.2));
+          _audio.playAlarm();
+          _audio.playGlitch();
           break;
       }
 

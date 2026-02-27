@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:color_mixing_deductive/color_mixer_game.dart';
 import 'package:color_mixing_deductive/helpers/event_rarity_system.dart';
 import 'package:color_mixing_deductive/helpers/haptic_manager.dart';
@@ -188,10 +189,92 @@ class _RandomEventAlertOverlayState extends State<RandomEventAlertOverlay>
                 ),
               ),
             ),
+
+          // Digital Glitch Overlay (Phase 1 & 2)
+          if (_event?.isPositive == false)
+            _GlitchOverlay(pulseIntensity: _pulseAnimation.value),
         ],
       ),
     );
   }
+}
+
+// ─── Glitch Overlay ────────────────────────────────────────────────────────
+
+class _GlitchOverlay extends StatelessWidget {
+  final double pulseIntensity;
+  const _GlitchOverlay({required this.pulseIntensity});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<int>(
+      stream: Stream.periodic(const Duration(milliseconds: 50), (x) => x),
+      builder: (context, snapshot) {
+        return CustomPaint(
+          size: MediaQuery.of(context).size,
+          painter: _GlitchPainter(pulseIntensity: pulseIntensity),
+        );
+      },
+    );
+  }
+}
+
+class _GlitchPainter extends CustomPainter {
+  final double pulseIntensity;
+  final Random _random = Random();
+
+  _GlitchPainter({required this.pulseIntensity});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Only glitch sometimes, intensity tied to pulse
+    if (_random.nextDouble() > 0.3 + (pulseIntensity * 0.4)) return;
+
+    final paint = Paint()..style = PaintingStyle.fill;
+
+    // 1. Digital Blocks
+    int blockCount = (3 + _random.nextInt(5)).toInt();
+    for (int i = 0; i < blockCount; i++) {
+      final rect = Rect.fromLTWH(
+        _random.nextDouble() * size.width,
+        _random.nextDouble() * size.height,
+        20 + _random.nextDouble() * 100,
+        2 + _random.nextDouble() * 10,
+      );
+
+      paint.color = [
+        Colors.white,
+        Colors.redAccent,
+        Colors.cyan,
+        AppTheme.neonMagenta,
+      ][_random.nextInt(4)].withValues(alpha: 0.1 + _random.nextDouble() * 0.2);
+
+      canvas.drawRect(rect, paint);
+    }
+
+    // 2. Scanline/Static Jitter
+    if (_random.nextDouble() < 0.4) {
+      final y = _random.nextDouble() * size.height;
+      final h = 1.0 + _random.nextDouble() * 30.0;
+      paint.color = Colors.white.withValues(alpha: 0.05);
+      canvas.drawRect(Rect.fromLTWH(0, y, size.width, h), paint);
+    }
+
+    // 3. Chromatic Shift (Full screen horizontal shift simulation)
+    if (_random.nextDouble() < 0.2) {
+      final offset = (_random.nextDouble() - 0.5) * 10;
+      paint.color = Colors.red.withValues(alpha: 0.05);
+      canvas.drawRect(Rect.fromLTWH(offset, 0, size.width, size.height), paint);
+      paint.color = Colors.cyan.withValues(alpha: 0.05);
+      canvas.drawRect(
+        Rect.fromLTWH(-offset, 0, size.width, size.height),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_GlitchPainter oldDelegate) => true;
 }
 
 // ─── Event Banner Card ─────────────────────────────────────────────────────

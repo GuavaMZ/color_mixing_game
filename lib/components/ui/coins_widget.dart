@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 
 class CoinsWidget extends StatelessWidget {
   final ValueListenable<int> coinsNotifier;
-  final bool useEnhancedStyle; // Whether to use the enhanced style or basic style
+  final bool
+  useEnhancedStyle; // Whether to use the enhanced style or basic style
   final double? iconSize;
   final double? fontSize;
   final EdgeInsetsGeometry? padding;
@@ -28,7 +29,9 @@ class CoinsWidget extends StatelessWidget {
         if (useEnhancedStyle) {
           // Enhanced style with gradient background and glow effects
           return Container(
-            padding: padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding:
+                padding ??
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
@@ -70,9 +73,7 @@ class CoinsWidget extends StatelessWidget {
                     if (showIcon) const SizedBox(width: 8),
                     Text(
                       "$coins",
-                      style: AppTheme.buttonText(
-                        context,
-                      ).copyWith(
+                      style: AppTheme.buttonText(context).copyWith(
                         color: Colors.white,
                         fontSize: fontSize ?? 20,
                         fontWeight: FontWeight.bold,
@@ -92,7 +93,9 @@ class CoinsWidget extends StatelessWidget {
         } else {
           // Basic style matching main menu
           return Container(
-            padding: padding ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding:
+                padding ??
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: AppTheme.cosmicGlass(
               borderRadius: 20,
               borderColor: Colors.amber.withValues(alpha: 0.3),
@@ -109,9 +112,7 @@ class CoinsWidget extends StatelessWidget {
                 if (showIcon) const SizedBox(width: 8),
                 Text(
                   "$coins",
-                  style: AppTheme.bodyLarge(
-                    context,
-                  ).copyWith(
+                  style: AppTheme.bodyLarge(context).copyWith(
                     fontWeight: FontWeight.w900,
                     color: Colors.white,
                     fontSize: fontSize ?? 16,

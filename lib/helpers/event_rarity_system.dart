@@ -135,6 +135,13 @@ class EventRaritySystem {
       icon: '💧',
     ),
     EventConfig(
+      id: 'digital_spike',
+      rarity: EventRarity.uncommon,
+      baseDuration: 8.0,
+      label: 'Digital Spike',
+      icon: '⚡',
+    ),
+    EventConfig(
       id: 'evaporation_long',
       rarity: EventRarity.uncommon,
       baseDuration: 10.0,
@@ -167,6 +174,13 @@ class EventRaritySystem {
       baseDuration: 18.0,
       label: 'Chaos Cascade',
       icon: '☠',
+    ),
+    EventConfig(
+      id: 'system_meltdown',
+      rarity: EventRarity.epic,
+      baseDuration: 20.0,
+      label: 'System Meltdown',
+      icon: '🔥',
     ),
   ];
 

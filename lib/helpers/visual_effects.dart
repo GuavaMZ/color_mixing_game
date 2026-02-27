@@ -494,7 +494,7 @@ class _PulsingEffectState extends State<PulsingEffect>
     super.initState();
     _controller = AnimationController(duration: widget.duration, vsync: this)
       ..repeat(reverse: true);
-      
+
     _scaleAnimation = Tween<double>(
       begin: widget.minScale,
       end: widget.maxScale,

@@ -16,6 +16,11 @@ class GlitchEffect extends Component with HasGameReference<ColorMixerGame> {
   double _glitchOffset = 0;
   int _scanLineY = 0;
 
+  /// Intensity of the glitch effect (0.0 to 1.5+)
+  final double intensity;
+
+  GlitchEffect({this.intensity = 1.0});
+
   // Cached Paints
   final Paint _rgbPaint = Paint()..blendMode = BlendMode.screen;
   final Paint _scanLinePaint = Paint()
@@ -47,30 +52,32 @@ class GlitchEffect extends Component with HasGameReference<ColorMixerGame> {
       } else {
         // Update glitch parameters
         _glitchOffset =
-            (_random.nextDouble() - 0.5) * 35; // Increased intensity
+            (_random.nextDouble() - 0.5) * 35 * intensity; // Scale by intensity
         _scanLineY = _random.nextInt(800);
 
         // Generate random digital blocks
-        if (_random.nextDouble() < 0.4) {
+        if (_random.nextDouble() < 0.4 * intensity) {
           _glitchBlocks.clear();
-          for (int i = 0; i < 3; i++) {
+          int blockCount = (3 * intensity).toInt().clamp(2, 8);
+          for (int i = 0; i < blockCount; i++) {
             _glitchBlocks.add(
               Rect.fromLTWH(
                 _random.nextDouble() * game.size.x,
                 _random.nextDouble() * game.size.y,
-                50 + _random.nextDouble() * 150,
-                10 + _random.nextDouble() * 40,
+                50 + _random.nextDouble() * 150 * intensity,
+                10 + _random.nextDouble() * 40 * intensity,
               ),
             );
           }
         }
 
-        _chromaticIntensity = _random.nextDouble();
+        _chromaticIntensity = _random.nextDouble() * intensity;
       }
-    } else if (_glitchTimer >= _nextGlitchTime) {
+    } else if (_glitchTimer >= _nextGlitchTime / intensity.clamp(0.5, 3.0)) {
       _isGlitching = true;
       AudioManager().playGlitch();
-      _glitchDuration = 0.15 + _random.nextDouble() * 0.3;
+      _glitchDuration =
+          (0.15 + _random.nextDouble() * 0.3) * intensity.clamp(0.8, 2.0);
 
       // Impact haptic if enabled
       HapticManager().light();
@@ -101,8 +108,9 @@ class GlitchEffect extends Component with HasGameReference<ColorMixerGame> {
     );
 
     // 2. Fragmented Scan Lines
-    for (int i = 0; i < 8; i++) {
-      final y = (_scanLineY + i * 40) % gameSize.y.toInt();
+    int lineCount = (8 * intensity).toInt().clamp(4, 20);
+    for (int i = 0; i < lineCount; i++) {
+      final y = (_scanLineY + i * (40 / intensity)) % gameSize.y.toInt();
       if (_random.nextDouble() < 0.7) {
         canvas.drawLine(
           Offset(0, y.toDouble()),

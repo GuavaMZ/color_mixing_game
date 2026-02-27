@@ -32,6 +32,7 @@ import 'package:color_mixing_deductive/overlays/menus/daily_login_overlay.dart';
 import 'package:color_mixing_deductive/overlays/menus/mode_guide_overlay.dart';
 import 'package:color_mixing_deductive/overlays/system/blackout_overlay.dart';
 import 'package:color_mixing_deductive/overlays/system/random_event_alert_overlay.dart';
+import 'package:color_mixing_deductive/overlays/system/intro_splash_overlay.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:color_mixing_deductive/core/ad_manager.dart';
 import 'package:color_mixing_deductive/core/security_service.dart';
@@ -259,8 +260,9 @@ class _GameSectionState extends State<_GameSection> {
               'ModeGuide': (context, game) => ModeGuideOverlay(game: game),
               'RandomEventAlert': (context, game) =>
                   RandomEventAlertOverlay(game: game),
+              'IntroSplash': (context, game) => IntroSplashOverlay(game: game),
             },
-            initialActiveOverlays: const ['MainMenu'],
+            initialActiveOverlays: const ['IntroSplash'],
             loadingBuilder: (context) => Container(
               color: const Color(0xFF1A1A2E),
               child: const Center(
