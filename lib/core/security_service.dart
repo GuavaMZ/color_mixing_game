@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:color_mixing_deductive/core/security_audit_logger.dart';
 
 /// Enhanced security service with multiple layers of protection:
 /// - Dynamic key derivation with runtime obfuscation
@@ -27,21 +28,19 @@ class SecurityService {
   // ═══════════════════════════════════════════════════════════════════════════
 
   // Base key bytes split and obfuscated to prevent static analysis
-  static final List<int> _baseKeyPart1 = [
-    0x63, 0x6F, 0x6C, 0x6F, 0x72, 0x5F, // color_
-  ];
-  static final List<int> _baseKeyPart2 = [
-    0x6D, 0x69, 0x78, 0x69, 0x6E, 0x67, // mixing
-  ];
+  static final List<int> _baseKeyPart1 = [0x63, 0x6F, 0x6C, 0x6F, 0x72, 0x5F];
+  static final List<int> _baseKeyPart2 = [0x6D, 0x69, 0x78, 0x69, 0x6E, 0x67];
   static final List<int> _baseKeyPart3 = [
-    0x5F, 0x73, 0x65, 0x63, 0x72, 0x65, 0x74, // _secret
+    0x5F,
+    0x73,
+    0x65,
+    0x63,
+    0x72,
+    0x65,
+    0x74,
   ];
-  static final List<int> _baseKeyPart4 = [
-    0x5F, 0x6B, 0x65, 0x79, 0x5F, // _key_
-  ];
-  static final List<int> _baseKeyPart5 = [
-    0x32, 0x30, 0x32, 0x36, // 2026
-  ];
+  static final List<int> _baseKeyPart4 = [0x5F, 0x6B, 0x65, 0x79, 0x5F];
+  static final List<int> _baseKeyPart5 = [0x32, 0x30, 0x32, 0x36];
 
   // Salt for key derivation (stored in code, combined at runtime)
   static final Uint8List _keySalt = Uint8List.fromList([
@@ -249,11 +248,26 @@ class SecurityService {
         return null;
       }
 
-      // Validate sequence (not ahead of current)
+      // Validate sequence (not ahead of current, and not too far in the past)
       final sequence = data['s'] as int?;
-      if (sequence != null && sequence > _sequenceNumber) {
-        _logSecurityEvent('sequence_anomaly', key, extra: 's=$sequence');
-        return null;
+      if (sequence != null) {
+        if (sequence > _sequenceNumber) {
+          _logSecurityEvent(
+            'sequence_anomaly_ahead',
+            key,
+            extra: 's=$sequence',
+          );
+          return null;
+        }
+        // Prevent replay of old saves (max window of 100 saves)
+        if (sequence < _sequenceNumber - 100) {
+          _logSecurityEvent(
+            'sequence_anomaly_replay',
+            key,
+            extra: 's=$sequence',
+          );
+          return null;
+        }
       }
 
       return data['d'] as String;
@@ -308,17 +322,14 @@ class SecurityService {
   }
 
   static void _logSecurityEvent(String type, String key, {String? extra}) {
-    // In production, send to analytics/crash reporting
-    // For now, log with timestamp
-    // final timestamp = DateTime.now().toIso8601String();
-    /*
-    print(
-      '[SecurityAlert] $timestamp | Type: $type | Key: $key${extra != null ? ' | Extra: $extra' : ''}',
+    SecurityAuditLogger.log(
+      type,
+      'Security event on key: $key${extra != null ? " | $extra" : ""}',
+      severity: SecurityEventSeverity.error,
     );
-    */
   }
 
-  static final math.Random _random = math.Random();
+  static final math.Random _random = math.Random.secure();
   static int _randomInt(int min, int max) => min + _random.nextInt(max - min);
 
   // Singleton instance for key derivation

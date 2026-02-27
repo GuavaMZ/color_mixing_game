@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 /// Runtime security checks to detect tampering, debugging, and unsafe environments.
 ///
@@ -49,34 +50,22 @@ class RuntimeIntegrityChecker {
   Future<bool> _checkEmulator() async {
     try {
       if (Platform.isAndroid) {
-        // Check for common emulator indicators
-        final buildFingerprint = await _getSystemProperty('ro.build.fingerprint') ?? '';
-        final buildCharacteristics = await _getSystemProperty('ro.build.characteristics') ?? '';
+        final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+        final AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
 
-        final emulatorIndicators = [
-          'generic',
-          'sdk',
-          'test-keys',
-          'androidsdk',
-          'vbox',
-          'genymotion',
-        ];
+        final isEmulator =
+            !androidInfo.isPhysicalDevice ||
+            androidInfo.model.contains('Emulator') ||
+            androidInfo.model.contains('Android SDK built for x86') ||
+            androidInfo.board.contains('goldfish') ||
+            androidInfo.hardware.contains('ranchu') ||
+            androidInfo.product.contains('sdk_gphone');
 
-        final combined = '$buildFingerprint$buildCharacteristics'.toLowerCase();
-        return emulatorIndicators.any((indicator) => combined.contains(indicator));
+        return isEmulator;
       }
       return false;
     } catch (e) {
       return false;
-    }
-  }
-
-  /// Get Android system property via reflection (works on Android only)
-  Future<String?> _getSystemProperty(String key) async {
-    try {
-      return null;
-    } catch (e) {
-      return null;
     }
   }
 
@@ -88,8 +77,11 @@ class RuntimeIntegrityChecker {
   static bool get isSecure {
     final lastCheck = _lastCheckTime;
     if (lastCheck == null) {
-      _logEvent('not_initialized', 'Integrity checker not initialized');
-      return true;
+      _logEvent(
+        'not_initialized',
+        'Integrity checker not initialized. Defaulting to insecure.',
+      );
+      return false;
     }
 
     // Check if we need to re-run checks

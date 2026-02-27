@@ -43,6 +43,7 @@ dependencies:
   shorebird_code_push: ^2.0.5
   in_app_purchase: ^3.2.3
   flutter_native_splash: ^2.4.7
+  device_info_plus: ^11.0.0
 
 dev_dependencies:
   flutter_test:

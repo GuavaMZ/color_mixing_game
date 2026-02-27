@@ -196,10 +196,10 @@ class SaveManager {
     const maxPossibleCoins = 1000000;
     if (coins > maxPossibleCoins) {
       RuntimeIntegrityChecker.recordSuspiciousActivity(
-        'impossible_coins',
+        'impossible_coins_rejected',
         details: 'value=$coins, max=$maxPossibleCoins',
       );
-      coins = maxPossibleCoins;
+      return; // Reject outright instead of capping and saving
     }
 
     await SecurityService.write('total_coins', coins.toString());

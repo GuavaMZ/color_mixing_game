@@ -37,25 +37,25 @@ class SecurityEvent {
   });
 
   Map<String, dynamic> toJson() => {
-        'timestamp': timestamp.toIso8601String(),
-        'type': type,
-        'message': message,
-        'severity': severity.name,
-        'metadata': metadata,
-        'stack_trace': stackTrace,
-      };
+    'timestamp': timestamp.toIso8601String(),
+    'type': type,
+    'message': message,
+    'severity': severity.name,
+    'metadata': metadata,
+    'stack_trace': stackTrace,
+  };
 
   static SecurityEvent fromJson(Map<String, dynamic> json) => SecurityEvent(
-        timestamp: DateTime.parse(json['timestamp'] as String),
-        type: json['type'] as String,
-        message: json['message'] as String,
-        severity: SecurityEventSeverity.values.firstWhere(
-          (e) => e.name == json['severity'],
-          orElse: () => SecurityEventSeverity.info,
-        ),
-        metadata: Map<String, dynamic>.from(json['metadata'] ?? {}),
-        stackTrace: json['stack_trace'] as String?,
-      );
+    timestamp: DateTime.parse(json['timestamp'] as String),
+    type: json['type'] as String,
+    message: json['message'] as String,
+    severity: SecurityEventSeverity.values.firstWhere(
+      (e) => e.name == json['severity'],
+      orElse: () => SecurityEventSeverity.info,
+    ),
+    metadata: Map<String, dynamic>.from(json['metadata'] ?? {}),
+    stackTrace: json['stack_trace'] as String?,
+  );
 }
 
 /// Security audit logger for tracking and analyzing security events.
@@ -119,7 +119,9 @@ class SecurityAuditLogger {
   static Future<void> _persistEvents() async {
     try {
       final eventsToPersist = _events.take(_maxPersistedEvents).toList();
-      final encoded = jsonEncode(eventsToPersist.map((e) => e.toJson()).toList());
+      final encoded = jsonEncode(
+        eventsToPersist.map((e) => e.toJson()).toList(),
+      );
       await SecurityService.write(_persistKey, encoded);
     } catch (e) {
       debugPrint('Failed to persist security audit log: $e');
@@ -137,9 +139,10 @@ class SecurityAuditLogger {
   }) {
     final now = DateTime.now();
 
-    // Throttle check
+    // Throttle check (bypass for critical/error events)
     final lastLog = _lastLogTime;
-    if (lastLog != null &&
+    if (severity.index < SecurityEventSeverity.error.index &&
+        lastLog != null &&
         now.difference(lastLog).inMilliseconds < _logThrottleMs) {
       _droppedEvents++;
       return;
@@ -155,9 +158,7 @@ class SecurityAuditLogger {
       metadata: {
         ...?metadata,
         if (error != null) 'error': error.toString(),
-        if (_droppedEvents > 0) ...{
-          'dropped_events': _droppedEvents,
-        },
+        if (_droppedEvents > 0) ...{'dropped_events': _droppedEvents},
       },
       stackTrace: stackTrace?.toString(),
     );
@@ -195,9 +196,7 @@ class SecurityAuditLogger {
   static List<SecurityEvent> getEventsBySeverity(
     SecurityEventSeverity minSeverity,
   ) {
-    return _events
-        .where((e) => e.severity.index >= minSeverity.index)
-        .toList();
+    return _events.where((e) => e.severity.index >= minSeverity.index).toList();
   }
 
   /// Get events filtered by type

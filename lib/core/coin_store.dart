@@ -123,7 +123,7 @@ class CoinStoreService {
       0x69, 0x78, 0x69, 0x6E, 0x67, 0x5F, 0x67, 0x61, // ixing_ga
       0x6D, 0x65, 0x5F, 0x32, 0x30, 0x32, 0x36, 0x5F, // me_2026_
       0x73, 0x65, 0x63, 0x75, 0x72, 0x69, 0x74, 0x79, // security
-    ]..shuffle(math.Random(42)), // Deterministic shuffle for consistency
+    ],
   );
 
   // ─── State ────────────────────────────────────────────────────────────────
@@ -268,12 +268,13 @@ class CoinStoreService {
         final timestamp = DateTime.tryParse(timestampStr);
         if (timestamp != null) {
           final age = DateTime.now().difference(timestamp);
-          // Warn if receipt is from future or very old
-          if (age.isNegative || age.inDays > 365) {
+          // Reject receipts older than 90 days
+          if (age.isNegative || age.inDays > 90) {
             RuntimeIntegrityChecker.recordSuspiciousActivity(
-              'receipt_timestamp_anomaly',
+              'receipt_expired_or_future',
               details: 'timestamp=$timestampStr',
             );
+            return false;
           }
         }
       }
@@ -406,7 +407,7 @@ class CoinStoreService {
   }
 
   String _generateNonce() {
-    final random = math.Random();
+    final random = math.Random.secure();
     return List.generate(
       16,
       (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0'),
