@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:color_mixing_deductive/color_mixer_game.dart';
+import 'package:shorebird_code_push/shorebird_code_push.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class IntroSplashOverlay extends StatefulWidget {
   final ColorMixerGame game;
@@ -21,6 +23,10 @@ class _IntroSplashOverlayState extends State<IntroSplashOverlay>
   late Animation<double> _logoScale;
   late Animation<double> _textFade;
   late Animation<double> _barFade;
+
+  final ShorebirdUpdater _updater = ShorebirdUpdater();
+  String _statusKey = AppStrings.labArchivesInitialized;
+  bool _isUpdating = false;
 
   @override
   void initState() {
@@ -58,14 +64,49 @@ class _IntroSplashOverlayState extends State<IntroSplashOverlay>
       ),
     );
 
-    _controller.forward().then((_) {
-      Future.delayed(const Duration(milliseconds: 800), () {
+    _startInitalization();
+  }
+
+  Future<void> _startInitalization() async {
+    _controller.forward();
+
+    // Check for updates in parallel with animations
+    await _checkForUpdates();
+
+    // Small extra delay to ensure logo isn't too fast
+    await Future.delayed(const Duration(milliseconds: 1000));
+
+    if (mounted) {
+      widget.game.overlays.remove('IntroSplash');
+      widget.game.overlays.add('MainMenu');
+    }
+  }
+
+  Future<void> _checkForUpdates() async {
+    try {
+      final connectivityResult = await Connectivity().checkConnectivity();
+      if (connectivityResult.contains(ConnectivityResult.none)) return;
+
+      setState(() => _statusKey = AppStrings.checkingForUpdates);
+
+      final isUpdateAvailable = await _updater.checkForUpdate();
+      if (isUpdateAvailable == UpdateStatus.outdated) {
+        setState(() => _statusKey = AppStrings.downloadingUpdate);
+
+        await _updater.update();
+
         if (mounted) {
-          widget.game.overlays.remove('IntroSplash');
-          widget.game.overlays.add('MainMenu');
+          setState(() => _statusKey = AppStrings.updateReady);
         }
-      });
-    });
+      } else {
+        setState(() => _statusKey = AppStrings.labArchivesInitialized);
+      }
+    } catch (e) {
+      debugPrint('Update check failed: $e');
+      if (mounted) {
+        setState(() => _statusKey = AppStrings.labArchivesInitialized);
+      }
+    }
   }
 
   @override
@@ -128,7 +169,7 @@ class _IntroSplashOverlayState extends State<IntroSplashOverlay>
             bottom: 60,
             child: FadeTransition(
               opacity: _barFade,
-              child: const _StaticPremiumBar(),
+              child: _StaticPremiumBar(statusKey: _statusKey),
             ),
           ),
         ],
@@ -138,7 +179,8 @@ class _IntroSplashOverlayState extends State<IntroSplashOverlay>
 }
 
 class _StaticPremiumBar extends StatelessWidget {
-  const _StaticPremiumBar();
+  final String statusKey;
+  const _StaticPremiumBar({required this.statusKey});
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +188,7 @@ class _StaticPremiumBar extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          AppStrings.labArchivesInitialized.getString(context).toUpperCase(),
+          statusKey.getString(context).toUpperCase(),
           style: TextStyle(
             color: Colors.white.withValues(alpha: 0.7),
             fontSize: 10,

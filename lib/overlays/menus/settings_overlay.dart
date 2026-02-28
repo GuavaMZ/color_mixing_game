@@ -435,7 +435,7 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                                   Text(
                                     _currentPatch != null
                                         ? '${AppStrings.patch.getString(context)} #$_currentPatch'
-                                        : 'v1.2.0',
+                                        : 'v1.2.1',
                                     style: TextStyle(
                                       color: Colors.white.withValues(
                                         alpha: 0.5,

@@ -113,7 +113,7 @@ class _MyAppState extends State<MyApp> {
       'app_started',
       'Application started',
       severity: SecurityEventSeverity.info,
-      metadata: {'version': '1.2.0+3', 'debug_mode': kDebugMode},
+      metadata: {'version': '1.2.1+4', 'debug_mode': kDebugMode},
     );
 
     // Remove native splash after a short delay to ensure everything is ready
@@ -152,6 +152,18 @@ class _MyAppState extends State<MyApp> {
           surface: Color(0xFF16213E),
         ),
       ),
+      builder: (context, child) {
+        final data = MediaQuery.of(context);
+        return MediaQuery(
+          data: data.copyWith(
+            textScaler: data.textScaler.clamp(
+              minScaleFactor: 0.8,
+              maxScaleFactor: 1.15,
+            ),
+          ),
+          child: child!,
+        );
+      },
       home: const _GameSection(),
     );
   }

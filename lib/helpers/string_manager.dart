@@ -409,6 +409,9 @@ mixin AppStrings {
   static const String rarityLegendary = "rarity_legendary";
   static const String termsAcceptanceStatement = "terms_acceptance_statement";
   static const String termsOfUseLabel = "terms_of_use_label";
+  static const String checkingForUpdates = "checking_for_updates";
+  static const String downloadingUpdate = "downloading_update";
+  static const String updateReady = "update_ready";
 
   // Event Labels
   static const String eventGlitch = "event_glitch";
@@ -733,11 +736,13 @@ mixin AppStrings {
     achievement10Desc: 'Complete a level with 3 stars in Blind Mode.',
     achievement11Title: 'Shopaholic',
     achievement11Desc: 'Unlock all available beaker skins.',
-    achievement12Title: 'Stability Expert',
     achievement12Desc: 'Complete a level using exactly one Stability Matrix.',
     anomalyDetected: 'ANOMALY DETECTED',
     coinsEarned: '+%s Coins',
     coinsEarnedShort: '+%s',
+    checkingForUpdates: 'Checking for updates...',
+    downloadingUpdate: 'Downloading update...',
+    updateReady: 'Update ready!',
 
     // Tutorial
     tutorial: 'Tutorial',
@@ -1395,6 +1400,9 @@ mixin AppStrings {
     anomalyDetected: 'تم رصد خلل!',
     coinsEarned: '+%s عملات',
     coinsEarnedShort: '+%s',
+    checkingForUpdates: 'جاري البحث عن تحديثات...',
+    downloadingUpdate: 'جاري تنزيل التحديث...',
+    updateReady: 'التحديث جاهز!',
 
     // Tutorial
     tutorial: 'التعليمات',
@@ -1907,6 +1915,9 @@ mixin AppStrings {
     anomalyDetected: '¡ANOMALÍA DETECTADA!',
     coinsEarned: '+%s Monedas',
     coinsEarnedShort: '+%s',
+    checkingForUpdates: 'Buscando actualizaciones...',
+    downloadingUpdate: 'Descargando actualización...',
+    updateReady: '¡Actualización lista!',
 
     // Tutorial
     tutorial: 'Tutorial',

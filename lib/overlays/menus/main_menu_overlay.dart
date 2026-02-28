@@ -130,13 +130,16 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                     padding: const EdgeInsets.only(bottom: 8),
                     child: _buildTermsAcceptance(),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: Text(
-                      'v1.2.0',
-                      style: AppTheme.caption(
-                        context,
-                      ).copyWith(color: Colors.white.withValues(alpha: 0.3)),
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: Text(
+                        'v1.2.1',
+                        style: AppTheme.caption(
+                          context,
+                        ).copyWith(color: Colors.white.withValues(alpha: 0.3)),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ),
                 ],
