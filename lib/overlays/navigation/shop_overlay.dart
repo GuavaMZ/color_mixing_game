@@ -9,6 +9,7 @@ import 'package:color_mixing_deductive/helpers/visual_effects.dart';
 import 'package:color_mixing_deductive/components/ui/animated_card.dart';
 import 'package:color_mixing_deductive/components/ui/responsive_components.dart';
 import 'package:color_mixing_deductive/components/ui/coins_widget.dart';
+import 'package:color_mixing_deductive/core/lives_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import '../../color_mixer_game.dart';
@@ -149,6 +150,15 @@ class _ShopOverlayState extends State<ShopOverlay> {
       amount: 2,
       icon: Icons.visibility_outlined,
       color: AppTheme.electricYellow,
+    ),
+    HelperItemData(
+      id: 'lives',
+      nameKey: AppStrings.extraLivesTitle,
+      descKey: AppStrings.extraLivesDesc,
+      price: 1500,
+      amount: 3,
+      icon: Icons.favorite_rounded,
+      color: Colors.redAccent,
     ),
   ];
 
@@ -958,11 +968,20 @@ class HelperItemCard extends StatelessWidget {
     AudioManager().playButton();
     if (game.totalCoins.value >= item.price) {
       game.addCoins(-item.price);
-      game.addHelper(item.id, item.amount);
+
+      if (item.id == 'lives') {
+        LivesManager().addLives(item.amount);
+      } else {
+        game.addHelper(item.id, item.amount);
+      }
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppStrings.helperPurchased.getString(context)),
+          content: Text(
+            item.id == 'lives'
+                ? AppStrings.itemActivated.getString(context)
+                : AppStrings.helperPurchased.getString(context),
+          ),
           backgroundColor: AppTheme.success.withValues(alpha: 0.8),
           duration: const Duration(milliseconds: 1500),
           behavior: SnackBarBehavior.floating,

@@ -8,6 +8,7 @@ import '../../core/lives_manager.dart';
 import '../../core/save_manager.dart';
 import '../../helpers/visual_effects.dart'; // For StarField and Shimmer
 import '../../components/ui/responsive_components.dart'; // For ResponsiveIconButton and spacing
+import '../../overlays/system/no_lives_dialog.dart';
 
 class LevelMapOverlay extends StatefulWidget {
   final ColorMixerGame game;
@@ -55,7 +56,7 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
     if (status == -1) return; // Locked
 
     if (LivesManager().lives <= 0) {
-      _showNoLivesDialog();
+      NoLivesDialog.show(context);
       return;
     }
 
@@ -71,74 +72,6 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
       widget.game.randomEventsEnabled = value;
     });
     SaveManager.saveRandomEvents(value);
-  }
-
-  void _showNoLivesDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.primaryDark.withValues(alpha: 0.95),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-          side: const BorderSide(color: AppTheme.neonMagenta, width: 2),
-        ),
-        title: Text(
-          AppStrings.outOfLives.getString(context),
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 1.2,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.favorite_rounded,
-              color: AppTheme.neonMagenta,
-              size: 64,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              AppStrings.noLivesDesc.getString(context),
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.white70),
-            ),
-            const SizedBox(height: 20),
-            AnimatedBuilder(
-              animation: LivesManager(),
-              builder: (context, _) {
-                final time = LivesManager().timeUntilNextLife;
-                final displayTime = time == AppStrings.full
-                    ? AppStrings.full.getString(context)
-                    : time;
-                return Text(
-                  "${AppStrings.nextLifeIn.getString(context)}$displayTime",
-                  style: const TextStyle(
-                    color: AppTheme.neonCyan,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              AppStrings.ok.getString(context),
-              style: const TextStyle(
-                color: AppTheme.neonCyan,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   @override

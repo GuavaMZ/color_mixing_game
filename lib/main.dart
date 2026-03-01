@@ -158,7 +158,7 @@ class _MyAppState extends State<MyApp> {
           data: data.copyWith(
             textScaler: data.textScaler.clamp(
               minScaleFactor: 0.8,
-              maxScaleFactor: 1.15,
+              maxScaleFactor: 1.4,
             ),
           ),
           child: child!,

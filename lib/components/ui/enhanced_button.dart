@@ -105,7 +105,7 @@ class _EnhancedButtonState extends State<EnhancedButton>
             child: Material(
               color: Colors.transparent,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Center(
                   child: widget.isLoading
                       ? SizedBox(
@@ -128,7 +128,7 @@ class _EnhancedButtonState extends State<EnhancedButton>
                                 color: effectiveTextColor,
                                 size: 20,
                               ),
-                              const SizedBox(width: 12),
+                              const SizedBox(width: 6),
                             ],
                             Text(
                               widget.label,

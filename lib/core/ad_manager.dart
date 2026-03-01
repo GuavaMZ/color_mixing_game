@@ -9,7 +9,9 @@ class AdManager {
 
   BannerAd? _bannerAd;
   InterstitialAd? _interstitialAd;
+  RewardedAd? _rewardedAd;
   bool _isInterstitialAdReady = false;
+  bool _isRewardedAdReady = false;
 
   // Test Ad Unit IDs
   final String _androidBannerId = 'ca-app-pub-3940256099942544/6300978111';
@@ -17,6 +19,8 @@ class AdManager {
   final String _androidInterstitialId =
       'ca-app-pub-3940256099942544/1033173712';
   final String _iosInterstitialId = 'ca-app-pub-3940256099942544/4411468910';
+  final String _androidRewardedId = 'ca-app-pub-3940256099942544/5224354917';
+  final String _iosRewardedId = 'ca-app-pub-3940256099942544/1712485313';
 
   String get bannerAdUnitId {
     if (kDebugMode) {
@@ -38,8 +42,21 @@ class AdManager {
         : 'YOUR_IOS_INTERSTITIAL_ID';
   }
 
+  String get rewardedAdUnitId {
+    if (kDebugMode) {
+      if (Platform.isAndroid) return _androidRewardedId;
+      if (Platform.isIOS) return _iosRewardedId;
+    }
+    // Replace with production IDs
+    return Platform.isAndroid
+        ? 'YOUR_ANDROID_REWARDED_ID'
+        : 'YOUR_IOS_REWARDED_ID';
+  }
+
   Future<void> initialize() async {
     await MobileAds.instance.initialize();
+    loadInterstitialAd();
+    loadRewardedAd();
   }
 
   void loadBannerAd(Function(Ad) onAdLoaded) {
@@ -100,8 +117,56 @@ class AdManager {
 
   BannerAd? get bannerAd => _bannerAd;
 
+  void loadRewardedAd() {
+    RewardedAd.load(
+      adUnitId: rewardedAdUnitId,
+      request: const AdRequest(),
+      rewardedAdLoadCallback: RewardedAdLoadCallback(
+        onAdLoaded: (ad) {
+          _rewardedAd = ad;
+          _isRewardedAdReady = true;
+          _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              ad.dispose();
+              _isRewardedAdReady = false;
+              loadRewardedAd();
+            },
+            onAdFailedToShowFullScreenContent: (ad, err) {
+              ad.dispose();
+              _isRewardedAdReady = false;
+              loadRewardedAd();
+            },
+          );
+        },
+        onAdFailedToLoad: (err) {
+          debugPrint('Rewarded Ad failed to load: $err');
+          _isRewardedAdReady = false;
+        },
+      ),
+    );
+  }
+
+  void showRewardedAd({
+    required void Function(AdWithoutView ad, RewardItem reward)
+    onUserEarnedReward,
+    VoidCallback? onAdFailed,
+  }) {
+    if (_isRewardedAdReady && _rewardedAd != null) {
+      _rewardedAd!.show(onUserEarnedReward: onUserEarnedReward);
+      _rewardedAd = null;
+      _isRewardedAdReady = false;
+    } else {
+      debugPrint('Rewarded Ad not ready yet');
+      onAdFailed?.call();
+      loadRewardedAd();
+    }
+  }
+
+  bool get isRewardedAdReady => _isRewardedAdReady;
+
   void dispose() {
     _bannerAd?.dispose();
     _interstitialAd?.dispose();
+    _rewardedAd?.dispose();
   }
 }

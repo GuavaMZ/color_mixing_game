@@ -62,6 +62,11 @@ mixin AppStrings {
   static const String revealColorTitle = "reveal_color_title";
   static const String revealColorDesc = "reveal_color_desc";
   static const String helperPurchased = "helper_purchased";
+  static const String extraLivesTitle = "extra_lives_title";
+  static const String extraLivesDesc = "extra_lives_desc";
+  static const String watchAdTitle = "watch_ad_title";
+  static const String watchAdDesc = "watch_ad_desc";
+  static const String watchAdButton = "watch_ad_button";
   static const String vibration = "vibration";
   static const String blindMode = "blind_mode";
   static const String on = "on";
@@ -768,6 +773,11 @@ mixin AppStrings {
     revealColorTitle: 'Spectral Scanner',
     revealColorDesc: 'Temporarily see true beaker color',
     helperPurchased: 'Lab kit acquired!',
+    extraLivesTitle: 'Emergency Recharge',
+    extraLivesDesc: 'Add 3 extra lives to your laboratory',
+    watchAdTitle: 'Energy Shortage',
+    watchAdDesc: 'Watch a quick transmission to gain 1 life',
+    watchAdButton: 'Watch Ad (+1 Life)',
 
     // Hints
     hintPureRed: "Think red. Just red.",
@@ -1427,6 +1437,11 @@ mixin AppStrings {
     revealColorTitle: 'الماسح الطيفي',
     revealColorDesc: 'رؤية لون الكأس الحقيقي مؤقتاً',
     helperPurchased: 'تم الحصول على المعدات!',
+    extraLivesTitle: 'شحن الطوارئ',
+    extraLivesDesc: 'إضافة 3 أرواح إضافية لمختبرك',
+    watchAdTitle: 'نقص الطاقة',
+    watchAdDesc: 'شاهد إرساليتنا القصيرة للحصول على حياة واحدة',
+    watchAdButton: 'شاهد إعلان (حياة +1)',
 
     // hints
     hintPureRed: "فكر بالأحمر. الأحمر فقط.",
@@ -1944,6 +1959,11 @@ mixin AppStrings {
     revealColorTitle: 'Escáner Espectral',
     revealColorDesc: 'Ver temporalmente el color real del vaso',
     helperPurchased: '¡Kit de laboratorio adquirido!',
+    extraLivesTitle: 'Recarga de Emergencia',
+    extraLivesDesc: 'Añade 3 vidas extra a tu laboratorio',
+    watchAdTitle: 'Escasez de Energía',
+    watchAdDesc: 'Mira una transmisión rápida para ganar 1 vida',
+    watchAdButton: 'Ver Anuncio (+1 Vida)',
 
     // Hints
     hintPureRed: "Piensa en rojo. Solo rojo.",

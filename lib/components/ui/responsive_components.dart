@@ -33,9 +33,11 @@ class ResponsiveButton extends StatelessWidget {
     final effectiveColor = color ?? AppTheme.neonCyan;
     final effectiveTextColor = textColor ?? Colors.white;
 
-    return SizedBox(
-      width: width,
-      height: buttonHeight,
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        minWidth: width ?? 0,
+        minHeight: buttonHeight,
+      ),
       child: Container(
         decoration: isOutlined
             ? AppTheme.cosmicCard(
@@ -74,6 +76,7 @@ class ResponsiveButton extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: ResponsiveHelper.gridSpacing(context, 2),
+                vertical: 8,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -98,7 +101,7 @@ class ResponsiveButton extends StatelessWidget {
                         isLarge: isLarge,
                       ).copyWith(color: effectiveTextColor),
                       textAlign: TextAlign.center,
-                      maxLines: 1,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),

@@ -24,141 +24,160 @@ class StatisticsOverlay extends StatelessWidget {
           ),
         ),
         child: SafeArea(
-          child: Column(
-            children: [
-              // Header
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () {
-                        AudioManager().playButton();
-                        game.returnToMainMenu();
-                      },
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      AppStrings.statisticsTitle.getString(context),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Stats content
-              Expanded(
-                child: FutureBuilder<Map<String, dynamic>>(
-                  future: StatisticsManager.getAllStats(),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const Center(
-                        child: CircularProgressIndicator(
-                          color: AppTheme.neonCyan,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Column(
+                    children: [
+                      // Header
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          children: [
+                            IconButton(
+                              icon: const Icon(
+                                Icons.arrow_back,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                AudioManager().playButton();
+                                game.returnToMainMenu();
+                              },
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              AppStrings.statisticsTitle.getString(context),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
                         ),
-                      );
-                    }
-
-                    final stats = snapshot.data!;
-                    return SingleChildScrollView(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          _StatCard(
-                            icon: Icons.emoji_events,
-                            title: AppStrings.levelsCompleted.getString(
-                              context,
-                            ),
-                            value: '${stats['totalLevels']}',
-                            color: AppTheme.neonCyan,
-                          ),
-                          _StatCard(
-                            icon: Icons.star,
-                            title: AppStrings.perfectMatches.getString(context),
-                            value: '${stats['perfectMatches']}',
-                            color: AppTheme.neonPurple,
-                          ),
-                          _StatCard(
-                            icon: Icons.water_drop,
-                            title: AppStrings.totalDropsUsed.getString(context),
-                            value: '${stats['totalDrops']}',
-                            color: AppTheme.neonMagenta,
-                          ),
-                          _StatCard(
-                            icon: Icons.local_fire_department,
-                            title: AppStrings.highestCombo.getString(context),
-                            value: '${stats['highestCombo']}x',
-                            color: Colors.orange,
-                          ),
-                          FutureBuilder<double>(
-                            future: StatisticsManager.getAverageAccuracy(),
-                            builder: (context, accuracySnapshot) {
-                              return _StatCard(
-                                icon: Icons.percent,
-                                title: AppStrings.averageAccuracy.getString(
-                                  context,
-                                ),
-                                value:
-                                    '${(accuracySnapshot.data ?? 0).toStringAsFixed(1)}%',
-                                color: Colors.green,
-                              );
-                            },
-                          ),
-                          FutureBuilder<String>(
-                            future: StatisticsManager.getFavoriteMode(),
-                            builder: (context, modeSnapshot) {
-                              return _StatCard(
-                                icon: Icons.favorite,
-                                title: AppStrings.favoriteMode.getString(
-                                  context,
-                                ),
-                                value:
-                                    modeSnapshot.data ??
-                                    AppStrings.none.getString(context),
-                                color: Colors.pink,
-                              );
-                            },
-                          ),
-
-                          const SizedBox(height: 20),
-                          Text(
-                            AppStrings.modePlayCounts.getString(context),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-
-                          _ModeStatRow(
-                            AppStrings.classicMode.getString(context),
-                            stats['classicPlays'],
-                          ),
-                          _ModeStatRow(
-                            AppStrings.timeAttackMode.getString(context),
-                            stats['timeAttackPlays'],
-                          ),
-                          _ModeStatRow(
-                            AppStrings.colorEcho.getString(context),
-                            stats['colorEchoPlays'],
-                          ),
-                          _ModeStatRow(
-                            AppStrings.chaosLabTitle.getString(context),
-                            stats['chaosLabPlays'],
-                          ),
-                        ],
                       ),
-                    );
-                  },
+
+                      // Stats content
+                      FutureBuilder<Map<String, dynamic>>(
+                        future: StatisticsManager.getAllStats(),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(40.0),
+                                child: CircularProgressIndicator(
+                                  color: AppTheme.neonCyan,
+                                ),
+                              ),
+                            );
+                          }
+
+                          final stats = snapshot.data!;
+                          return Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              children: [
+                                _StatCard(
+                                  icon: Icons.emoji_events,
+                                  title: AppStrings.levelsCompleted.getString(
+                                    context,
+                                  ),
+                                  value: '${stats['totalLevels']}',
+                                  color: AppTheme.neonCyan,
+                                ),
+                                _StatCard(
+                                  icon: Icons.star,
+                                  title: AppStrings.perfectMatches.getString(
+                                    context,
+                                  ),
+                                  value: '${stats['perfectMatches']}',
+                                  color: AppTheme.neonPurple,
+                                ),
+                                _StatCard(
+                                  icon: Icons.water_drop,
+                                  title: AppStrings.totalDropsUsed.getString(
+                                    context,
+                                  ),
+                                  value: '${stats['totalDrops']}',
+                                  color: AppTheme.neonMagenta,
+                                ),
+                                _StatCard(
+                                  icon: Icons.local_fire_department,
+                                  title: AppStrings.highestCombo.getString(
+                                    context,
+                                  ),
+                                  value: '${stats['highestCombo']}x',
+                                  color: Colors.orange,
+                                ),
+                                FutureBuilder<double>(
+                                  future:
+                                      StatisticsManager.getAverageAccuracy(),
+                                  builder: (context, accuracySnapshot) {
+                                    return _StatCard(
+                                      icon: Icons.percent,
+                                      title: AppStrings.averageAccuracy
+                                          .getString(context),
+                                      value:
+                                          '${(accuracySnapshot.data ?? 0).toStringAsFixed(1)}%',
+                                      color: Colors.green,
+                                    );
+                                  },
+                                ),
+                                FutureBuilder<String>(
+                                  future: StatisticsManager.getFavoriteMode(),
+                                  builder: (context, modeSnapshot) {
+                                    return _StatCard(
+                                      icon: Icons.favorite,
+                                      title: AppStrings.favoriteMode.getString(
+                                        context,
+                                      ),
+                                      value:
+                                          modeSnapshot.data ??
+                                          AppStrings.none.getString(context),
+                                      color: Colors.pink,
+                                    );
+                                  },
+                                ),
+
+                                const SizedBox(height: 20),
+                                Text(
+                                  AppStrings.modePlayCounts.getString(context),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+
+                                _ModeStatRow(
+                                  AppStrings.classicMode.getString(context),
+                                  stats['classicPlays'],
+                                ),
+                                _ModeStatRow(
+                                  AppStrings.timeAttackMode.getString(context),
+                                  stats['timeAttackPlays'],
+                                ),
+                                _ModeStatRow(
+                                  AppStrings.colorEcho.getString(context),
+                                  stats['colorEchoPlays'],
+                                ),
+                                _ModeStatRow(
+                                  AppStrings.chaosLabTitle.getString(context),
+                                  stats['chaosLabPlays'],
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              );
+            },
           ),
         ),
       ),

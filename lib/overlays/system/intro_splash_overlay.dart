@@ -122,44 +122,65 @@ class _IntroSplashOverlayState extends State<IntroSplashOverlay>
       body: Stack(
         children: [
           // Logo + Text in Center
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Logo
-                FadeTransition(
-                  opacity: _logoFade,
-                  child: ScaleTransition(
-                    scale: _logoScale,
-                    child: SvgPicture.asset(
-                      'assets/images/dv-logo.svg',
-                      width: 150,
-                      height: 150,
-                      colorFilter: const ColorFilter.mode(
-                        Colors.white,
-                        BlendMode.srcIn,
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 40),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Logo
+                          FadeTransition(
+                            opacity: _logoFade,
+                            child: ScaleTransition(
+                              scale: _logoScale,
+                              child: SvgPicture.asset(
+                                'assets/images/dv-logo.svg',
+                                width: 150,
+                                height: 150,
+                                colorFilter: const ColorFilter.mode(
+                                  Colors.white,
+                                  BlendMode.srcIn,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 30),
+                          // Text
+                          FadeTransition(
+                            opacity: _textFade,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                              ),
+                              child: Text(
+                                AppStrings.presents.getString(context),
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w300,
+                                  letterSpacing: 4.0,
+                                  fontFamily: 'Roboto',
+                                  decoration: TextDecoration.none,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 100,
+                          ), // Space for the bottom bar
+                        ],
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
-                // Text
-                FadeTransition(
-                  opacity: _textFade,
-                  child: Text(
-                    AppStrings.presents.getString(context),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w300,
-                      letterSpacing: 4.0,
-                      fontFamily: 'Roboto',
-                      decoration: TextDecoration.none,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+              );
+            },
           ),
 
           // Mirror the loading bar at the bottom (Static 100% since loading is done)

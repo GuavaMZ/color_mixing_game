@@ -104,46 +104,67 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
 
           // Main Content
           SafeArea(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: ResponsiveHelper.spacing(context, 16),
-              ),
-              child: Column(
-                children: [
-                  // Top Bar (Status & Utils)
-                  _buildTopBar(),
-
-                  const Spacer(),
-
-                  // Hero Logo Section
-                  _buildHeroLogo(),
-
-                  const Spacer(),
-
-                  // Game Modes
-                  _buildGameModes(),
-
-                  const Spacer(),
-
-                  // Footer
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: _buildTermsAcceptance(),
-                  ),
-                  Flexible(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight,
+                    ),
                     child: Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: Text(
-                        'v1.2.1',
-                        style: AppTheme.caption(
-                          context,
-                        ).copyWith(color: Colors.white.withValues(alpha: 0.3)),
-                        overflow: TextOverflow.ellipsis,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: ResponsiveHelper.spacing(context, 16),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            children: [
+                              // Top Bar (Status & Utils)
+                              _buildTopBar(),
+                              SizedBox(
+                                height: ResponsiveHelper.spacing(context, 20),
+                              ),
+                            ],
+                          ),
+
+                          // Hero Logo Section
+                          _buildHeroLogo(),
+
+                          Column(
+                            children: [
+                              SizedBox(
+                                height: ResponsiveHelper.spacing(context, 20),
+                              ),
+                              // Game Modes
+                              _buildGameModes(),
+                              SizedBox(
+                                height: ResponsiveHelper.spacing(context, 20),
+                              ),
+
+                              // Footer
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: _buildTermsAcceptance(),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: Text(
+                                  'v1.2.1',
+                                  style: AppTheme.caption(context).copyWith(
+                                    color: Colors.white.withValues(alpha: 0.3),
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ],
-              ),
+                );
+              },
             ),
           ),
         ],

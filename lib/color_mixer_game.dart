@@ -1108,52 +1108,23 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       isTimeUp = false;
     }
 
-    // Clear any existing radar or spectral target
-    children.whereType<HolographicRadar>().forEach((r) => r.removeFromParent());
-    children.whereType<SpectralGhostTarget>().forEach(
-      (s) => s.removeFromParent(),
-    );
-
-    // Clear any existing chaos effects
-    children.whereType<GlitchEffect>().forEach((g) => g.removeFromParent());
-    children.whereType<InvertedControlsEffect>().forEach(
-      (i) => i.removeFromParent(),
-    );
-    children.whereType<EarthquakeVisualEffect>().forEach(
-      (e) => e.removeFromParent(),
-    );
-    overlays.remove('Blackout');
-    children.whereType<AcidSplatter>().forEach(
-      (e) => e.removeFromParent(),
-    ); // Remove Acid
-
-    // Chaos Mode Reset (Detailed)
-    children.whereType<MirrorDistortionEffect>().forEach(
-      (e) => e.removeFromParent(),
-    );
-    children.whereType<WindForceEffect>().forEach((e) => e.removeFromParent());
-    children.whereType<LeakingBeakerEffect>().forEach(
-      (e) => e.removeFromParent(),
-    );
-    children.whereType<ChromaticAberrationEffect>().forEach(
-      (e) => e.removeFromParent(),
-    );
-    children.whereType<ElectricalSparks>().forEach((e) => e.removeFromParent());
-    children.whereType<EmergencyLights>().forEach((e) => e.removeFromParent());
-    children.whereType<CrackedGlassOverlay>().forEach(
-      (e) => e.removeFromParent(),
-    );
-
-    // Check beaker for unstable effect and steam
-    beaker.children.whereType<UnstableBeakerEffect>().toList().forEach(
-      (u) => u.removeFromParent(),
-    );
-    beaker.children.whereType<SurfaceSteam>().toList().forEach(
-      (s) => s.removeFromParent(),
-    );
-    beaker.children.whereType<GravityFluxEffect>().toList().forEach(
-      (g) => g.removeFromParent(),
-    );
+    // Centralized cleanup of game/HUD overlays
+    final gameOverlays = [
+      'Controls',
+      'ColorEchoHUD',
+      'ChaosLabHUD',
+      'Blackout',
+      'WinMenu',
+      'GameOver',
+      'EchoWin',
+      'EchoGameOver',
+      'ChaosWin',
+      'ChaosGameOver',
+      'Tutorial',
+    ];
+    for (final overlay in gameOverlays) {
+      overlays.remove(overlay);
+    }
 
     if (currentMode == GameMode.colorEcho) {
       add(HolographicRadar(position: beaker.position, radius: 130));
@@ -1165,7 +1136,6 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       );
       add(ChromaticAberrationEffect());
       overlays.add('ColorEchoHUD');
-      overlays.remove('Controls');
     } else if (currentMode == GameMode.chaosLab) {
       // Chaos Lab: dynamic difficulty based on chaosRound
       timeLeft = 240.0;
@@ -1178,11 +1148,6 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       _eventTimer = (20.0 - chaosRound * 2).clamp(8.0, 20.0);
 
       overlays.add('ChaosLabHUD');
-      overlays.remove('Controls');
-      overlays.remove('ColorEchoHUD');
-    } else {
-      overlays.remove('ColorEchoHUD');
-      overlays.remove('ChaosLabHUD');
     }
 
     notifyListeners();
@@ -1383,33 +1348,10 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
         _audio.playMenuMusic();
       }
 
-      // Clear any temporary game and menu overlays
-      final toRemove = [
-        'PauseMenu',
-        'GameOver',
-        'WinMenu',
-        'EchoWin',
-        'EchoGameOver',
-        'ChaosWin',
-        'ChaosGameOver',
-        'Controls',
-        'LevelMap',
-        'ColorEchoHUD',
-        'ChaosLabHUD',
-        'Shop',
-        'Gallery',
-        'Achievements',
-        'Statistics',
-        'DailyChallenge',
-        'Settings',
-        'LabUpgrade',
-        'CoinStore',
-        'ModeGuide',
-        'Tutorial',
-        'DailyLogin',
-      ];
-
-      for (final overlay in toRemove) {
+      // Clear ALL currently active overlays to ensure clean state
+      // We take a copy of the active overlays set to avoid concurrent modification issues
+      final active = overlays.activeOverlays.toList();
+      for (final overlay in active) {
         if (overlay != pageName) {
           overlays.remove(overlay);
         }
@@ -1858,5 +1800,26 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
         }
       });
     });
+  }
+
+  @override
+  void lifecycleStateChange(AppLifecycleState state) {
+    debugPrint('Game Lifecycle: $state');
+    switch (state) {
+      case AppLifecycleState.resumed:
+        AudioManager().resumeMusic();
+        break;
+      case AppLifecycleState.paused:
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.detached:
+        AudioManager().pauseMusic();
+        break;
+      default:
+        // Handle newer states like 'hidden' if they exist in the current Flutter version
+        if (state.toString().contains('hidden')) {
+          AudioManager().pauseMusic();
+        }
+    }
+    super.lifecycleStateChange(state);
   }
 }

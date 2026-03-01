@@ -129,236 +129,244 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
                   padding: EdgeInsets.all(
                     ResponsiveHelper.spacing(context, 24),
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Trophy icon with glow
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: RadialGradient(
-                            colors: [
-                              Colors.amber.withValues(alpha: 0.4),
-                              Colors.amber.withValues(alpha: 0.1),
-                              Colors.transparent,
-                            ],
-                            stops: const [0.0, 0.6, 1.0],
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Trophy icon with glow
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: RadialGradient(
+                              colors: [
+                                Colors.amber.withValues(alpha: 0.4),
+                                Colors.amber.withValues(alpha: 0.1),
+                                Colors.transparent,
+                              ],
+                              stops: const [0.0, 0.6, 1.0],
+                            ),
+                          ),
+                          child: TweenAnimationBuilder<double>(
+                            duration: const Duration(milliseconds: 800),
+                            tween: Tween(begin: 0.5, end: 1.0),
+                            curve: Curves.elasticOut,
+                            builder: (context, value, child) {
+                              return Transform.scale(
+                                scale: value,
+                                child: Icon(
+                                  Icons.emoji_events_rounded,
+                                  color: Colors.amber,
+                                  size: ResponsiveHelper.iconSize(context, 80),
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.amber.withValues(
+                                        alpha: 0.6,
+                                      ),
+                                      blurRadius: 25,
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           ),
                         ),
-                        child: TweenAnimationBuilder<double>(
-                          duration: const Duration(milliseconds: 800),
-                          tween: Tween(begin: 0.5, end: 1.0),
-                          curve: Curves.elasticOut,
-                          builder: (context, value, child) {
-                            return Transform.scale(
-                              scale: value,
-                              child: Icon(
-                                Icons.emoji_events_rounded,
-                                color: Colors.amber,
-                                size: ResponsiveHelper.iconSize(context, 80),
-                                shadows: [
-                                  Shadow(
-                                    color: Colors.amber.withValues(alpha: 0.6),
-                                    blurRadius: 25,
-                                  ),
-                                ],
+
+                        SizedBox(height: ResponsiveHelper.spacing(context, 16)),
+
+                        // Win text
+                        Text(
+                          AppStrings.wonText.getString(context),
+                          style: AppTheme.heading1(context).copyWith(
+                            fontSize: ResponsiveHelper.fontSize(context, 48),
+                            color: Colors.white,
+                            shadows: [
+                              Shadow(
+                                color: Colors.purpleAccent.withValues(
+                                  alpha: 0.6,
+                                ),
+                                blurRadius: 20,
                               ),
+                            ],
+                          ),
+                        ),
+
+                        SizedBox(height: ResponsiveHelper.spacing(context, 20)),
+
+                        // Animated Stars
+                        AnimatedBuilder(
+                          animation: _starsController,
+                          builder: (context, child) {
+                            return Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: List.generate(3, (index) {
+                                final delay = index * 0.2;
+                                final progress =
+                                    ((_starsController.value - delay) / 0.4)
+                                        .clamp(0.0, 1.0);
+                                final isEarned = index < stars;
+
+                                return TweenAnimationBuilder<double>(
+                                  duration: Duration.zero,
+                                  tween: Tween(begin: 0, end: progress),
+                                  builder: (context, value, child) {
+                                    return Transform.scale(
+                                      scale: isEarned
+                                          ? Curves.elasticOut.transform(value)
+                                          : 0.8,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                        ),
+                                        child: Icon(
+                                          isEarned
+                                              ? Icons.star_rounded
+                                              : Icons.star_outline_rounded,
+                                          color: isEarned
+                                              ? Colors.amber
+                                              : Colors.white.withValues(
+                                                  alpha: 0.3,
+                                                ),
+                                          size: ResponsiveHelper.iconSize(
+                                            context,
+                                            50,
+                                          ),
+                                          shadows: isEarned
+                                              ? [
+                                                  Shadow(
+                                                    color: Colors.amber
+                                                        .withValues(alpha: 0.6),
+                                                    blurRadius: 15,
+                                                  ),
+                                                ]
+                                              : [],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              }),
                             );
                           },
                         ),
-                      ),
 
-                      SizedBox(height: ResponsiveHelper.spacing(context, 16)),
+                        SizedBox(height: ResponsiveHelper.spacing(context, 12)),
 
-                      // Win text
-                      Text(
-                        AppStrings.wonText.getString(context),
-                        style: AppTheme.heading1(context).copyWith(
-                          fontSize: ResponsiveHelper.fontSize(context, 48),
-                          color: Colors.white,
-                          shadows: [
-                            Shadow(
-                              color: Colors.purpleAccent.withValues(alpha: 0.6),
-                              blurRadius: 20,
-                            ),
-                          ],
+                        // Result message
+                        Text(
+                          _getResultMessage(stars, context),
+                          style: AppTheme.bodyLarge(context).copyWith(
+                            color: Colors.white,
+                            shadows: [
+                              Shadow(
+                                color: Colors.blueAccent.withValues(alpha: 0.5),
+                                blurRadius: 8,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
 
-                      SizedBox(height: ResponsiveHelper.spacing(context, 20)),
+                        SizedBox(height: ResponsiveHelper.spacing(context, 12)),
 
-                      // Animated Stars
-                      AnimatedBuilder(
-                        animation: _starsController,
-                        builder: (context, child) {
-                          return Row(
+                        // Coins Earned Display
+                        _buildCoinsEarnedDisplay(context, stars),
+
+                        // +30% Event Bonus badge (shown when applicable)
+                        if (widget.game.randomEventBonusApplied) ...[
+                          const SizedBox(height: 8),
+                          _buildEventBonusBadge(context),
+                        ],
+
+                        SizedBox(height: ResponsiveHelper.spacing(context, 20)),
+
+                        // Stats container
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 14,
+                          ),
+                          decoration: AppTheme.cosmicCard(
+                            borderRadius: 16,
+                            fillColor: Colors.black.withValues(alpha: 0.2),
+                            borderColor: Colors.white.withValues(alpha: 0.1),
+                          ),
+                          child: Row(
                             mainAxisSize: MainAxisSize.min,
-                            children: List.generate(3, (index) {
-                              final delay = index * 0.2;
-                              final progress =
-                                  ((_starsController.value - delay) / 0.4)
-                                      .clamp(0.0, 1.0);
-                              final isEarned = index < stars;
-
-                              return TweenAnimationBuilder<double>(
-                                duration: Duration.zero,
-                                tween: Tween(begin: 0, end: progress),
-                                builder: (context, value, child) {
-                                  return Transform.scale(
-                                    scale: isEarned
-                                        ? Curves.elasticOut.transform(value)
-                                        : 0.8,
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 6,
-                                      ),
-                                      child: Icon(
-                                        isEarned
-                                            ? Icons.star_rounded
-                                            : Icons.star_outline_rounded,
-                                        color: isEarned
-                                            ? Colors.amber
-                                            : Colors.white.withValues(
-                                                alpha: 0.3,
-                                              ),
-                                        size: ResponsiveHelper.iconSize(
-                                          context,
-                                          50,
-                                        ),
-                                        shadows: isEarned
-                                            ? [
-                                                Shadow(
-                                                  color: Colors.amber
-                                                      .withValues(alpha: 0.6),
-                                                  blurRadius: 15,
-                                                ),
-                                              ]
-                                            : [],
-                                      ),
+                            children: [
+                              Icon(
+                                Icons.water_drop_rounded,
+                                color: AppTheme.neonCyan,
+                                size: 22,
+                                shadows: [
+                                  Shadow(
+                                    color: AppTheme.neonCyan.withValues(
+                                      alpha: 0.5,
                                     ),
-                                  );
-                                },
-                              );
-                            }),
-                          );
-                        },
-                      ),
-
-                      SizedBox(height: ResponsiveHelper.spacing(context, 12)),
-
-                      // Result message
-                      Text(
-                        _getResultMessage(stars, context),
-                        style: AppTheme.bodyLarge(context).copyWith(
-                          color: Colors.white,
-                          shadows: [
-                            Shadow(
-                              color: Colors.blueAccent.withValues(alpha: 0.5),
-                              blurRadius: 8,
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      SizedBox(height: ResponsiveHelper.spacing(context, 12)),
-
-                      // Coins Earned Display
-                      _buildCoinsEarnedDisplay(context, stars),
-
-                      // +30% Event Bonus badge (shown when applicable)
-                      if (widget.game.randomEventBonusApplied) ...[
-                        const SizedBox(height: 8),
-                        _buildEventBonusBadge(context),
-                      ],
-
-                      SizedBox(height: ResponsiveHelper.spacing(context, 20)),
-
-                      // Stats container
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 14,
-                        ),
-                        decoration: AppTheme.cosmicCard(
-                          borderRadius: 16,
-                          fillColor: Colors.black.withValues(alpha: 0.2),
-                          borderColor: Colors.white.withValues(alpha: 0.1),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.water_drop_rounded,
-                              color: AppTheme.neonCyan,
-                              size: 22,
-                              shadows: [
-                                Shadow(
-                                  color: AppTheme.neonCyan.withValues(
-                                    alpha: 0.5,
+                                    blurRadius: 10,
                                   ),
-                                  blurRadius: 10,
+                                ],
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                "${AppStrings.dropsUsed.getString(context)}: $drops",
+                                style: AppTheme.buttonText(context).copyWith(
+                                  color: Colors.white,
+                                  fontSize: ResponsiveHelper.fontSize(
+                                    context,
+                                    16,
+                                  ),
                                 ),
-                              ],
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              "${AppStrings.dropsUsed.getString(context)}: $drops",
-                              style: AppTheme.buttonText(context).copyWith(
-                                color: Colors.white,
-                                fontSize: ResponsiveHelper.fontSize(
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: ResponsiveHelper.spacing(context, 28)),
+
+                        // Scientific Lab Report
+                        _buildLabReport(context),
+
+                        SizedBox(height: ResponsiveHelper.spacing(context, 20)),
+
+                        // Action buttons
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: EnhancedButton(
+                                label: AppStrings.replayLevel.getString(
                                   context,
-                                  16,
                                 ),
+                                icon: Icons.replay_rounded,
+                                isOutlined: true,
+                                onTap: () {
+                                  _audio.playButton();
+                                  widget.game.resetGame();
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              flex: 2,
+                              child: EnhancedButton(
+                                label: AppStrings.newLevel.getString(context),
+                                icon: Icons.arrow_forward_rounded,
+                                onTap: () {
+                                  _audio.playButton();
+                                  if (widget
+                                          .game
+                                          .levelManager
+                                          .currentLevelIndex >=
+                                      10) {
+                                    AdManager().showInterstitialAd();
+                                  }
+                                  widget.game.goToNextLevel();
+                                },
                               ),
                             ),
                           ],
                         ),
-                      ),
-                      SizedBox(height: ResponsiveHelper.spacing(context, 28)),
-
-                      // Scientific Lab Report
-                      _buildLabReport(context),
-
-                      SizedBox(height: ResponsiveHelper.spacing(context, 20)),
-
-                      // Action buttons
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: EnhancedButton(
-                              label: AppStrings.replayLevel.getString(context),
-                              icon: Icons.replay_rounded,
-                              isOutlined: true,
-                              onTap: () {
-                                _audio.playButton();
-                                widget.game.resetGame();
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            flex: 2,
-                            child: EnhancedButton(
-                              label: AppStrings.newLevel.getString(context),
-                              icon: Icons.arrow_forward_rounded,
-                              onTap: () {
-                                _audio.playButton();
-                                if (widget
-                                        .game
-                                        .levelManager
-                                        .currentLevelIndex >=
-                                    10) {
-                                  AdManager().showInterstitialAd();
-                                }
-                                widget.game.goToNextLevel();
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

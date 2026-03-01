@@ -291,225 +291,222 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                 fillColor: AppTheme.primaryDark.withValues(alpha: 0.7),
                 borderColor: AppTheme.neonCyan.withValues(alpha: 0.3),
                 padding: EdgeInsets.all(ResponsiveHelper.spacing(context, 20)),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Header
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ShimmerEffect(
-                          baseColor: Colors.white,
-                          highlightColor: AppTheme.neonCyan,
-                          child: Text(
-                            AppStrings.settings.getString(context),
-                            style: AppTheme.heading2(context),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Header
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ShimmerEffect(
+                            baseColor: Colors.white,
+                            highlightColor: AppTheme.neonCyan,
+                            child: Text(
+                              AppStrings.settings.getString(context),
+                              style: AppTheme.heading2(context),
+                            ),
                           ),
-                        ),
-                        ResponsiveIconButton(
-                          onPressed: _close,
-                          icon: Icons.close_rounded,
-                          color: Colors.white.withValues(alpha: 0.7),
-                          backgroundColor: AppTheme.primaryMedium.withValues(
-                            alpha: 0.3,
+                          ResponsiveIconButton(
+                            onPressed: _close,
+                            icon: Icons.close_rounded,
+                            color: Colors.white.withValues(alpha: 0.7),
+                            backgroundColor: AppTheme.primaryMedium.withValues(
+                              alpha: 0.3,
+                            ),
+                            size: 22,
                           ),
-                          size: 22,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
 
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            // Sound Effects toggle
-                            _SettingsTile(
-                              icon: Icons.volume_up_rounded,
-                              title: AppStrings.soundEffects.getString(context),
-                              trailing: _ToggleSwitch(
-                                value: _audio.sfxEnabled,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _audio.sfxEnabled = value;
-                                  });
-                                  if (value) _audio.playButton();
-                                },
-                              ),
+                      // Settings Tiles
+                      Column(
+                        children: [
+                          // Sound Effects toggle
+                          _SettingsTile(
+                            icon: Icons.volume_up_rounded,
+                            title: AppStrings.soundEffects.getString(context),
+                            trailing: _ToggleSwitch(
+                              value: _audio.sfxEnabled,
+                              onChanged: (value) {
+                                setState(() {
+                                  _audio.sfxEnabled = value;
+                                });
+                                if (value) _audio.playButton();
+                              },
                             ),
+                          ),
 
-                            const SizedBox(height: 16),
+                          const SizedBox(height: 16),
 
-                            // Music toggle
-                            _SettingsTile(
-                              icon: Icons.music_note_rounded,
-                              title: AppStrings.music.getString(context),
-                              trailing: _ToggleSwitch(
-                                value: _audio.musicEnabled,
-                                onChanged: (value) {
-                                  _audio.playButton();
-                                  setState(() {
-                                    _audio.musicEnabled = value;
-                                  });
-                                },
-                              ),
+                          // Music toggle
+                          _SettingsTile(
+                            icon: Icons.music_note_rounded,
+                            title: AppStrings.music.getString(context),
+                            trailing: _ToggleSwitch(
+                              value: _audio.musicEnabled,
+                              onChanged: (value) {
+                                _audio.playButton();
+                                setState(() {
+                                  _audio.musicEnabled = value;
+                                });
+                              },
                             ),
+                          ),
 
-                            const SizedBox(height: 16),
+                          const SizedBox(height: 16),
 
-                            // Language selector
-                            _SettingsTile(
-                              icon: Icons.language_rounded,
-                              title: AppStrings.language.getString(context),
-                              trailing: _LanguageSelector(
-                                currentLocale:
-                                    _localization.currentLocale?.languageCode ??
-                                    'en',
-                                onChanged: (code) {
-                                  _audio.playButton();
-                                  _localization.translate(code);
-                                },
-                              ),
+                          // Language selector
+                          _SettingsTile(
+                            icon: Icons.language_rounded,
+                            title: AppStrings.language.getString(context),
+                            trailing: _LanguageSelector(
+                              currentLocale:
+                                  _localization.currentLocale?.languageCode ??
+                                  'en',
+                              onChanged: (code) {
+                                _audio.playButton();
+                                _localization.translate(code);
+                              },
                             ),
-                            const SizedBox(height: 16),
+                          ),
+                          const SizedBox(height: 16),
 
-                            // Blind Mode
-                            _SettingsTile(
-                              icon: Icons.visibility_off_rounded,
-                              title: AppStrings.blindMode.getString(context),
-                              trailing: _ToggleSwitch(
-                                value: widget.game.globalBlindMode,
-                                onChanged: (value) {
-                                  _audio.playButton();
-                                  widget.game.toggleBlindMode(value);
-                                  setState(() {});
-                                },
-                              ),
+                          // Blind Mode
+                          _SettingsTile(
+                            icon: Icons.visibility_off_rounded,
+                            title: AppStrings.blindMode.getString(context),
+                            trailing: _ToggleSwitch(
+                              value: widget.game.globalBlindMode,
+                              onChanged: (value) {
+                                _audio.playButton();
+                                widget.game.toggleBlindMode(value);
+                                setState(() {});
+                              },
                             ),
+                          ),
 
-                            const SizedBox(height: 24),
+                          const SizedBox(height: 24),
 
-                            // Accessibility Section Header
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.accessibility_new_rounded,
+                          // Accessibility Section Header
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.accessibility_new_rounded,
+                                  color: AppTheme.neonCyan,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  AppStrings.accessibility.getString(context),
+                                  style: AppTheme.bodyLarge(context).copyWith(
                                     color: AppTheme.neonCyan,
-                                    size: 20,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    AppStrings.accessibility.getString(context),
-                                    style: AppTheme.bodyLarge(context).copyWith(
-                                      color: AppTheme.neonCyan,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
+                          ),
 
-                            _SettingsTile(
-                              icon: Icons.motion_photos_off_rounded,
-                              title: AppStrings.reducedMotion.getString(
-                                context,
-                              ),
-                              trailing: _ToggleSwitch(
-                                value: widget.game.reducedMotionEnabled,
-                                onChanged: (value) {
-                                  _audio.playButton();
-                                  widget.game.toggleReducedMotion(value);
-                                  setState(() {});
-                                },
-                              ),
+                          _SettingsTile(
+                            icon: Icons.motion_photos_off_rounded,
+                            title: AppStrings.reducedMotion.getString(context),
+                            trailing: _ToggleSwitch(
+                              value: widget.game.reducedMotionEnabled,
+                              onChanged: (value) {
+                                _audio.playButton();
+                                widget.game.toggleReducedMotion(value);
+                                setState(() {});
+                              },
                             ),
-                            const SizedBox(height: 16),
-                            _SettingsTile(
-                              icon: Icons.system_update_rounded,
-                              title: AppStrings.appVersion.getString(context),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    _currentPatch != null
-                                        ? '${AppStrings.patch.getString(context)} #$_currentPatch'
-                                        : 'v1.2.1',
-                                    style: TextStyle(
-                                      color: Colors.white.withValues(
-                                        alpha: 0.5,
-                                      ),
-                                    ),
+                          ),
+                          const SizedBox(height: 16),
+                          _SettingsTile(
+                            icon: Icons.system_update_rounded,
+                            title: AppStrings.appVersion.getString(context),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  _currentPatch != null
+                                      ? '${AppStrings.patch.getString(context)} #$_currentPatch'
+                                      : 'v1.2.1',
+                                  style: TextStyle(
+                                    color: Colors.white.withValues(alpha: 0.5),
                                   ),
-                                  const SizedBox(width: 8),
-                                  if (_isCheckingForUpdate)
-                                    const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  else
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.refresh_rounded,
-                                        size: 20,
-                                      ),
-                                      onPressed: _checkForUpdate,
+                                ),
+                                const SizedBox(width: 8),
+                                if (_isCheckingForUpdate)
+                                  const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
                                     ),
-                                ],
-                              ),
+                                  )
+                                else
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.refresh_rounded,
+                                      size: 20,
+                                    ),
+                                    onPressed: _checkForUpdate,
+                                  ),
+                              ],
                             ),
-                          ],
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 24),
+
+                      // Tutorial Button
+                      SizedBox(
+                        width: double.infinity,
+                        child: EnhancedButton(
+                          label: AppStrings.replayTutorial.getString(context),
+                          icon: Icons.school_rounded,
+                          onTap: () {
+                            _audio.playButton();
+                            widget.game.transitionTo('Settings', 'Tutorial');
+                          },
                         ),
                       ),
-                    ),
 
-                    const SizedBox(height: 24),
+                      const SizedBox(height: 12),
 
-                    // Tutorial Button
-                    SizedBox(
-                      width: double.infinity,
-                      child: EnhancedButton(
-                        label: AppStrings.replayTutorial.getString(context),
-                        icon: Icons.school_rounded,
-                        onTap: () {
-                          _audio.playButton();
-                          widget.game.transitionTo('Settings', 'Tutorial');
-                        },
+                      // Redeem Code Button
+                      SizedBox(
+                        width: double.infinity,
+                        child: EnhancedButton(
+                          label: AppStrings.redeemCode.getString(context),
+                          icon: Icons.card_giftcard_rounded,
+                          isOutlined: true,
+                          onTap: () {
+                            _audio.playButton();
+                            _showRedeemDialog(context);
+                          },
+                        ),
                       ),
-                    ),
 
-                    const SizedBox(height: 12),
+                      const SizedBox(height: 12),
 
-                    // Redeem Code Button
-                    SizedBox(
-                      width: double.infinity,
-                      child: EnhancedButton(
-                        label: AppStrings.redeemCode.getString(context),
-                        icon: Icons.card_giftcard_rounded,
-                        isOutlined: true,
-                        onTap: () {
-                          _audio.playButton();
-                          _showRedeemDialog(context);
-                        },
+                      // Close button
+                      SizedBox(
+                        width: double.infinity,
+                        child: EnhancedButton(
+                          label: AppStrings.back
+                              .getString(context)
+                              .toUpperCase(),
+                          icon: Icons.arrow_back_rounded,
+                          onTap: _close,
+                        ),
                       ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // Close button
-                    SizedBox(
-                      width: double.infinity,
-                      child: EnhancedButton(
-                        label: AppStrings.back.getString(context).toUpperCase(),
-                        icon: Icons.arrow_back_rounded,
-                        onTap: _close,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

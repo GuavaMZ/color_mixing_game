@@ -5,8 +5,8 @@ import 'package:color_mixing_deductive/core/security_service.dart';
 import 'package:color_mixing_deductive/helpers/string_manager.dart';
 
 class LivesManager extends ChangeNotifier {
-  static const int maxLives = 5;
-  static const Duration regenDuration = Duration(minutes: 10);
+  static const int maxLives = 6;
+  static const Duration regenDuration = Duration(minutes: 9);
 
   int _lives = maxLives;
   DateTime? _nextRegenTime;
