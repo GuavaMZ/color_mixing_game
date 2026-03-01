@@ -310,14 +310,18 @@ class _CoinStoreOverlayState extends State<CoinStoreOverlay>
                   size: 16,
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  AppStrings.coinStoreSubtitle.getString(context),
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 12,
-                    letterSpacing: 0.5,
+                SizedBox(
+                  width: ResponsiveHelper.isMobile(context) ? 250 : 350,
+                  child: Text(
+                    AppStrings.coinStoreSubtitle.getString(context),
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 12,
+                      letterSpacing: 0.5,
+                      overflow: TextOverflow.clip,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
                 ),
               ],
             ),

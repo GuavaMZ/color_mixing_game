@@ -96,7 +96,6 @@ class LevelGenerator {
         'isBlindMode': last['isBlindMode'],
         'hint': last['hint'],
       });
-      // print("Filled missing level ${levels.length} with duplicate.");
     }
 
     return levels;
@@ -179,9 +178,7 @@ class LevelGenerator {
       generated++;
     }
 
-    if (generated < count) {
-      // print("Warning: Could not generate unique levels for phase $phaseName. Generated $generated/$count");
-    }
+    if (generated < count) {}
 
     return phaseLevels;
   }

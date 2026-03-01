@@ -2,6 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:color_mixing_deductive/core/security_service.dart';
 import 'package:color_mixing_deductive/core/runtime_integrity_checker.dart';
+import 'package:color_mixing_deductive/core/cloud_sync_service.dart';
 
 /// Enhanced SaveManager with security validations, rate limiting, and anomaly detection.
 ///
@@ -17,6 +18,13 @@ class SaveManager {
   static const String _levelKey = 'player_progress';
   static const String _labConfigKey = 'lab_configuration';
   static const String _unlockedLabItemsKey = 'unlocked_lab_items';
+
+  static CloudSyncService? _syncService;
+
+  /// Initialize the SaveManager with an optional CloudSyncService.
+  static void initialize(CloudSyncService? syncService) {
+    _syncService = syncService;
+  }
 
   // ═══════════════════════════════════════════════════════════════════════════
   // RATE LIMITING
@@ -58,7 +66,6 @@ class SaveManager {
       if (value != null) {
         await SecurityService.write(key, value);
         await prefs.remove(key);
-        // print('Migrated $key to secure storage.');
       }
     }
   }
@@ -83,6 +90,9 @@ class SaveManager {
       progress.map((key, value) => MapEntry(key.toString(), value)),
     );
     await SecurityService.write('${_levelKey}_$mode', encodedData);
+
+    // Trigger background cloud sync
+    _triggerCloudSync('${_levelKey}_$mode', encodedData);
   }
 
   static bool _validateProgress(Map<int, int> progress) {
@@ -125,7 +135,6 @@ class SaveManager {
           (key, value) => MapEntry(int.parse(key), value as int),
         );
       } catch (e) {
-        // print('Error parsing progress data: $e');
         return {0: 0};
       }
     }
@@ -160,6 +169,7 @@ class SaveManager {
     }
 
     await SecurityService.write('total_stars', total.toString());
+    _triggerCloudSync('total_stars', total.toString());
   }
 
   static Future<int> loadTotalStars() async {
@@ -203,6 +213,7 @@ class SaveManager {
     }
 
     await SecurityService.write('total_coins', coins.toString());
+    _triggerCloudSync('total_coins', coins.toString());
   }
 
   static Future<int> loadTotalCoins() async {
@@ -278,7 +289,9 @@ class SaveManager {
 
   static Future<void> savePurchasedSkins(List<String> skins) async {
     await _enforceRateLimit('purchased_skins');
-    await SecurityService.write('purchased_skins', jsonEncode(skins));
+    final data = jsonEncode(skins);
+    await SecurityService.write('purchased_skins', data);
+    _triggerCloudSync('purchased_skins', data);
   }
 
   static Future<List<String>> loadPurchasedSkins() async {
@@ -296,7 +309,6 @@ class SaveManager {
       try {
         return (jsonDecode(data) as List).cast<String>();
       } catch (e) {
-        // print('Error parsing skins: $e');
         return [];
       }
     }
@@ -309,6 +321,7 @@ class SaveManager {
       'unlocked_achievements',
       jsonEncode(achievements),
     );
+    _triggerCloudSync('unlocked_achievements', jsonEncode(achievements));
   }
 
   static Future<List<String>> loadAchievements() async {
@@ -326,7 +339,6 @@ class SaveManager {
       try {
         return (jsonDecode(data) as List).cast<String>();
       } catch (e) {
-        // print('Error parsing achievements: $e');
         return [];
       }
     }
@@ -407,9 +419,7 @@ class SaveManager {
         }
 
         return decoded.map((key, value) => MapEntry(key, value as int));
-      } catch (e) {
-        // print('Error parsing helpers: $e');
-      }
+      } catch (e) {}
     }
     return {'extra_drops': 0, 'help_drop': 0, 'reveal_color': 0, 'undo': 0};
   }
@@ -458,9 +468,7 @@ class SaveManager {
       try {
         Map<String, dynamic> decoded = jsonDecode(data);
         return decoded.map((key, value) => MapEntry(key, value as String));
-      } catch (e) {
-        // print('Error parsing lab config: $e');
-      }
+      } catch (e) {}
     }
 
     return {
@@ -490,9 +498,7 @@ class SaveManager {
     if (data != null) {
       try {
         return (jsonDecode(data) as List).cast<String>();
-      } catch (e) {
-        // print('Error parsing unlocked items: $e');
-      }
+      } catch (e) {}
     }
 
     return ['surface_steel', 'light_basic', 'bg_default', 'stand_basic'];
@@ -519,9 +525,7 @@ class SaveManager {
       try {
         final List<dynamic> decoded = jsonDecode(data);
         return decoded.map((id) => int.parse(id.toString())).toSet();
-      } catch (e) {
-        // print('Error parsing discovered colors: $e');
-      }
+      } catch (e) {}
     }
     return {};
   }
@@ -600,6 +604,26 @@ class SaveManager {
   // REDEEM CODES
   // ═══════════════════════════════════════════════════════════════════════════
 
+  static void _triggerCloudSync(String key, String localData) {
+    if (_syncService == null) return;
+
+    // We use the current timestamp for Last-Write-Wins
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+
+    // Fire and forget cloud sync in background
+    _syncService!
+        .syncKey(key, localData, timestamp)
+        .then((latestData) {
+          if (latestData != null && latestData != localData) {
+            // Cloud had newer data, we should ideally update local storage
+            // but to avoid loops and complexity in this PR, we'll let the next load handle it
+            // or we could call SecurityService.write(key, latestData) here.
+            SecurityService.write(key, latestData);
+          }
+        })
+        .catchError((_) {});
+  }
+
   static const String _redeemedCodesKey = 'redeemed_codes';
 
   static Future<bool> isCodeRedeemed(String code) async {
@@ -646,7 +670,6 @@ class SaveManager {
         final List<dynamic> decoded = jsonDecode(data);
         return decoded.cast<Map<String, dynamic>>();
       } catch (e) {
-        // print('Error parsing purchase history: $e');
         return [];
       }
     }

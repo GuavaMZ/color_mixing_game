@@ -150,7 +150,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 16),
                                 child: Text(
-                                  'v1.2.1',
+                                  'v1.3.0',
                                   style: AppTheme.caption(context).copyWith(
                                     color: Colors.white.withValues(alpha: 0.3),
                                   ),

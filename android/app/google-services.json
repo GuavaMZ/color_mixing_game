@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "426190934584",
+    "project_id": "color-lab-game",
+    "storage_bucket": "color-lab-game.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:426190934584:android:42dd3adb87a2043d8c4ccd",
+        "android_client_info": {
+          "package_name": "com.dvzeyad.color_mixing_deductive"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAK9ahC4I1wU6UOxIKNENGY0RmanrRfi4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

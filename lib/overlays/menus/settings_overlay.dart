@@ -360,7 +360,7 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                           // Language selector
                           _SettingsTile(
                             icon: Icons.language_rounded,
-                            title: AppStrings.language.getString(context),
+                            title: '',
                             trailing: _LanguageSelector(
                               currentLocale:
                                   _localization.currentLocale?.languageCode ??
@@ -433,7 +433,7 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                                 Text(
                                   _currentPatch != null
                                       ? '${AppStrings.patch.getString(context)} #$_currentPatch'
-                                      : 'v1.2.1',
+                                      : 'v1.3.0',
                                   style: TextStyle(
                                     color: Colors.white.withValues(alpha: 0.5),
                                   ),

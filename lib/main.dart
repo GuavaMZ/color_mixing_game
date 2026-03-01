@@ -42,6 +42,19 @@ import 'package:color_mixing_deductive/core/security_audit_logger.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shorebird_code_push/shorebird_code_push.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:color_mixing_deductive/core/firebase_sync_provider.dart';
+import 'package:color_mixing_deductive/core/cloud_sync_service.dart';
+import 'package:color_mixing_deductive/core/save_manager.dart';
+import 'package:color_mixing_deductive/firebase_options.dart';
+import 'package:color_mixing_deductive/core/notification_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+@pragma('vm:entry-point')
+Future<void> _backgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  debugPrint("Handling background message: ${message.messageId}");
+}
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -51,6 +64,26 @@ void main() async {
   await SecurityService.initialize();
   await RuntimeIntegrityChecker.initialize();
   await SecurityAuditLogger.initialize();
+
+  // Initialize Firebase
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
+    // Initialize Cloud Sync
+    final syncProvider = FirebaseSyncProvider();
+    final syncService = CloudSyncService(syncProvider);
+    SaveManager.initialize(syncService);
+
+    // Initialize Notifications
+    FirebaseMessaging.onBackgroundMessage(_backgroundHandler);
+    await NotificationService.instance.initialize();
+  } catch (e) {
+    debugPrint('Firebase initialization failed: $e');
+    // SaveManager will still work locally without cloud sync
+    SaveManager.initialize(null);
+  }
 
   // Set preferred orientations for mobile
   await SystemChrome.setPreferredOrientations([
@@ -113,7 +146,7 @@ class _MyAppState extends State<MyApp> {
       'app_started',
       'Application started',
       severity: SecurityEventSeverity.info,
-      metadata: {'version': '1.2.1+4', 'debug_mode': kDebugMode},
+      metadata: {'version': '1.3.0+5', 'debug_mode': kDebugMode},
     );
 
     // Remove native splash after a short delay to ensure everything is ready

@@ -12,7 +12,6 @@ class LeakingBeakerEffect extends Component
     with HasGameReference<ColorMixerGame> {
   final List<_LeakPoint> _leaks = [];
   final Random _random = Random();
-  double _leakTimer = 0;
 
   @override
   void onMount() {
@@ -24,11 +23,10 @@ class LeakingBeakerEffect extends Component
   @override
   void update(double dt) {
     super.update(dt);
-    _leakTimer += dt;
 
-    if (_leaks.isEmpty && _leakTimer > 2.0) {
-      _spawnLeak();
-      _leakTimer = 0;
+    if (_leaks.isEmpty) {
+      removeFromParent();
+      return;
     }
 
     for (final leak in _leaks) {
@@ -80,13 +78,13 @@ class LeakingBeakerEffect extends Component
   }
 }
 
-class _LeakPoint extends PositionComponent with TapCallbacks {
+class _LeakPoint extends PositionComponent with TapCallbacks, DragCallbacks {
   final Function(_LeakPoint) onFixed;
   final List<Offset> _crackLines = [];
 
   _LeakPoint({required Vector2 position, required this.onFixed}) {
     this.position = position;
-    size = Vector2.all(40);
+    size = Vector2.all(60); // Increased hit area for better swiping
     anchor = Anchor.center;
 
     final random = Random();
@@ -122,9 +120,17 @@ class _LeakPoint extends PositionComponent with TapCallbacks {
     );
   }
 
-  @override
-  void onTapDown(TapDownEvent event) {
+  void _fix() {
     onFixed(this);
     removeFromParent();
+  }
+
+  @override
+  void onTapDown(TapDownEvent event) => _fix();
+
+  @override
+  void onDragStart(DragStartEvent event) {
+    super.onDragStart(event);
+    _fix();
   }
 }

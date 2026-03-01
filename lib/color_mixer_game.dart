@@ -497,11 +497,82 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   @override
   void onRemove() {
     _audio.dispose();
+    disposeRandomEvents(); // Call disposeRandomEvents on game removal
     super.onRemove();
   }
 
+  void disposeRandomEvents() {
+    // Reset Logic Flags
+    isBlackout = false;
+    isEvaporating = false;
+    _evaporationVisualOffset = 0.0;
+    isControlsInverted = false;
+    isUiGlitching = false;
+    isColorBlindEvent = false;
+    isGravityFlux = false;
+    isEarthquake = false;
+    isTimeFreeze = false;
+    isDoubleCoinActive = false;
+    _randomEventOccurredThisLevel = false;
+    _earthquakeOffset = Vector2.zero();
+
+    // Restore beaker state
+    beaker.isBlindMode = isBlindMode;
+
+    // Reset HUD
+    activeEventLabel.value = null;
+    activeEventProgress.value = 0.0;
+    _activeEventDuration = 0.0;
+    _activeEventElapsed = 0.0;
+    pendingEvent.value = null;
+
+    overlays.remove('Blackout');
+    overlays.remove('RandomEventAlert');
+
+    // Cleanup Components
+    children.whereType<BlackoutEffect>().forEach((e) => e.removeFromParent());
+    children.whereType<GlitchEffect>().forEach((g) => g.removeFromParent());
+    children.whereType<InvertedControlsEffect>().toList().forEach(
+      (i) => i.removeFromParent(),
+    );
+    children.whereType<EarthquakeVisualEffect>().toList().forEach(
+      (e) => e.removeFromParent(),
+    );
+    children.whereType<AcidSplatter>().toList().forEach(
+      (e) => e.removeFromParent(),
+    );
+    children.whereType<MirrorDistortionEffect>().toList().forEach(
+      (e) => e.removeFromParent(),
+    );
+    children.whereType<WindForceEffect>().toList().forEach(
+      (e) => e.removeFromParent(),
+    );
+    children.whereType<LeakingBeakerEffect>().toList().forEach(
+      (e) => e.removeFromParent(),
+    );
+    children.whereType<ChromaticAberrationEffect>().toList().forEach(
+      (e) => e.removeFromParent(),
+    );
+
+    beaker.children.whereType<SurfaceSteam>().toList().forEach(
+      (s) => s.removeFromParent(),
+    );
+    beaker.children.whereType<GravityFluxEffect>().toList().forEach(
+      (g) => g.removeFromParent(),
+    );
+    beaker.children.whereType<UnstableBeakerEffect>().toList().forEach(
+      (u) => u.removeFromParent(),
+    );
+
+    notifyListeners();
+  }
+
   void showWinEffect() {
-    if (_hasLost) return;
+    if (overlays.isActive('WinMenu')) return;
+
+    disposeRandomEvents();
+
+    _audio.playWin();
 
     // Combo System: Increment on perfect match
     int stars = calculateStars();
@@ -1148,7 +1219,20 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       _eventTimer = (20.0 - chaosRound * 2).clamp(8.0, 20.0);
 
       overlays.add('ChaosLabHUD');
+    } else if (currentMode == GameMode.classic ||
+        currentMode == GameMode.timeAttack) {
+      overlays.add('Controls');
     }
+
+    // Random Events Initialization
+    disposeRandomEvents();
+    if (randomEventsEnabled &&
+        (currentMode == GameMode.classic ||
+            currentMode == GameMode.timeAttack)) {
+      // First event after 10-15 seconds
+      _eventTimer = 10.0 + _random.nextDouble() * 5.0;
+    }
+    randomEventBonusApplied = false;
 
     notifyListeners();
   }
@@ -1222,6 +1306,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     if (_hasLost || _hasWon) return;
     _hasLost = true;
     _hasWon = false; // نضمن أن حالة الفوز لم تتحقق
+
+    disposeRandomEvents();
 
     _audio.playGameOver();
 
@@ -1346,6 +1432,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       if (pageName == 'MainMenu') {
         currentMode = GameMode.none;
         _audio.playMenuMusic();
+        disposeRandomEvents();
       }
 
       // Clear ALL currently active overlays to ensure clean state
