@@ -14,13 +14,13 @@ class AdManager {
   bool _isRewardedAdReady = false;
 
   // Test Ad Unit IDs
-  final String _androidBannerId = 'ca-app-pub-3940256099942544/6300978111';
-  final String _iosBannerId = 'ca-app-pub-3940256099942544/2934735716';
+  final String _androidBannerId = 'ca-app-pub-7510332808716092/6879301632';
+  final String _iosBannerId = 'ca-app-pub-7510332808716092/6879301632';
   final String _androidInterstitialId =
-      'ca-app-pub-3940256099942544/1033173712';
-  final String _iosInterstitialId = 'ca-app-pub-3940256099942544/4411468910';
-  final String _androidRewardedId = 'ca-app-pub-3940256099942544/5224354917';
-  final String _iosRewardedId = 'ca-app-pub-3940256099942544/1712485313';
+      'ca-app-pub-7510332808716092/8248769768';
+  final String _iosInterstitialId = 'ca-app-pub-7510332808716092/8248769768';
+  final String _androidRewardedId = 'ca-app-pub-7510332808716092/8391481823';
+  final String _iosRewardedId = 'ca-app-pub-7510332808716092/8391481823';
 
   String get bannerAdUnitId {
     if (kDebugMode) {
@@ -28,7 +28,9 @@ class AdManager {
       if (Platform.isIOS) return _iosBannerId;
     }
     // Replace with production IDs
-    return Platform.isAndroid ? 'YOUR_ANDROID_BANNER_ID' : 'YOUR_IOS_BANNER_ID';
+    return Platform.isAndroid
+        ? 'ca-app-pub-7510332808716092/6879301632'
+        : 'ca-app-pub-7510332808716092/6879301632';
   }
 
   String get interstitialAdUnitId {
@@ -38,8 +40,8 @@ class AdManager {
     }
     // Replace with production IDs
     return Platform.isAndroid
-        ? 'YOUR_ANDROID_INTERSTITIAL_ID'
-        : 'YOUR_IOS_INTERSTITIAL_ID';
+        ? 'ca-app-pub-7510332808716092/8248769768'
+        : 'ca-app-pub-7510332808716092/8248769768';
   }
 
   String get rewardedAdUnitId {
@@ -49,8 +51,8 @@ class AdManager {
     }
     // Replace with production IDs
     return Platform.isAndroid
-        ? 'YOUR_ANDROID_REWARDED_ID'
-        : 'YOUR_IOS_REWARDED_ID';
+        ? 'ca-app-pub-7510332808716092/8391481823'
+        : 'ca-app-pub-7510332808716092/8391481823';
   }
 
   Future<void> initialize() async {
