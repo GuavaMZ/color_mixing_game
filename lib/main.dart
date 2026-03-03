@@ -1,5 +1,6 @@
 import 'package:color_mixing_deductive/color_mixer_game.dart';
 import 'package:color_mixing_deductive/helpers/audio_manager.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 import 'package:color_mixing_deductive/overlays/hud/controls_overlay.dart';
 import 'package:color_mixing_deductive/overlays/menus/game_over_overlay.dart';
 import 'package:color_mixing_deductive/overlays/navigation/level_map_overlay.dart';
@@ -146,7 +147,10 @@ class _MyAppState extends State<MyApp> {
       'app_started',
       'Application started',
       severity: SecurityEventSeverity.info,
-      metadata: {'version': '1.3.0+5', 'debug_mode': kDebugMode},
+      metadata: {
+        'version': GlobalConstants.appVersion,
+        'debug_mode': kDebugMode,
+      },
     );
 
     // Remove native splash after a short delay to ensure everything is ready
@@ -186,17 +190,14 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       builder: (context, child) {
-        final data = MediaQuery.of(context);
         return MediaQuery(
-          data: data.copyWith(
-            textScaler: data.textScaler.clamp(
-              minScaleFactor: 0.8,
-              maxScaleFactor: 1.4,
-            ),
-          ),
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.noScaling),
           child: child!,
         );
       },
+
       home: const _GameSection(),
     );
   }

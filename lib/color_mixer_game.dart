@@ -145,6 +145,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   final ValueNotifier<Map<String, int>> helperCounts =
       ValueNotifier<Map<String, int>>({});
 
+  DateTime _levelStartTime = DateTime.now();
+
   // Combo System
   final ValueNotifier<int> comboCount = ValueNotifier<int>(0);
   int highestCombo = 0;
@@ -487,7 +489,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     // Check win condition ONLY if color changed
     if (!_hasWon && beaker.currentColor != _lastBeakerColor) {
       _lastBeakerColor = beaker.currentColor;
-      if (ColorLogic.checkMatch(beaker.currentColor, targetColor) == 100.0) {
+      if (ColorLogic.checkMatch(beaker.currentColor, targetColor) >= 93.0) {
         _hasWon = true;
         showWinEffect();
       }
@@ -1144,6 +1146,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     randomEventBonusApplied = false;
     helpersUsedInLevel.clear();
     _lastBeakerColor = Colors.transparent;
+    _levelStartTime = DateTime.now();
 
     // Reset Chaos State
     chaosStability = 1.0;
@@ -1426,6 +1429,16 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     return false;
   }
 
+  bool addHelpers(String helperId, int count) {
+    final current = helperCounts.value[helperId] ?? 0;
+    Map<String, int> newCounts = Map<String, int>.from(helperCounts.value);
+    newCounts[helperId] = current + count;
+    helperCounts.value = newCounts;
+    SaveManager.saveHelpers(newCounts);
+    notifyListeners();
+    return true;
+  }
+
   void navigateToPage(String pageName, {bool isReverse = false}) {
     void performCleanup() {
       // If navigating to MainMenu, reset mode and music
@@ -1508,6 +1521,98 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
         !unlockedAchievements.contains('stability_expert')) {
       _unlock('stability_expert');
     }
+
+    // --- BUG FIXES (Previously missing triggers) ---
+
+    // Speed Runner: Under 5 seconds
+    final elapsedSec = DateTime.now().difference(_levelStartTime).inSeconds;
+    if (elapsedSec < 5 && !unlockedAchievements.contains('speed_runner')) {
+      _unlock('speed_runner');
+    }
+
+    // Star Collector: 50 total stars
+    if (totalStars >= 50 && !unlockedAchievements.contains('star_collector')) {
+      _unlock('star_collector');
+    }
+
+    // Perfectionist: First 3 star win
+    if (stars == 3 && !unlockedAchievements.contains('perfectionist')) {
+      _unlock('perfectionist');
+    }
+
+    // Veteran: 10 levels completed
+    if (stats['totalLevels'] >= 10 &&
+        !unlockedAchievements.contains('veteran')) {
+      _unlock('veteran');
+    }
+
+    // --- NEW ACHIEVEMENTS ---
+
+    // Color Collector: Discover 50 colors
+    final discoveredCount = (await SaveManager.loadDiscoveredColors()).length;
+    if (discoveredCount >= 50 &&
+        !unlockedAchievements.contains('color_collector')) {
+      _unlock('color_collector');
+    }
+
+    // Wealthy Scientist: 5000 coins
+    if (totalCoins.value >= 5000 &&
+        !unlockedAchievements.contains('wealthy_scientist')) {
+      _unlock('wealthy_scientist');
+    }
+
+    // Big Spender: Spend 2000 coins
+    final totalSpent = await SaveManager.loadTotalSpent();
+    if (totalSpent >= 2000 && !unlockedAchievements.contains('big_spender')) {
+      _unlock('big_spender');
+    }
+
+    // Daily Scholar: 7 daily challenges
+    final dailyCount = await SaveManager.loadDailyChallengeCount();
+    if (dailyCount >= 7 && !unlockedAchievements.contains('daily_scholar')) {
+      _unlock('daily_scholar');
+    }
+
+    // Century Club: Reach level 100
+    if (levelManager.currentLevelIndex >= 99 &&
+        !unlockedAchievements.contains('century_club')) {
+      _unlock('century_club');
+    }
+
+    // Chaos Master: Win with stability < 15%
+    if (currentMode == GameMode.chaosLab &&
+        chaosStability < 0.15 &&
+        !unlockedAchievements.contains('chaos_master')) {
+      _unlock('chaos_master');
+    }
+
+    // Echo Maestro: Reach Echo Round 10
+    if (currentMode == GameMode.colorEcho &&
+        echoRound >= 10 &&
+        !unlockedAchievements.contains('echo_maestro')) {
+      _unlock('echo_maestro');
+    }
+
+    // Helper Hoarder: 10 of each helper
+    bool has10OfEach =
+        helperCounts.value.values.every((v) => v >= 10) &&
+        helperCounts.value.length == 4;
+    if (has10OfEach && !unlockedAchievements.contains('helper_hoarder')) {
+      _unlock('helper_hoarder');
+    }
+
+    // Zero Waste: Exactly minimum drops
+    final minNeeded = levelManager.currentLevel.minDropsNeeded;
+    if (totalDrops.value == minNeeded &&
+        !unlockedAchievements.contains('zero_waste')) {
+      _unlock('zero_waste');
+    }
+
+    // Legendary Status: 500 levels
+    if (stats['totalLevels'] >= 500 &&
+        !unlockedAchievements.contains('legendary_status')) {
+      _unlock('legendary_status');
+    }
   }
 
   void _unlock(String id) {
@@ -1552,6 +1657,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
     if (achieved) {
       await DailyChallengeManager.completeChallenge();
+      await SaveManager.incrementDailyChallengeCount();
       // Add coins directly. SaveManager is called inside completeChallenge? No, the plan says to call it.
       // Wait, DailyChallengeManager doesn't grant coins. ColorMixerGame should.
       addCoins(challenge.reward);

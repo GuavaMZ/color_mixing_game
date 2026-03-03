@@ -38,7 +38,7 @@ class ControlsOverlay extends StatelessWidget {
           child: Stack(
             children: [
               // Banner Ad at the top
-              if (game.levelManager.currentLevelIndex >= 10)
+              if (game.levelManager.currentLevelIndex >= 0)
                 Positioned(
                   top: 0,
                   left: 0,
@@ -51,7 +51,7 @@ class ControlsOverlay extends StatelessWidget {
                 top:
                     ResponsiveHelper.safePadding(context).top +
                     ResponsiveHelper.spacing(context, 16) +
-                    (game.levelManager.currentLevelIndex >= 10
+                    (game.levelManager.currentLevelIndex >= 0
                         ? 50
                         : 0), // Added offset for Ad
                 left: 0,
@@ -444,27 +444,27 @@ class ControlsOverlay extends StatelessWidget {
   Widget _buildControlsRow(BuildContext context) {
     final palette = [
       {
-        'color': Colors.black,
+        'color': const Color(0xFF121212), // Matte Black
         'type': 'black',
         'label': AppStrings.blackColor.getString(context),
       },
       {
-        'color': Colors.red,
+        'color': const Color(0xFFFF3D00), // Clean Vibrant Red
         'type': 'red',
         'label': AppStrings.redColor.getString(context),
       },
       {
-        'color': Colors.green,
+        'color': const Color(0xFF00E676), // Clean Neon Green
         'type': 'green',
         'label': AppStrings.greenColor.getString(context),
       },
       {
-        'color': Colors.blue,
+        'color': const Color(0xFF2979FF), // Bright Blue
         'type': 'blue',
         'label': AppStrings.blueColor.getString(context),
       },
       {
-        'color': Colors.white,
+        'color': const Color(0xFFF8F9FA), // Clean Off-White
         'type': 'white',
         'label': AppStrings.whiteColor.getString(context),
       },
@@ -954,50 +954,82 @@ class _EnhancedDropButtonState extends State<_EnhancedDropButton> {
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  widget.color.withValues(alpha: 0.9),
+                  widget.color.withValues(alpha: 0.95),
                   widget.color,
-                  Color.lerp(widget.color, Colors.black, 0.4)!,
+                  Color.lerp(widget.color, Colors.black, 0.45)!,
                 ],
-                stops: const [0.0, 0.6, 1.0],
-                center: Alignment.topLeft,
+                stops: const [0.0, 0.7, 1.0],
+                center: const Alignment(-0.35, -0.35),
+                radius: 0.85,
               ),
               border: Border.all(
                 width: 2,
-                color: Colors.white.withValues(alpha: 0.5),
+                color: Colors.white.withValues(alpha: 0.4),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: widget.color.withValues(alpha: 0.6),
-                  blurRadius: 20,
-                  spreadRadius: 2,
+                  color: widget.color.withValues(alpha: 0.5),
+                  blurRadius: 15,
+                  spreadRadius: 1,
                   offset: const Offset(0, 4),
                 ),
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.5),
-                  blurRadius: 10,
+                  color: Colors.black.withValues(alpha: 0.4),
+                  blurRadius: 12,
                   offset: const Offset(0, 8),
                 ),
                 if (!_isPressed)
                   BoxShadow(
-                    color: Colors.white.withValues(alpha: 0.3),
-                    blurRadius: 5,
-                    spreadRadius: -2,
+                    color: Colors.white.withValues(alpha: 0.2),
+                    blurRadius: 4,
+                    spreadRadius: -1,
                     offset: const Offset(0, -2),
                   ),
               ],
             ),
             child: Stack(
               children: [
-                // Shine
+                // Top Shine (Primary)
                 Positioned(
-                  top: widget.size * 0.15,
-                  left: widget.size * 0.15,
+                  top: widget.size * 0.1,
+                  left: widget.size * 0.2,
                   child: Container(
-                    width: widget.size * 0.35,
-                    height: widget.size * 0.2,
+                    width: widget.size * 0.4,
+                    height: widget.size * 0.25,
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.4),
-                      borderRadius: BorderRadius.circular(widget.size),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.white.withValues(alpha: 0.45),
+                          Colors.white.withValues(alpha: 0.05),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.all(
+                        Radius.elliptical(
+                          widget.size * 0.4,
+                          widget.size * 0.25,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Bottom Rim Light
+                Positioned(
+                  bottom: widget.size * 0.1,
+                  right: widget.size * 0.2,
+                  child: Container(
+                    width: widget.size * 0.3,
+                    height: widget.size * 0.15,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.all(
+                        Radius.elliptical(
+                          widget.size * 0.3,
+                          widget.size * 0.15,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -1006,11 +1038,12 @@ class _EnhancedDropButtonState extends State<_EnhancedDropButton> {
                   child: Icon(
                     Icons.water_drop,
                     color: iconColor,
-                    size: widget.size * 0.5,
+                    size: widget.size * 0.48,
                     shadows: [
                       Shadow(
-                        color: Colors.black.withValues(alpha: 0.3),
+                        color: Colors.black.withValues(alpha: 0.2),
                         blurRadius: 4,
+                        offset: const Offset(0, 1),
                       ),
                     ],
                   ),

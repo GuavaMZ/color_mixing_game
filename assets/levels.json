@@ -9,7 +9,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 4,
+            "maxDrops": 8,
             "difficultyFactor": 0.002,
             "isBlindMode": false,
             "hint": "hint_pure_red"
@@ -23,7 +23,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 4,
+            "maxDrops": 8,
             "difficultyFactor": 0.004,
             "isBlindMode": false,
             "hint": "hint_pure_green"
@@ -37,7 +37,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 4,
+            "maxDrops": 8,
             "difficultyFactor": 0.006,
             "isBlindMode": false,
             "hint": "hint_pure_blue"
@@ -51,7 +51,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 5,
+            "maxDrops": 10,
             "difficultyFactor": 0.008,
             "isBlindMode": false,
             "hint": "hint_mix_rg"
@@ -65,7 +65,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 5,
+            "maxDrops": 10,
             "difficultyFactor": 0.01,
             "isBlindMode": false,
             "hint": "hint_mix_rb"
@@ -79,7 +79,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 5,
+            "maxDrops": 10,
             "difficultyFactor": 0.012,
             "isBlindMode": false,
             "hint": "hint_mix_gb"
@@ -93,7 +93,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 7,
+            "maxDrops": 14,
             "difficultyFactor": 0.014,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -107,7 +107,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 7,
+            "maxDrops": 14,
             "difficultyFactor": 0.016,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -121,7 +121,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 7,
+            "maxDrops": 14,
             "difficultyFactor": 0.018,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -135,7 +135,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 7,
+            "maxDrops": 14,
             "difficultyFactor": 0.02,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -149,7 +149,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 7,
+            "maxDrops": 14,
             "difficultyFactor": 0.022,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -163,7 +163,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 7,
+            "maxDrops": 14,
             "difficultyFactor": 0.024,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -177,7 +177,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.026,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -191,7 +191,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.028,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -205,7 +205,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.03,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -219,7 +219,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.032,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -233,7 +233,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.034,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -247,7 +247,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.036,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -261,7 +261,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.038,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -275,7 +275,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.04,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -289,7 +289,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.042,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -303,7 +303,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.044,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -317,7 +317,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.046,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -331,7 +331,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.048,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -345,7 +345,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.05,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -359,7 +359,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.052,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -373,7 +373,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.054,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -387,7 +387,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 5,
+            "maxDrops": 10,
             "difficultyFactor": 0.056,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -401,7 +401,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 7,
+            "maxDrops": 14,
             "difficultyFactor": 0.058,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -415,7 +415,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.06,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -429,7 +429,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.062,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -443,7 +443,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 7,
+            "maxDrops": 14,
             "difficultyFactor": 0.064,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -457,7 +457,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.066,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -471,7 +471,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.068,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -485,7 +485,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 7,
+            "maxDrops": 14,
             "difficultyFactor": 0.07,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -499,7 +499,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.072,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -513,7 +513,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 7,
+            "maxDrops": 14,
             "difficultyFactor": 0.074,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -527,7 +527,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 7,
+            "maxDrops": 14,
             "difficultyFactor": 0.076,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -541,7 +541,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.078,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -555,7 +555,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 7,
+            "maxDrops": 14,
             "difficultyFactor": 0.08,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -569,7 +569,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.082,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -583,7 +583,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.084,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -597,7 +597,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.086,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -611,7 +611,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.088,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -625,7 +625,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.09,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -639,7 +639,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.092,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -653,7 +653,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.094,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -667,7 +667,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.096,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -681,7 +681,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 5,
+            "maxDrops": 10,
             "difficultyFactor": 0.098,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -695,7 +695,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 7,
+            "maxDrops": 14,
             "difficultyFactor": 0.1,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -709,7 +709,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.102,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -723,7 +723,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.104,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -737,7 +737,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.106,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -751,7 +751,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.108,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -765,7 +765,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.11,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -779,7 +779,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 7,
+            "maxDrops": 14,
             "difficultyFactor": 0.112,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -793,7 +793,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.114,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -807,7 +807,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 7,
+            "maxDrops": 14,
             "difficultyFactor": 0.116,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -821,7 +821,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.118,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -835,7 +835,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.12,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -849,7 +849,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.122,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -863,7 +863,7 @@
                 "white": 2,
                 "black": 2
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.124,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -877,7 +877,7 @@
                 "white": 2,
                 "black": 1
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.126,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -891,7 +891,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.128,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -905,7 +905,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.13,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -919,7 +919,7 @@
                 "white": 1,
                 "black": 1
             },
-            "maxDrops": 7,
+            "maxDrops": 14,
             "difficultyFactor": 0.132,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -933,7 +933,7 @@
                 "white": 2,
                 "black": 1
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.134,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -947,7 +947,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.136,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -961,7 +961,7 @@
                 "white": 1,
                 "black": 2
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.138,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -975,7 +975,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.14,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -989,7 +989,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.142,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -1003,7 +1003,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.144,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -1017,7 +1017,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.146,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -1031,7 +1031,7 @@
                 "white": 1,
                 "black": 2
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.148,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -1045,7 +1045,7 @@
                 "white": 2,
                 "black": 1
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.15,
             "isBlindMode": true,
             "hint": "hint_needs_white"
@@ -1059,7 +1059,7 @@
                 "white": 1,
                 "black": 1
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.152,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -1073,7 +1073,7 @@
                 "white": 1,
                 "black": 2
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.154,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -1087,7 +1087,7 @@
                 "white": 1,
                 "black": 1
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.156,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -1101,7 +1101,7 @@
                 "white": 1,
                 "black": 2
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.158,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -1115,7 +1115,7 @@
                 "white": 2,
                 "black": 2
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.16,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -1129,7 +1129,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.162,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -1143,7 +1143,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.164,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -1157,7 +1157,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.166,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -1171,7 +1171,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.168,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -1185,7 +1185,7 @@
                 "white": 1,
                 "black": 1
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.17,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -1199,7 +1199,7 @@
                 "white": 2,
                 "black": 2
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.172,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -1213,7 +1213,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.174,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -1227,7 +1227,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.176,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -1241,7 +1241,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.178,
             "isBlindMode": false,
             "hint": "hint_balance_all"
@@ -1255,7 +1255,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 7,
+            "maxDrops": 14,
             "difficultyFactor": 0.18,
             "isBlindMode": true,
             "hint": "hint_balance_all"
@@ -1269,7 +1269,7 @@
                 "white": 2,
                 "black": 1
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.182,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -1283,7 +1283,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.184,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -1297,7 +1297,7 @@
                 "white": 1,
                 "black": 1
             },
-            "maxDrops": 7,
+            "maxDrops": 14,
             "difficultyFactor": 0.186,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -1311,7 +1311,7 @@
                 "white": 1,
                 "black": 2
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.188,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -1325,7 +1325,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.19,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -1339,7 +1339,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.192,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -1353,7 +1353,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.194,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -1367,7 +1367,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.196,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -1381,7 +1381,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.198,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -1395,7 +1395,7 @@
                 "white": 2,
                 "black": 2
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.2,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -1409,7 +1409,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.202,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -1423,7 +1423,7 @@
                 "white": 2,
                 "black": 1
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.204,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -1437,7 +1437,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.206,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -1451,7 +1451,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.208,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -1465,7 +1465,7 @@
                 "white": 2,
                 "black": 1
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.21,
             "isBlindMode": true,
             "hint": "hint_needs_white"
@@ -1479,7 +1479,7 @@
                 "white": 1,
                 "black": 2
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.212,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -1493,7 +1493,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.214,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -1507,7 +1507,7 @@
                 "white": 2,
                 "black": 1
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.216,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -1521,7 +1521,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.218,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -1535,7 +1535,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.22,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -1549,7 +1549,7 @@
                 "white": 1,
                 "black": 2
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.222,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -1563,7 +1563,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.224,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -1577,7 +1577,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.226,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -1591,7 +1591,7 @@
                 "white": 1,
                 "black": 1
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.228,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -1605,7 +1605,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.23,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -1619,7 +1619,7 @@
                 "white": 1,
                 "black": 1
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.232,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -1633,7 +1633,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.234,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -1647,7 +1647,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.236,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -1661,7 +1661,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.238,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -1675,7 +1675,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.24,
             "isBlindMode": true,
             "hint": "hint_mostly_red"
@@ -1689,7 +1689,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.242,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -1703,7 +1703,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.244,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -1717,7 +1717,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.246,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -1731,7 +1731,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.248,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -1745,7 +1745,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.25,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -1759,7 +1759,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.252,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -1773,7 +1773,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.254,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -1787,7 +1787,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.256,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -1801,7 +1801,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.258,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -1815,7 +1815,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.26,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -1829,7 +1829,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.262,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -1843,7 +1843,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.264,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -1857,7 +1857,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.266,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -1871,7 +1871,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.268,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -1885,7 +1885,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.27,
             "isBlindMode": true,
             "hint": "hint_mostly_green"
@@ -1899,7 +1899,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.272,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -1913,7 +1913,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.274,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -1927,7 +1927,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.276,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -1941,7 +1941,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.278,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -1955,7 +1955,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.28,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -1969,7 +1969,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.282,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -1983,7 +1983,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.284,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -1997,7 +1997,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.286,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2011,7 +2011,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.288,
             "isBlindMode": false,
             "hint": "hint_balance_all"
@@ -2025,7 +2025,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.29,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -2039,7 +2039,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.292,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2053,7 +2053,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.294,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -2067,7 +2067,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.296,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -2081,7 +2081,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 22,
+            "maxDrops": 44,
             "difficultyFactor": 0.298,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2095,7 +2095,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 22,
+            "maxDrops": 44,
             "difficultyFactor": 0.3,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -2109,7 +2109,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.302,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -2123,7 +2123,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.304,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -2137,7 +2137,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.306,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -2151,7 +2151,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.308,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -2165,7 +2165,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.31,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -2179,7 +2179,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.312,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2193,7 +2193,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 20,
+            "maxDrops": 40,
             "difficultyFactor": 0.314,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2207,7 +2207,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.316,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -2221,7 +2221,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.318,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -2235,7 +2235,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.32,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2249,7 +2249,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.322,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -2263,7 +2263,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.324,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2277,7 +2277,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.326,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -2291,7 +2291,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.328,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -2305,7 +2305,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 20,
+            "maxDrops": 40,
             "difficultyFactor": 0.33,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -2319,7 +2319,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.332,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -2333,7 +2333,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.334,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -2347,7 +2347,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.336,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2361,7 +2361,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.338,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -2375,7 +2375,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.34,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2389,7 +2389,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 23,
+            "maxDrops": 46,
             "difficultyFactor": 0.342,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2403,7 +2403,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.344,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2417,7 +2417,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.346,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2431,7 +2431,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.348,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -2445,7 +2445,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.35,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -2459,7 +2459,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.352,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -2473,7 +2473,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 8,
+            "maxDrops": 16,
             "difficultyFactor": 0.354,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -2487,7 +2487,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.356,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2501,7 +2501,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.358,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -2515,7 +2515,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.36,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -2529,7 +2529,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.362,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -2543,7 +2543,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.364,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -2557,7 +2557,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.366,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -2571,7 +2571,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.368,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -2585,7 +2585,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.37,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -2599,7 +2599,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.372,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2613,7 +2613,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.374,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -2627,7 +2627,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.376,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -2641,7 +2641,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.378,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2655,7 +2655,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.38,
             "isBlindMode": false,
             "hint": "hint_balance_all"
@@ -2669,7 +2669,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.382,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -2683,7 +2683,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.384,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2697,7 +2697,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 20,
+            "maxDrops": 40,
             "difficultyFactor": 0.386,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2711,7 +2711,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.388,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -2725,7 +2725,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.39,
             "isBlindMode": true,
             "hint": "hint_mostly_red"
@@ -2739,7 +2739,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.392,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2753,7 +2753,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.394,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2767,7 +2767,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 20,
+            "maxDrops": 40,
             "difficultyFactor": 0.396,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2781,7 +2781,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 22,
+            "maxDrops": 44,
             "difficultyFactor": 0.398,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2795,7 +2795,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.4,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -2809,7 +2809,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.402,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -2823,7 +2823,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.404,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -2837,7 +2837,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 22,
+            "maxDrops": 44,
             "difficultyFactor": 0.406,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2851,7 +2851,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 20,
+            "maxDrops": 40,
             "difficultyFactor": 0.408,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2865,7 +2865,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.41,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -2879,7 +2879,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.412,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2893,7 +2893,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.414,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2907,7 +2907,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.416,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2921,7 +2921,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.418,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -2935,7 +2935,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.42,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -2949,7 +2949,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.422,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -2963,7 +2963,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.424,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -2977,7 +2977,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.426,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -2991,7 +2991,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.428,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3005,7 +3005,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.43,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -3019,7 +3019,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.432,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3033,7 +3033,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.434,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3047,7 +3047,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.436,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -3061,7 +3061,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.438,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3075,7 +3075,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.44,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3089,7 +3089,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.442,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3103,7 +3103,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.444,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -3117,7 +3117,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.446,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3131,7 +3131,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 22,
+            "maxDrops": 44,
             "difficultyFactor": 0.448,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3145,7 +3145,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.45,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -3159,7 +3159,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.452,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -3173,7 +3173,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.454,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3187,7 +3187,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.456,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3201,7 +3201,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.458,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -3215,7 +3215,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.46,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -3229,7 +3229,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.462,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3243,7 +3243,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.464,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -3257,7 +3257,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.466,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -3271,7 +3271,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.468,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -3285,7 +3285,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.47,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3299,7 +3299,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.472,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -3313,7 +3313,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.474,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -3327,7 +3327,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 20,
+            "maxDrops": 40,
             "difficultyFactor": 0.476,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3341,7 +3341,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.478,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -3355,7 +3355,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.48,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -3369,7 +3369,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.482,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -3383,7 +3383,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.484,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -3397,7 +3397,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.486,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -3411,7 +3411,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.488,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3425,7 +3425,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 20,
+            "maxDrops": 40,
             "difficultyFactor": 0.49,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3439,7 +3439,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.492,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3453,7 +3453,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.494,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3467,7 +3467,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.496,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3481,7 +3481,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.498,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -3495,7 +3495,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.5,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -3509,7 +3509,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.502,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -3523,7 +3523,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.504,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -3537,7 +3537,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 12,
+            "maxDrops": 24,
             "difficultyFactor": 0.506,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -3551,7 +3551,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 9,
+            "maxDrops": 18,
             "difficultyFactor": 0.508,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -3565,7 +3565,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.51,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -3579,7 +3579,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.512,
             "isBlindMode": true,
             "hint": "hint_mostly_red"
@@ -3593,7 +3593,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.514,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -3607,7 +3607,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.516,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -3621,7 +3621,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.518,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3635,7 +3635,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.52,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -3649,7 +3649,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 18,
+            "maxDrops": 36,
             "difficultyFactor": 0.522,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3663,7 +3663,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.524,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -3677,7 +3677,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.526,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -3691,7 +3691,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.528,
             "isBlindMode": true,
             "hint": "hint_mostly_red"
@@ -3705,7 +3705,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 18,
+            "maxDrops": 36,
             "difficultyFactor": 0.53,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3719,7 +3719,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.532,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -3733,7 +3733,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 12,
+            "maxDrops": 24,
             "difficultyFactor": 0.534,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -3747,7 +3747,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.536,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3761,7 +3761,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.538,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3775,7 +3775,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.54,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3789,7 +3789,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.542,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -3803,7 +3803,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.544,
             "isBlindMode": true,
             "hint": "hint_mostly_red"
@@ -3817,7 +3817,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.546,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3831,7 +3831,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 12,
+            "maxDrops": 24,
             "difficultyFactor": 0.548,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -3845,7 +3845,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.55,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -3859,7 +3859,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.552,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -3873,7 +3873,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.554,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -3887,7 +3887,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.556,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -3901,7 +3901,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.558,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -3915,7 +3915,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 12,
+            "maxDrops": 24,
             "difficultyFactor": 0.56,
             "isBlindMode": true,
             "hint": "hint_mostly_blue"
@@ -3929,7 +3929,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.562,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -3943,7 +3943,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 7,
+            "maxDrops": 14,
             "difficultyFactor": 0.564,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -3957,7 +3957,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.566,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3971,7 +3971,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 20,
+            "maxDrops": 40,
             "difficultyFactor": 0.568,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -3985,7 +3985,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 12,
+            "maxDrops": 24,
             "difficultyFactor": 0.57,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -3999,7 +3999,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.572,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -4013,7 +4013,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.574,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -4027,7 +4027,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.576,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -4041,7 +4041,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.578,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -4055,7 +4055,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 12,
+            "maxDrops": 24,
             "difficultyFactor": 0.58,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -4069,7 +4069,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.582,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -4083,7 +4083,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.584,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -4097,7 +4097,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 12,
+            "maxDrops": 24,
             "difficultyFactor": 0.586,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -4111,7 +4111,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.588,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -4125,7 +4125,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 12,
+            "maxDrops": 24,
             "difficultyFactor": 0.59,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -4139,7 +4139,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 12,
+            "maxDrops": 24,
             "difficultyFactor": 0.592,
             "isBlindMode": true,
             "hint": "hint_mostly_red"
@@ -4153,7 +4153,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.594,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -4167,7 +4167,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.596,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -4181,7 +4181,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.598,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -4195,7 +4195,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 12,
+            "maxDrops": 24,
             "difficultyFactor": 0.6,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -4209,7 +4209,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.602,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -4223,7 +4223,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 15,
+            "maxDrops": 30,
             "difficultyFactor": 0.604,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -4237,7 +4237,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.606,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -4251,7 +4251,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.608,
             "isBlindMode": true,
             "hint": "hint_needs_white"
@@ -4265,7 +4265,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.61,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -4279,7 +4279,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 15,
+            "maxDrops": 30,
             "difficultyFactor": 0.612,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -4293,7 +4293,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.614,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -4307,7 +4307,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.616,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -4321,7 +4321,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 15,
+            "maxDrops": 30,
             "difficultyFactor": 0.618,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -4335,7 +4335,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 18,
+            "maxDrops": 36,
             "difficultyFactor": 0.62,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -4349,7 +4349,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.622,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -4363,7 +4363,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 15,
+            "maxDrops": 30,
             "difficultyFactor": 0.624,
             "isBlindMode": true,
             "hint": "hint_mostly_blue"
@@ -4377,7 +4377,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.626,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -4391,7 +4391,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.628,
             "isBlindMode": false,
             "hint": "hint_balance_all"
@@ -4405,7 +4405,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.63,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -4419,7 +4419,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.632,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -4433,7 +4433,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.634,
             "isBlindMode": false,
             "hint": "hint_needs_black"
@@ -4447,7 +4447,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.636,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -4461,7 +4461,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.638,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -4475,7 +4475,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 15,
+            "maxDrops": 30,
             "difficultyFactor": 0.64,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -4489,7 +4489,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.642,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -4503,7 +4503,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.644,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -4517,7 +4517,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.646,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -4531,7 +4531,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.648,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -4545,7 +4545,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.65,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -4559,7 +4559,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 15,
+            "maxDrops": 30,
             "difficultyFactor": 0.652,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -4573,7 +4573,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 15,
+            "maxDrops": 30,
             "difficultyFactor": 0.654,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -4587,7 +4587,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 12,
+            "maxDrops": 24,
             "difficultyFactor": 0.656,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -4601,7 +4601,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.658,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -4615,7 +4615,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 20,
+            "maxDrops": 40,
             "difficultyFactor": 0.66,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -4629,7 +4629,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 15,
+            "maxDrops": 30,
             "difficultyFactor": 0.662,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -4643,7 +4643,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 12,
+            "maxDrops": 24,
             "difficultyFactor": 0.664,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -4657,7 +4657,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.666,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -4671,7 +4671,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 18,
+            "maxDrops": 36,
             "difficultyFactor": 0.668,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -4685,7 +4685,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.67,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -4699,7 +4699,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.672,
             "isBlindMode": true,
             "hint": "hint_mostly_green"
@@ -4713,7 +4713,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.674,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -4727,7 +4727,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 15,
+            "maxDrops": 30,
             "difficultyFactor": 0.676,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -4741,7 +4741,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.678,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -4755,7 +4755,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 22,
+            "maxDrops": 44,
             "difficultyFactor": 0.68,
             "isBlindMode": false,
             "hint": "hint_balance_all"
@@ -4769,7 +4769,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 12,
+            "maxDrops": 24,
             "difficultyFactor": 0.682,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -4783,7 +4783,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 18,
+            "maxDrops": 36,
             "difficultyFactor": 0.684,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -4797,7 +4797,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.686,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -4811,7 +4811,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 12,
+            "maxDrops": 24,
             "difficultyFactor": 0.688,
             "isBlindMode": true,
             "hint": "hint_mostly_red"
@@ -4825,7 +4825,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.69,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -4839,7 +4839,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.692,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -4853,7 +4853,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 12,
+            "maxDrops": 24,
             "difficultyFactor": 0.694,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -4867,7 +4867,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 15,
+            "maxDrops": 30,
             "difficultyFactor": 0.696,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -4881,7 +4881,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 20,
+            "maxDrops": 40,
             "difficultyFactor": 0.698,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -4895,7 +4895,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.7,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -4909,7 +4909,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.702,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -4923,7 +4923,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.704,
             "isBlindMode": true,
             "hint": "hint_mostly_blue"
@@ -4937,7 +4937,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.706,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -4951,7 +4951,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 18,
+            "maxDrops": 36,
             "difficultyFactor": 0.708,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -4965,7 +4965,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 15,
+            "maxDrops": 30,
             "difficultyFactor": 0.71,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -4979,7 +4979,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.712,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -4993,7 +4993,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 12,
+            "maxDrops": 24,
             "difficultyFactor": 0.714,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -5007,7 +5007,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.716,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -5021,7 +5021,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.718,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -5035,7 +5035,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.72,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -5049,7 +5049,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.722,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -5063,7 +5063,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 18,
+            "maxDrops": 36,
             "difficultyFactor": 0.724,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -5077,7 +5077,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 12,
+            "maxDrops": 24,
             "difficultyFactor": 0.726,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -5091,7 +5091,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.728,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -5105,7 +5105,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.73,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -5119,7 +5119,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 15,
+            "maxDrops": 30,
             "difficultyFactor": 0.732,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -5133,7 +5133,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.734,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -5147,7 +5147,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 20,
+            "maxDrops": 40,
             "difficultyFactor": 0.736,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -5161,7 +5161,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.738,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -5175,7 +5175,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.74,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -5189,7 +5189,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.742,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -5203,7 +5203,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 15,
+            "maxDrops": 30,
             "difficultyFactor": 0.744,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -5217,7 +5217,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 15,
+            "maxDrops": 30,
             "difficultyFactor": 0.746,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -5231,7 +5231,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 15,
+            "maxDrops": 30,
             "difficultyFactor": 0.748,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -5245,7 +5245,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.75,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -5259,7 +5259,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 18,
+            "maxDrops": 36,
             "difficultyFactor": 0.752,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -5273,7 +5273,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.754,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -5287,7 +5287,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 12,
+            "maxDrops": 24,
             "difficultyFactor": 0.756,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -5301,7 +5301,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 9,
+            "maxDrops": 18,
             "difficultyFactor": 0.758,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -5315,7 +5315,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.76,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -5329,7 +5329,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.762,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -5343,7 +5343,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.764,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -5357,7 +5357,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.766,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -5371,7 +5371,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.768,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -5385,7 +5385,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.77,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -5399,7 +5399,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.772,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -5413,7 +5413,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 12,
+            "maxDrops": 24,
             "difficultyFactor": 0.774,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -5427,7 +5427,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.776,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -5441,7 +5441,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 10,
+            "maxDrops": 20,
             "difficultyFactor": 0.778,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -5455,7 +5455,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.78,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -5469,7 +5469,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.782,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -5483,7 +5483,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.784,
             "isBlindMode": true,
             "hint": "hint_mostly_red"
@@ -5497,7 +5497,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 15,
+            "maxDrops": 30,
             "difficultyFactor": 0.786,
             "isBlindMode": false,
             "hint": "hint_balance_all"
@@ -5511,7 +5511,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 21,
+            "maxDrops": 42,
             "difficultyFactor": 0.788,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -5525,7 +5525,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.79,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -5539,7 +5539,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.792,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -5553,7 +5553,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.794,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -5567,7 +5567,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.796,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -5581,7 +5581,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.798,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -5595,7 +5595,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.8,
             "isBlindMode": true,
             "hint": "hint_mostly_green"
@@ -5609,7 +5609,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 20,
+            "maxDrops": 40,
             "difficultyFactor": 0.802,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -5623,7 +5623,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.804,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -5637,7 +5637,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.806,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -5651,7 +5651,7 @@
                 "white": 2,
                 "black": 1
             },
-            "maxDrops": 23,
+            "maxDrops": 46,
             "difficultyFactor": 0.808,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -5665,7 +5665,7 @@
                 "white": 1,
                 "black": 3
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.81,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -5679,7 +5679,7 @@
                 "white": 1,
                 "black": 1
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.812,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -5693,7 +5693,7 @@
                 "white": 3,
                 "black": 3
             },
-            "maxDrops": 20,
+            "maxDrops": 40,
             "difficultyFactor": 0.814,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -5707,7 +5707,7 @@
                 "white": 2,
                 "black": 3
             },
-            "maxDrops": 18,
+            "maxDrops": 36,
             "difficultyFactor": 0.816,
             "isBlindMode": true,
             "hint": "hint_mostly_blue"
@@ -5721,7 +5721,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.818,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -5735,7 +5735,7 @@
                 "white": 1,
                 "black": 3
             },
-            "maxDrops": 26,
+            "maxDrops": 52,
             "difficultyFactor": 0.82,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -5749,7 +5749,7 @@
                 "white": 1,
                 "black": 3
             },
-            "maxDrops": 12,
+            "maxDrops": 24,
             "difficultyFactor": 0.822,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -5763,7 +5763,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 18,
+            "maxDrops": 36,
             "difficultyFactor": 0.824,
             "isBlindMode": true,
             "hint": "hint_mostly_green"
@@ -5777,7 +5777,7 @@
                 "white": 3,
                 "black": 1
             },
-            "maxDrops": 15,
+            "maxDrops": 30,
             "difficultyFactor": 0.826,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -5791,7 +5791,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 20,
+            "maxDrops": 40,
             "difficultyFactor": 0.828,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -5805,7 +5805,7 @@
                 "white": 3,
                 "black": 1
             },
-            "maxDrops": 21,
+            "maxDrops": 42,
             "difficultyFactor": 0.83,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -5819,7 +5819,7 @@
                 "white": 1,
                 "black": 3
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.832,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -5833,7 +5833,7 @@
                 "white": 3,
                 "black": 2
             },
-            "maxDrops": 24,
+            "maxDrops": 48,
             "difficultyFactor": 0.834,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -5847,7 +5847,7 @@
                 "white": 3,
                 "black": 1
             },
-            "maxDrops": 26,
+            "maxDrops": 52,
             "difficultyFactor": 0.836,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -5861,7 +5861,7 @@
                 "white": 1,
                 "black": 1
             },
-            "maxDrops": 15,
+            "maxDrops": 30,
             "difficultyFactor": 0.838,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -5875,7 +5875,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.84,
             "isBlindMode": true,
             "hint": "hint_mostly_green"
@@ -5889,7 +5889,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.842,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -5903,7 +5903,7 @@
                 "white": 1,
                 "black": 3
             },
-            "maxDrops": 24,
+            "maxDrops": 48,
             "difficultyFactor": 0.844,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -5917,7 +5917,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.846,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -5931,7 +5931,7 @@
                 "white": 1,
                 "black": 3
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.848,
             "isBlindMode": true,
             "hint": "hint_mostly_blue"
@@ -5945,7 +5945,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 18,
+            "maxDrops": 36,
             "difficultyFactor": 0.85,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -5959,7 +5959,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 18,
+            "maxDrops": 36,
             "difficultyFactor": 0.852,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -5973,7 +5973,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.854,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -5987,7 +5987,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 11,
+            "maxDrops": 22,
             "difficultyFactor": 0.856,
             "isBlindMode": true,
             "hint": "hint_mostly_red"
@@ -6001,7 +6001,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 12,
+            "maxDrops": 24,
             "difficultyFactor": 0.858,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -6015,7 +6015,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.86,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6029,7 +6029,7 @@
                 "white": 2,
                 "black": 1
             },
-            "maxDrops": 15,
+            "maxDrops": 30,
             "difficultyFactor": 0.862,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6043,7 +6043,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.864,
             "isBlindMode": true,
             "hint": "hint_mostly_green"
@@ -6057,7 +6057,7 @@
                 "white": 1,
                 "black": 2
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.866,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -6071,7 +6071,7 @@
                 "white": 3,
                 "black": 1
             },
-            "maxDrops": 22,
+            "maxDrops": 44,
             "difficultyFactor": 0.868,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6085,7 +6085,7 @@
                 "white": 1,
                 "black": 1
             },
-            "maxDrops": 20,
+            "maxDrops": 40,
             "difficultyFactor": 0.87,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -6099,7 +6099,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 15,
+            "maxDrops": 30,
             "difficultyFactor": 0.872,
             "isBlindMode": true,
             "hint": "hint_mostly_green"
@@ -6113,7 +6113,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.874,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -6127,7 +6127,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.876,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -6141,7 +6141,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.878,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -6155,7 +6155,7 @@
                 "white": 1,
                 "black": 2
             },
-            "maxDrops": 24,
+            "maxDrops": 48,
             "difficultyFactor": 0.88,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -6169,7 +6169,7 @@
                 "white": 2,
                 "black": 1
             },
-            "maxDrops": 24,
+            "maxDrops": 48,
             "difficultyFactor": 0.882,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6183,7 +6183,7 @@
                 "white": 3,
                 "black": 1
             },
-            "maxDrops": 15,
+            "maxDrops": 30,
             "difficultyFactor": 0.884,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6197,7 +6197,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 20,
+            "maxDrops": 40,
             "difficultyFactor": 0.886,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -6211,7 +6211,7 @@
                 "white": 0,
                 "black": 2
             },
-            "maxDrops": 20,
+            "maxDrops": 40,
             "difficultyFactor": 0.888,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -6225,7 +6225,7 @@
                 "white": 2,
                 "black": 2
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.89,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6239,7 +6239,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.892,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6253,7 +6253,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 22,
+            "maxDrops": 44,
             "difficultyFactor": 0.894,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6267,7 +6267,7 @@
                 "white": 2,
                 "black": 2
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.896,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -6281,7 +6281,7 @@
                 "white": 1,
                 "black": 3
             },
-            "maxDrops": 21,
+            "maxDrops": 42,
             "difficultyFactor": 0.898,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6295,7 +6295,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.9,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -6309,7 +6309,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 21,
+            "maxDrops": 42,
             "difficultyFactor": 0.902,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6323,7 +6323,7 @@
                 "white": 1,
                 "black": 1
             },
-            "maxDrops": 26,
+            "maxDrops": 52,
             "difficultyFactor": 0.904,
             "isBlindMode": true,
             "hint": "hint_balance_all"
@@ -6337,7 +6337,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 18,
+            "maxDrops": 36,
             "difficultyFactor": 0.906,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -6351,7 +6351,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 9,
+            "maxDrops": 18,
             "difficultyFactor": 0.908,
             "isBlindMode": false,
             "hint": "hint_needs_white"
@@ -6365,7 +6365,7 @@
                 "white": 3,
                 "black": 2
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.91,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6379,7 +6379,7 @@
                 "white": 3,
                 "black": 3
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.912,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -6393,7 +6393,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 23,
+            "maxDrops": 46,
             "difficultyFactor": 0.914,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6407,7 +6407,7 @@
                 "white": 2,
                 "black": 3
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.916,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6421,7 +6421,7 @@
                 "white": 1,
                 "black": 2
             },
-            "maxDrops": 24,
+            "maxDrops": 48,
             "difficultyFactor": 0.918,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6435,7 +6435,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 20,
+            "maxDrops": 40,
             "difficultyFactor": 0.92,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -6449,7 +6449,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 12,
+            "maxDrops": 24,
             "difficultyFactor": 0.922,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6463,7 +6463,7 @@
                 "white": 3,
                 "black": 2
             },
-            "maxDrops": 25,
+            "maxDrops": 50,
             "difficultyFactor": 0.924,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6477,7 +6477,7 @@
                 "white": 0,
                 "black": 1
             },
-            "maxDrops": 21,
+            "maxDrops": 42,
             "difficultyFactor": 0.926,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6491,7 +6491,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.928,
             "isBlindMode": true,
             "hint": "hint_mostly_blue"
@@ -6505,7 +6505,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 18,
+            "maxDrops": 36,
             "difficultyFactor": 0.93,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -6519,7 +6519,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 20,
+            "maxDrops": 40,
             "difficultyFactor": 0.932,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6533,7 +6533,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 24,
+            "maxDrops": 48,
             "difficultyFactor": 0.934,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6547,7 +6547,7 @@
                 "white": 3,
                 "black": 3
             },
-            "maxDrops": 20,
+            "maxDrops": 40,
             "difficultyFactor": 0.936,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -6561,7 +6561,7 @@
                 "white": 3,
                 "black": 3
             },
-            "maxDrops": 21,
+            "maxDrops": 42,
             "difficultyFactor": 0.938,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6575,7 +6575,7 @@
                 "white": 1,
                 "black": 1
             },
-            "maxDrops": 24,
+            "maxDrops": 48,
             "difficultyFactor": 0.94,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6589,7 +6589,7 @@
                 "white": 3,
                 "black": 2
             },
-            "maxDrops": 23,
+            "maxDrops": 46,
             "difficultyFactor": 0.942,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6603,7 +6603,7 @@
                 "white": 3,
                 "black": 2
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.944,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -6617,7 +6617,7 @@
                 "white": 3,
                 "black": 3
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.946,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6631,7 +6631,7 @@
                 "white": 2,
                 "black": 3
             },
-            "maxDrops": 21,
+            "maxDrops": 42,
             "difficultyFactor": 0.948,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6645,7 +6645,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 22,
+            "maxDrops": 44,
             "difficultyFactor": 0.95,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6659,7 +6659,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 18,
+            "maxDrops": 36,
             "difficultyFactor": 0.952,
             "isBlindMode": true,
             "hint": "hint_mostly_blue"
@@ -6673,7 +6673,7 @@
                 "white": 3,
                 "black": 1
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.954,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6687,7 +6687,7 @@
                 "white": 3,
                 "black": 2
             },
-            "maxDrops": 26,
+            "maxDrops": 52,
             "difficultyFactor": 0.956,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6701,7 +6701,7 @@
                 "white": 2,
                 "black": 2
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.958,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6715,7 +6715,7 @@
                 "white": 0,
                 "black": 3
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.96,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -6729,7 +6729,7 @@
                 "white": 1,
                 "black": 2
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.962,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6743,7 +6743,7 @@
                 "white": 2,
                 "black": 2
             },
-            "maxDrops": 24,
+            "maxDrops": 48,
             "difficultyFactor": 0.964,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6757,7 +6757,7 @@
                 "white": 1,
                 "black": 3
             },
-            "maxDrops": 22,
+            "maxDrops": 44,
             "difficultyFactor": 0.966,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6771,7 +6771,7 @@
                 "white": 3,
                 "black": 0
             },
-            "maxDrops": 21,
+            "maxDrops": 42,
             "difficultyFactor": 0.968,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -6785,7 +6785,7 @@
                 "white": 1,
                 "black": 3
             },
-            "maxDrops": 18,
+            "maxDrops": 36,
             "difficultyFactor": 0.97,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -6799,7 +6799,7 @@
                 "white": 2,
                 "black": 3
             },
-            "maxDrops": 14,
+            "maxDrops": 28,
             "difficultyFactor": 0.972,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6813,7 +6813,7 @@
                 "white": 1,
                 "black": 1
             },
-            "maxDrops": 22,
+            "maxDrops": 44,
             "difficultyFactor": 0.974,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6827,7 +6827,7 @@
                 "white": 1,
                 "black": 3
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.976,
             "isBlindMode": true,
             "hint": "hint_mostly_blue"
@@ -6841,7 +6841,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 13,
+            "maxDrops": 26,
             "difficultyFactor": 0.978,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -6855,7 +6855,7 @@
                 "white": 2,
                 "black": 2
             },
-            "maxDrops": 23,
+            "maxDrops": 46,
             "difficultyFactor": 0.98,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6869,7 +6869,7 @@
                 "white": 3,
                 "black": 2
             },
-            "maxDrops": 19,
+            "maxDrops": 38,
             "difficultyFactor": 0.982,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -6883,7 +6883,7 @@
                 "white": 1,
                 "black": 1
             },
-            "maxDrops": 21,
+            "maxDrops": 42,
             "difficultyFactor": 0.984,
             "isBlindMode": true,
             "hint": "hint_observe"
@@ -6897,7 +6897,7 @@
                 "white": 2,
                 "black": 2
             },
-            "maxDrops": 18,
+            "maxDrops": 36,
             "difficultyFactor": 0.986,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -6911,7 +6911,7 @@
                 "white": 0,
                 "black": 0
             },
-            "maxDrops": 15,
+            "maxDrops": 30,
             "difficultyFactor": 0.988,
             "isBlindMode": false,
             "hint": "hint_mostly_red"
@@ -6925,7 +6925,7 @@
                 "white": 1,
                 "black": 2
             },
-            "maxDrops": 24,
+            "maxDrops": 48,
             "difficultyFactor": 0.99,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6939,7 +6939,7 @@
                 "white": 1,
                 "black": 1
             },
-            "maxDrops": 20,
+            "maxDrops": 40,
             "difficultyFactor": 0.992,
             "isBlindMode": true,
             "hint": "hint_mostly_red"
@@ -6953,7 +6953,7 @@
                 "white": 1,
                 "black": 1
             },
-            "maxDrops": 16,
+            "maxDrops": 32,
             "difficultyFactor": 0.994,
             "isBlindMode": false,
             "hint": "hint_mostly_blue"
@@ -6967,7 +6967,7 @@
                 "white": 3,
                 "black": 3
             },
-            "maxDrops": 21,
+            "maxDrops": 42,
             "difficultyFactor": 0.996,
             "isBlindMode": false,
             "hint": "hint_observe"
@@ -6981,7 +6981,7 @@
                 "white": 2,
                 "black": 0
             },
-            "maxDrops": 17,
+            "maxDrops": 34,
             "difficultyFactor": 0.998,
             "isBlindMode": false,
             "hint": "hint_mostly_green"
@@ -6995,7 +6995,7 @@
                 "white": 1,
                 "black": 0
             },
-            "maxDrops": 12,
+            "maxDrops": 24,
             "difficultyFactor": 1.0,
             "isBlindMode": true,
             "hint": "hint_mostly_blue"

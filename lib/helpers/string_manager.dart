@@ -71,6 +71,7 @@ mixin AppStrings {
   static const String blindMode = "blind_mode";
   static const String on = "on";
   static const String off = "off";
+  static const String codeRedeemedHelpers = "code_redeemed_helpers";
 
   // Game states
   static const String paused = "paused";
@@ -172,6 +173,28 @@ mixin AppStrings {
   static const String achievement11Desc = "achievement_11_desc";
   static const String achievement12Title = "achievement_12_title";
   static const String achievement12Desc = "achievement_12_desc";
+
+  // New Achievements (13-22)
+  static const String achievement13Title = "achievement_13_title";
+  static const String achievement13Desc = "achievement_13_desc";
+  static const String achievement14Title = "achievement_14_title";
+  static const String achievement14Desc = "achievement_14_desc";
+  static const String achievement15Title = "achievement_15_title";
+  static const String achievement15Desc = "achievement_15_desc";
+  static const String achievement16Title = "achievement_16_title";
+  static const String achievement16Desc = "achievement_16_desc";
+  static const String achievement17Title = "achievement_17_title";
+  static const String achievement17Desc = "achievement_17_desc";
+  static const String achievement18Title = "achievement_18_title";
+  static const String achievement18Desc = "achievement_18_desc";
+  static const String achievement19Title = "achievement_19_title";
+  static const String achievement19Desc = "achievement_19_desc";
+  static const String achievement20Title = "achievement_20_title";
+  static const String achievement20Desc = "achievement_20_desc";
+  static const String achievement21Title = "achievement_21_title";
+  static const String achievement21Desc = "achievement_21_desc";
+  static const String achievement22Title = "achievement_22_title";
+  static const String achievement22Desc = "achievement_22_desc";
 
   // Chaos Lab Events
   static const String anomalyDetected = "anomaly_detected";
@@ -741,7 +764,30 @@ mixin AppStrings {
     achievement10Desc: 'Complete a level with 3 stars in Blind Mode.',
     achievement11Title: 'Shopaholic',
     achievement11Desc: 'Unlock all available beaker skins.',
+    achievement12Title: 'Stability Expert',
     achievement12Desc: 'Complete a level using exactly one Stability Matrix.',
+
+    // New Achievements
+    achievement13Title: 'Color Collector',
+    achievement13Desc: 'Discover 50 unique colors in the laboratory.',
+    achievement14Title: 'Wealthy Scientist',
+    achievement14Desc: 'Amass 5,000 chemistry credits.',
+    achievement15Title: 'Big Spender',
+    achievement15Desc: 'Spend 2,000 total coins in the Chemical Shop.',
+    achievement16Title: 'Daily Scholar',
+    achievement16Desc: 'Complete 7 daily challenges.',
+    achievement17Title: 'Century Club',
+    achievement17Desc: 'Reach level 100 in Classic mode.',
+    achievement18Title: 'Chaos Master',
+    achievement18Desc: 'Win Chaos Lab with stability below 15%.',
+    achievement19Title: 'Echo Maestro',
+    achievement19Desc: 'Reach round 10 in Color Echo mode.',
+    achievement20Title: 'Helper Hoarder',
+    achievement20Desc: 'Have 10 of each laboratory helper at once.',
+    achievement21Title: 'Zero Waste',
+    achievement21Desc: 'Win with exactly the minimum drops required.',
+    achievement22Title: 'Legendary Status',
+    achievement22Desc: 'Complete 500 levels across all modes.',
     anomalyDetected: 'ANOMALY DETECTED',
     coinsEarned: '+%s Coins',
     coinsEarnedShort: '+%s',
@@ -944,6 +990,7 @@ mixin AppStrings {
     invalidCodeDesc: 'The code you entered is not valid.',
     codeRedeemedLives: 'Code redeemed! +3 Lives added.',
     codeRedeemedCoins: 'Code redeemed! +99999 Coins added.',
+    codeRedeemedHelpers: 'Code redeemed! +3 of each helper added.',
     accessibility: 'Accessibility',
     reducedMotion: 'Reduced Motion',
     appVersion: 'App Version',
@@ -1407,6 +1454,28 @@ mixin AppStrings {
     achievement11Desc: 'افتح جميع أشكال الكؤوس المتاحة.',
     achievement12Title: 'خبير الاستقرار',
     achievement12Desc: 'أكمل مستوى باستخدام مصفوفة استقرار واحدة بالضبط.',
+
+    // New Achievements
+    achievement13Title: 'جامع الألوان',
+    achievement13Desc: 'اكتشف 50 لونًا فريدًا في المختبر.',
+    achievement14Title: 'العالم الثري',
+    achievement14Desc: 'اجمع 5,000 من أرصدة الكيمياء.',
+    achievement15Title: 'المسرف الكبير',
+    achievement15Desc: 'أنفق 2,000 عملة في المتجر الكيميائي.',
+    achievement16Title: 'طالب يومي',
+    achievement16Desc: 'أكمل 7 تحديات يومية.',
+    achievement17Title: 'نادي المئة',
+    achievement17Desc: 'صل إلى المستوى 100 في الوضع الكلاسيكي.',
+    achievement18Title: 'سيد الفوضى',
+    achievement18Desc: 'فز في مختبر الفوضى مع استقرار أقل من 15%.',
+    achievement19Title: 'مايسترو الصدى',
+    achievement19Desc: 'صل إلى الجولة 10 في وضع صدى الألوان.',
+    achievement20Title: 'مكتنز المساعدات',
+    achievement20Desc: 'امتلك 10 من كل مساعد في وقت واحد.',
+    achievement21Title: 'صفر نفايات',
+    achievement21Desc: 'فز باستخدام الحد الأدنى المطلق من القطرات.',
+    achievement22Title: 'الحالة الأسطورية',
+    achievement22Desc: 'أكمل 500 مستوى عبر جميع الأوضاع.',
     anomalyDetected: 'تم رصد خلل!',
     coinsEarned: '+%s عملات',
     coinsEarnedShort: '+%s',
@@ -1608,6 +1677,7 @@ mixin AppStrings {
     invalidCodeDesc: 'الكود الذي أدخلته غير صالح.',
     codeRedeemedLives: 'تم استخدام الكود! أضيفت +3 أرواح.',
     codeRedeemedCoins: 'تم استخدام الكود! أضيفت +99999 عملة.',
+    codeRedeemedHelpers: 'تم استرداد الرمز! تم إضافة +3 من كل مساعد.',
     accessibility: 'إمكانية الوصول',
     reducedMotion: 'حركة مخففة',
     appVersion: 'إصدار التطبيق',
@@ -1927,6 +1997,28 @@ mixin AppStrings {
     achievement12Title: 'Experto en Estabilidad',
     achievement12Desc:
         'Completa un nivel usando exactamente una Matriz de Estabilidad.',
+
+    // New Achievements
+    achievement13Title: 'Coleccionista de Colores',
+    achievement13Desc: 'Descubre 50 colores únicos en el laboratorio.',
+    achievement14Title: 'Científico Rico',
+    achievement14Desc: 'Amasa 5,000 créditos de química.',
+    achievement15Title: 'Gran Gastador',
+    achievement15Desc: 'Gasta 2,000 monedas en la Tienda Química.',
+    achievement16Title: 'Erudito Diario',
+    achievement16Desc: 'Completa 7 desafíos diarios.',
+    achievement17Title: 'Club del Siglo',
+    achievement17Desc: 'Llega al nivel 100 en el modo Clásico.',
+    achievement18Title: 'Maestro del Caos',
+    achievement18Desc: 'Gana en Chaos Lab con estabilidad inferior al 15%.',
+    achievement19Title: 'Maestro del Eco',
+    achievement19Desc: 'Llega a la ronda 10 en el modo Eco de Color.',
+    achievement20Title: 'Acaparador de Ayudas',
+    achievement20Desc: 'Ten 10 de cada ayudante a la vez.',
+    achievement21Title: 'Cero Desperdicio',
+    achievement21Desc: 'Gana con exactamente el mínimo de gotas requeridas.',
+    achievement22Title: 'Estado Legendario',
+    achievement22Desc: 'Completa 500 niveles en todos los modos.',
     anomalyDetected: '¡ANOMALÍA DETECTADA!',
     coinsEarned: '+%s Monedas',
     coinsEarnedShort: '+%s',
@@ -2128,6 +2220,7 @@ mixin AppStrings {
     invalidCodeDesc: 'El código introducido no es válido.',
     codeRedeemedLives: '¡Código canjeado! +3 Vidas añadidas.',
     codeRedeemedCoins: '¡Código canjeado! +99999 Monedas añadidas.',
+    codeRedeemedHelpers: '¡Código canjeado! +3 de cada ayudante añadidos.',
     accessibility: 'Accesibilidad',
     reducedMotion: 'Movimiento Reducido',
     appVersion: 'Versión de la App',
@@ -2458,6 +2551,31 @@ mixin AppStrings {
     achievement12Title: 'Expert en Stabilité',
     achievement12Desc:
         'Terminez un niveau en utilisant exactement une Matrice de Stabilité.',
+
+    // New Achievements
+    achievement13Title: 'Collectionneur de Couleurs',
+    achievement13Desc: 'Découvrez 50 couleurs uniques dans le laboratoire.',
+    achievement14Title: 'Scientifique Fortuné',
+    achievement14Desc: 'Amassez 5 000 crédits de chimie.',
+    achievement15Title: 'Grand Dépensier',
+    achievement15Desc: 'Dépensez 2 000 pièces dans la Boutique Chimique.',
+    achievement16Title: 'Érudit Quotidien',
+    achievement16Desc: 'Terminez 7 défis quotidiens.',
+    achievement17Title: 'Club des Cent',
+    achievement17Desc: 'Atteignez le niveau 100 en mode Classique.',
+    achievement18Title: 'Maître du Chaos',
+    achievement18Desc:
+        'Gagnez dans Chaos Lab avec une stabilité inférieure à 15 %.',
+    achievement19Title: 'Maestro de l\'Écho',
+    achievement19Desc: 'Atteignez le tour 10 en mode Écho de Couleur.',
+    achievement20Title: 'Accumulateur d\'Aides',
+    achievement20Desc:
+        'Possédez 10 exemplaires de chaque aide de laboratoire en même temps.',
+    achievement21Title: 'Zéro Déchet',
+    achievement21Desc:
+        'Gagnez avec exactement le nombre minimum de gouttes requis.',
+    achievement22Title: 'Statut Légendaire',
+    achievement22Desc: 'Terminez 500 niveaux tous modes confondus.',
     anomalyDetected: 'ANOMALIE DÉTECTÉE !',
     coinsEarned: '+%s Pièces',
     coinsEarnedShort: '+%s',
@@ -2651,6 +2769,7 @@ mixin AppStrings {
     invalidCodeDesc: 'Le code que vous avez saisi n\'est pas valide.',
     codeRedeemedLives: 'Code utilisé ! +3 Vies ajoutées.',
     codeRedeemedCoins: 'Code utilisé ! +99999 Pièces ajoutées.',
+    codeRedeemedHelpers: 'Code utilisé ! +3 de chaque aide ajoutés.',
     accessibility: 'Accessibilité',
     reducedMotion: 'Mouvement Réduit',
     appVersion: 'Version de l\'App',

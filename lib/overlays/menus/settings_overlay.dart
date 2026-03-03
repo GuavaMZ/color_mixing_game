@@ -1,3 +1,4 @@
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import '../../../color_mixer_game.dart';
@@ -226,6 +227,20 @@ class _SettingsOverlayState extends State<SettingsOverlay>
           AppStrings.codeRedeemedCoins.getString(context),
         );
       }
+    } else if (code == 'helpersmzcmp080799') {
+      widget.game.addHelpers('extra_drops', 3);
+      widget.game.addHelpers('help_drop', 3);
+      widget.game.addHelpers('reveal_color', 3);
+      widget.game.addHelpers('undo', 3);
+
+      await SaveManager.markCodeAsRedeemed(code);
+      _audio.playWin();
+      if (mounted) {
+        _showResultDialog(
+          AppStrings.success.getString(context),
+          AppStrings.codeRedeemedHelpers.getString(context),
+        );
+      }
     } else {
       _audio.playButton();
       _showResultDialog(
@@ -433,7 +448,7 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                                 Text(
                                   _currentPatch != null
                                       ? '${AppStrings.patch.getString(context)} #$_currentPatch'
-                                      : 'v1.3.0',
+                                      : 'v${GlobalConstants.appVersion}',
                                   style: TextStyle(
                                     color: Colors.white.withValues(alpha: 0.5),
                                   ),

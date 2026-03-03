@@ -320,7 +320,7 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
                             ],
                           ),
                         ),
-                        SizedBox(height: ResponsiveHelper.spacing(context, 28)),
+                        SizedBox(height: ResponsiveHelper.spacing(context, 20)),
 
                         // Scientific Lab Report
                         _buildLabReport(context),
@@ -356,7 +356,7 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
                                           .game
                                           .levelManager
                                           .currentLevelIndex >=
-                                      10) {
+                                      0) {
                                     AdManager().showInterstitialAd();
                                   }
                                   widget.game.goToNextLevel();
@@ -587,7 +587,7 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
             ],
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
 
           // Wavelength row with spectral gradient
           _buildReportRow(
@@ -641,7 +641,7 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
             ),
           ),
 
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
 
           // Temperature row
           _buildReportRow(
@@ -671,60 +671,60 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
             value: harmonyLabel,
           ),
 
-          const SizedBox(height: 12),
+          // const SizedBox(height: 12),
 
           // Did You Know?
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.cyanAccent.withValues(alpha: 0.06),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.cyanAccent.withValues(alpha: 0.1),
-              ),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  Icons.lightbulb_rounded,
-                  color: Colors.amberAccent,
-                  size: 18,
-                  shadows: [
-                    Shadow(
-                      color: Colors.amberAccent.withValues(alpha: 0.5),
-                      blurRadius: 6,
-                    ),
-                  ],
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        AppStrings.didYouKnow.getString(context),
-                        style: AppTheme.buttonText(context).copyWith(
-                          color: Colors.amberAccent,
-                          fontSize: ResponsiveHelper.fontSize(context, 11),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        fact.getString(context),
-                        style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.8),
-                          fontSize: ResponsiveHelper.fontSize(context, 11),
-                          height: 1.4,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // Container(
+          //   padding: const EdgeInsets.all(10),
+          //   decoration: BoxDecoration(
+          //     color: Colors.cyanAccent.withValues(alpha: 0.06),
+          //     borderRadius: BorderRadius.circular(12),
+          //     border: Border.all(
+          //       color: Colors.cyanAccent.withValues(alpha: 0.1),
+          //     ),
+          //   ),
+          //   child: Row(
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     children: [
+          //       Icon(
+          //         Icons.lightbulb_rounded,
+          //         color: Colors.amberAccent,
+          //         size: 18,
+          //         shadows: [
+          //           Shadow(
+          //             color: Colors.amberAccent.withValues(alpha: 0.5),
+          //             blurRadius: 6,
+          //           ),
+          //         ],
+          //       ),
+          //       const SizedBox(width: 8),
+          //       Expanded(
+          //         child: Column(
+          //           crossAxisAlignment: CrossAxisAlignment.start,
+          //           children: [
+          //             Text(
+          //               AppStrings.didYouKnow.getString(context),
+          //               style: AppTheme.buttonText(context).copyWith(
+          //                 color: Colors.amberAccent,
+          //                 fontSize: ResponsiveHelper.fontSize(context, 11),
+          //                 fontWeight: FontWeight.bold,
+          //               ),
+          //             ),
+          //             const SizedBox(height: 4),
+          //             Text(
+          //               fact.getString(context),
+          //               style: TextStyle(
+          //                 color: Colors.white.withValues(alpha: 0.8),
+          //                 fontSize: ResponsiveHelper.fontSize(context, 11),
+          //                 height: 1.4,
+          //               ),
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
         ],
       ),
     );

@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import '../../../color_mixer_game.dart';
@@ -150,7 +151,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 16),
                                 child: Text(
-                                  'v1.3.0',
+                                  'v${GlobalConstants.appVersion}',
                                   style: AppTheme.caption(context).copyWith(
                                     color: Colors.white.withValues(alpha: 0.3),
                                   ),

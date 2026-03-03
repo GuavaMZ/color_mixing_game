@@ -18,6 +18,9 @@ class SaveManager {
   static const String _levelKey = 'player_progress';
   static const String _labConfigKey = 'lab_configuration';
   static const String _unlockedLabItemsKey = 'unlocked_lab_items';
+  static const String _totalSpentKey = 'total_spent_coins';
+  static const String _dailyChallengeCountKey =
+      'daily_challenge_completed_count';
 
   static CloudSyncService? _syncService;
 
@@ -280,7 +283,33 @@ class SaveManager {
     }
 
     await saveTotalCoins(current - amount);
+
+    // Track total spent
+    final spent = await loadTotalSpent();
+    await saveTotalSpent(spent + amount);
     return true;
+  }
+
+  static Future<void> saveTotalSpent(int amount) async {
+    await SecurityService.write(_totalSpentKey, amount.toString());
+  }
+
+  static Future<int> loadTotalSpent() async {
+    final data = await SecurityService.read(_totalSpentKey);
+    return data != null ? (int.tryParse(data) ?? 0) : 0;
+  }
+
+  static Future<void> incrementDailyChallengeCount() async {
+    final current = await loadDailyChallengeCount();
+    await SecurityService.write(
+      _dailyChallengeCountKey,
+      (current + 1).toString(),
+    );
+  }
+
+  static Future<int> loadDailyChallengeCount() async {
+    final data = await SecurityService.read(_dailyChallengeCountKey);
+    return data != null ? (int.tryParse(data) ?? 0) : 0;
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -411,17 +440,17 @@ class SaveManager {
             'negative_helper_count',
           );
           return {
-            'extra_drops': 0,
-            'help_drop': 0,
-            'reveal_color': 0,
-            'undo': 0,
+            'extra_drops': 3,
+            'help_drop': 3,
+            'reveal_color': 3,
+            'undo': 3,
           };
         }
 
         return decoded.map((key, value) => MapEntry(key, value as int));
       } catch (e) {}
     }
-    return {'extra_drops': 0, 'help_drop': 0, 'reveal_color': 0, 'undo': 0};
+    return {'extra_drops': 3, 'help_drop': 3, 'reveal_color': 3, 'undo': 3};
   }
 
   static Future<void> saveRandomEvents(bool enabled) async {
