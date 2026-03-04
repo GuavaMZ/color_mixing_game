@@ -61,9 +61,7 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
     }
 
     AudioManager().playButton();
-    widget.game.levelManager.currentLevelIndex = index;
-    widget.game.startLevel();
-    widget.game.transitionTo('LevelMap', 'Controls');
+    widget.game.transitionToLevel(index);
   }
 
   void _toggleRandomEvents(bool value) {

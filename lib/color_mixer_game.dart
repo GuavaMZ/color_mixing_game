@@ -146,6 +146,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       ValueNotifier<Map<String, int>>({});
 
   DateTime _levelStartTime = DateTime.now();
+  double _winTimer = -1.0;
 
   // Combo System
   final ValueNotifier<int> comboCount = ValueNotifier<int>(0);
@@ -213,16 +214,26 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     String overlayToRemove,
     String overlayToAdd, {
     bool isReverse = false,
+    VoidCallback? midpointAction,
   }) {
     if (_transitionCallback != null) {
       _transitionCallback!(() {
-        overlays.remove(overlayToRemove);
-        overlays.add(overlayToAdd);
+        if (overlayToRemove.isNotEmpty) overlays.remove(overlayToRemove);
+        midpointAction?.call();
+        if (overlayToAdd.isNotEmpty) overlays.add(overlayToAdd);
       }, isReverse: isReverse);
     } else {
-      overlays.remove(overlayToRemove);
-      overlays.add(overlayToAdd);
+      if (overlayToRemove.isNotEmpty) overlays.remove(overlayToRemove);
+      midpointAction?.call();
+      if (overlayToAdd.isNotEmpty) overlays.add(overlayToAdd);
     }
+  }
+
+  void transitionToLevel(int index) {
+    transitionTo('LevelMap', 'Controls', midpointAction: () {
+      levelManager.currentLevelIndex = index;
+      startLevel();
+    });
   }
 
   @override
@@ -356,6 +367,14 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   @override
   void update(double dt) {
     super.update(dt);
+
+    if (_winTimer > 0) {
+      _winTimer -= dt;
+      if (_winTimer <= 0) {
+        _winTimer = -1.0;
+        _executeWinTransition();
+      }
+    }
 
     if ((currentMode == GameMode.timeAttack ||
             currentMode == GameMode.colorEcho ||
@@ -689,42 +708,46 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     StatisticsManager.addDropsUsed(totalDrops.value);
     StatisticsManager.incrementModePlay(currentMode);
 
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      if (currentMode == GameMode.colorEcho) {
-        // Echo scoring: reward efficiency (fewer drops = more points)
-        echoScore += matchPercentage.value * (maxDrops - totalDrops.value + 1);
-        echoRound++;
-        echoStreak++;
+    _winTimer = 1.5;
+  }
 
-        // Base 50, Streak 1.0x multiplier
-        int echoCoins = (50 * (1 + echoStreak * 1.0)).toInt();
-        lastEarnedCoins = echoCoins;
-        addCoins(echoCoins);
+  void _executeWinTransition() {
+    if (!isMounted) return;
 
-        // Milestone reward
-        if (echoStreak % 5 == 0) {
-          _grantRandomHelper();
-        }
+    if (currentMode == GameMode.colorEcho) {
+      // Echo scoring: reward efficiency (fewer drops = more points)
+      echoScore += matchPercentage.value * (maxDrops - totalDrops.value + 1);
+      echoRound++;
+      echoStreak++;
 
-        overlays.add('EchoWin');
-      } else if (currentMode == GameMode.chaosLab) {
-        // Chaos base 50 + 10x per round depth
-        int chaosBaseCoins = 50 + (chaosRound * 10);
-        int chaosBonus = (chaosBaseCoins * chaosStability).toInt();
-        lastEarnedCoins = chaosBaseCoins + chaosBonus;
-        addCoins(lastEarnedCoins);
-        chaosRound++;
+      // Base 50, Streak 1.0x multiplier
+      int echoCoins = (50 * (1 + echoStreak * 1.0)).toInt();
+      lastEarnedCoins = echoCoins;
+      addCoins(echoCoins);
 
-        // Chaos Survivor bonus
-        if (chaosStability < 0.3) {
-          _grantRandomHelper();
-        }
-
-        overlays.add('ChaosWin');
-      } else {
-        overlays.add('WinMenu');
+      // Milestone reward
+      if (echoStreak % 5 == 0) {
+        _grantRandomHelper();
       }
-    });
+
+      overlays.add('EchoWin');
+    } else if (currentMode == GameMode.chaosLab) {
+      // Chaos base 50 + 10x per round depth
+      int chaosBaseCoins = 50 + (chaosRound * 10);
+      int chaosBonus = (chaosBaseCoins * chaosStability).toInt();
+      lastEarnedCoins = chaosBaseCoins + chaosBonus;
+      addCoins(lastEarnedCoins);
+      chaosRound++;
+
+      // Chaos Survivor bonus
+      if (chaosStability < 0.3) {
+        _grantRandomHelper();
+      }
+
+      overlays.add('ChaosWin');
+    } else {
+      overlays.add('WinMenu');
+    }
   }
 
   /// Start next Echo round without resetting score/streak
@@ -791,18 +814,19 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       chaosRound = 0;
     }
 
-    // Removed levelManager.reset() as it resets currentLevelIndex to 0
-    beaker.clearContents();
-    totalDrops.value = 0;
-    matchPercentage.value = 0;
-    rDrops = 0;
-    gDrops = 0;
-    bDrops = 0;
-    whiteDrops = 0;
-    blackDrops = 0;
-    dropsLimitReached.value = false;
-    startLevel();
-    notifyListeners();
+    transitionTo('', '', midpointAction: () {
+      beaker.clearContents();
+      totalDrops.value = 0;
+      matchPercentage.value = 0;
+      rDrops = 0;
+      gDrops = 0;
+      bDrops = 0;
+      whiteDrops = 0;
+      blackDrops = 0;
+      dropsLimitReached.value = false;
+      startLevel();
+    });
+  }
   }
 
   List<String> dropHistory = [];
@@ -1254,20 +1278,19 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
   void goToNextLevel() {
     if (currentMode == GameMode.colorEcho) {
-      overlays.remove('WinMenu');
-      startLevel();
-      notifyListeners();
+      transitionTo('WinMenu', '', midpointAction: () {
+        startLevel();
+      });
       return;
     }
-
-    // Remove WinMenu overlay
-    overlays.remove('WinMenu');
 
     // Check if next level exists
     int nextLevelIndex = levelManager.currentLevelIndex + 1;
     if (nextLevelIndex < levelManager.levels.length) {
-      levelManager.currentLevelIndex = nextLevelIndex;
-      startLevel(); // Initialize and start the next level
+      transitionTo('WinMenu', 'Controls', midpointAction: () {
+        levelManager.currentLevelIndex = nextLevelIndex;
+        startLevel();
+      });
     } else {
       navigateToPage('LevelMap', isReverse: true);
     }
@@ -1440,7 +1463,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   }
 
   void navigateToPage(String pageName, {bool isReverse = false}) {
-    void performCleanup() {
+    transitionTo('', pageName, isReverse: isReverse, midpointAction: () {
       // If navigating to MainMenu, reset mode and music
       if (pageName == 'MainMenu') {
         currentMode = GameMode.none;
@@ -1448,8 +1471,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
         disposeRandomEvents();
       }
 
-      // Clear ALL currently active overlays to ensure clean state
-      // We take a copy of the active overlays set to avoid concurrent modification issues
+      // Clear ALL currently active overlays except the target
       final active = overlays.activeOverlays.toList();
       for (final overlay in active) {
         if (overlay != pageName) {
@@ -1459,15 +1481,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
       // Force re-initialization of the target page
       overlays.remove(pageName);
-      overlays.add(pageName);
-      notifyListeners();
-    }
-
-    if (_transitionCallback != null) {
-      _transitionCallback!(performCleanup, isReverse: isReverse);
-    } else {
-      performCleanup();
-    }
+    });
   }
 
   void returnToMainMenu() => navigateToPage('MainMenu', isReverse: true);

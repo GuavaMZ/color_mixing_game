@@ -2,6 +2,7 @@ import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:color_mixing_deductive/color_mixer_game.dart';
 import 'package:shorebird_code_push/shorebird_code_push.dart';
@@ -71,10 +72,15 @@ class _IntroSplashOverlayState extends State<IntroSplashOverlay>
     _controller.forward();
 
     // Check for updates in parallel with animations
-    await _checkForUpdates();
+    final requiresRestart = await _checkForUpdates();
 
     // Small extra delay to ensure logo isn't too fast
     await Future.delayed(const Duration(milliseconds: 1000));
+
+    if (requiresRestart) {
+      _showRestartDialog();
+      return; // Break initialization loop to prevent moving to MainMenu
+    }
 
     if (mounted) {
       widget.game.overlays.remove('IntroSplash');
@@ -82,10 +88,10 @@ class _IntroSplashOverlayState extends State<IntroSplashOverlay>
     }
   }
 
-  Future<void> _checkForUpdates() async {
+  Future<bool> _checkForUpdates() async {
     try {
       final connectivityResult = await Connectivity().checkConnectivity();
-      if (connectivityResult.contains(ConnectivityResult.none)) return;
+      if (connectivityResult.contains(ConnectivityResult.none)) return false;
 
       setState(() => _statusKey = AppStrings.checkingForUpdates);
 
@@ -98,15 +104,82 @@ class _IntroSplashOverlayState extends State<IntroSplashOverlay>
         if (mounted) {
           setState(() => _statusKey = AppStrings.updateReady);
         }
+        return true;
       } else {
         setState(() => _statusKey = AppStrings.labArchivesInitialized);
+        return false;
       }
     } catch (e) {
       debugPrint('Update check failed: $e');
       if (mounted) {
         setState(() => _statusKey = AppStrings.labArchivesInitialized);
       }
+      return false;
     }
+  }
+
+  void _showRestartDialog() {
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => PopScope(
+        canPop: false,
+        child: AlertDialog(
+          backgroundColor: AppTheme.primaryDark.withValues(alpha: 0.95),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+            side: const BorderSide(color: AppTheme.neonCyan, width: 2),
+          ),
+          title: Text(
+            AppStrings.updateReady.getString(context),
+            style: AppTheme.heading1(
+              context,
+            ).copyWith(color: Colors.white, fontSize: 24),
+            textAlign: TextAlign.center,
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.system_update_rounded,
+                color: AppTheme.neonCyan,
+                size: 48,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                AppStrings.updateReadyDesc.getString(context),
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white70, fontSize: 16),
+              ),
+            ],
+          ),
+          actionsAlignment: MainAxisAlignment.center,
+          actions: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.neonCyan,
+                foregroundColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 12,
+                ),
+              ),
+              onPressed: () {
+                SystemNavigator.pop();
+              },
+              child: Text(
+                AppStrings.quit.getString(context),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override

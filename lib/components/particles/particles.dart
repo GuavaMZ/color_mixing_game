@@ -10,6 +10,9 @@ class WinningParticles extends Component {
 
   WinningParticles({required this.position, required this.colors});
 
+  double _timer = 0;
+  final double _duration = 3.5;
+
   @override
   Future<void> onLoad() async {
     super.onLoad();
@@ -78,9 +81,14 @@ class WinningParticles extends Component {
     );
 
     add(particleComponent);
+  }
 
-    Future.delayed(const Duration(milliseconds: 3500), () {
+  @override
+  void update(double dt) {
+    super.update(dt);
+    _timer += dt;
+    if (_timer >= _duration) {
       removeFromParent();
-    });
+    }
   }
 }

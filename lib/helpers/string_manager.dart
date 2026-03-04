@@ -440,6 +440,7 @@ mixin AppStrings {
   static const String checkingForUpdates = "checking_for_updates";
   static const String downloadingUpdate = "downloading_update";
   static const String updateReady = "update_ready";
+  static const String updateReadyDesc = "update_ready_desc";
 
   // Event Labels
   static const String eventGlitch = "event_glitch";
@@ -794,6 +795,8 @@ mixin AppStrings {
     checkingForUpdates: 'Checking for updates...',
     downloadingUpdate: 'Downloading update...',
     updateReady: 'Update ready!',
+    updateReadyDesc:
+        'An update has been downloaded. Please restart the game to apply changes.',
 
     // Tutorial
     tutorial: 'Tutorial',
@@ -1482,6 +1485,8 @@ mixin AppStrings {
     checkingForUpdates: 'جاري البحث عن تحديثات...',
     downloadingUpdate: 'جاري تنزيل التحديث...',
     updateReady: 'التحديث جاهز!',
+    updateReadyDesc:
+        'تم تنزيل تحديث. يرجى إعادة تشغيل اللعبة لتطبيق التغييرات.',
 
     // Tutorial
     tutorial: 'التعليمات',
@@ -2206,6 +2211,8 @@ mixin AppStrings {
     latestVersion: 'Estás en la última versión.',
     full: 'Lleno',
     updateAvailable: 'Actualización Disponible',
+    updateReadyDesc:
+        'Se ha descargado una actualización. Por favor, reinicia el juego para aplicar los cambios.',
     updateDesc:
         'Hay una nueva actualización disponible. ¿Quieres descargarla ahora?',
     later: 'Más tarde',
@@ -2916,5 +2923,7 @@ mixin AppStrings {
         'La roue des couleurs a été inventée par Sir Isaac Newton en 1666.',
     termsAcceptanceStatement: 'En jouant, vous acceptez nos %s',
     termsOfUseLabel: "Conditions d'utilisation",
+    updateReadyDesc:
+        'Une mise à jour a été téléchargée. Veuillez redémarrer le jeu pour appliquer les modifications.',
   };
 }

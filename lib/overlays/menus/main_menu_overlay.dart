@@ -506,9 +506,14 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
           ),
           onTap: () {
             AudioManager().playButton();
-            widget.game.currentMode = GameMode.colorEcho;
-            widget.game.startLevel();
-            widget.game.transitionTo('MainMenu', 'ColorEchoHUD');
+            widget.game.transitionTo(
+              'MainMenu',
+              'ColorEchoHUD',
+              midpointAction: () {
+                widget.game.currentMode = GameMode.colorEcho;
+                widget.game.startLevel();
+              },
+            );
           },
           delay: 100,
         ),
@@ -540,9 +545,14 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
           ),
           onTap: () {
             AudioManager().playButton();
-            widget.game.currentMode = GameMode.chaosLab;
-            widget.game.startLevel();
-            widget.game.transitionTo('MainMenu', 'ChaosLabHUD');
+            widget.game.transitionTo(
+              'MainMenu',
+              'ChaosLabHUD',
+              midpointAction: () {
+                widget.game.currentMode = GameMode.chaosLab;
+                widget.game.startLevel();
+              },
+            );
           },
           delay: 300,
         ),

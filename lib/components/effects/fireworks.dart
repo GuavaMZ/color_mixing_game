@@ -6,12 +6,21 @@ import 'package:flutter/material.dart';
 class Fireworks extends PositionComponent {
   final Random _rnd = Random();
   double _timer = 0;
+  double _lifetime = 0;
+  final double _maxLifetime =
+      5.0; // Automatically stop and clean up after 5 seconds
 
   Fireworks({super.size});
 
   @override
   void update(double dt) {
     super.update(dt);
+    _lifetime += dt;
+    if (_lifetime >= _maxLifetime) {
+      removeFromParent();
+      return;
+    }
+
     _timer += dt;
     if (_timer > 0.5) {
       _timer = 0;

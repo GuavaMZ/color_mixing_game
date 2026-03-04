@@ -9,6 +9,9 @@ class EchoParticles extends Component {
 
   EchoParticles({required this.position, required this.color});
 
+  double _timer = 0;
+  final double _duration = 1.5;
+
   @override
   Future<void> onLoad() async {
     super.onLoad();
@@ -54,9 +57,14 @@ class EchoParticles extends Component {
     );
 
     add(particleComponent);
+  }
 
-    Future.delayed(const Duration(milliseconds: 1500), () {
+  @override
+  void update(double dt) {
+    super.update(dt);
+    _timer += dt;
+    if (_timer >= _duration) {
       removeFromParent();
-    });
+    }
   }
 }
