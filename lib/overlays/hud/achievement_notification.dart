@@ -1,13 +1,19 @@
+import 'package:color_mixing_deductive/core/achievement_engine.dart';
 import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
 import 'package:flutter/material.dart';
 
+/// Achievement notification banner that slides in from the top.
+///
+/// Supports three [AchievementTier] styles (Bronze / Silver / Gold)
+/// so the badge color communicates rarity at a glance.
 class AchievementNotification extends StatefulWidget {
   final VoidCallback onDismiss;
   final String title;
   final String subtitle;
   final IconData icon;
+  final AchievementTier tier;
 
   const AchievementNotification({
     super.key,
@@ -15,6 +21,7 @@ class AchievementNotification extends StatefulWidget {
     required this.title,
     required this.subtitle,
     required this.icon,
+    this.tier = AchievementTier.gold,
   });
 
   @override
@@ -36,13 +43,12 @@ class _AchievementNotificationState extends State<AchievementNotification>
     );
 
     _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, -1.5), // Start above screen
-      end: const Offset(0, 0.2), // Slide down a bit
+      begin: const Offset(0, -1.5),
+      end: const Offset(0, 0.2),
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
 
     _controller.forward();
 
-    // Auto dismiss
     Future.delayed(const Duration(seconds: 4), () {
       if (mounted) {
         _controller.reverse().then((_) => widget.onDismiss());
@@ -55,6 +61,31 @@ class _AchievementNotificationState extends State<AchievementNotification>
     _controller.dispose();
     super.dispose();
   }
+
+  // Badge gradient per tier
+  List<Color> get _badgeColors => switch (widget.tier) {
+    AchievementTier.bronze => [
+      const Color(0xFFCD7F32),
+      const Color(0xFF8B4513),
+    ],
+    AchievementTier.silver => [
+      const Color(0xFFC0C0C0),
+      const Color(0xFF808080),
+    ],
+    AchievementTier.gold => [const Color(0xFFFFD700), const Color(0xFFB8860B)],
+  };
+
+  Color get _glowColor => switch (widget.tier) {
+    AchievementTier.bronze => const Color(0xFFCD7F32),
+    AchievementTier.silver => const Color(0xFFC0C0C0),
+    AchievementTier.gold => Colors.amber,
+  };
+
+  Color get _borderColor => switch (widget.tier) {
+    AchievementTier.bronze => const Color(0xFFCD7F32),
+    AchievementTier.silver => const Color(0xFFC0C0C0),
+    AchievementTier.gold => AppTheme.electricYellow,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -71,25 +102,26 @@ class _AchievementNotificationState extends State<AchievementNotification>
             decoration: AppTheme.cosmicCard(
               borderRadius: 16,
               fillColor: AppTheme.primaryDark,
-              borderColor: AppTheme.electricYellow,
+              borderColor: _borderColor,
               hasGlow: true,
+              glowColor: _glowColor,
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Metallic Badge Icon
+                // Tier Badge Icon
                 Container(
                   padding: const EdgeInsets.all(8),
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
-                      colors: [Color(0xFFFFD700), Color(0xFFB8860B)], // Gold
+                      colors: _badgeColors,
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.amber,
+                        color: _glowColor.withValues(alpha: 0.5),
                         blurRadius: 10,
                         spreadRadius: 2,
                       ),
@@ -103,14 +135,40 @@ class _AchievementNotificationState extends State<AchievementNotification>
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        AppStrings.achievementUnlockedTitle.getString(context),
-                        style: TextStyle(
-                          color: AppTheme.electricYellow,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 2.0,
-                        ),
+                      Row(
+                        children: [
+                          Text(
+                            AppStrings.achievementUnlockedTitle.getString(
+                              context,
+                            ),
+                            style: TextStyle(
+                              color: _borderColor,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 2.0,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: _glowColor.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              widget.tier.label.toUpperCase(),
+                              style: TextStyle(
+                                color: _glowColor,
+                                fontSize: 9,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.5,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 4),
                       Text(

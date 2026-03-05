@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'vip_manager.dart';
 
 class AdManager {
   static final AdManager _instance = AdManager._internal();
@@ -107,6 +108,11 @@ class AdManager {
   }
 
   void showInterstitialAd() {
+    if (VipManager.instance.isVip.value) {
+      debugPrint('Skipping Interstitial Ad for VIP user');
+      return;
+    }
+
     if (_isInterstitialAdReady && _interstitialAd != null) {
       _interstitialAd!.show();
       _isInterstitialAdReady = false;

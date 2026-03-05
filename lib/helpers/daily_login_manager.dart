@@ -1,5 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:color_mixing_deductive/core/save_manager.dart';
+import 'package:color_mixing_deductive/helpers/statistics_manager.dart';
 
 class DailyLoginManager {
   static const String _lastLoginKey = 'daily_login_last_date';
@@ -7,15 +8,7 @@ class DailyLoginManager {
   static const String _claimedTodayKey = 'daily_login_claimed_today';
 
   // Static rewards for the 7-day track
-  static const List<int> _dailyRewards = [
-    50, // Day 1
-    100, // Day 2
-    150, // Day 3
-    200, // Day 4
-    250, // Day 5
-    300, // Day 6
-    500, // Day 7
-  ];
+  static const List<int> _dailyRewards = [50, 100, 150, 200, 250, 300, 500];
 
   static int getRewardForDay(int day) {
     if (day < 1 || day > 7) return 50;
@@ -28,7 +21,6 @@ class DailyLoginManager {
     final lastDate = prefs.getString(_lastLoginKey);
     final today = _getTodayString();
 
-    // If they haven't logged in today, or they haven't claimed yet today
     if (lastDate != today) {
       return true;
     }
@@ -66,9 +58,6 @@ class DailyLoginManager {
 
     // If their last login was yesterday, they maintain the streak
     if (lastDate == yesterday) {
-      // We don't advance the streak until they *claim* it. We just present it.
-      // E.g. streak is currently 1 (meaning they claimed day 1 yesterday).
-      // They are now presented with day 2.
       int nextStreak = streak + 1;
       if (nextStreak > 7) {
         nextStreak = 1; // Loop back to 1 after completing a week
@@ -99,6 +88,9 @@ class DailyLoginManager {
     await prefs.setString(_lastLoginKey, today);
     await prefs.setInt(_loginStreakKey, streakToClaim);
     await prefs.setBool(_claimedTodayKey, true);
+
+    // Track for achievements
+    StatisticsManager.updateLoginStreak(streakToClaim);
 
     return rewardCoins;
   }

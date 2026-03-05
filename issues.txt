@@ -1,0 +1,15 @@
+﻿Analyzing color_mixing_deductive...                             
+
+   info - Empty catch block - bin\diag.dart:10:15 - empty_catches
+   info - Empty catch block - bin\diag.dart:14:15 - empty_catches
+   info - Empty catch block - lib\core\save_manager.dart:451:19 - empty_catches
+   info - Empty catch block - lib\core\save_manager.dart:500:19 - empty_catches
+   info - Empty catch block - lib\core\save_manager.dart:530:19 - empty_catches
+   info - Empty catch block - lib\core\save_manager.dart:557:19 - empty_catches
+   info - Invalid use of a private type in a public API - lib\core\xp_manager.dart:185:3 - library_private_types_in_public_api
+   info - Use interpolation to compose strings and values - lib\core\xp_manager.dart:202:7 - prefer_interpolation_to_compose_strings
+   info - Unnecessary use of multiple underscores - lib\overlays\hud\controls_overlay.dart:1259:20 - unnecessary_underscores
+warning - The value of the local variable 'fact' isn't used - lib\overlays\menus\win_menu_overlay.dart:522:11 - unused_local_variable
+   info - The private field _isUpdating could be 'final' - lib\overlays\system\intro_splash_overlay.dart:30:8 - prefer_final_fields
+warning - The value of the field '_isUpdating' isn't used - lib\overlays\system\intro_splash_overlay.dart:30:8 - unused_field
+

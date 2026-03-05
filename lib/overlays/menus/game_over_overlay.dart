@@ -10,9 +10,57 @@ import '../../../color_mixer_game.dart';
 import '../../core/lives_manager.dart';
 import '../../overlays/system/no_lives_dialog.dart';
 
-class GameOverOverlay extends StatelessWidget {
+import '../../core/ad_manager.dart';
+
+class GameOverOverlay extends StatefulWidget {
   final ColorMixerGame game;
   const GameOverOverlay({super.key, required this.game});
+
+  @override
+  State<GameOverOverlay> createState() => _GameOverOverlayState();
+}
+
+class _GameOverOverlayState extends State<GameOverOverlay> {
+  bool _reviveUsed = false;
+  bool _isAdLoading = false;
+
+  void _watchAdToRevive() {
+    if (_isAdLoading) return;
+    setState(() => _isAdLoading = true);
+
+    AdManager().showRewardedAd(
+      onUserEarnedReward: (_, __) {
+        if (mounted) {
+          setState(() {
+            _reviveUsed = true;
+            _isAdLoading = false;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppStrings.reviveSuccess.getString(context)),
+              backgroundColor: Colors.green,
+            ),
+          );
+          // Reward logic
+          widget.game.reviveWithDrops(15);
+        }
+      },
+    );
+
+    // Stop spinner if ad failed to load (async fail silently handled inside AdManager for now,
+    // but we can just timeout the spinner as a fail-safe or let user try again)
+    Future.delayed(const Duration(seconds: 4), () {
+      if (mounted && _isAdLoading) {
+        setState(() => _isAdLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppStrings.adNotReady.getString(context)),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +104,7 @@ class GameOverOverlay extends StatelessWidget {
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
-                          game.isTimeUp
+                          widget.game.isTimeUp
                               ? Icons.timer_off_outlined
                               : Icons.opacity_rounded,
                           color: AppTheme.neonMagenta,
@@ -77,7 +125,7 @@ class GameOverOverlay extends StatelessWidget {
                       baseColor: Colors.white,
                       highlightColor: AppTheme.neonMagenta,
                       child: Text(
-                        game.isTimeUp
+                        widget.game.isTimeUp
                             ? AppStrings.timeUp.getString(context)
                             : AppStrings.outOfDrops.getString(context),
                         style: AppTheme.heading2(
@@ -87,7 +135,7 @@ class GameOverOverlay extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      game.isTimeUp
+                      widget.game.isTimeUp
                           ? AppStrings.timeUpDesc.getString(context)
                           : AppStrings.outOfDropsDesc.getString(context),
                       textAlign: TextAlign.center,
@@ -97,6 +145,24 @@ class GameOverOverlay extends StatelessWidget {
                     ),
                     const SizedBox(height: 32),
 
+                    // ── Phase 2: Rewarded Ad Revive ──────────────────────
+                    if (!_reviveUsed &&
+                        widget.game.currentMode == GameMode.classic) ...[
+                      SizedBox(
+                        width: double.infinity,
+                        child: EnhancedButton(
+                          label: _isAdLoading
+                              ? '...'
+                              : AppStrings.watchAdRevive.getString(context),
+                          icon: Icons.personal_video_rounded,
+                          color: Colors.amber,
+                          onTap: _watchAdToRevive,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+
+                    // ──────────────────────────────────────────────────
                     Row(
                       children: [
                         Expanded(
@@ -109,7 +175,7 @@ class GameOverOverlay extends StatelessWidget {
                                 return;
                               }
                               AudioManager().playButton();
-                              game.resetGame();
+                              widget.game.resetGame();
                             },
                           ),
                         ),
@@ -121,10 +187,11 @@ class GameOverOverlay extends StatelessWidget {
                             isOutlined: true,
                             onTap: () {
                               AudioManager().playButton();
-                              if (game.currentMode == GameMode.colorEcho) {
-                                game.returnToMainMenu();
+                              if (widget.game.currentMode ==
+                                  GameMode.colorEcho) {
+                                widget.game.returnToMainMenu();
                               } else {
-                                game.navigateToPage(
+                                widget.game.navigateToPage(
                                   'LevelMap',
                                   isReverse: true,
                                 );

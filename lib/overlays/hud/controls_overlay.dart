@@ -10,6 +10,7 @@ import '../../helpers/visual_effects.dart';
 import '../../components/ui/responsive_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import '../../core/ad_manager.dart';
 
 class ControlsOverlay extends StatelessWidget {
   const ControlsOverlay({super.key, required this.game});
@@ -573,6 +574,11 @@ class ControlsOverlay extends StatelessWidget {
                 onTap: game.isBlindMode ? () => game.revealHiddenColor() : null,
                 isVisible: game.isBlindMode,
               ),
+              if ((counts['help_drop'] ?? 0) <= 0 &&
+                  game.currentMode == GameMode.classic) ...[
+                const SizedBox(height: 8),
+                _WatchAdHintButton(game: game),
+              ],
             ],
           );
         },
@@ -798,7 +804,7 @@ class _TimeAttackTimer extends StatelessWidget {
           duration: const Duration(milliseconds: 300),
           tween: Tween(begin: 1.0, end: isLow ? 1.05 : 1.0),
           builder: (context, scale, child) {
-            return Transform.scale(
+            final timerWidget = Transform.scale(
               scale: isLow
                   ? (1.0 + (progress < 0.2 ? (game.timeLeft % 0.5) * 0.1 : 0.0))
                   : 1.0,
@@ -891,6 +897,19 @@ class _TimeAttackTimer extends StatelessWidget {
                   ),
                 ],
               ),
+            );
+
+            // Wrap in column to add the +10s ad button below
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                timerWidget,
+                if (isLow) ...[
+                  const SizedBox(height: 8),
+                  _WatchAdTimeButton(game: game),
+                ],
+              ],
             );
           },
         );
@@ -1272,4 +1291,156 @@ class _PulsingDotState extends State<_PulsingDot>
       ),
     );
   }
+}
+
+// ── Phase 2: Rewarded Ad Buttons ──────────────────────────────────────────
+
+class _WatchAdHintButton extends StatefulWidget {
+  final ColorMixerGame game;
+  const _WatchAdHintButton({required this.game});
+
+  @override
+  State<_WatchAdHintButton> createState() => _WatchAdHintButtonState();
+}
+
+class _WatchAdHintButtonState extends State<_WatchAdHintButton> {
+  bool _isAdLoading = false;
+
+  void _watchAd() {
+    if (_isAdLoading) return;
+    setState(() => _isAdLoading = true);
+
+    AdManager().showRewardedAd(
+      onUserEarnedReward: (_, __) {
+        if (mounted) {
+          setState(() {
+            _isAdLoading = false;
+          });
+          widget.game.addHelper('help_drop', 1);
+          widget.game.addHelpDrop();
+        }
+      },
+      onAdFailed: () {
+        if (mounted) setState(() => _isAdLoading = false);
+      },
+    );
+
+    Future.delayed(const Duration(seconds: 4), () {
+      if (mounted && _isAdLoading) {
+        setState(() => _isAdLoading = false);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _buildAdMiniButton(
+      context: context,
+      icon: Icons.personal_video_rounded,
+      color: Colors.amber,
+      isLoading: _isAdLoading,
+      onTap: _watchAd,
+    );
+  }
+}
+
+class _WatchAdTimeButton extends StatefulWidget {
+  final ColorMixerGame game;
+  const _WatchAdTimeButton({required this.game});
+
+  @override
+  State<_WatchAdTimeButton> createState() => _WatchAdTimeButtonState();
+}
+
+class _WatchAdTimeButtonState extends State<_WatchAdTimeButton> {
+  bool _isAdLoading = false;
+  bool _usedThisLevel = false;
+
+  void _watchAd() {
+    if (_isAdLoading || _usedThisLevel) return;
+    setState(() => _isAdLoading = true);
+
+    AdManager().showRewardedAd(
+      onUserEarnedReward: (_, __) {
+        if (mounted) {
+          setState(() {
+            _isAdLoading = false;
+            _usedThisLevel = true;
+          });
+          widget.game.timeLeft += 10;
+        }
+      },
+      onAdFailed: () {
+        if (mounted) setState(() => _isAdLoading = false);
+      },
+    );
+
+    Future.delayed(const Duration(seconds: 4), () {
+      if (mounted && _isAdLoading) {
+        setState(() => _isAdLoading = false);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_usedThisLevel) return const SizedBox.shrink();
+    return _buildAdMiniButton(
+      context: context,
+      icon: Icons.add_alarm_rounded,
+      color: AppTheme.electricYellow,
+      isLoading: _isAdLoading,
+      label: "+10s",
+      onTap: _watchAd,
+    );
+  }
+}
+
+Widget _buildAdMiniButton({
+  required BuildContext context,
+  required IconData icon,
+  required Color color,
+  required bool isLoading,
+  required VoidCallback onTap,
+  String? label,
+}) {
+  return GestureDetector(
+    onTap: isLoading ? null : onTap,
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(color: color.withValues(alpha: 0.2), blurRadius: 8),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (isLoading)
+            SizedBox(
+              width: 14,
+              height: 14,
+              child: CircularProgressIndicator(strokeWidth: 2, color: color),
+            )
+          else
+            Icon(icon, color: color, size: 16),
+          if (label != null) ...[
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                decoration: TextDecoration.none,
+              ),
+            ),
+          ],
+        ],
+      ),
+    ),
+  );
 }

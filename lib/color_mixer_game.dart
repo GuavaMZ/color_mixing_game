@@ -21,6 +21,8 @@ import 'package:color_mixing_deductive/components/environment/beaker_stand.dart'
 import 'package:color_mixing_deductive/components/environment/string_lights.dart';
 import 'package:color_mixing_deductive/components/effects/inverted_controls_effect.dart';
 import 'package:color_mixing_deductive/components/effects/earthquake_visual_effect.dart';
+import 'package:color_mixing_deductive/core/season_pass_manager.dart';
+import 'package:color_mixing_deductive/core/vip_manager.dart';
 import 'package:color_mixing_deductive/components/effects/mirror_distortion_effect.dart';
 import 'package:color_mixing_deductive/components/effects/wind_force_effect.dart';
 import 'package:color_mixing_deductive/components/effects/leaking_beaker_effect.dart';
@@ -33,16 +35,21 @@ import 'package:color_mixing_deductive/core/level_manager.dart';
 import 'package:color_mixing_deductive/core/save_manager.dart';
 import 'package:color_mixing_deductive/core/coin_store.dart';
 import 'package:color_mixing_deductive/core/lives_manager.dart';
+import 'package:color_mixing_deductive/core/xp_manager.dart';
+import 'package:color_mixing_deductive/core/card_collection_manager.dart';
+import 'package:color_mixing_deductive/core/achievement_engine.dart';
+import 'package:color_mixing_deductive/core/adaptive_difficulty.dart';
 import 'package:color_mixing_deductive/helpers/audio_manager.dart';
 import 'package:color_mixing_deductive/helpers/event_rarity_system.dart';
 import 'package:color_mixing_deductive/helpers/haptic_manager.dart';
 import 'package:color_mixing_deductive/helpers/statistics_manager.dart';
+import 'package:color_mixing_deductive/helpers/tournament_manager.dart';
 import 'dart:math';
 import 'package:flame/game.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 
-enum GameMode { classic, timeAttack, colorEcho, chaosLab, none }
+enum GameMode { classic, timeAttack, colorEcho, chaosLab, tournament, none }
 
 class ColorMixerGame extends FlameGame with ChangeNotifier {
   late Beaker beaker;
@@ -138,8 +145,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   final ValueNotifier<double> matchPercentage = ValueNotifier<double>(0.0);
   final ValueNotifier<int> totalDrops = ValueNotifier<int>(0);
   int lastEarnedCoins = 0; // For UI synchronization
-  bool randomEventBonusApplied =
-      false; // Whether 1.3x bonus was applied this win
+  bool randomEventBonusApplied = false;
   final ValueNotifier<bool> dropsLimitReached = ValueNotifier<bool>(false);
   final ValueNotifier<int> totalCoins = ValueNotifier<int>(0);
   final ValueNotifier<Map<String, int>> helperCounts =
@@ -184,6 +190,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   double _activeEventDuration = 0.0;
   double _activeEventElapsed = 0.0;
   bool _randomEventOccurredThisLevel = false;
+  bool _cardDroppedThisLevel = false;
 
   bool get isAnyRandomEventActive =>
       isBlackout ||
@@ -230,10 +237,14 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   }
 
   void transitionToLevel(int index) {
-    transitionTo('LevelMap', 'Controls', midpointAction: () {
-      levelManager.currentLevelIndex = index;
-      startLevel();
-    });
+    transitionTo(
+      'LevelMap',
+      'Controls',
+      midpointAction: () {
+        levelManager.currentLevelIndex = index;
+        startLevel();
+      },
+    );
   }
 
   @override
@@ -253,6 +264,15 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     reducedMotionEnabled = await SaveManager.loadReducedMotion();
     randomEventsEnabled = await SaveManager.loadRandomEvents();
     loadingProgress.value = 0.3;
+
+    // ── Phase 1: Init meta-progression systems ──────────────────────────────
+    await XpManager.instance.init();
+    XpManager.instance.attachGame(this);
+    await AchievementEngine.instance.init(unlockedAchievements);
+    await AdaptiveDifficulty.instance.init();
+    // Listen for level-up events to show the overlay
+    XpManager.instance.levelUpEvent.addListener(_onLevelUp);
+    // ────────────────────────────────────────────────────────────────────────
 
     CoinStoreService.instance.attachGame(this);
     CoinStoreService.instance.initialize();
@@ -517,9 +537,21 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
   @override
   void onRemove() {
+    XpManager.instance.levelUpEvent.removeListener(_onLevelUp);
     _audio.dispose();
     disposeRandomEvents(); // Call disposeRandomEvents on game removal
     super.onRemove();
+  }
+
+  /// Called whenever [XpManager] fires a level-up event.
+  void _onLevelUp() {
+    final newLevel = XpManager.instance.levelUpEvent.value;
+    if (newLevel == null || !isMounted) return;
+    // Show the level-up overlay. We pass the last earned level-up coin bonus
+    // (stored in XpManager._levelUpBonus) via the overlay builder in main.dart.
+    if (!overlays.isActive('LevelUp')) {
+      overlays.add('LevelUp');
+    }
   }
 
   void disposeRandomEvents() {
@@ -699,14 +731,98 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       levelManager.unlockNextLevel(levelManager.currentLevelIndex, stars);
     }
 
-    // Track statistics
+    // Track statistics (Phase 1 extended)
     StatisticsManager.incrementLevelsCompleted();
     if (stars == 3) {
       StatisticsManager.incrementPerfectMatches();
     }
+    if (currentMode == GameMode.classic) {
+      StatisticsManager.incrementClassicLevelsCompleted();
+    } else if (currentMode == GameMode.timeAttack) {
+      StatisticsManager.incrementTimeAttackWins();
+    }
+    StatisticsManager.recordLevelHintStatus(
+      usedHint: hasUsedHint,
+      wasClassicPerfect:
+          currentMode == GameMode.classic && stars == 3 && !hasUsedHint,
+    );
     StatisticsManager.updateHighestCombo(comboCount.value);
     StatisticsManager.addDropsUsed(totalDrops.value);
     StatisticsManager.incrementModePlay(currentMode);
+
+    // ── Phase 1: XP + Achievement Engine ─────────────────────────────────
+    // Award XP (async — fire and forget; level-up overlay triggered by listener)
+    XpManager.instance
+        .addXpForWin(
+          stars: stars,
+          mode: currentMode,
+          comboCount: comboCount.value,
+        )
+        .then((xpForWin) {
+          // ── Phase 2: Season Pass XP Feed ─────────────────────────────────────
+          if (xpForWin > 0) {
+            SeasonPassManager.instance.addPassXp(xpForWin);
+          }
+        });
+
+    // Record adaptive difficulty outcome (only for classic levelled mode)
+    if (currentMode == GameMode.classic) {
+      AdaptiveDifficulty.instance.recordOutcome(won: true);
+    }
+
+    // Run achievement engine check
+    StatisticsManager.getAllStats().then((stats) {
+      final ctx = AchievementContext(
+        stars: stars,
+        totalLevelsCompleted: stats['totalLevels'] ?? 0,
+        classicLevelsCompleted: stats['classicLevelsCompleted'] ?? 0,
+        totalDropsUsed: stats['totalDrops'] ?? 0,
+        dropsUsedThisLevel: totalDrops.value,
+        hasUsedHint: hasUsedHint,
+        totalStars: totalStars,
+        playerLevel: XpManager.instance.playerLevel.value,
+        prestigeCount: XpManager.instance.prestigeCount.value,
+        highestCombo: comboCount.value > highestCombo
+            ? comboCount.value
+            : highestCombo,
+        timeAttackWins: stats['timeAttackWins'] ?? 0,
+        echoRound: echoRound,
+        chaosRound: chaosRound,
+        hasPlayedAllModes: stats['hasPlayedAllModes'] ?? false,
+        levelsWithoutHints: stats['levelsWithoutHints'] ?? 0,
+        classicPerfectNoHints: stats['classicPerfectNoHints'] ?? 0,
+        totalCoins: totalCoins.value,
+        loginStreak: stats['loginStreak'] ?? 0,
+        wonWithActiveEvent: isAnyRandomEventActive,
+        wonDuringBlackout: isBlackout,
+      );
+      AchievementEngine.instance.check(ctx).then((newIds) {
+        unlockedAchievements = AchievementEngine.instance.unlockedIds.toList();
+        // Show a toast for each new achievement (reuse the Achievement overlay)
+        if (newIds.isNotEmpty && isMounted) {
+          if (!overlays.isActive('Achievement')) {
+            overlays.add('Achievement');
+          }
+        }
+      });
+    });
+    // ───────────────────────────────────────────────────────────────────────
+
+    // Phase 1: Card Collection Drop
+    if (!_cardDroppedThisLevel &&
+        (stars == 3 || currentMode != GameMode.classic)) {
+      if (Random().nextDouble() > 0.6) {
+        // 40% chance drop
+        _cardDroppedThisLevel = true;
+        CardCollectionManager.instance.dropRandomCard().then((card) {
+          if (card != null && isMounted) {
+            if (!overlays.isActive('CardUnlock')) {
+              overlays.add('CardUnlock');
+            }
+          }
+        });
+      }
+    }
 
     _winTimer = 1.5;
   }
@@ -745,6 +861,27 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       }
 
       overlays.add('ChaosWin');
+    } else if (currentMode == GameMode.tournament) {
+      // Tournament scoring logic
+      int accuracy = matchPercentage.value.toInt();
+      // Assume tournament levels have a 60s base for speed bonus if time-based,
+      // but if classic-like, maybe speed isn't the focus.
+      // Let's use a flat speed bonus factor or based on time taken.
+      int speedBonus = 10;
+
+      TournamentManager.instance.submitScore(
+        accuracy,
+        speedBonus,
+        comboCount.value + 1,
+      );
+
+      // Award some coins
+      int tournamentCoins = (accuracy * 2).toInt();
+      lastEarnedCoins = tournamentCoins;
+      addCoins(tournamentCoins);
+
+      overlays.remove('TournamentHUD');
+      overlays.add('WinMenu');
     } else {
       overlays.add('WinMenu');
     }
@@ -801,6 +938,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     overlays.remove('EchoGameOver');
     overlays.remove('ChaosWin');
     overlays.remove('ChaosGameOver');
+    overlays.remove('TournamentHUD');
+    overlays.remove('CardUnlock');
     _evaporationVisualOffset = 0.0;
 
     // Reset Echo state on retry (not next round)
@@ -814,19 +953,85 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       chaosRound = 0;
     }
 
-    transitionTo('', '', midpointAction: () {
-      beaker.clearContents();
-      totalDrops.value = 0;
-      matchPercentage.value = 0;
-      rDrops = 0;
-      gDrops = 0;
-      bDrops = 0;
-      whiteDrops = 0;
-      blackDrops = 0;
-      dropsLimitReached.value = false;
-      startLevel();
-    });
+    transitionTo(
+      '',
+      '',
+      midpointAction: () {
+        beaker.clearContents();
+        totalDrops.value = 0;
+        matchPercentage.value = 0;
+        rDrops = 0;
+        gDrops = 0;
+        bDrops = 0;
+        whiteDrops = 0;
+        blackDrops = 0;
+        dropsLimitReached.value = false;
+        startLevel();
+      },
+    );
   }
+
+  void startTournamentMode() {
+    _hasWon = false;
+    _hasLost = false;
+    currentMode = GameMode.tournament;
+
+    // Set a seed based on the current week to ensure everyone gets the same colors
+    final now = DateTime.now();
+    final weekSeed =
+        now.year * 100 +
+        (now.millisecondsSinceEpoch ~/ (1000 * 60 * 60 * 24 * 7));
+    final rng = Random(weekSeed);
+
+    // Generate a target color based on the weekly theme
+    final theme = TournamentManager.instance.currentTheme;
+    if (theme == "Red Week") {
+      targetColor = Color.fromARGB(
+        255,
+        rng.nextInt(100) + 155, // High red
+        rng.nextInt(80), // Low green
+        rng.nextInt(80), // Low blue
+      );
+    } else if (theme == "Spectral Blues") {
+      targetColor = Color.fromARGB(
+        255,
+        rng.nextInt(80), // Low red
+        rng.nextInt(100) + 50, // Med green
+        rng.nextInt(155) + 100, // High blue
+      );
+    } else if (theme == "Emerald City") {
+      targetColor = Color.fromARGB(
+        255,
+        rng.nextInt(60), // Low red
+        rng.nextInt(155) + 100, // High green
+        rng.nextInt(60), // Low blue
+      );
+    } else {
+      // Default random for Neon Cascade / Warm Sunset
+      targetColor = Color.fromARGB(
+        255,
+        rng.nextInt(256),
+        rng.nextInt(256),
+        rng.nextInt(256),
+      );
+    }
+
+    beaker.clearContents();
+    matchPercentage.value = 0;
+    totalDrops.value = 0;
+    rDrops = 0;
+    gDrops = 0;
+    bDrops = 0;
+    whiteDrops = 0;
+    blackDrops = 0;
+    dropsLimitReached.value = false;
+    dropHistory.clear();
+    _previousMatchPct = 0.0;
+
+    if (overlays.isActive('MainMenu')) overlays.remove('MainMenu');
+    if (!overlays.isActive('TournamentHUD')) overlays.add('TournamentHUD');
+    startLevel();
+    notifyListeners();
   }
 
   List<String> dropHistory = [];
@@ -1167,6 +1372,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     isDoubleCoinActive = false;
     _evaporationVisualOffset = 0.0;
     _randomEventOccurredThisLevel = false;
+    _cardDroppedThisLevel = false;
     randomEventBonusApplied = false;
     helpersUsedInLevel.clear();
     _lastBeakerColor = Colors.transparent;
@@ -1219,6 +1425,9 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       'ChaosWin',
       'ChaosGameOver',
       'Tutorial',
+      'Tournament',
+      'TournamentHUD',
+      'CardUnlock',
     ];
     for (final overlay in gameOverlays) {
       overlays.remove(overlay);
@@ -1278,19 +1487,27 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
   void goToNextLevel() {
     if (currentMode == GameMode.colorEcho) {
-      transitionTo('WinMenu', '', midpointAction: () {
-        startLevel();
-      });
+      transitionTo(
+        'WinMenu',
+        '',
+        midpointAction: () {
+          startLevel();
+        },
+      );
       return;
     }
 
     // Check if next level exists
     int nextLevelIndex = levelManager.currentLevelIndex + 1;
     if (nextLevelIndex < levelManager.levels.length) {
-      transitionTo('WinMenu', 'Controls', midpointAction: () {
-        levelManager.currentLevelIndex = nextLevelIndex;
-        startLevel();
-      });
+      transitionTo(
+        'WinMenu',
+        'Controls',
+        midpointAction: () {
+          levelManager.currentLevelIndex = nextLevelIndex;
+          startLevel();
+        },
+      );
     } else {
       navigateToPage('LevelMap', isReverse: true);
     }
@@ -1337,6 +1554,9 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
     _audio.playGameOver();
 
+    overlays.remove('TournamentHUD');
+    overlays.remove('CardUnlock');
+
     if (currentMode == GameMode.colorEcho) {
       overlays.add('EchoGameOver');
     } else if (currentMode == GameMode.chaosLab) {
@@ -1351,8 +1571,27 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   }
 
   void addCoins(int amount) {
-    totalCoins.value += amount;
+    // Phase 2: Apply VIP coin multiplier
+    final multiplied = (amount * VipManager.instance.coinMultiplier).round();
+    totalCoins.value += multiplied;
     SaveManager.saveTotalCoins(totalCoins.value);
+    notifyListeners();
+  }
+
+  /// Phase 2: Revive the player after a game over by watching a rewarded ad.
+  /// Restores [drops] drops and resumes the level.
+  void reviveWithDrops(int drops) {
+    overlays.remove('GameOver');
+    maxDrops = drops;
+    totalDrops.value = 0;
+    rDrops = 0;
+    gDrops = 0;
+    bDrops = 0;
+    whiteDrops = 0;
+    blackDrops = 0;
+    _cardDroppedThisLevel = false;
+    overlays.add('Controls');
+    _startLevelBgm();
     notifyListeners();
   }
 
@@ -1463,25 +1702,30 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   }
 
   void navigateToPage(String pageName, {bool isReverse = false}) {
-    transitionTo('', pageName, isReverse: isReverse, midpointAction: () {
-      // If navigating to MainMenu, reset mode and music
-      if (pageName == 'MainMenu') {
-        currentMode = GameMode.none;
-        _audio.playMenuMusic();
-        disposeRandomEvents();
-      }
-
-      // Clear ALL currently active overlays except the target
-      final active = overlays.activeOverlays.toList();
-      for (final overlay in active) {
-        if (overlay != pageName) {
-          overlays.remove(overlay);
+    transitionTo(
+      '',
+      pageName,
+      isReverse: isReverse,
+      midpointAction: () {
+        // If navigating to MainMenu, reset mode and music
+        if (pageName == 'MainMenu') {
+          currentMode = GameMode.none;
+          _audio.playMenuMusic();
+          disposeRandomEvents();
         }
-      }
 
-      // Force re-initialization of the target page
-      overlays.remove(pageName);
-    });
+        // Clear ALL currently active overlays except the target
+        final active = overlays.activeOverlays.toList();
+        for (final overlay in active) {
+          if (overlay != pageName) {
+            overlays.remove(overlay);
+          }
+        }
+
+        // Force re-initialization of the target page
+        overlays.remove(pageName);
+      },
+    );
   }
 
   void returnToMainMenu() => navigateToPage('MainMenu', isReverse: true);

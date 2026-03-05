@@ -185,11 +185,13 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
           ),
         ),
 
-        // Horizontal Scrollable Utils
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(),
-          child: Row(
+        // Wrapping Utils for full visibility
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 2,
+            runSpacing: 8,
             children: [
               _buildUtilButton(
                 icon: Icons.emoji_events_rounded,
@@ -201,43 +203,61 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                 icon: Icons.bar_chart_rounded,
                 tooltip: AppStrings.statisticsTitle.getString(context),
                 onTap: () => _navTo('Statistics'),
-                delay: 100,
+                delay: 50,
               ),
               _buildUtilButton(
                 icon: Icons.event_available_rounded,
                 tooltip: AppStrings.dailyChallengeTitle.getString(context),
                 onTap: () => _navTo('DailyChallenge'),
-                delay: 200,
+                delay: 100,
               ),
               _buildUtilButton(
                 icon: Icons.shopping_basket_rounded,
                 tooltip: AppStrings.shopTitle.getString(context),
                 onTap: () => _navTo('Shop'),
-                delay: 300,
+                delay: 150,
               ),
               _buildUtilButton(
                 icon: Icons.auto_stories_rounded,
                 tooltip: AppStrings.galleryTitle.getString(context),
                 onTap: () => _navTo('Gallery'),
-                delay: 400,
+                delay: 200,
               ),
               _buildUtilButton(
-                icon: Icons.settings_rounded,
-                tooltip: AppStrings.settings.getString(context),
-                onTap: () => _navTo('Settings'),
-                delay: 500,
+                icon: Icons.style_rounded,
+                tooltip: AppStrings.cardCollectionTitle.getString(context),
+                onTap: () => _navTo('CardCollection'),
+                delay: 250,
+              ),
+              _buildUtilButton(
+                icon: Icons.workspace_premium_rounded,
+                tooltip: AppStrings.tournamentTitle.getString(context),
+                onTap: () => _navTo('Tournament'),
+                delay: 300,
               ),
               _buildUtilButton(
                 icon: Icons.science_outlined,
                 tooltip: AppStrings.labUpgradeTitle.getString(context),
                 onTap: () => _navTo('LabUpgrade'),
-                delay: 600,
+                delay: 350,
+              ),
+              _buildUtilButton(
+                icon: Icons.settings_rounded,
+                tooltip: AppStrings.settings.getString(context),
+                onTap: () => _navTo('Settings'),
+                delay: 400,
+              ),
+              _buildUtilButton(
+                icon: Icons.rocket_launch_rounded,
+                tooltip: AppStrings.seasonPassTitle.getString(context),
+                onTap: () => _navTo('SeasonPass'),
+                delay: 450,
               ),
               _buildUtilButton(
                 icon: Icons.help_outline_rounded,
                 tooltip: AppStrings.modeGuidesTitle.getString(context),
                 onTap: () => _navTo('ModeGuide'),
-                delay: 600,
+                delay: 450,
               ),
             ],
           ),
@@ -266,8 +286,8 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
           scale: value,
           child: Padding(
             padding: EdgeInsets.symmetric(
-              horizontal: ResponsiveHelper.spacing(context, 4),
-            ), // Responsive spacing
+              horizontal: ResponsiveHelper.spacing(context, 2),
+            ), // Compact horizontal spacing
             child: Semantics(
               label: tooltip,
               button: true,

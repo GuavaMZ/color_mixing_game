@@ -213,9 +213,37 @@ mixin AppStrings {
   static const String statisticsTitle = "statistics_title";
   static const String dailyChallengeTitle = "daily_challenge_title";
   static const String galleryTitle = "gallery_title";
+  static const String cardCollectionTitle = "card_collection_title";
+  static const String tournamentTitle = "tournament_title";
   static const String labUpgradeTitle = "lab_upgrade_title";
   static const String chaosLabTitle = "chaos_lab_title";
   static const String chaosLabSubtitle = "chaos_lab_subtitle";
+
+  // Phase 2 — VIP Scientist
+  static const String vipTitle = "vip_title";
+  static const String vipBenefit1 = "vip_benefit_1";
+  static const String vipBenefit2 = "vip_benefit_2";
+  static const String vipBenefit3 = "vip_benefit_3";
+  static const String vipSubscribe = "vip_subscribe";
+
+  // Phase 2 — Season Pass
+  static const String seasonPassTitle = "season_pass_title";
+  static const String premiumActive = "premium_active";
+  static const String remaining = "remaining";
+  static const String tierLabel = "tier_label";
+  static const String goPremium = "go_premium";
+  static const String premiumTitle = "premium_title";
+  static const String premiumPerk1 = "premium_perk_1";
+  static const String premiumPerk2 = "premium_perk_2";
+  static const String premiumPerk3 = "premium_perk_3";
+  static const String premiumPerk4 = "premium_perk_4";
+
+  // Phase 2 — Rewarded Ads
+  static const String watchAdRevive = "watch_ad_revive";
+  static const String watchAdHint = "watch_ad_hint";
+  static const String watchAdTime = "watch_ad_time";
+  static const String adNotReady = "ad_not_ready";
+  static const String reviveSuccess = "revive_success";
 
   // Statistics
   static const String levelsCompleted = "levels_completed";
@@ -855,9 +883,37 @@ mixin AppStrings {
     statisticsTitle: 'Statistics',
     dailyChallengeTitle: 'Daily Challenge',
     galleryTitle: 'Gallery',
+    cardCollectionTitle: 'Color Cards',
+    tournamentTitle: 'Tournament',
     labUpgradeTitle: 'Lab Upgrade',
     chaosLabTitle: 'CHAOS LAB',
     chaosLabSubtitle: 'Unstable reactions! Emergency protocols active!',
+
+    // Phase 2 — VIP Scientist
+    vipTitle: 'VIP Scientist',
+    vipBenefit1: 'No interstitial ads',
+    vipBenefit2: '+20% coins on every win',
+    vipBenefit3: 'Support the lab & keep it alive',
+    vipSubscribe: 'Subscribe (\$1.99 / month)',
+
+    // Phase 2 — Season Pass
+    seasonPassTitle: 'Season Pass',
+    premiumActive: 'Premium Active',
+    remaining: 'remaining',
+    tierLabel: 'Tier',
+    goPremium: 'GO PREMIUM',
+    premiumTitle: 'Premium Season Pass',
+    premiumPerk1: 'Exclusive Holographic & Galaxy beaker skins',
+    premiumPerk2: 'Rare lab themes: Aurora, Lava & more',
+    premiumPerk3: 'Legendary card packs at Tier 15 & 25',
+    premiumPerk4: 'Grand Alchemist crown at Tier 30',
+
+    // Phase 2 — Rewarded Ads
+    watchAdRevive: '📺 Watch Ad → Revive (15 drops)',
+    watchAdHint: '📺 Watch Ad → Free Hint',
+    watchAdTime: '📺 Watch Ad → +10 Seconds',
+    adNotReady: 'Ad loading, please try again in a moment.',
+    reviveSuccess: 'You\'ve been revived! 15 drops restored.',
 
     // Statistics
     levelsCompleted: 'Levels Completed',

@@ -357,7 +357,15 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
                                           .levelManager
                                           .currentLevelIndex >=
                                       0) {
-                                    AdManager().showInterstitialAd();
+                                    final levelNumber =
+                                        widget
+                                            .game
+                                            .levelManager
+                                            .currentLevelIndex +
+                                        1;
+                                    if (levelNumber % 2 == 0) {
+                                      AdManager().showInterstitialAd();
+                                    }
                                   }
                                   widget.game.goToNextLevel();
                                 },

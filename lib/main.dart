@@ -15,6 +15,7 @@ import 'package:color_mixing_deductive/overlays/system/achievements_overlay.dart
 import 'package:color_mixing_deductive/overlays/navigation/gallery_overlay.dart';
 import 'package:color_mixing_deductive/overlays/hud/color_echo_hud.dart';
 import 'package:color_mixing_deductive/overlays/hud/chaos_lab_hud.dart';
+import 'package:color_mixing_deductive/overlays/hud/tournament_hud.dart';
 import 'package:color_mixing_deductive/overlays/menus/lab_upgrade_hub.dart';
 import 'package:color_mixing_deductive/overlays/menus/echo_win_overlay.dart';
 import 'package:color_mixing_deductive/overlays/menus/echo_game_over_overlay.dart';
@@ -35,6 +36,16 @@ import 'package:color_mixing_deductive/overlays/system/blackout_overlay.dart';
 import 'package:color_mixing_deductive/overlays/system/random_event_alert_overlay.dart';
 import 'package:color_mixing_deductive/overlays/system/intro_splash_overlay.dart';
 import 'package:color_mixing_deductive/overlays/system/premium_loading_screen.dart';
+import 'package:color_mixing_deductive/overlays/system/level_up_overlay.dart';
+import 'package:color_mixing_deductive/core/xp_manager.dart';
+import 'package:color_mixing_deductive/core/card_collection_manager.dart';
+import 'package:color_mixing_deductive/overlays/system/card_unlock_overlay.dart';
+import 'package:color_mixing_deductive/overlays/menus/card_collection_overlay.dart';
+import 'package:color_mixing_deductive/helpers/tournament_manager.dart';
+import 'package:color_mixing_deductive/overlays/menus/tournament_overlay.dart';
+import 'package:color_mixing_deductive/core/season_pass_manager.dart';
+import 'package:color_mixing_deductive/core/vip_manager.dart';
+import 'package:color_mixing_deductive/overlays/menus/season_pass_overlay.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:color_mixing_deductive/core/ad_manager.dart';
 import 'package:color_mixing_deductive/core/security_service.dart';
@@ -116,6 +127,14 @@ void main() async {
   final shorebird = ShorebirdUpdater();
   final patch = await shorebird.readCurrentPatch();
   debugPrint('Shorebird Patch: ${patch?.number ?? "None"}');
+
+  // Load Phase 1 Features
+  await CardCollectionManager.instance.init();
+  await TournamentManager.instance.init();
+
+  // Load Phase 2 Features
+  await SeasonPassManager.instance.initialize();
+  await VipManager.instance.initialize();
 
   runApp(const MyApp());
 }
@@ -277,6 +296,7 @@ class _GameSectionState extends State<_GameSection> {
               'Settings': (context, game) => SettingsOverlay(game: game),
               'GameOver': (context, game) => GameOverOverlay(game: game),
               'Shop': (context, game) => ShopOverlay(game: game),
+              'SeasonPass': (context, game) => SeasonPassOverlay(game: game),
               'ColorEchoHUD': (context, game) => ColorEchoHUD(game: game),
               'ChaosLabHUD': (context, game) => ChaosLabHUD(game: game),
               'PauseMenu': (context, game) => PauseMenuOverlay(game: game),
@@ -308,6 +328,25 @@ class _GameSectionState extends State<_GameSection> {
               'RandomEventAlert': (context, game) =>
                   RandomEventAlertOverlay(game: game),
               'IntroSplash': (context, game) => IntroSplashOverlay(game: game),
+              'LevelUp': (context, game) => LevelUpOverlay(
+                game: game,
+                newLevel: XpManager.instance.playerLevel.value,
+                coinsBonus: XpManager.instance.playerLevel.value % 5 == 0
+                    ? (XpManager.instance.playerLevel.value % 10 == 0
+                          ? 500
+                          : 150)
+                    : 50,
+              ),
+              'CardUnlock': (context, game) => CardUnlockOverlay(
+                game: game,
+                card:
+                    CardCollectionManager.instance.newlyUnlockedCard.value ??
+                    CardCatalog.allCards.first, // fallback just in case
+              ),
+              'CardCollection': (context, game) =>
+                  CardCollectionOverlay(game: game),
+              'Tournament': (context, game) => TournamentOverlay(game: game),
+              'TournamentHUD': (context, game) => TournamentHUD(game: game),
             },
             initialActiveOverlays: const ['IntroSplash'],
             loadingBuilder: (context) =>

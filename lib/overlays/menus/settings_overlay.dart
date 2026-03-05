@@ -11,6 +11,7 @@ import '../../components/ui/animated_card.dart';
 import '../../components/ui/enhanced_button.dart';
 import '../../core/lives_manager.dart';
 import '../../core/save_manager.dart';
+import '../../core/vip_manager.dart';
 import 'package:shorebird_code_push/shorebird_code_push.dart';
 
 class SettingsOverlay extends StatefulWidget {
@@ -478,6 +479,166 @@ class _SettingsOverlayState extends State<SettingsOverlay>
 
                       const SizedBox(height: 24),
 
+                      // ── VIP Scientist Section ──────────────────────────────
+                      ValueListenableBuilder<bool>(
+                        valueListenable: VipManager.instance.isVip,
+                        builder: (ctx, isVip, _) {
+                          return Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: isVip
+                                    ? const Color(0xFFFFD700)
+                                    : Colors.white24,
+                                width: isVip ? 2 : 1,
+                              ),
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: isVip
+                                    ? [
+                                        const Color(
+                                          0xFFFFD700,
+                                        ).withValues(alpha: 0.15),
+                                        const Color(
+                                          0xFFFF8C00,
+                                        ).withValues(alpha: 0.05),
+                                      ]
+                                    : [
+                                        Colors.white.withValues(alpha: 0.04),
+                                        Colors.white.withValues(alpha: 0.02),
+                                      ],
+                              ),
+                              boxShadow: isVip
+                                  ? [
+                                      BoxShadow(
+                                        color: const Color(
+                                          0xFFFFD700,
+                                        ).withValues(alpha: 0.2),
+                                        blurRadius: 16,
+                                      ),
+                                    ]
+                                  : [],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.workspace_premium_rounded,
+                                      color: Color(0xFFFFD700),
+                                      size: 22,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      AppStrings.vipTitle.getString(context),
+                                      style: AppTheme.heading3(context)
+                                          .copyWith(
+                                            color: const Color(0xFFFFD700),
+                                            fontSize: 16,
+                                          ),
+                                    ),
+                                    if (isVip) ...[
+                                      const SizedBox(width: 8),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 3,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.green.withValues(
+                                            alpha: 0.2,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                          border: Border.all(
+                                            color: Colors.green.withValues(
+                                              alpha: 0.4,
+                                            ),
+                                          ),
+                                        ),
+                                        child: Text(
+                                          'ACTIVE',
+                                          style: TextStyle(
+                                            color: Colors.green,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                if (isVip)
+                                  Text(
+                                    '✅ ${VipManager.instance.expiryLabel} · +20% coins on every win',
+                                    style: AppTheme.bodySmall(
+                                      context,
+                                    ).copyWith(color: Colors.white70),
+                                  )
+                                else ...[
+                                  _vipBenefitRow(
+                                    '🚫',
+                                    AppStrings.vipBenefit1.getString(context),
+                                  ),
+                                  _vipBenefitRow(
+                                    '💰',
+                                    AppStrings.vipBenefit2.getString(context),
+                                  ),
+                                  _vipBenefitRow(
+                                    '🧪',
+                                    AppStrings.vipBenefit3.getString(context),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: const Color(
+                                          0xFFFFD700,
+                                        ),
+                                        foregroundColor: Colors.black,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 12,
+                                        ),
+                                      ),
+                                      onPressed: () async {
+                                        _audio.playButton();
+                                        // TODO: hook to CoinStoreService vip_monthly product
+                                        // For dev: activate immediately
+                                        await VipManager.instance.activate();
+                                        if (mounted) setState(() {});
+                                      },
+                                      child: Text(
+                                        AppStrings.vipSubscribe.getString(
+                                          context,
+                                        ),
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+
+                      const SizedBox(height: 24),
+
                       // Tutorial Button
                       SizedBox(
                         width: double.infinity,
@@ -524,6 +685,26 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                   ),
                 ),
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _vipBenefitRow(String emoji, String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Text(emoji, style: const TextStyle(fontSize: 16)),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: AppTheme.bodySmall(
+                context,
+              ).copyWith(color: Colors.white70),
             ),
           ),
         ],
