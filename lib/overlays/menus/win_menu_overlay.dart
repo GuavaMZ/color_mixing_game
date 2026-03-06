@@ -1,14 +1,16 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 import '../../../color_mixer_game.dart';
 import '../../../core/ad_manager.dart';
 import '../../../core/color_science.dart';
+import '../../../core/xp_manager.dart';
+import '../../../core/card_collection_manager.dart';
 import '../../helpers/string_manager.dart';
 import '../../helpers/theme_constants.dart';
 import '../../helpers/audio_manager.dart';
 import '../../helpers/visual_effects.dart';
 import '../../components/ui/enhanced_button.dart';
 import '../../components/ui/animated_card.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_localization/flutter_localization.dart';
 
 class WinMenuOverlay extends StatefulWidget {
   final ColorMixerGame game;
@@ -84,12 +86,6 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
     super.dispose();
   }
 
-  String _getResultMessage(int stars, BuildContext context) {
-    if (stars == 3) return AppStrings.perfectScore.getString(context);
-    if (stars == 2) return AppStrings.greatJob.getString(context);
-    return AppStrings.goodWork.getString(context);
-  }
-
   @override
   Widget build(BuildContext context) {
     final stars = widget.game.calculateStars();
@@ -107,273 +103,209 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
         // Confetti Layer
         ..._confetti,
 
-        Center(
-          child: FadeTransition(
-            opacity: _fadeAnimation,
-            child: ScaleTransition(
-              scale: _scaleAnimation,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth: ResponsiveHelper.responsive(
-                    context,
-                    mobile: 350.0,
-                    tablet: 450.0,
-                    desktop: 500.0,
+        SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: ResponsiveHelper.responsive(
+                context,
+                mobile: 16.0,
+                tablet: 40.0,
+                desktop: 100.0,
+              ),
+              vertical: 16.0,
+            ),
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: ResponsiveHelper.responsive(
+                      context,
+                      mobile: 400,
+                      tablet: 500,
+                      desktop: 600,
+                    ),
+                    maxHeight: MediaQuery.of(context).size.height * 0.85,
                   ),
-                ),
-                child: AnimatedCard(
-                  onTap: () {}, // Interactive glow only
-                  hasGlow: true,
-                  borderRadius: 35,
-                  fillColor: AppTheme.primaryDark.withValues(alpha: 0.9),
-                  padding: EdgeInsets.all(
-                    ResponsiveHelper.spacing(context, 24),
-                  ),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Trophy icon with glow
-                        Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: RadialGradient(
-                              colors: [
-                                Colors.amber.withValues(alpha: 0.4),
-                                Colors.amber.withValues(alpha: 0.1),
-                                Colors.transparent,
-                              ],
-                              stops: const [0.0, 0.6, 1.0],
-                            ),
-                          ),
-                          child: TweenAnimationBuilder<double>(
-                            duration: const Duration(milliseconds: 800),
-                            tween: Tween(begin: 0.5, end: 1.0),
-                            curve: Curves.elasticOut,
-                            builder: (context, value, child) {
-                              return Transform.scale(
-                                scale: value,
-                                child: Icon(
-                                  Icons.emoji_events_rounded,
-                                  color: Colors.amber,
-                                  size: ResponsiveHelper.iconSize(context, 80),
-                                  shadows: [
-                                    Shadow(
-                                      color: Colors.amber.withValues(
-                                        alpha: 0.6,
+                  child: ScaleTransition(
+                    scale: _scaleAnimation,
+                    child: AnimatedCard(
+                      onTap: () {}, // Interactive glow only
+                      hasGlow: true,
+                      borderRadius: 35,
+                      fillColor: AppTheme.primaryDark.withValues(alpha: 0.9),
+                      padding: EdgeInsets.all(
+                        ResponsiveHelper.spacing(context, 20),
+                      ),
+                      child: Column(
+                        children: [
+                          // Scrollable content wrapper to prevent overflow on very small devices
+                          Expanded(
+                            child: SingleChildScrollView(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  _buildHeader(context, stars),
+                                  SizedBox(
+                                    height: ResponsiveHelper.spacing(
+                                      context,
+                                      16,
+                                    ),
+                                  ),
+
+                                  // XP Progress Bar
+                                  _buildXpSection(context),
+                                  SizedBox(
+                                    height: ResponsiveHelper.spacing(
+                                      context,
+                                      16,
+                                    ),
+                                  ),
+
+                                  // Newly unlocked card (if any)
+                                  if (widget.game.winUnlockedCard != null) ...[
+                                    _buildCardSection(
+                                      context,
+                                      widget.game.winUnlockedCard!,
+                                    ),
+                                    SizedBox(
+                                      height: ResponsiveHelper.spacing(
+                                        context,
+                                        16,
                                       ),
-                                      blurRadius: 25,
                                     ),
                                   ],
-                                ),
-                              );
-                            },
-                          ),
-                        ),
 
-                        SizedBox(height: ResponsiveHelper.spacing(context, 16)),
+                                  // Coins Earned Display
+                                  _buildCoinsEarnedDisplay(context, stars),
 
-                        // Win text
-                        Text(
-                          AppStrings.wonText.getString(context),
-                          style: AppTheme.heading1(context).copyWith(
-                            fontSize: ResponsiveHelper.fontSize(context, 48),
-                            color: Colors.white,
-                            shadows: [
-                              Shadow(
-                                color: Colors.purpleAccent.withValues(
-                                  alpha: 0.6,
-                                ),
-                                blurRadius: 20,
-                              ),
-                            ],
-                          ),
-                        ),
+                                  // +30% Event Bonus badge (shown when applicable)
+                                  if (widget.game.randomEventBonusApplied) ...[
+                                    const SizedBox(height: 8),
+                                    _buildEventBonusBadge(context),
+                                  ],
 
-                        SizedBox(height: ResponsiveHelper.spacing(context, 20)),
-
-                        // Animated Stars
-                        AnimatedBuilder(
-                          animation: _starsController,
-                          builder: (context, child) {
-                            return Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: List.generate(3, (index) {
-                                final delay = index * 0.2;
-                                final progress =
-                                    ((_starsController.value - delay) / 0.4)
-                                        .clamp(0.0, 1.0);
-                                final isEarned = index < stars;
-
-                                return TweenAnimationBuilder<double>(
-                                  duration: Duration.zero,
-                                  tween: Tween(begin: 0, end: progress),
-                                  builder: (context, value, child) {
-                                    return Transform.scale(
-                                      scale: isEarned
-                                          ? Curves.elasticOut.transform(value)
-                                          : 0.8,
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 6,
-                                        ),
-                                        child: Icon(
-                                          isEarned
-                                              ? Icons.star_rounded
-                                              : Icons.star_outline_rounded,
-                                          color: isEarned
-                                              ? Colors.amber
-                                              : Colors.white.withValues(
-                                                  alpha: 0.3,
-                                                ),
-                                          size: ResponsiveHelper.iconSize(
-                                            context,
-                                            50,
-                                          ),
-                                          shadows: isEarned
-                                              ? [
-                                                  Shadow(
-                                                    color: Colors.amber
-                                                        .withValues(alpha: 0.6),
-                                                    blurRadius: 15,
-                                                  ),
-                                                ]
-                                              : [],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                );
-                              }),
-                            );
-                          },
-                        ),
-
-                        SizedBox(height: ResponsiveHelper.spacing(context, 12)),
-
-                        // Result message
-                        Text(
-                          _getResultMessage(stars, context),
-                          style: AppTheme.bodyLarge(context).copyWith(
-                            color: Colors.white,
-                            shadows: [
-                              Shadow(
-                                color: Colors.blueAccent.withValues(alpha: 0.5),
-                                blurRadius: 8,
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        SizedBox(height: ResponsiveHelper.spacing(context, 12)),
-
-                        // Coins Earned Display
-                        _buildCoinsEarnedDisplay(context, stars),
-
-                        // +30% Event Bonus badge (shown when applicable)
-                        if (widget.game.randomEventBonusApplied) ...[
-                          const SizedBox(height: 8),
-                          _buildEventBonusBadge(context),
-                        ],
-
-                        SizedBox(height: ResponsiveHelper.spacing(context, 20)),
-
-                        // Stats container
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 14,
-                          ),
-                          decoration: AppTheme.cosmicCard(
-                            borderRadius: 16,
-                            fillColor: Colors.black.withValues(alpha: 0.2),
-                            borderColor: Colors.white.withValues(alpha: 0.1),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.water_drop_rounded,
-                                color: AppTheme.neonCyan,
-                                size: 22,
-                                shadows: [
-                                  Shadow(
-                                    color: AppTheme.neonCyan.withValues(
-                                      alpha: 0.5,
+                                  SizedBox(
+                                    height: ResponsiveHelper.spacing(
+                                      context,
+                                      16,
                                     ),
-                                    blurRadius: 10,
+                                  ),
+
+                                  // Stats container
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 24,
+                                      vertical: 12,
+                                    ),
+                                    decoration: AppTheme.cosmicCard(
+                                      borderRadius: 16,
+                                      fillColor: Colors.black.withValues(
+                                        alpha: 0.2,
+                                      ),
+                                      borderColor: Colors.white.withValues(
+                                        alpha: 0.1,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.water_drop_rounded,
+                                          color: AppTheme.neonCyan,
+                                          size: 22,
+                                          shadows: [
+                                            Shadow(
+                                              color: AppTheme.neonCyan
+                                                  .withValues(alpha: 0.5),
+                                              blurRadius: 10,
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Text(
+                                          "${AppStrings.dropsUsed.getString(context)}: $drops",
+                                          style: AppTheme.buttonText(context)
+                                              .copyWith(
+                                                color: Colors.white,
+                                                fontSize:
+                                                    ResponsiveHelper.fontSize(
+                                                      context,
+                                                      16,
+                                                    ),
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: ResponsiveHelper.spacing(
+                                      context,
+                                      16,
+                                    ),
+                                  ),
+
+                                  // Scientific Lab Report
+                                  _buildLabReport(context),
+                                  SizedBox(
+                                    height: ResponsiveHelper.spacing(
+                                      context,
+                                      16,
+                                    ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(width: 10),
-                              Text(
-                                "${AppStrings.dropsUsed.getString(context)}: $drops",
-                                style: AppTheme.buttonText(context).copyWith(
-                                  color: Colors.white,
-                                  fontSize: ResponsiveHelper.fontSize(
+                            ),
+                          ),
+
+                          // Pinned Bottom Actions
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: EnhancedButton(
+                                  label: AppStrings.replayLevel.getString(
                                     context,
-                                    16,
                                   ),
+                                  icon: Icons.replay_rounded,
+                                  isOutlined: true,
+                                  onTap: () {
+                                    _audio.playButton();
+                                    widget.game.resetGame();
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                flex: 2,
+                                child: EnhancedButton(
+                                  label: AppStrings.newLevel.getString(context),
+                                  icon: Icons.arrow_forward_rounded,
+                                  onTap: () {
+                                    _audio.playButton();
+                                    if (widget
+                                            .game
+                                            .levelManager
+                                            .currentLevelIndex >=
+                                        0) {
+                                      final levelNumber =
+                                          widget
+                                              .game
+                                              .levelManager
+                                              .currentLevelIndex +
+                                          1;
+                                      if (levelNumber % 2 == 0) {
+                                        AdManager().showInterstitialAd();
+                                      }
+                                    }
+                                    widget.game.goToNextLevel();
+                                  },
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                        SizedBox(height: ResponsiveHelper.spacing(context, 20)),
-
-                        // Scientific Lab Report
-                        _buildLabReport(context),
-
-                        SizedBox(height: ResponsiveHelper.spacing(context, 20)),
-
-                        // Action buttons
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 2,
-                              child: EnhancedButton(
-                                label: AppStrings.replayLevel.getString(
-                                  context,
-                                ),
-                                icon: Icons.replay_rounded,
-                                isOutlined: true,
-                                onTap: () {
-                                  _audio.playButton();
-                                  widget.game.resetGame();
-                                },
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              flex: 2,
-                              child: EnhancedButton(
-                                label: AppStrings.newLevel.getString(context),
-                                icon: Icons.arrow_forward_rounded,
-                                onTap: () {
-                                  _audio.playButton();
-                                  if (widget
-                                          .game
-                                          .levelManager
-                                          .currentLevelIndex >=
-                                      0) {
-                                    final levelNumber =
-                                        widget
-                                            .game
-                                            .levelManager
-                                            .currentLevelIndex +
-                                        1;
-                                    if (levelNumber % 2 == 0) {
-                                      AdManager().showInterstitialAd();
-                                    }
-                                  }
-                                  widget.game.goToNextLevel();
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -382,6 +314,300 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
           ),
         ),
       ],
+    );
+  }
+
+  String _getResultMessage(int stars, BuildContext context) {
+    if (stars == 3) return AppStrings.perfectScore.getString(context);
+    if (stars == 2) return AppStrings.greatJob.getString(context);
+    return AppStrings.goodWork.getString(context);
+  }
+
+  Widget _buildHeader(BuildContext context, int stars) {
+    return Column(
+      children: [
+        // Trophy icon with glow
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: RadialGradient(
+              colors: [
+                Colors.amber.withValues(alpha: 0.4),
+                Colors.amber.withValues(alpha: 0.1),
+                Colors.transparent,
+              ],
+              stops: const [0.0, 0.6, 1.0],
+            ),
+          ),
+          child: TweenAnimationBuilder<double>(
+            duration: const Duration(milliseconds: 800),
+            tween: Tween(begin: 0.5, end: 1.0),
+            curve: Curves.elasticOut,
+            builder: (context, value, child) {
+              return Transform.scale(
+                scale: value,
+                child: Icon(
+                  Icons.emoji_events_rounded,
+                  color: Colors.amber,
+                  size: ResponsiveHelper.iconSize(context, 80),
+                  shadows: [
+                    Shadow(
+                      color: Colors.amber.withValues(alpha: 0.6),
+                      blurRadius: 25,
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+        SizedBox(height: ResponsiveHelper.spacing(context, 16)),
+        Text(
+          AppStrings.wonText.getString(context),
+          style: AppTheme.heading1(context).copyWith(
+            fontSize: ResponsiveHelper.fontSize(context, 48),
+            color: Colors.white,
+            shadows: [
+              Shadow(
+                color: Colors.purpleAccent.withValues(alpha: 0.6),
+                blurRadius: 20,
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: ResponsiveHelper.spacing(context, 20)),
+        AnimatedBuilder(
+          animation: _starsController,
+          builder: (context, child) {
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: List.generate(3, (index) {
+                final delay = index * 0.2;
+                final progress = ((_starsController.value - delay) / 0.4).clamp(
+                  0.0,
+                  1.0,
+                );
+                final isEarned = index < stars;
+                return TweenAnimationBuilder<double>(
+                  duration: Duration.zero,
+                  tween: Tween(begin: 0, end: progress),
+                  builder: (context, value, child) {
+                    return Transform.scale(
+                      scale: isEarned
+                          ? Curves.elasticOut.transform(value)
+                          : 0.8,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                        child: Icon(
+                          isEarned
+                              ? Icons.star_rounded
+                              : Icons.star_outline_rounded,
+                          color: isEarned
+                              ? Colors.amber
+                              : Colors.white.withValues(alpha: 0.3),
+                          size: ResponsiveHelper.iconSize(context, 50),
+                          shadows: isEarned
+                              ? [
+                                  Shadow(
+                                    color: Colors.amber.withValues(alpha: 0.6),
+                                    blurRadius: 15,
+                                  ),
+                                ]
+                              : [],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }),
+            );
+          },
+        ),
+        SizedBox(height: ResponsiveHelper.spacing(context, 12)),
+        Text(
+          _getResultMessage(stars, context),
+          style: AppTheme.bodyLarge(context).copyWith(
+            color: Colors.white,
+            shadows: [
+              Shadow(
+                color: Colors.blueAccent.withValues(alpha: 0.5),
+                blurRadius: 8,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildXpSection(BuildContext context) {
+    final oldLevel = widget.game.winPreviousLevel;
+    final oldXp = widget.game.winPreviousXp;
+    final earned = widget.game.winXpEarned;
+    final newLevel = XpManager.instance.playerLevel.value;
+    final leveledUp = newLevel > oldLevel;
+
+    // Simulate XP fill animation
+    final oldNeeded = XpManager.xpForLevel(oldLevel);
+    final startRatio = oldNeeded > 0
+        ? (oldXp / oldNeeded).clamp(0.0, 1.0)
+        : 0.0;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: AppTheme.cosmicCard(
+        borderRadius: 20,
+        fillColor: Colors.black.withValues(alpha: 0.3),
+        borderColor: leveledUp
+            ? Colors.amber.withValues(alpha: 0.5)
+            : Colors.cyanAccent.withValues(alpha: 0.2),
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Level $newLevel', // Or from XpManager.instance.rankTitle
+                style: AppTheme.buttonText(context).copyWith(
+                  color: Colors.cyanAccent,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              Text(
+                '+$earned XP',
+                style: AppTheme.buttonText(context).copyWith(
+                  color: Colors.amberAccent,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          TweenAnimationBuilder<double>(
+            duration: const Duration(milliseconds: 1500),
+            tween: Tween(
+              begin: startRatio,
+              end: leveledUp ? 1.0 : XpManager.instance.levelProgress,
+            ),
+            curve: Curves.easeOutCubic,
+            builder: (context, val, child) {
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: LinearProgressIndicator(
+                  value: val,
+                  minHeight: 12,
+                  backgroundColor: Colors.white.withValues(alpha: 0.1),
+                  valueColor: AlwaysStoppedAnimation(
+                    leveledUp && val >= 0.95 ? Colors.amber : Colors.cyanAccent,
+                  ),
+                ),
+              );
+            },
+          ),
+          if (leveledUp) ...[
+            const SizedBox(height: 8),
+            TweenAnimationBuilder<double>(
+              duration: const Duration(milliseconds: 800),
+              tween: Tween(begin: 0.0, end: 1.0),
+              curve: Curves.elasticOut,
+              builder: (context, val, child) => Transform.scale(
+                scale: val,
+                child: Text(
+                  'LEVEL UP!',
+                  style: TextStyle(
+                    color: Colors.amberAccent,
+                    fontWeight: FontWeight.bold,
+                    fontSize: ResponsiveHelper.fontSize(context, 18),
+                    letterSpacing: 2.0,
+                    shadows: [
+                      Shadow(
+                        color: Colors.amber.withValues(alpha: 0.6),
+                        blurRadius: 10,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCardSection(BuildContext context, CardDef card) {
+    return TweenAnimationBuilder<double>(
+      duration: const Duration(milliseconds: 1000),
+      tween: Tween(begin: 0.0, end: 1.0),
+      curve: Curves.elasticOut,
+      builder: (context, val, child) {
+        return Transform.scale(
+          scale: val,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  card.color.withValues(alpha: 0.4),
+                  Colors.black.withValues(alpha: 0.6),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: card.color.withValues(alpha: 0.8),
+                width: 2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: card.color.withValues(alpha: 0.3),
+                  blurRadius: 20,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.auto_awesome_mosaic_rounded,
+                  color: card.color,
+                  size: 40,
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'NEW CARD DISCOVERED!',
+                        style: TextStyle(
+                          color: Colors.amberAccent,
+                          fontWeight: FontWeight.bold,
+                          fontSize: ResponsiveHelper.fontSize(context, 12),
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        card.name,
+                        style: AppTheme.buttonText(context).copyWith(
+                          color: Colors.white,
+                          fontSize: ResponsiveHelper.fontSize(context, 18),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -527,7 +753,6 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
     final temp = ColorScience.getColorTemperature(targetColor);
     final currentColor = widget.game.beaker.currentColor;
     final harmony = ColorScience.getHarmonyType(currentColor, targetColor);
-    final fact = ColorScience.getColorFact(targetColor);
 
     String tempLabel;
     switch (temp['label']) {

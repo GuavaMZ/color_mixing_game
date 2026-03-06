@@ -35,11 +35,9 @@ import 'package:color_mixing_deductive/overlays/menus/mode_guide_overlay.dart';
 import 'package:color_mixing_deductive/overlays/system/blackout_overlay.dart';
 import 'package:color_mixing_deductive/overlays/system/random_event_alert_overlay.dart';
 import 'package:color_mixing_deductive/overlays/system/intro_splash_overlay.dart';
+import 'package:color_mixing_deductive/overlays/system/language_selection_overlay.dart';
 import 'package:color_mixing_deductive/overlays/system/premium_loading_screen.dart';
-import 'package:color_mixing_deductive/overlays/system/level_up_overlay.dart';
-import 'package:color_mixing_deductive/core/xp_manager.dart';
 import 'package:color_mixing_deductive/core/card_collection_manager.dart';
-import 'package:color_mixing_deductive/overlays/system/card_unlock_overlay.dart';
 import 'package:color_mixing_deductive/overlays/menus/card_collection_overlay.dart';
 import 'package:color_mixing_deductive/helpers/tournament_manager.dart';
 import 'package:color_mixing_deductive/overlays/menus/tournament_overlay.dart';
@@ -328,21 +326,8 @@ class _GameSectionState extends State<_GameSection> {
               'RandomEventAlert': (context, game) =>
                   RandomEventAlertOverlay(game: game),
               'IntroSplash': (context, game) => IntroSplashOverlay(game: game),
-              'LevelUp': (context, game) => LevelUpOverlay(
-                game: game,
-                newLevel: XpManager.instance.playerLevel.value,
-                coinsBonus: XpManager.instance.playerLevel.value % 5 == 0
-                    ? (XpManager.instance.playerLevel.value % 10 == 0
-                          ? 500
-                          : 150)
-                    : 50,
-              ),
-              'CardUnlock': (context, game) => CardUnlockOverlay(
-                game: game,
-                card:
-                    CardCollectionManager.instance.newlyUnlockedCard.value ??
-                    CardCatalog.allCards.first, // fallback just in case
-              ),
+              'LanguageSelection': (context, game) =>
+                  LanguageSelectionOverlay(game: game),
               'CardCollection': (context, game) =>
                   CardCollectionOverlay(game: game),
               'Tournament': (context, game) => TournamentOverlay(game: game),

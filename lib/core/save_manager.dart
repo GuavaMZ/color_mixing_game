@@ -21,6 +21,8 @@ class SaveManager {
   static const String _totalSpentKey = 'total_spent_coins';
   static const String _dailyChallengeCountKey =
       'daily_challenge_completed_count';
+  static const String _hasSeenLanguageKey = 'has_seen_language';
+  static const String _hasSeenTutorialKey = 'has_seen_tutorial';
 
   static CloudSyncService? _syncService;
 
@@ -718,6 +720,42 @@ class SaveManager {
       'security_events':
           RuntimeIntegrityChecker.getSecurityStatus()['events'] ?? [],
     };
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // ONBOARDING
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  static Future<bool> loadHasSeenLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey(_hasSeenLanguageKey)) {
+      final value = prefs.getBool(_hasSeenLanguageKey) ?? false;
+      await SecurityService.write(_hasSeenLanguageKey, value.toString());
+      await prefs.remove(_hasSeenLanguageKey);
+    }
+
+    final data = await SecurityService.read(_hasSeenLanguageKey);
+    return data == 'true';
+  }
+
+  static Future<void> saveHasSeenLanguage(bool seen) async {
+    await SecurityService.write(_hasSeenLanguageKey, seen.toString());
+  }
+
+  static Future<bool> loadHasSeenTutorial() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey(_hasSeenTutorialKey)) {
+      final value = prefs.getBool(_hasSeenTutorialKey) ?? false;
+      await SecurityService.write(_hasSeenTutorialKey, value.toString());
+      await prefs.remove(_hasSeenTutorialKey);
+    }
+
+    final data = await SecurityService.read(_hasSeenTutorialKey);
+    return data == 'true';
+  }
+
+  static Future<void> saveHasSeenTutorial(bool seen) async {
+    await SecurityService.write(_hasSeenTutorialKey, seen.toString());
   }
 }
 

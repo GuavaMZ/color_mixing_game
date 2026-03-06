@@ -84,6 +84,12 @@ class FloatingBubble {
        _highlightPaint = Paint()..style = PaintingStyle.fill,
        _gradientPaint = Paint();
 
+  Shader? _cachedShader;
+  Color? _lastBaseColor;
+  double? _lastOpacity;
+  double? _lastSize;
+  Offset? _lastCenter;
+
   void updateColor(Color? newColor) {
     color = newColor;
   }
@@ -112,22 +118,35 @@ class FloatingBubble {
   void render(Canvas canvas) {
     // Determine color base
     final baseColor = color ?? Colors.white;
+    final center = Offset(position.x, position.y);
 
-    // Draw bubble with gradient
-    final gradient = RadialGradient(
-      colors: [
-        baseColor.withValues(alpha: opacity * 0.8),
-        baseColor.withValues(alpha: opacity * 0.3),
-        baseColor.withValues(alpha: 0),
-      ],
-      stops: const [0.0, 0.7, 1.0],
-    );
+    // Only recreate shader if essential properties changed
+    if (_cachedShader == null ||
+        _lastBaseColor != baseColor ||
+        _lastOpacity != opacity ||
+        _lastSize != size ||
+        _lastCenter != center) {
+      _lastBaseColor = baseColor;
+      _lastOpacity = opacity;
+      _lastSize = size;
+      _lastCenter = center;
 
-    _gradientPaint.shader = gradient.createShader(
-      Rect.fromCircle(center: Offset(position.x, position.y), radius: size),
-    );
+      final gradient = RadialGradient(
+        colors: [
+          baseColor.withValues(alpha: opacity * 0.8),
+          baseColor.withValues(alpha: opacity * 0.3),
+          baseColor.withValues(alpha: 0),
+        ],
+        stops: const [0.0, 0.7, 1.0],
+      );
 
-    canvas.drawCircle(Offset(position.x, position.y), size, _gradientPaint);
+      _cachedShader = gradient.createShader(
+        Rect.fromCircle(center: center, radius: size),
+      );
+      _gradientPaint.shader = _cachedShader;
+    }
+
+    canvas.drawCircle(center, size, _gradientPaint);
 
     // Add highlight
     _highlightPaint.color = Colors.white.withValues(alpha: opacity * 1.5);

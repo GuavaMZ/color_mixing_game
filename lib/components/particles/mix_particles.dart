@@ -14,9 +14,8 @@ class MixParticles extends PositionComponent
   final double maxLifetime = 1.5;
 
   final Paint _particlePaint = Paint()..style = PaintingStyle.fill;
-  final Paint _glowPaint = Paint()
-    ..style = PaintingStyle.fill
-    ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
+  final Paint _glowPaint = Paint()..style = PaintingStyle.fill;
+  Shader? _glowShader;
 
   MixParticles({required this.dropColor, required this.mixPosition})
     : super(position: mixPosition);
@@ -24,6 +23,20 @@ class MixParticles extends PositionComponent
   @override
   Future<void> onLoad() async {
     super.onLoad();
+
+    // Create a generic glow shader for the particles
+    // We base it on a normalized size and scale the canvas later
+    const double baseRadius = 10.0;
+    _glowShader = RadialGradient(
+      colors: [
+        dropColor.withValues(alpha: 0.8),
+        dropColor.withValues(alpha: 0.3),
+        dropColor.withValues(alpha: 0),
+      ],
+      stops: const [0.0, 0.5, 1.0],
+    ).createShader(Rect.fromCircle(center: Offset.zero, radius: baseRadius));
+    _glowPaint.shader = _glowShader;
+
     // Create splash particles
     for (int i = 0; i < 20; i++) {
       final angle = _random.nextDouble() * 2 * pi;
@@ -62,8 +75,9 @@ class MixParticles extends PositionComponent
   @override
   void render(Canvas canvas) {
     super.render(canvas);
+    final bool skipGlow = game.reducedMotionEnabled;
     for (var particle in _particles) {
-      particle.render(canvas, _particlePaint, _glowPaint);
+      particle.render(canvas, _particlePaint, _glowPaint, skipGlow);
     }
   }
 }
@@ -97,21 +111,36 @@ class _MixParticle {
     }
   }
 
-  void render(Canvas canvas, Paint particlePaint, Paint glowPaint) {
+  void render(
+    Canvas canvas,
+    Paint particlePaint,
+    Paint glowPaint,
+    bool skipGlow,
+  ) {
     if (age >= lifetime) return;
 
     final progress = (1 - age / lifetime).clamp(0.0, 1.0);
+    final currentSize = size * (1 - age / lifetime * 0.5);
 
     particlePaint.color = color.withValues(alpha: progress);
     canvas.drawCircle(
       Offset(position.x, position.y),
-      size * (1 - age / lifetime * 0.5),
+      currentSize,
       particlePaint,
     );
 
-    // Glow effect
-    glowPaint.color = color.withValues(alpha: progress * 0.3);
-    canvas.drawCircle(Offset(position.x, position.y), size * 2, glowPaint);
+    // Glow effect - Using radial gradient shader instead of MaskFilter.blur
+    if (!skipGlow) {
+      canvas.save();
+      canvas.translate(position.x, position.y);
+      // Scale based on particle size relative to baseRadius(10)
+      final scale = (currentSize * 2.5) / 10.0;
+      canvas.scale(scale);
+
+      glowPaint.color = Colors.white.withValues(alpha: progress * 0.4);
+      canvas.drawCircle(Offset.zero, 10.0, glowPaint);
+      canvas.restore();
+    }
   }
 }
 

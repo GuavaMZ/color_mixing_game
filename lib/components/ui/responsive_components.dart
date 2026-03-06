@@ -125,6 +125,7 @@ class ResponsiveIconButton extends StatelessWidget {
   final double? size;
   final double? padding;
   final String? tooltip;
+  final bool showBadge;
 
   const ResponsiveIconButton({
     super.key,
@@ -136,6 +137,7 @@ class ResponsiveIconButton extends StatelessWidget {
     this.size,
     this.padding,
     this.tooltip,
+    this.showBadge = false,
   });
 
   @override
@@ -164,10 +166,36 @@ class ResponsiveIconButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(effectiveSize / 4),
           child: Padding(
             padding: EdgeInsets.all(padding ?? 0),
-            child: Icon(
-              icon,
-              color: iconColor,
-              size: ResponsiveHelper.iconSize(context, size ?? 24),
+            child: Stack(
+              alignment: Alignment.center,
+              clipBehavior: Clip.none,
+              children: [
+                Icon(
+                  icon,
+                  color: iconColor,
+                  size: ResponsiveHelper.iconSize(context, size ?? 24),
+                ),
+                if (showBadge)
+                  Positioned(
+                    top: -2,
+                    right: -2,
+                    child: Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        color: Colors.redAccent,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.redAccent.withValues(alpha: 0.8),
+                            blurRadius: 6,
+                            spreadRadius: 2,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
         ),

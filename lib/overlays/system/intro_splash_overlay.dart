@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:color_mixing_deductive/color_mixer_game.dart';
 import 'package:shorebird_code_push/shorebird_code_push.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:color_mixing_deductive/core/save_manager.dart';
 
 class IntroSplashOverlay extends StatefulWidget {
   final ColorMixerGame game;
@@ -83,8 +84,17 @@ class _IntroSplashOverlayState extends State<IntroSplashOverlay>
     }
 
     if (mounted) {
+      final hasSeenLanguage = await SaveManager.loadHasSeenLanguage();
+      final hasSeenTutorial = await SaveManager.loadHasSeenTutorial();
+
       widget.game.overlays.remove('IntroSplash');
-      widget.game.overlays.add('MainMenu');
+      if (!hasSeenLanguage) {
+        widget.game.overlays.add('LanguageSelection');
+      } else if (!hasSeenTutorial) {
+        widget.game.overlays.add('Tutorial');
+      } else {
+        widget.game.overlays.add('MainMenu');
+      }
     }
   }
 

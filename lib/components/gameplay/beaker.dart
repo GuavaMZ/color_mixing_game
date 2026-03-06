@@ -60,6 +60,9 @@ class Beaker extends PositionComponent with HasGameReference<ColorMixerGame> {
 
   Shader? _liquidGradientShader;
   Shader? _glassGradientShader;
+  Shader? _leftGleamShader;
+  Shader? _rightGleamShader;
+  Shader? _topRimShader;
   Color? _lastGradientColor;
   Vector2? _lastShaderSize;
   Path? _cachedBeakerPath;
@@ -177,6 +180,47 @@ class Beaker extends PositionComponent with HasGameReference<ColorMixerGame> {
         stops: const [0.0, 0.15, 0.5, 0.85, 1.0],
       ).createShader(Rect.fromLTWH(0, 0, size.x, size.y));
       _glassFrontPaint.shader = _glassGradientShader;
+
+      // 3. Highlight Shaders
+      final double w = size.x;
+      final double h = size.y;
+
+      // Sharp Left Gleam
+      final Rect leftRect = Rect.fromLTWH(w * 0.08, 0, w * 0.12, h);
+      _leftGleamShader = LinearGradient(
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+        colors: [
+          Colors.white.withValues(alpha: 0.0),
+          Colors.white.withValues(alpha: 0.45),
+          Colors.white.withValues(alpha: 0.0),
+        ],
+        stops: const [0.0, 0.4, 1.0],
+      ).createShader(leftRect);
+
+      // Secondary Right Reflection
+      final Rect rightRect = Rect.fromLTWH(w * 0.82, 0, w * 0.08, h);
+      _rightGleamShader = LinearGradient(
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+        colors: [
+          Colors.white.withValues(alpha: 0.0),
+          Colors.white.withValues(alpha: 0.2),
+          Colors.white.withValues(alpha: 0.0),
+        ],
+        stops: const [0.0, 0.5, 1.0],
+      ).createShader(rightRect);
+
+      // Top Rim Catch-light
+      final Rect topRimRect = Rect.fromLTWH(0, 0, w, h * 0.1);
+      _topRimShader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Colors.white.withValues(alpha: 0.3),
+          Colors.white.withValues(alpha: 0.0),
+        ],
+      ).createShader(topRimRect);
 
       // Update rim stroke width for premium feel
       _rimPaint.strokeWidth = min(size.x, size.y) * 0.015;
@@ -420,47 +464,19 @@ class Beaker extends PositionComponent with HasGameReference<ColorMixerGame> {
 
     // 1. Sharp Left Gleam (Main Specular)
     final Rect leftRect = Rect.fromLTWH(w * 0.08, 0, w * 0.12, h);
-    final Paint leftGleam = Paint()
-      ..shader = LinearGradient(
-        begin: Alignment.centerLeft,
-        end: Alignment.centerRight,
-        colors: [
-          Colors.white.withValues(alpha: 0.0),
-          Colors.white.withValues(alpha: 0.45),
-          Colors.white.withValues(alpha: 0.0),
-        ],
-        stops: const [0.0, 0.4, 1.0],
-      ).createShader(leftRect);
+    final Paint leftGleam = Paint()..shader = _leftGleamShader;
 
     canvas.drawRect(leftRect, leftGleam);
 
     // 2. Secondary Right Reflection
     final Rect rightRect = Rect.fromLTWH(w * 0.82, 0, w * 0.08, h);
-    final Paint rightGleam = Paint()
-      ..shader = LinearGradient(
-        begin: Alignment.centerLeft,
-        end: Alignment.centerRight,
-        colors: [
-          Colors.white.withValues(alpha: 0.0),
-          Colors.white.withValues(alpha: 0.2),
-          Colors.white.withValues(alpha: 0.0),
-        ],
-        stops: const [0.0, 0.5, 1.0],
-      ).createShader(rightRect);
+    final Paint rightGleam = Paint()..shader = _rightGleamShader;
 
     canvas.drawRect(rightRect, rightGleam);
 
     // 3. Top Rim Catch-light
     final Rect topRimRect = Rect.fromLTWH(0, 0, w, h * 0.1);
-    final Paint topRimGleam = Paint()
-      ..shader = LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [
-          Colors.white.withValues(alpha: 0.3),
-          Colors.white.withValues(alpha: 0.0),
-        ],
-      ).createShader(topRimRect);
+    final Paint topRimGleam = Paint()..shader = _topRimShader;
     canvas.drawRect(topRimRect, topRimGleam);
 
     // 4. Type specialized specular spotlight

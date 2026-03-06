@@ -474,55 +474,63 @@ class ControlsOverlay extends StatelessWidget {
     return ValueListenableBuilder<bool>(
       valueListenable: game.dropsLimitReached,
       builder: (context, isLimitReached, _) {
-        return Semantics(
-          label: AppStrings.colorButtons.getString(context),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: palette.map((item) {
-              final color = item['color'] as Color;
-              final type = item['type'] as String;
-              final label = item['label'] as String;
+        return ValueListenableBuilder<double>(
+          valueListenable: game.dropCooldownProgress,
+          builder: (context, progress, _) {
+            final isCooldown = progress < 1.0;
+            final bool isDisabled = isLimitReached || isCooldown;
 
-              final buttonSize = ResponsiveHelper.responsive<double>(
-                context,
-                mobile: 56.0, // Slightly larger for better touch targets
-                tablet: 64.0,
-                desktop: 72.0,
-              );
+            return Semantics(
+              label: AppStrings.colorButtons.getString(context),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: palette.map((item) {
+                  final color = item['color'] as Color;
+                  final type = item['type'] as String;
+                  final label = item['label'] as String;
 
-              return Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: ResponsiveHelper.spacing(context, 8),
-                ),
-                child: Opacity(
-                  opacity: isLimitReached ? 0.4 : 1.0,
-                  child: Semantics(
-                    label: label,
-                    button: true,
-                    child: ExcludeSemantics(
-                      child: _EnhancedDropButton(
-                        onTap: isLimitReached
-                            ? null
-                            : () {
-                                String effectiveType = type;
-                                if (game.isControlsInverted) {
-                                  if (type == 'red') {
-                                    effectiveType = 'blue';
-                                  } else if (type == 'blue') {
-                                    effectiveType = 'red';
-                                  }
-                                }
-                                game.addDrop(effectiveType);
-                              },
-                        size: buttonSize,
-                        color: color,
+                  final buttonSize = ResponsiveHelper.responsive<double>(
+                    context,
+                    mobile: 56.0,
+                    tablet: 64.0,
+                    desktop: 72.0,
+                  );
+
+                  return Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: ResponsiveHelper.spacing(context, 8),
+                    ),
+                    child: Opacity(
+                      opacity: isDisabled ? 0.4 : 1.0,
+                      child: Semantics(
+                        label: label,
+                        button: true,
+                        child: ExcludeSemantics(
+                          child: _EnhancedDropButton(
+                            onTap: isDisabled
+                                ? null
+                                : () {
+                                    String effectiveType = type;
+                                    if (game.isControlsInverted) {
+                                      if (type == 'red') {
+                                        effectiveType = 'blue';
+                                      } else if (type == 'blue') {
+                                        effectiveType = 'red';
+                                      }
+                                    }
+                                    game.addDrop(effectiveType);
+                                  },
+                            size: buttonSize,
+                            color: color,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
+                  );
+                }).toList(),
+              ),
+            );
+          },
         );
       },
     );

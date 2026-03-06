@@ -10,6 +10,26 @@ class PatternBackground extends Component with HasGameReference {
   final List<_StarParticle> _stars = [];
   // final double _speed = 20.0;
 
+  final Paint _gridPaint = Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 1;
+  final Paint _glowPaint = Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 3;
+  final Paint _tickPaint = Paint()..strokeWidth = 1;
+
+  final Paint _crystalPaint = Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 1;
+  final Paint _crystalFillPaint = Paint()..style = PaintingStyle.fill;
+  final Paint _scientificPaint = Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 1.5;
+
+  Shader? _glowShader;
+  LabItem? _lastConfig;
+  Vector2? _lastSize;
+
   PatternBackground({this.config});
 
   void updateConfig(LabItem? newConfig) {
@@ -59,9 +79,27 @@ class PatternBackground extends Component with HasGameReference {
     // }
   }
 
+  void _updateCacheIfNeeded() {
+    if (_lastConfig?.id == config?.id && _lastSize == game.size) return;
+    _lastConfig = config;
+    _lastSize = game.size.clone();
+
+    final baseColor = config?.placeholderColor ?? Colors.cyan;
+
+    // Use a radial gradient for glow instead of MaskFilter.blur
+    _glowShader = RadialGradient(
+      colors: [
+        baseColor.withValues(alpha: 0.1),
+        baseColor.withValues(alpha: 0),
+      ],
+    ).createShader(Rect.fromCircle(center: Offset.zero, radius: 10));
+    _glowPaint.shader = _glowShader;
+  }
+
   @override
   void render(Canvas canvas) {
     super.render(canvas);
+    _updateCacheIfNeeded();
 
     // Render Pattern based on Config
     if (config != null) {
@@ -90,23 +128,19 @@ class PatternBackground extends Component with HasGameReference {
     final size = game.size;
     final baseColor = config?.placeholderColor ?? Colors.cyan;
 
-    final paint = Paint()
-      ..color = baseColor.withValues(alpha: 0.1)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
-
-    final glowPaint = Paint()
-      ..color = baseColor.withValues(alpha: 0.05)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3);
+    _gridPaint.color = baseColor.withValues(alpha: 0.1);
 
     const gridSize = 60.0;
 
     // Vertical lines
     for (double x = 0; x <= size.x; x += gridSize) {
-      canvas.drawLine(Offset(x, 0), Offset(x, size.y), glowPaint);
-      canvas.drawLine(Offset(x, 0), Offset(x, size.y), paint);
+      canvas.save();
+      canvas.translate(x, size.y / 2);
+      canvas.scale(1, size.y / 10.0);
+      canvas.drawCircle(Offset.zero, 10, _glowPaint);
+      canvas.restore();
+
+      canvas.drawLine(Offset(x, 0), Offset(x, size.y), _gridPaint);
 
       // Measurement Ticks
       _drawTicks(canvas, Offset(x, 0), true, size.y);
@@ -114,8 +148,13 @@ class PatternBackground extends Component with HasGameReference {
 
     // Horizontal lines
     for (double y = 0; y <= size.y; y += gridSize) {
-      canvas.drawLine(Offset(0, y), Offset(size.x, y), glowPaint);
-      canvas.drawLine(Offset(0, y), Offset(size.x, y), paint);
+      canvas.save();
+      canvas.translate(size.x / 2, y);
+      canvas.scale(size.x / 10.0, 1);
+      canvas.drawCircle(Offset.zero, 10, _glowPaint);
+      canvas.restore();
+
+      canvas.drawLine(Offset(0, y), Offset(size.x, y), _gridPaint);
 
       // Measurement Ticks
       _drawTicks(canvas, Offset(0, y), false, size.x);
@@ -126,9 +165,9 @@ class PatternBackground extends Component with HasGameReference {
   }
 
   void _drawTicks(Canvas canvas, Offset start, bool isVertical, double length) {
-    final tickPaint = Paint()
-      ..color = (config?.placeholderColor ?? Colors.cyan).withValues(alpha: 0.2)
-      ..strokeWidth = 1;
+    _tickPaint.color = (config?.placeholderColor ?? Colors.cyan).withValues(
+      alpha: 0.2,
+    );
 
     const tickSpacing = 12.0;
     const tickLength = 4.0;
@@ -138,13 +177,13 @@ class PatternBackground extends Component with HasGameReference {
         canvas.drawLine(
           Offset(start.dx - tickLength / 2, i),
           Offset(start.dx + tickLength / 2, i),
-          tickPaint,
+          _tickPaint,
         );
       } else {
         canvas.drawLine(
           Offset(i, start.dy - tickLength / 2),
           Offset(i, start.dy + tickLength / 2),
-          tickPaint,
+          _tickPaint,
         );
       }
     }
@@ -179,14 +218,8 @@ class PatternBackground extends Component with HasGameReference {
     final size = game.size;
     final baseColor = config?.placeholderColor ?? Colors.white;
 
-    final paint = Paint()
-      ..color = baseColor.withValues(alpha: 0.1)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
-
-    final glowPaint = Paint()
-      ..color = baseColor.withValues(alpha: 0.03)
-      ..style = PaintingStyle.fill;
+    _crystalPaint.color = baseColor.withValues(alpha: 0.1);
+    _crystalFillPaint.color = baseColor.withValues(alpha: 0.03);
 
     const gridSize = 100.0;
 
@@ -202,12 +235,12 @@ class PatternBackground extends Component with HasGameReference {
         );
 
         // Layered crystal effect
-        canvas.drawRect(rect, glowPaint);
-        canvas.drawRect(rect, paint);
+        canvas.drawRect(rect, _crystalFillPaint);
+        canvas.drawRect(rect, _crystalPaint);
 
         // Inner detail lines
-        canvas.drawLine(rect.topLeft, rect.bottomRight, paint);
-        canvas.drawLine(rect.topRight, rect.bottomLeft, paint);
+        canvas.drawLine(rect.topLeft, rect.bottomRight, _crystalPaint);
+        canvas.drawLine(rect.topRight, rect.bottomLeft, _crystalPaint);
       }
     }
 
@@ -216,37 +249,33 @@ class PatternBackground extends Component with HasGameReference {
   }
 
   void _drawScientificOverlays(Canvas canvas, Vector2 size) {
-    final paint = Paint()
-      ..color = (config?.placeholderColor ?? Colors.white).withValues(
-        alpha: 0.15,
-      )
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.5;
+    _scientificPaint.color = (config?.placeholderColor ?? Colors.white)
+        .withValues(alpha: 0.15);
 
     final centerX = size.x / 2;
     final centerY = size.y / 2;
 
     // Central Crosshair
-    canvas.drawCircle(Offset(centerX, centerY), 40, paint);
+    canvas.drawCircle(Offset(centerX, centerY), 40, _scientificPaint);
     canvas.drawLine(
       Offset(centerX - 60, centerY),
       Offset(centerX - 20, centerY),
-      paint,
+      _scientificPaint,
     );
     canvas.drawLine(
       Offset(centerX + 20, centerY),
       Offset(centerX + 60, centerY),
-      paint,
+      _scientificPaint,
     );
     canvas.drawLine(
       Offset(centerX, centerY - 60),
       Offset(centerX, centerY - 20),
-      paint,
+      _scientificPaint,
     );
     canvas.drawLine(
       Offset(centerX, centerY + 20),
       Offset(centerX, centerY + 60),
-      paint,
+      _scientificPaint,
     );
   }
 }

@@ -14,6 +14,9 @@ class AdManager {
   bool _isInterstitialAdReady = false;
   bool _isRewardedAdReady = false;
 
+  VoidCallback? onAdOpened;
+  VoidCallback? onAdClosed;
+
   // Test Ad Unit IDs
   final String _androidBannerId = 'ca-app-pub-7510332808716092/6879301632';
   final String _iosBannerId = 'ca-app-pub-7510332808716092/6879301632';
@@ -91,10 +94,12 @@ class AdManager {
               FullScreenContentCallback(
                 onAdDismissedFullScreenContent: (ad) {
                   ad.dispose();
+                  onAdClosed?.call();
                   loadInterstitialAd(); // Preload details for next time
                 },
                 onAdFailedToShowFullScreenContent: (ad, err) {
                   ad.dispose();
+                  onAdClosed?.call();
                   loadInterstitialAd();
                 },
               );
@@ -114,6 +119,7 @@ class AdManager {
     }
 
     if (_isInterstitialAdReady && _interstitialAd != null) {
+      onAdOpened?.call();
       _interstitialAd!.show();
       _isInterstitialAdReady = false;
       _interstitialAd = null;
@@ -136,11 +142,13 @@ class AdManager {
           _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
             onAdDismissedFullScreenContent: (ad) {
               ad.dispose();
+              onAdClosed?.call();
               _isRewardedAdReady = false;
               loadRewardedAd();
             },
             onAdFailedToShowFullScreenContent: (ad, err) {
               ad.dispose();
+              onAdClosed?.call();
               _isRewardedAdReady = false;
               loadRewardedAd();
             },
@@ -160,6 +168,7 @@ class AdManager {
     VoidCallback? onAdFailed,
   }) {
     if (_isRewardedAdReady && _rewardedAd != null) {
+      onAdOpened?.call();
       _rewardedAd!.show(onUserEarnedReward: onUserEarnedReward);
       _rewardedAd = null;
       _isRewardedAdReady = false;

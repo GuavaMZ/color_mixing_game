@@ -1,3 +1,3 @@
 class GlobalConstants {
-  static const String appVersion = '1.3.2+7';
+  static const String appVersion = '1.4.1+9';
 }

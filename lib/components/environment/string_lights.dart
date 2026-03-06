@@ -19,6 +19,14 @@ class StringLights extends PositionComponent
   final List<Offset> _bulbPositions = [];
   final Path _wirePath = Path();
 
+  final Paint _wirePaint = Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 3;
+  final Paint _bulbPaint = Paint()..style = PaintingStyle.fill;
+  final Paint _glowPaint = Paint()..style = PaintingStyle.fill;
+  Shader? _glowShader;
+  Color? _lastBulbColor;
+
   StringLights({required Vector2 size, this.currentConfig})
     : super(position: Vector2.zero()) {
     this.size = size;
@@ -141,55 +149,59 @@ class StringLights extends PositionComponent
     if (bulbColors.isEmpty) return;
 
     // Draw Wire
-    final Paint wirePaint = Paint()
-      ..color = wireColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3;
-
-    canvas.drawPath(_wirePath, wirePaint);
+    _wirePaint.color = wireColor;
+    canvas.drawPath(_wirePath, _wirePaint);
 
     // Draw Bulbs
     if (_bulbPositions.isEmpty) return;
 
+    final baseColor = bulbColors.first; // Simplified for glow sharing
+    if (isGlowing && (_glowShader == null || _lastBulbColor != baseColor)) {
+      _lastBulbColor = baseColor;
+      _glowShader = RadialGradient(
+        colors: [
+          baseColor.withValues(alpha: 0.6),
+          baseColor.withValues(alpha: 0.0),
+        ],
+        stops: const [0.0, 1.0],
+      ).createShader(Rect.fromCircle(center: Offset.zero, radius: 15.0));
+      _glowPaint.shader = _glowShader;
+    }
+
     for (int i = 0; i < _bulbPositions.length; i++) {
       final pos = _bulbPositions[i];
-      final baseColor = bulbColors[i % bulbColors.length];
 
       // Calculate dynamic effects
       double bulbIntensity = 1.0;
       double radiusMultiplier = 1.0;
 
       if (isPulsing) {
-        // Offset time by bulb index to create a wave or twinkling effect
         final double offset = i * 0.5;
         bulbIntensity = 0.6 + 0.4 * sin(_time * 2 + offset);
 
-        // Starlight twinkles faster and sharper
         if (currentConfig?.id == 'lights_starlight') {
           bulbIntensity = 0.3 + 0.7 * pow(sin(_time * 4 + offset * 3), 2);
           radiusMultiplier = 0.5 + 0.5 * bulbIntensity;
         }
       }
 
-      final Color displayColor = baseColor.withValues(alpha: bulbIntensity);
-
-      // Draw outer glow
+      // Draw outer glow using shared shader and scaling
       if (isGlowing) {
-        canvas.drawCircle(
-          pos,
-          15.0 * radiusMultiplier,
-          Paint()
-            ..color = displayColor.withValues(alpha: 0.3)
-            ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8),
-        );
+        canvas.save();
+        canvas.translate(pos.dx, pos.dy);
+        canvas.scale(radiusMultiplier);
+        _glowPaint.color = Colors.white.withValues(alpha: bulbIntensity * 0.5);
+        canvas.drawCircle(Offset.zero, 15.0, _glowPaint);
+        canvas.restore();
       }
 
       // Draw inner bulb
+      _bulbPaint.color = Colors.white.withValues(alpha: 0.9 * bulbIntensity);
       canvas.drawCircle(
         pos,
         (currentConfig?.id == 'lights_starlight' ? 3.0 : 6.0) *
             radiusMultiplier,
-        Paint()..color = Colors.white.withValues(alpha: 0.9),
+        _bulbPaint,
       );
 
       // Draw bulb base/socket connecting to wire

@@ -113,12 +113,12 @@ class XpManager {
       xp = (xp * (1.0 + comboCount * 0.05)).round();
     }
 
-    return await _addXp(xp);
+    await _addXp(xp);
+    return xp;
   }
 
   /// Raw XP addition — handles level-ups internally.
   Future<int> _addXp(int amount) async {
-    int coinsAwarded = 0;
     int remaining = amount;
 
     while (remaining > 0 && playerLevel.value < maxLevel) {
@@ -131,7 +131,6 @@ class XpManager {
 
         // Award level-up coins
         final bonus = _levelUpBonus(playerLevel.value);
-        coinsAwarded += bonus;
         if (_game != null && bonus > 0) {
           _game!.addCoins(bonus);
         }
@@ -155,7 +154,7 @@ class XpManager {
     }
 
     await _persist();
-    return coinsAwarded;
+    return amount;
   }
 
   /// Coins awarded on level-up. Milestone levels give bigger bonuses.

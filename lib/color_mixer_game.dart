@@ -1,3 +1,4 @@
+import 'package:color_mixing_deductive/core/ad_manager.dart';
 import 'package:color_mixing_deductive/helpers/daily_challenge_manager.dart';
 import 'package:color_mixing_deductive/components/particles/ambient_particles.dart';
 import 'package:color_mixing_deductive/components/environment/background_gradient.dart';
@@ -162,6 +163,21 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   int totalStars = 0;
   Color _lastBeakerColor = Colors.transparent;
 
+  static const double _dropCooldown = 1.0;
+  double _dropCooldownTimer = 0.0;
+  final ValueNotifier<double> dropCooldownProgress = ValueNotifier(1.0);
+
+  int _lastNotifiedTime = -1;
+  double _lastNotifiedMatch = -1.0;
+  double _winCheckTimer = 0.0;
+  static const double _winCheckInterval = 0.1; // Check win every 100ms
+
+  // Win Menu specific state
+  int winPreviousLevel = 0;
+  int winPreviousXp = 0;
+  int winXpEarned = 0;
+  CardDef? winUnlockedCard;
+
   late BackgroundGradient backgroundGradient;
   late AmbientParticles ambientParticles;
   late PatternBackground patternBackground;
@@ -251,6 +267,16 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   Future<void> onLoad() async {
     super.onLoad();
 
+    // Register Ad Lifecycle Callbacks to pause/resume game
+    AdManager().onAdOpened = () {
+      debugPrint('Game paused for Ad');
+      paused = true;
+    };
+    AdManager().onAdClosed = () {
+      debugPrint('Game resumed after Ad');
+      paused = false;
+    };
+
     // تحميل التقدم المحفوظ من الهاتف
     // تحميل التقدم المحفوظ من الهاتف
     await levelManager.initProgress();
@@ -270,8 +296,6 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     XpManager.instance.attachGame(this);
     await AchievementEngine.instance.init(unlockedAchievements);
     await AdaptiveDifficulty.instance.init();
-    // Listen for level-up events to show the overlay
-    XpManager.instance.levelUpEvent.addListener(_onLevelUp);
     // ────────────────────────────────────────────────────────────────────────
 
     CoinStoreService.instance.attachGame(this);
@@ -381,7 +405,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     // Start music for Main Menu (Classic/Menu BGM)
     _audio.playMenuMusic();
 
-    startLevel();
+    targetColor = Colors.transparent; // Set placeholder color until game starts
   }
 
   @override
@@ -394,6 +418,14 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
         _winTimer = -1.0;
         _executeWinTransition();
       }
+    }
+
+    if (_dropCooldownTimer > 0) {
+      _dropCooldownTimer -= dt;
+      if (_dropCooldownTimer < 0) _dropCooldownTimer = 0;
+      dropCooldownProgress.value = 1.0 - (_dropCooldownTimer / _dropCooldown);
+    } else if (dropCooldownProgress.value < 1.0) {
+      dropCooldownProgress.value = 1.0;
     }
 
     if ((currentMode == GameMode.timeAttack ||
@@ -428,11 +460,22 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       }
 
       if (timeLeft <= 0) {
-        timeLeft = 0;
         isTimeUp = true;
         _handleGameOver();
       }
-      notifyListeners();
+
+      // Throttled notification: only if time (int) or match percentage (significant delta) changes
+      bool shouldNotify = false;
+      if (timeLeft.toInt() != _lastNotifiedTime) {
+        _lastNotifiedTime = timeLeft.toInt();
+        shouldNotify = true;
+      }
+      if ((matchPercentage.value - _lastNotifiedMatch).abs() >= 0.1) {
+        _lastNotifiedMatch = matchPercentage.value;
+        shouldNotify = true;
+      }
+
+      if (shouldNotify) notifyListeners();
     }
 
     // Earthquake Logic
@@ -525,33 +568,28 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
             1.0 - (_activeEventElapsed / _activeEventDuration).clamp(0.0, 1.0);
       }
     }
-    // Check win condition ONLY if color changed
+
+    // Throttled win condition check ONLY if color changed
     if (!_hasWon && beaker.currentColor != _lastBeakerColor) {
-      _lastBeakerColor = beaker.currentColor;
-      if (ColorLogic.checkMatch(beaker.currentColor, targetColor) >= 93.0) {
-        _hasWon = true;
-        showWinEffect();
+      _winCheckTimer += dt;
+      if (_winCheckTimer >= _winCheckInterval) {
+        _winCheckTimer = 0.0;
+        _lastBeakerColor = beaker.currentColor;
+        if (ColorLogic.checkMatch(beaker.currentColor, targetColor) >= 93.0) {
+          _hasWon = true;
+          showWinEffect();
+        }
       }
+    } else {
+      _winCheckTimer = 0.0;
     }
   }
 
   @override
   void onRemove() {
-    XpManager.instance.levelUpEvent.removeListener(_onLevelUp);
     _audio.dispose();
     disposeRandomEvents(); // Call disposeRandomEvents on game removal
     super.onRemove();
-  }
-
-  /// Called whenever [XpManager] fires a level-up event.
-  void _onLevelUp() {
-    final newLevel = XpManager.instance.levelUpEvent.value;
-    if (newLevel == null || !isMounted) return;
-    // Show the level-up overlay. We pass the last earned level-up coin bonus
-    // (stored in XpManager._levelUpBonus) via the overlay builder in main.dart.
-    if (!overlays.isActive('LevelUp')) {
-      overlays.add('LevelUp');
-    }
   }
 
   void disposeRandomEvents() {
@@ -620,7 +658,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     notifyListeners();
   }
 
-  void showWinEffect() {
+  Future<void> showWinEffect() async {
     if (overlays.isActive('WinMenu')) return;
 
     disposeRandomEvents();
@@ -751,19 +789,21 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     StatisticsManager.incrementModePlay(currentMode);
 
     // ── Phase 1: XP + Achievement Engine ─────────────────────────────────
-    // Award XP (async — fire and forget; level-up overlay triggered by listener)
-    XpManager.instance
-        .addXpForWin(
-          stars: stars,
-          mode: currentMode,
-          comboCount: comboCount.value,
-        )
-        .then((xpForWin) {
-          // ── Phase 2: Season Pass XP Feed ─────────────────────────────────────
-          if (xpForWin > 0) {
-            SeasonPassManager.instance.addPassXp(xpForWin);
-          }
-        });
+    // Store previous state for Win Menu
+    winPreviousLevel = XpManager.instance.playerLevel.value;
+    winPreviousXp = XpManager.instance.currentXp.value;
+
+    // Award XP and wait for it
+    winXpEarned = await XpManager.instance.addXpForWin(
+      stars: stars,
+      mode: currentMode,
+      comboCount: comboCount.value,
+    );
+
+    // ── Phase 2: Season Pass XP Feed ─────────────────────────────────────
+    if (winXpEarned > 0) {
+      SeasonPassManager.instance.addPassXp(winXpEarned);
+    }
 
     // Record adaptive difficulty outcome (only for classic levelled mode)
     if (currentMode == GameMode.classic) {
@@ -809,18 +849,13 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     // ───────────────────────────────────────────────────────────────────────
 
     // Phase 1: Card Collection Drop
+    winUnlockedCard = null;
     if (!_cardDroppedThisLevel &&
         (stars == 3 || currentMode != GameMode.classic)) {
       if (Random().nextDouble() > 0.6) {
         // 40% chance drop
         _cardDroppedThisLevel = true;
-        CardCollectionManager.instance.dropRandomCard().then((card) {
-          if (card != null && isMounted) {
-            if (!overlays.isActive('CardUnlock')) {
-              overlays.add('CardUnlock');
-            }
-          }
-        });
+        winUnlockedCard = await CardCollectionManager.instance.dropRandomCard();
       }
     }
 
@@ -1038,11 +1073,14 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
   void addDrop(String colorType, {bool ignoreInversion = false}) {
     if (_hasWon) return;
+    if (_dropCooldownTimer > 0) return;
     if (rDrops + gDrops + bDrops + whiteDrops + blackDrops >= maxDrops) {
       dropsLimitReached.value = true;
       return;
     }
 
+    _dropCooldownTimer = _dropCooldown;
+    dropCooldownProgress.value = 0.0;
     _audio.playDrop();
 
     // Map colorType to actual Color
@@ -1582,6 +1620,13 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   /// Restores [drops] drops and resumes the level.
   void reviveWithDrops(int drops) {
     overlays.remove('GameOver');
+    overlays.remove('EchoGameOver');
+    overlays.remove('ChaosGameOver');
+
+    _hasLost = false;
+    isTimeUp = false;
+    timeLeft = maxTime;
+
     maxDrops = drops;
     totalDrops.value = 0;
     rDrops = 0;
@@ -1590,6 +1635,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     whiteDrops = 0;
     blackDrops = 0;
     _cardDroppedThisLevel = false;
+
     overlays.add('Controls');
     _startLevelBgm();
     notifyListeners();

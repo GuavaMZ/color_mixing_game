@@ -30,6 +30,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
 
   // Staggered animations for buttons
   final List<AnimationController> _buttonControllers = [];
+  bool _hasUnclaimedDailyLogin = false;
 
   @override
   void initState() {
@@ -67,8 +68,15 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
 
   Future<void> _checkDailyLogin() async {
     final canClaim = await DailyLoginManager.canClaimToday();
-    if (canClaim && mounted) {
-      widget.game.transitionTo('MainMenu', 'DailyLogin');
+    if (mounted) {
+      setState(() {
+        _hasUnclaimedDailyLogin = canClaim;
+      });
+      if (canClaim) {
+        // Optionally don't force transition if we just want the badge,
+        // but user expects to see it on startup.
+        // widget.game.transitionTo('MainMenu', 'DailyLogin');
+      }
     }
   }
 
@@ -210,6 +218,8 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                 tooltip: AppStrings.dailyChallengeTitle.getString(context),
                 onTap: () => _navTo('DailyChallenge'),
                 delay: 100,
+                showBadge:
+                    _hasUnclaimedDailyLogin, // Uses Daily Challenge icon for Daily Login since they are tied or similar for rewards
               ),
               _buildUtilButton(
                 icon: Icons.shopping_basket_rounded,
@@ -276,6 +286,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
     required String tooltip,
     required VoidCallback onTap,
     required int delay,
+    bool showBadge = false,
   }) {
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
@@ -304,6 +315,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                   ), // Responsive size
                   color: Colors.white,
                   backgroundColor: Colors.white.withValues(alpha: 0.05),
+                  showBadge: showBadge,
                 ),
               ),
             ),

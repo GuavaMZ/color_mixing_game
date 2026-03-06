@@ -1,0 +1,46 @@
+﻿00:00 +0: loading D:/Work/color_mixing_deductive/test/color_logic_test.dart
+00:00 +0: D:/Work/color_mixing_deductive/test/color_logic_test.dart: ColorLogic 5-Color Mixing Tests Pure Red mixing
+00:00 +1: D:/Work/color_mixing_deductive/test/color_logic_test.dart: ColorLogic 5-Color Mixing Tests Red + White (Tint)
+00:00 +2: D:/Work/color_mixing_deductive/test/color_logic_test.dart: ColorLogic 5-Color Mixing Tests Red + Black (Shade)
+00:00 +3: D:/Work/color_mixing_deductive/test/color_logic_test.dart: ColorLogic 5-Color Mixing Tests Red + White + Black (Grey Scale or Tone)
+00:00 +4: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorScience - CIE Delta-E76 Identical colors have delta-E of 0
+00:00 +5: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorScience - CIE Delta-E76 Very similar colors have low delta-E
+00:00 +6: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorScience - CIE Delta-E76 Pure red vs pure green has high delta-E
+00:00 +7: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorScience - CIE Delta-E76 Black vs white has high delta-E
+00:00 +8: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorScience - CIE Delta-E76 RGB to Lab for black returns L=0
+00:00 +9: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorScience - CIE Delta-E76 RGB to Lab for white returns LΓëê100
+00:00 +10: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorScience - Wavelength Estimation Red yields wavelength near 700nm
+00:00 +11: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorScience - Wavelength Estimation Green yields wavelength near 530nm
+00:00 +12: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorScience - Wavelength Estimation Blue yields wavelength near 470nm
+00:00 +13: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorScience - Wavelength Estimation Wavelength always within visible spectrum
+00:00 +14: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorScience - Wavelength Estimation Spectral region names are valid
+00:00 +14 -1: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorScience - Wavelength Estimation Spectral region names are valid [E]
+  Expected: contains 'spectral_violet'
+    Actual: ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'Indigo', 'Violet']
+     Which: does not contain 'spectral_violet'
+  
+  package:matcher                                     expect
+  package:flutter_test/src/widget_tester.dart 473:18  expect
+  test\color_science_test.dart 93:9                   main.<fn>.<fn>
+  
+00:00 +14 -1: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorScience - Color Temperature Red is classified as warm
+00:00 +15 -1: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorScience - Color Temperature Blue is classified as cool
+00:00 +16 -1: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorScience - Color Temperature Grey is classified as neutral
+00:00 +17 -1: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorScience - Color Temperature Temperature kelvin values are reasonable
+00:00 +18 -1: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorScience - Color Harmony Complementary colors are detected (red vs cyan)
+00:00 +19 -1: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorScience - Color Harmony Analogous colors are detected
+00:00 +20 -1: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorScience - Color Harmony Low saturation returns neutral
+00:00 +21 -1: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorScience - Complementary Color Complementary of red is cyan-ish
+00:00 +22 -1: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorScience - Color Facts Returns a non-empty string
+00:00 +23 -1: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorScience - Color Facts Different colors can give different facts
+00:00 +24 -1: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorLogic.checkMatch with Delta-E Identical colors give 100% match
+00:00 +25 -1: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorLogic.checkMatch with Delta-E Very similar colors give high match
+00:00 +26 -1: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorLogic.checkMatch with Delta-E Very different colors give low match
+00:00 +27 -1: D:/Work/color_mixing_deductive/test/color_science_test.dart: ColorLogic.checkMatch with Delta-E Match is always between 0 and 100
+00:03 +28 -1: D:/Work/color_mixing_deductive/test/redeem_test.dart: Redeem System Tests Code should not be redeemed initially
+00:03 +29 -1: D:/Work/color_mixing_deductive/test/redeem_test.dart: Redeem System Tests Code should be marked as redeemed
+00:03 +30 -1: D:/Work/color_mixing_deductive/test/redeem_test.dart: Redeem System Tests Multiple codes can be redeemed
+00:04 +31 -1: D:/Work/color_mixing_deductive/test/redeem_test.dart: Redeem System Tests Multiple codes can be redeemed
+00:04 +32 -1: D:/Work/color_mixing_deductive/test/redeem_test.dart: Redeem System Tests Multiple codes can be redeemed
+00:04 +33 -1: Some tests failed.
+

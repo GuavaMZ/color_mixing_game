@@ -5,6 +5,7 @@ import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:color_mixing_deductive/core/save_manager.dart';
 
 class TutorialOverlay extends StatefulWidget {
   final ColorMixerGame game;
@@ -62,8 +63,11 @@ class _TutorialOverlayState extends State<TutorialOverlay>
     }
   }
 
-  void _close() {
-    widget.game.navigateToPage('Settings', isReverse: true);
+  void _close() async {
+    await SaveManager.saveHasSeenTutorial(true);
+    if (!mounted) return;
+    widget.game.overlays.remove('Tutorial');
+    widget.game.overlays.add('MainMenu');
   }
 
   @override

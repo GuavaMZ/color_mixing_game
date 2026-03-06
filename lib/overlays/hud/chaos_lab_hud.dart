@@ -603,27 +603,35 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
     return ValueListenableBuilder<bool>(
       valueListenable: widget.game.dropsLimitReached,
       builder: (context, isLimitReached, _) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: palette.map((item) {
-            final color = item['color'] as Color;
-            final type = item['type'] as String;
-            final buttonSize = 48.0;
+        return ValueListenableBuilder<double>(
+          valueListenable: widget.game.dropCooldownProgress,
+          builder: (context, progress, _) {
+            final isCooldown = progress < 1.0;
+            final bool isDisabled = isLimitReached || isCooldown;
 
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: Opacity(
-                opacity: isLimitReached ? 0.4 : 1.0,
-                child: _buildColorButton(
-                  context,
-                  color,
-                  type,
-                  buttonSize,
-                  isLimitReached,
-                ),
-              ),
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: palette.map((item) {
+                final color = item['color'] as Color;
+                final type = item['type'] as String;
+                final buttonSize = 48.0;
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  child: Opacity(
+                    opacity: isDisabled ? 0.4 : 1.0,
+                    child: _buildColorButton(
+                      context,
+                      color,
+                      type,
+                      buttonSize,
+                      isDisabled,
+                    ),
+                  ),
+                );
+              }).toList(),
             );
-          }).toList(),
+          },
         );
       },
     );
