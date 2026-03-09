@@ -168,4 +168,10 @@ class LivesManager extends ChangeNotifier {
     final seconds = (diff.inSeconds % 60).toString().padLeft(2, '0');
     return "$minutes:$seconds";
   }
+
+  @override
+  void dispose() {
+    _regenTimer?.cancel();
+    super.dispose();
+  }
 }

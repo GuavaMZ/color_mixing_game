@@ -61,9 +61,13 @@ class _SeasonPassOverlayState extends State<SeasonPassOverlay>
     final tierData = kPassTiers[tier - 1];
     final reward = premium ? tierData.premiumReward! : tierData.freeReward;
     if (reward.type == RewardType.coins) {
-      final current = await SaveManager.loadTotalCoins();
-      await SaveManager.saveTotalCoins(current + reward.amount);
-      widget.game.totalCoins.value = current + reward.amount;
+      bool success = await SaveManager.addCoins(
+        reward.amount,
+        reason: 'Season pass reward',
+      );
+      if (success) {
+        widget.game.totalCoins.value = await SaveManager.loadTotalCoins();
+      }
     } else if (reward.type == RewardType.helperItem) {
       final helperId = reward.label.contains('Hint')
           ? 'help_drop'
@@ -133,7 +137,7 @@ class _SeasonPassOverlayState extends State<SeasonPassOverlay>
                 ),
                 ValueListenableBuilder<bool>(
                   valueListenable: _manager.isPremium,
-                  builder: (_, premium, __) => Text(
+                  builder: (context, premium, child) => Text(
                     premium
                         ? '👑 ${AppStrings.premiumActive.getString(context)} — ${_manager.timeUntilSeasonEnd} left'
                         : '⏳ ${_manager.timeUntilSeasonEnd} ${AppStrings.remaining.getString(context)}',
@@ -147,7 +151,7 @@ class _SeasonPassOverlayState extends State<SeasonPassOverlay>
           ),
           ValueListenableBuilder<int>(
             valueListenable: _manager.totalXp,
-            builder: (_, xp, __) => Container(
+            builder: (context, xp, child) => Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: AppTheme.cosmicGlass(borderRadius: 16),
               child: Column(
@@ -178,7 +182,7 @@ class _SeasonPassOverlayState extends State<SeasonPassOverlay>
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: ValueListenableBuilder<int>(
         valueListenable: _manager.currentTier,
-        builder: (_, tier, __) {
+        builder: (context, tier, child) {
           final progress = _manager.tierProgress;
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -202,13 +206,25 @@ class _SeasonPassOverlayState extends State<SeasonPassOverlay>
                 ],
               ),
               const SizedBox(height: 4),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: LinearProgressIndicator(
-                  value: progress,
-                  minHeight: 8,
-                  backgroundColor: Colors.white12,
-                  valueColor: AlwaysStoppedAnimation(AppTheme.neonCyan),
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.neonCyan.withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: LinearProgressIndicator(
+                    value: progress,
+                    minHeight: 12, // Increased height for premium feel
+                    backgroundColor: Colors.white.withValues(alpha: 0.1),
+                    valueColor: AlwaysStoppedAnimation(AppTheme.neonCyan),
+                  ),
                 ),
               ),
             ],
@@ -222,7 +238,7 @@ class _SeasonPassOverlayState extends State<SeasonPassOverlay>
     return PageView.builder(
       controller: _pageController,
       itemCount: kPassTiers.length,
-      itemBuilder: (_, index) {
+      itemBuilder: (context, index) {
         final tierData = kPassTiers[index];
         return _buildTierCard(tierData);
       },
@@ -232,13 +248,13 @@ class _SeasonPassOverlayState extends State<SeasonPassOverlay>
   Widget _buildTierCard(PassTier tierData) {
     return ValueListenableBuilder<int>(
       valueListenable: _manager.currentTier,
-      builder: (_, currentTier, __) {
+      builder: (context, currentTier, child) {
         return ValueListenableBuilder<bool>(
           valueListenable: _manager.isPremium,
-          builder: (_, isPremium, __) {
+          builder: (context, isPremium, child) {
             return ValueListenableBuilder<Set<int>>(
               valueListenable: _manager.claimedTiers,
-              builder: (_, claimed, __) {
+              builder: (context, claimed, child) {
                 final isUnlocked = currentTier >= tierData.tier;
                 final isFreeClaimed = claimed.contains(tierData.tier);
                 final isPremiumClaimed = claimed.contains(tierData.tier * 1000);
@@ -251,29 +267,34 @@ class _SeasonPassOverlayState extends State<SeasonPassOverlay>
                     vertical: 12,
                   ),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(24),
                     border: Border.all(
                       color: isCurrentTier
                           ? const Color(0xFFFFD700)
                           : isUnlocked
-                          ? AppTheme.neonCyan.withValues(alpha: 0.5)
-                          : Colors.white12,
+                          ? AppTheme.neonCyan.withValues(alpha: 0.6)
+                          : Colors.white.withValues(alpha: 0.08),
                       width: isCurrentTier ? 2 : 1,
                     ),
                     color: isUnlocked
-                        ? AppTheme.primaryMedium.withValues(alpha: 0.8)
-                        : Colors.black.withValues(alpha: 0.3),
-                    boxShadow: isCurrentTier
-                        ? [
-                            BoxShadow(
-                              color: const Color(
-                                0xFFFFD700,
-                              ).withValues(alpha: 0.3),
-                              blurRadius: 20,
-                              spreadRadius: 2,
-                            ),
-                          ]
-                        : [],
+                        ? AppTheme.primaryMedium.withValues(alpha: 0.6)
+                        : Colors.white.withValues(
+                            alpha: 0.03,
+                          ), // Lighter frosted look
+                    boxShadow: [
+                      if (isCurrentTier)
+                        BoxShadow(
+                          color: const Color(0xFFFFD700).withValues(alpha: 0.4),
+                          blurRadius: 24,
+                          spreadRadius: 4,
+                        ),
+                      if (isUnlocked && !isCurrentTier)
+                        BoxShadow(
+                          color: AppTheme.neonCyan.withValues(alpha: 0.2),
+                          blurRadius: 16,
+                          spreadRadius: 2,
+                        ),
+                    ],
                   ),
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(12),
@@ -349,7 +370,7 @@ class _SeasonPassOverlayState extends State<SeasonPassOverlay>
   Widget _buildPremiumCTA() {
     return ValueListenableBuilder<bool>(
       valueListenable: _manager.isPremium,
-      builder: (_, isPremium, __) {
+      builder: (context, isPremium, child) {
         if (isPremium) return const SizedBox.shrink();
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -534,13 +555,25 @@ class _RewardCard extends StatelessWidget {
         : Colors.white24;
 
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: borderColor),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: borderColor,
+          width: isPremiumCard ? 1.5 : 1.0,
+        ),
         color: isPremiumCard
-            ? const Color(0xFFFFD700).withValues(alpha: 0.08)
-            : Colors.white.withValues(alpha: 0.05),
+            ? const Color(0xFFFFD700).withValues(alpha: 0.12)
+            : Colors.white.withValues(alpha: 0.08),
+        boxShadow: isPremiumCard && isUnlocked && !isClaimed
+            ? [
+                BoxShadow(
+                  color: const Color(0xFFFFD700).withValues(alpha: 0.2),
+                  blurRadius: 12,
+                  spreadRadius: 1,
+                ),
+              ]
+            : null,
       ),
       child: Column(
         children: [

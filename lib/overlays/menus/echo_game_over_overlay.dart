@@ -1,6 +1,7 @@
 import 'package:flutter_localization/flutter_localization.dart';
 import '../../helpers/string_manager.dart';
 import '../../../color_mixer_game.dart';
+import '../../../core/ad_manager.dart';
 import '../../helpers/theme_constants.dart';
 import '../../helpers/audio_manager.dart';
 import '../../components/ui/enhanced_button.dart';
@@ -209,8 +210,18 @@ class _EchoGameOverOverlayState extends State<EchoGameOverOverlay>
                                 icon: Icons.home_rounded,
                                 isOutlined: true,
                                 onTap: () {
-                                  _audio.playButton();
-                                  widget.game.returnToMainMenu();
+                                  void proceedNav() {
+                                    _audio.playButton();
+                                    widget.game.returnToMainMenu();
+                                  }
+
+                                  if (AdManager().shouldShowInterstitial()) {
+                                    AdManager().showInterstitialAd(
+                                      onAdDismissed: proceedNav,
+                                    );
+                                  } else {
+                                    proceedNav();
+                                  }
                                 },
                               ),
                             ),
@@ -222,8 +233,18 @@ class _EchoGameOverOverlayState extends State<EchoGameOverOverlay>
                                 icon: Icons.replay_rounded,
                                 color: AppTheme.neonMagenta,
                                 onTap: () {
-                                  _audio.playButton();
-                                  widget.game.resetGame();
+                                  void proceedReset() {
+                                    _audio.playButton();
+                                    widget.game.resetGame();
+                                  }
+
+                                  if (AdManager().shouldShowInterstitial()) {
+                                    AdManager().showInterstitialAd(
+                                      onAdDismissed: proceedReset,
+                                    );
+                                  } else {
+                                    proceedReset();
+                                  }
                                 },
                               ),
                             ),

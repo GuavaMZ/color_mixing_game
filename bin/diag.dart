@@ -7,9 +7,13 @@ void main() async {
   // but I'm checking against documentation now.
   try {
     await updater.readCurrentPatch();
-  } catch (e) {}
+  } catch (e) {
+    print('Diag error: $e');
+  }
 
   try {
     await updater.checkForUpdate();
-  } catch (e) {}
+  } catch (e) {
+    print('Diag error: $e');
+  }
 }

@@ -112,19 +112,62 @@ class AdManager {
     );
   }
 
-  void showInterstitialAd() {
+  int _wonLevelsCount = 0;
+  int _triesCount = 0;
+
+  void recordWin() {
+    _wonLevelsCount++;
+    _triesCount++;
+  }
+
+  void recordLoss() {
+    _triesCount++;
+  }
+
+  void resetAdCounters() {
+    _wonLevelsCount = 0;
+    _triesCount = 0;
+  }
+
+  bool shouldShowInterstitial() {
+    return _wonLevelsCount >= 3 || _triesCount >= 3;
+  }
+
+  void showInterstitialAd({VoidCallback? onAdDismissed}) {
     if (VipManager.instance.isVip.value) {
       debugPrint('Skipping Interstitial Ad for VIP user');
+      onAdDismissed?.call();
       return;
     }
 
     if (_isInterstitialAdReady && _interstitialAd != null) {
+      _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+        onAdDismissedFullScreenContent: (ad) {
+          ad.dispose();
+          resetAdCounters(); // Reset counters after ad finishes
+          onAdClosed?.call();
+          onAdDismissed?.call();
+          loadInterstitialAd(); // Preload for next time
+        },
+        onAdFailedToShowFullScreenContent: (ad, err) {
+          ad.dispose();
+          resetAdCounters(); // Reset counters even if ad fails
+          onAdClosed?.call();
+          onAdDismissed?.call();
+          loadInterstitialAd();
+        },
+      );
+
       onAdOpened?.call();
       _interstitialAd!.show();
       _isInterstitialAdReady = false;
       _interstitialAd = null;
     } else {
       debugPrint('Interstitial Ad not ready yet');
+      // If ad isn't ready but we should have shown it, we preserve the counters
+      // or optionally reset them so we don't spam. Let's reset them so it tries again later.
+      resetAdCounters();
+      onAdDismissed?.call();
       loadInterstitialAd(); // Try loading one for next time
     }
   }

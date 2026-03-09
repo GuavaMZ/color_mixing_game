@@ -101,7 +101,9 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
         ),
 
         // Confetti Layer
-        ..._confetti,
+        RepaintBoundary(
+          child: Stack(clipBehavior: Clip.none, children: _confetti),
+        ),
 
         SafeArea(
           child: Padding(
@@ -283,22 +285,20 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
                                   icon: Icons.arrow_forward_rounded,
                                   onTap: () {
                                     _audio.playButton();
-                                    if (widget
-                                            .game
-                                            .levelManager
-                                            .currentLevelIndex >=
-                                        0) {
-                                      final levelNumber =
-                                          widget
-                                              .game
-                                              .levelManager
-                                              .currentLevelIndex +
-                                          1;
-                                      if (levelNumber % 2 == 0) {
-                                        AdManager().showInterstitialAd();
+
+                                    void proceedToNextLevel() {
+                                      if (mounted) {
+                                        widget.game.goToNextLevel();
                                       }
                                     }
-                                    widget.game.goToNextLevel();
+
+                                    if (AdManager().shouldShowInterstitial()) {
+                                      AdManager().showInterstitialAd(
+                                        onAdDismissed: proceedToNextLevel,
+                                      );
+                                      return; // Wait for ad
+                                    }
+                                    proceedToNextLevel();
                                   },
                                 ),
                               ),
@@ -327,39 +327,41 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
     return Column(
       children: [
         // Trophy icon with glow
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: RadialGradient(
-              colors: [
-                Colors.amber.withValues(alpha: 0.4),
-                Colors.amber.withValues(alpha: 0.1),
-                Colors.transparent,
-              ],
-              stops: const [0.0, 0.6, 1.0],
+        RepaintBoundary(
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  Colors.amber.withValues(alpha: 0.4),
+                  Colors.amber.withValues(alpha: 0.1),
+                  Colors.transparent,
+                ],
+                stops: const [0.0, 0.6, 1.0],
+              ),
             ),
-          ),
-          child: TweenAnimationBuilder<double>(
-            duration: const Duration(milliseconds: 800),
-            tween: Tween(begin: 0.5, end: 1.0),
-            curve: Curves.elasticOut,
-            builder: (context, value, child) {
-              return Transform.scale(
-                scale: value,
-                child: Icon(
-                  Icons.emoji_events_rounded,
-                  color: Colors.amber,
-                  size: ResponsiveHelper.iconSize(context, 80),
-                  shadows: [
-                    Shadow(
-                      color: Colors.amber.withValues(alpha: 0.6),
-                      blurRadius: 25,
-                    ),
-                  ],
-                ),
-              );
-            },
+            child: TweenAnimationBuilder<double>(
+              duration: const Duration(milliseconds: 800),
+              tween: Tween(begin: 0.5, end: 1.0),
+              curve: Curves.elasticOut,
+              builder: (context, value, child) {
+                return Transform.scale(
+                  scale: value,
+                  child: Icon(
+                    Icons.emoji_events_rounded,
+                    color: Colors.amber,
+                    size: ResponsiveHelper.iconSize(context, 80),
+                    shadows: [
+                      Shadow(
+                        color: Colors.amber.withValues(alpha: 0.6),
+                        blurRadius: 25,
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
           ),
         ),
         SizedBox(height: ResponsiveHelper.spacing(context, 16)),
@@ -377,52 +379,54 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
           ),
         ),
         SizedBox(height: ResponsiveHelper.spacing(context, 20)),
-        AnimatedBuilder(
-          animation: _starsController,
-          builder: (context, child) {
-            return Row(
-              mainAxisSize: MainAxisSize.min,
-              children: List.generate(3, (index) {
-                final delay = index * 0.2;
-                final progress = ((_starsController.value - delay) / 0.4).clamp(
-                  0.0,
-                  1.0,
-                );
-                final isEarned = index < stars;
-                return TweenAnimationBuilder<double>(
-                  duration: Duration.zero,
-                  tween: Tween(begin: 0, end: progress),
-                  builder: (context, value, child) {
-                    return Transform.scale(
-                      scale: isEarned
-                          ? Curves.elasticOut.transform(value)
-                          : 0.8,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 6),
-                        child: Icon(
-                          isEarned
-                              ? Icons.star_rounded
-                              : Icons.star_outline_rounded,
-                          color: isEarned
-                              ? Colors.amber
-                              : Colors.white.withValues(alpha: 0.3),
-                          size: ResponsiveHelper.iconSize(context, 50),
-                          shadows: isEarned
-                              ? [
-                                  Shadow(
-                                    color: Colors.amber.withValues(alpha: 0.6),
-                                    blurRadius: 15,
-                                  ),
-                                ]
-                              : [],
+        RepaintBoundary(
+          child: AnimatedBuilder(
+            animation: _starsController,
+            builder: (context, child) {
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(3, (index) {
+                  final delay = index * 0.2;
+                  final progress = ((_starsController.value - delay) / 0.4)
+                      .clamp(0.0, 1.0);
+                  final isEarned = index < stars;
+                  return TweenAnimationBuilder<double>(
+                    duration: Duration.zero,
+                    tween: Tween(begin: 0, end: progress),
+                    builder: (context, value, child) {
+                      return Transform.scale(
+                        scale: isEarned
+                            ? Curves.elasticOut.transform(value)
+                            : 0.8,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          child: Icon(
+                            isEarned
+                                ? Icons.star_rounded
+                                : Icons.star_outline_rounded,
+                            color: isEarned
+                                ? Colors.amber
+                                : Colors.white.withValues(alpha: 0.3),
+                            size: ResponsiveHelper.iconSize(context, 50),
+                            shadows: isEarned
+                                ? [
+                                    Shadow(
+                                      color: Colors.amber.withValues(
+                                        alpha: 0.6,
+                                      ),
+                                      blurRadius: 15,
+                                    ),
+                                  ]
+                                : [],
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                );
-              }),
-            );
-          },
+                      );
+                    },
+                  );
+                }),
+              );
+            },
+          ),
         ),
         SizedBox(height: ResponsiveHelper.spacing(context, 12)),
         Text(
@@ -469,7 +473,7 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Level $newLevel', // Or from XpManager.instance.rankTitle
+                '${AppStrings.levelLabel.getString(context)} $newLevel',
                 style: AppTheme.buttonText(context).copyWith(
                   color: Colors.cyanAccent,
                   fontWeight: FontWeight.bold,
@@ -517,7 +521,7 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
               builder: (context, val, child) => Transform.scale(
                 scale: val,
                 child: Text(
-                  'LEVEL UP!',
+                  AppStrings.levelUp.getString(context),
                   style: TextStyle(
                     color: Colors.amberAccent,
                     fontWeight: FontWeight.bold,
@@ -584,7 +588,7 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'NEW CARD DISCOVERED!',
+                        AppStrings.milestoneUnlocked.getString(context),
                         style: TextStyle(
                           color: Colors.amberAccent,
                           fontWeight: FontWeight.bold,
@@ -614,79 +618,81 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
   Widget _buildCoinsEarnedDisplay(BuildContext context, int stars) {
     int coins = widget.game.lastEarnedCoins;
 
-    return TweenAnimationBuilder<int>(
-      tween: IntTween(begin: 0, end: coins),
-      duration: const Duration(milliseconds: 1200),
-      curve: Curves.easeOut,
-      builder: (context, value, child) {
-        return TweenAnimationBuilder<double>(
-          tween: Tween(begin: 0.8, end: 1.0),
-          duration: const Duration(milliseconds: 400),
-          curve: Curves.elasticOut,
-          builder: (context, scale, _) {
-            return Transform.scale(
-              scale: scale,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 8,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.amber.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: Colors.amber.withValues(
-                      alpha: 0.3 + (value / coins) * 0.4,
-                    ),
-                    width: 1,
+    return RepaintBoundary(
+      child: TweenAnimationBuilder<int>(
+        tween: IntTween(begin: 0, end: coins),
+        duration: const Duration(milliseconds: 1200),
+        curve: Curves.easeOut,
+        builder: (context, value, child) {
+          return TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0.8, end: 1.0),
+            duration: const Duration(milliseconds: 400),
+            curve: Curves.elasticOut,
+            builder: (context, scale, _) {
+              return Transform.scale(
+                scale: scale,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 8,
                   ),
-                  boxShadow: [
-                    BoxShadow(
+                  decoration: BoxDecoration(
+                    color: Colors.amber.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
                       color: Colors.amber.withValues(
-                        alpha: 0.1 + (value / coins) * 0.2,
+                        alpha: 0.3 + (value / coins) * 0.4,
                       ),
-                      blurRadius: 10 + (value / coins) * 10,
+                      width: 1,
                     ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.monetization_on_rounded,
-                      color: Colors.amber,
-                      size: 24,
-                      shadows: [
-                        Shadow(
-                          color: Colors.amber.withValues(alpha: 0.6),
-                          blurRadius: 8,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.amber.withValues(
+                          alpha: 0.1 + (value / coins) * 0.2,
                         ),
-                      ],
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      AppStrings.coinsEarned
-                          .getString(context)
-                          .replaceFirst('%s', '$value'),
-                      style: AppTheme.buttonText(context).copyWith(
-                        color: Colors.amberAccent,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        blurRadius: 10 + (value / coins) * 10,
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.monetization_on_rounded,
+                        color: Colors.amber,
+                        size: 24,
                         shadows: [
                           Shadow(
-                            color: Colors.amber.withValues(alpha: 0.5),
+                            color: Colors.amber.withValues(alpha: 0.6),
                             blurRadius: 8,
                           ),
                         ],
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 8),
+                      Text(
+                        AppStrings.coinsEarned
+                            .getString(context)
+                            .replaceFirst('%s', '$value'),
+                        style: AppTheme.buttonText(context).copyWith(
+                          color: Colors.amberAccent,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          shadows: [
+                            Shadow(
+                              color: Colors.amber.withValues(alpha: 0.5),
+                              blurRadius: 8,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          },
-        );
-      },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 

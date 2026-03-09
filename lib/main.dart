@@ -4,6 +4,7 @@ import 'package:color_mixing_deductive/helpers/global_variables.dart';
 import 'package:color_mixing_deductive/overlays/hud/controls_overlay.dart';
 import 'package:color_mixing_deductive/overlays/menus/game_over_overlay.dart';
 import 'package:color_mixing_deductive/overlays/navigation/level_map_overlay.dart';
+import 'package:color_mixing_deductive/overlays/navigation/phase_select_overlay.dart';
 import 'package:color_mixing_deductive/overlays/menus/main_menu_overlay.dart';
 import 'package:color_mixing_deductive/overlays/menus/settings_overlay.dart';
 import 'package:color_mixing_deductive/overlays/navigation/shop_overlay.dart';
@@ -290,6 +291,7 @@ class _GameSectionState extends State<_GameSection> {
               'Controls': (context, game) => ControlsOverlay(game: game),
               'WinMenu': (context, game) => WinMenuOverlay(game: game),
               'LevelMap': (context, game) => LevelMapOverlay(game: game),
+              'PhaseSelect': (context, game) => PhaseSelectOverlay(game: game),
               'MainMenu': (context, game) => MainMenuOverlay(game: game),
               'Settings': (context, game) => SettingsOverlay(game: game),
               'GameOver': (context, game) => GameOverOverlay(game: game),
@@ -299,11 +301,22 @@ class _GameSectionState extends State<_GameSection> {
               'ChaosLabHUD': (context, game) => ChaosLabHUD(game: game),
               'PauseMenu': (context, game) => PauseMenuOverlay(game: game),
               'Tutorial': (context, game) => TutorialOverlay(game: game),
-              'Achievement': (context, game) => AchievementNotification(
-                onDismiss: () => game.overlays.remove('Achievement'),
-                title: AppStrings.achievement1Title.getString(context),
-                subtitle: AppStrings.achievement1Desc.getString(context),
-                icon: Icons.science_rounded,
+              'Achievement': (context, game) {
+                if (game.achievementQueue.isEmpty) {
+                  return const SizedBox.shrink();
+                }
+                final achievement = game.achievementQueue.first;
+                return AchievementNotification(
+                  onDismiss: () => game.dismissAchievement(),
+                  title: achievement.title.getString(context),
+                  subtitle: achievement.description.getString(context),
+                  icon: achievement.icon,
+                  tier: achievement.tier,
+                );
+              },
+              'RewardToast': (context, game) => _RewardToast(
+                message: game.rewardNotification.value ?? "Reward Found!",
+                onDismiss: () => game.overlays.remove('RewardToast'),
               ),
               'Achievements': (context, game) =>
                   AchievementsOverlay(game: game),
@@ -341,6 +354,94 @@ class _GameSectionState extends State<_GameSection> {
           // ── Layer 2: Transition — always on top of every screen ───────────
           TransitionOverlay(game: _game),
         ],
+      ),
+    );
+  }
+}
+
+class _RewardToast extends StatefulWidget {
+  final String message;
+  final VoidCallback onDismiss;
+
+  const _RewardToast({required this.message, required this.onDismiss});
+
+  @override
+  State<_RewardToast> createState() => _RewardToastState();
+}
+
+class _RewardToastState extends State<_RewardToast>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, -1.2),
+      end: const Offset(0, 0.1),
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutBack));
+
+    _controller.forward();
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) {
+        _controller.reverse().then((_) => widget.onDismiss());
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: SlideTransition(
+        position: _slideAnimation,
+        child: Center(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E2A4A),
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(
+                color: Colors.cyanAccent.withValues(alpha: 0.5),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.cyanAccent.withValues(alpha: 0.2),
+                  blurRadius: 10,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.stars_rounded, color: Colors.cyanAccent),
+                const SizedBox(width: 12),
+                Text(
+                  widget.message,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -29,7 +29,7 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
     setState(() => _isAdLoading = true);
 
     AdManager().showRewardedAd(
-      onUserEarnedReward: (_, __) {
+      onUserEarnedReward: (ad, reward) {
         if (mounted) {
           setState(() {
             _reviveUsed = true;
@@ -170,12 +170,22 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
                             label: AppStrings.retry.getString(context),
                             icon: Icons.replay_rounded,
                             onTap: () {
-                              if (LivesManager().lives <= 0) {
-                                NoLivesDialog.show(context);
-                                return;
+                              void proceedReset() {
+                                if (LivesManager().lives <= 0) {
+                                  NoLivesDialog.show(context);
+                                  return;
+                                }
+                                AudioManager().playButton();
+                                widget.game.resetGame();
                               }
-                              AudioManager().playButton();
-                              widget.game.resetGame();
+
+                              if (AdManager().shouldShowInterstitial()) {
+                                AdManager().showInterstitialAd(
+                                  onAdDismissed: proceedReset,
+                                );
+                              } else {
+                                proceedReset();
+                              }
                             },
                           ),
                         ),
@@ -186,15 +196,25 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
                             icon: Icons.map_rounded,
                             isOutlined: true,
                             onTap: () {
-                              AudioManager().playButton();
-                              if (widget.game.currentMode ==
-                                  GameMode.colorEcho) {
-                                widget.game.returnToMainMenu();
-                              } else {
-                                widget.game.navigateToPage(
-                                  'LevelMap',
-                                  isReverse: true,
+                              void proceedNav() {
+                                AudioManager().playButton();
+                                if (widget.game.currentMode ==
+                                    GameMode.colorEcho) {
+                                  widget.game.returnToMainMenu();
+                                } else {
+                                  widget.game.navigateToPage(
+                                    'LevelMap',
+                                    isReverse: true,
+                                  );
+                                }
+                              }
+
+                              if (AdManager().shouldShowInterstitial()) {
+                                AdManager().showInterstitialAd(
+                                  onAdDismissed: proceedNav,
                                 );
+                              } else {
+                                proceedNav();
                               }
                             },
                           ),

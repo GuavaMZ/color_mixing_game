@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:color_mixing_deductive/core/save_manager.dart';
 import 'package:color_mixing_deductive/color_mixer_game.dart';
+import 'package:color_mixing_deductive/helpers/string_manager.dart';
 
 /// Manages the player's XP, level, and prestige progression.
 ///
@@ -28,14 +29,18 @@ class XpManager {
 
   // ─── Rank titles by level bracket ─────────────────────────────────────────
   static const List<RankTier> _ranks = [
-    RankTier(minLevel: 0, title: 'Apprentice', emoji: '🧪'),
-    RankTier(minLevel: 10, title: 'Junior Chemist', emoji: '⚗️'),
-    RankTier(minLevel: 20, title: 'Chemist', emoji: '🔬'),
-    RankTier(minLevel: 35, title: 'Senior Chemist', emoji: '🧬'),
-    RankTier(minLevel: 50, title: 'Alchemist', emoji: '✨'),
-    RankTier(minLevel: 65, title: 'Grand Alchemist', emoji: '🌟'),
-    RankTier(minLevel: 80, title: 'Color Wizard', emoji: '🔮'),
-    RankTier(minLevel: 95, title: 'Color God', emoji: '👑'),
+    RankTier(minLevel: 0, titleKey: AppStrings.rankApprentice, emoji: '🧪'),
+    RankTier(minLevel: 10, titleKey: AppStrings.rankJuniorChemist, emoji: '⚗️'),
+    RankTier(minLevel: 20, titleKey: AppStrings.rankChemist, emoji: '🔬'),
+    RankTier(minLevel: 35, titleKey: AppStrings.rankSeniorChemist, emoji: '🧬'),
+    RankTier(minLevel: 50, titleKey: AppStrings.rankAlchemist, emoji: '✨'),
+    RankTier(
+      minLevel: 65,
+      titleKey: AppStrings.rankGrandAlchemist,
+      emoji: '🌟',
+    ),
+    RankTier(minLevel: 80, titleKey: AppStrings.rankColorWizard, emoji: '🔮'),
+    RankTier(minLevel: 95, titleKey: AppStrings.rankColorGod, emoji: '👑'),
   ];
 
   // ─── State ────────────────────────────────────────────────────────────────
@@ -132,7 +137,7 @@ class XpManager {
         // Award level-up coins
         final bonus = _levelUpBonus(playerLevel.value);
         if (_game != null && bonus > 0) {
-          _game!.addCoins(bonus);
+          await _game!.addCoins(bonus);
         }
 
         // Fire event for overlay
@@ -175,8 +180,10 @@ class XpManager {
     currentXp.value = 0;
     await _persist();
 
-    // Award a prestige bonus
-    _game?.addCoins(2000);
+    // 5) Award 2000 coins prestige bonus
+    if (_game != null) {
+      await _game!.addCoins(2000);
+    }
   }
 
   // ─── Rank Info ────────────────────────────────────────────────────────────
@@ -190,9 +197,8 @@ class XpManager {
     return result;
   }
 
-  String get rankTitle => currentRank.title;
+  String get rankTitleKey => currentRank.titleKey;
   String get rankEmoji => currentRank.emoji;
-  String get fullRankLabel => '${currentRank.emoji} ${currentRank.title}';
 
   // ─── Persistence ──────────────────────────────────────────────────────────
 
@@ -223,11 +229,11 @@ class XpManager {
 
 class RankTier {
   final int minLevel;
-  final String title;
+  final String titleKey;
   final String emoji;
   const RankTier({
     required this.minLevel,
-    required this.title,
+    required this.titleKey,
     required this.emoji,
   });
 }

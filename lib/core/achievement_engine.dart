@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:color_mixing_deductive/core/save_manager.dart';
+import 'package:color_mixing_deductive/helpers/string_manager.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 
 // ─── Achievement Tier ─────────────────────────────────────────────────────────
 
@@ -12,10 +14,10 @@ extension AchievementTierX on AchievementTier {
     AchievementTier.gold => const Color(0xFFFFD700),
   };
 
-  String get label => switch (this) {
-    AchievementTier.bronze => 'Bronze',
-    AchievementTier.silver => 'Silver',
-    AchievementTier.gold => 'Gold',
+  String labelKey(BuildContext context) => switch (this) {
+    AchievementTier.bronze => AppStrings.tierBronze.getString(context),
+    AchievementTier.silver => AppStrings.tierSilver.getString(context),
+    AchievementTier.gold => AppStrings.tierGold.getString(context),
   };
 }
 
@@ -44,36 +46,36 @@ class AchievementCatalog {
     // ── Getting Started ───────────────────────────────────────────────────────
     AchievementDef(
       id: 'first_win',
-      title: 'First Formula',
-      description: 'Win your very first level.',
+      title: AppStrings.archFirstWinTitle,
+      description: AppStrings.archFirstWinDesc,
       icon: Icons.science_rounded,
       tier: AchievementTier.bronze,
     ),
     AchievementDef(
       id: 'first_perfect',
-      title: 'Perfect Blend',
-      description: 'Achieve a 3-star perfect match.',
+      title: AppStrings.archFirstPerfectTitle,
+      description: AppStrings.archFirstPerfectDesc,
       icon: Icons.star_rounded,
       tier: AchievementTier.bronze,
     ),
     AchievementDef(
       id: 'mad_chemist',
-      title: 'Mad Chemist',
-      description: 'Complete 10 levels in any mode.',
+      title: AppStrings.archMadChemistTitle,
+      description: AppStrings.archMadChemistDesc,
       icon: Icons.biotech_rounded,
       tier: AchievementTier.bronze,
     ),
     AchievementDef(
       id: 'drop_collector',
-      title: 'Drop Collector',
-      description: 'Use 500 total drops across all levels.',
+      title: AppStrings.archDropCollectorTitle,
+      description: AppStrings.archDropCollectorDesc,
       icon: Icons.water_drop_rounded,
       tier: AchievementTier.bronze,
     ),
     AchievementDef(
       id: 'first_hint',
-      title: 'Need a Clue?',
-      description: 'Use a hint for the first time.',
+      title: AppStrings.archFirstHintTitle,
+      description: AppStrings.archFirstHintDesc,
       icon: Icons.lightbulb_rounded,
       tier: AchievementTier.bronze,
     ),
@@ -81,50 +83,50 @@ class AchievementCatalog {
     // ── Progression ───────────────────────────────────────────────────────────
     AchievementDef(
       id: 'level_25',
-      title: '25 Levels Deep',
-      description: 'Complete 25 classic levels.',
+      title: AppStrings.archLevel25Title,
+      description: AppStrings.archLevel25Desc,
       icon: Icons.layers_rounded,
       tier: AchievementTier.bronze,
     ),
     AchievementDef(
       id: 'level_50',
-      title: 'Halfway There',
-      description: 'Complete 50 classic levels.',
+      title: AppStrings.archLevel50Title,
+      description: AppStrings.archLevel50Desc,
       icon: Icons.filter_5_rounded,
       tier: AchievementTier.silver,
     ),
     AchievementDef(
       id: 'level_100',
-      title: 'Century Scientist',
-      description: 'Complete 100 classic levels.',
+      title: AppStrings.archLevel100Title,
+      description: AppStrings.archLevel100Desc,
       icon: Icons.military_tech_rounded,
       tier: AchievementTier.gold,
     ),
     AchievementDef(
       id: 'player_level_10',
-      title: 'Junior Chemist',
-      description: 'Reach Player Level 10.',
+      title: AppStrings.archPlayerLevel10Title,
+      description: AppStrings.archPlayerLevel10Desc,
       icon: Icons.trending_up_rounded,
       tier: AchievementTier.bronze,
     ),
     AchievementDef(
       id: 'player_level_50',
-      title: 'Alchemist Rank',
-      description: 'Reach Player Level 50.',
+      title: AppStrings.archPlayerLevel50Title,
+      description: AppStrings.archPlayerLevel50Desc,
       icon: Icons.auto_awesome_rounded,
       tier: AchievementTier.silver,
     ),
     AchievementDef(
       id: 'player_level_100',
-      title: 'Color God',
-      description: 'Reach the maximum Player Level 100.',
+      title: AppStrings.archPlayerLevel100Title,
+      description: AppStrings.archPlayerLevel100Desc,
       icon: Icons.workspace_premium_rounded,
       tier: AchievementTier.gold,
     ),
     AchievementDef(
       id: 'prestige',
-      title: 'Beyond Mastery',
-      description: 'Prestige for the first time.',
+      title: AppStrings.archPrestigeTitle,
+      description: AppStrings.archPrestigeDesc,
       icon: Icons.diamond_rounded,
       tier: AchievementTier.gold,
     ),
@@ -132,15 +134,15 @@ class AchievementCatalog {
     // ── Stars ─────────────────────────────────────────────────────────────────
     AchievementDef(
       id: 'perfect_10',
-      title: 'Perfect Streak',
-      description: 'Get 3 stars on 10 different levels.',
+      title: AppStrings.archPerfect10Title,
+      description: AppStrings.archPerfect10Desc,
       icon: Icons.grade_rounded,
       tier: AchievementTier.silver,
     ),
     AchievementDef(
       id: 'perfect_50',
-      title: 'Star Hoarder',
-      description: 'Collect 150 total stars.',
+      title: AppStrings.archPerfect50Title,
+      description: AppStrings.archPerfect50Desc,
       icon: Icons.stars_rounded,
       tier: AchievementTier.gold,
     ),
@@ -148,22 +150,22 @@ class AchievementCatalog {
     // ── Combo System ──────────────────────────────────────────────────────────
     AchievementDef(
       id: 'combo_3',
-      title: 'Triple Threat',
-      description: 'Achieve a 3-win combo streak.',
+      title: AppStrings.archCombo3Title,
+      description: AppStrings.archCombo3Desc,
       icon: Icons.bolt_rounded,
       tier: AchievementTier.bronze,
     ),
     AchievementDef(
       id: 'combo_king',
-      title: 'Combo King',
-      description: 'Achieve a 10-win combo streak.',
+      title: AppStrings.archComboKingTitle,
+      description: AppStrings.archComboKingDesc,
       icon: Icons.local_fire_department_rounded,
       tier: AchievementTier.silver,
     ),
     AchievementDef(
       id: 'combo_legend',
-      title: 'Combo Legend',
-      description: 'Achieve a 20-win combo streak.',
+      title: AppStrings.archComboLegendTitle,
+      description: AppStrings.archComboLegendDesc,
       icon: Icons.whatshot_rounded,
       tier: AchievementTier.gold,
     ),
@@ -171,29 +173,29 @@ class AchievementCatalog {
     // ── Mode Explorer ─────────────────────────────────────────────────────────
     AchievementDef(
       id: 'time_attacker',
-      title: 'Speed Demon',
-      description: 'Win 10 Time Attack levels.',
+      title: AppStrings.archTimeAttackerTitle,
+      description: AppStrings.archTimeAttackerDesc,
       icon: Icons.timer_rounded,
       tier: AchievementTier.bronze,
     ),
     AchievementDef(
       id: 'echo_master',
-      title: 'Echo Master',
-      description: 'Reach round 10 in Color Echo mode.',
+      title: AppStrings.archEchoMasterTitle,
+      description: AppStrings.archEchoMasterDesc,
       icon: Icons.surround_sound_rounded,
       tier: AchievementTier.silver,
     ),
     AchievementDef(
       id: 'chaos_survivor',
-      title: 'Chaos Survivor',
-      description: 'Survive 10 rounds in Chaos Lab mode.',
+      title: AppStrings.archChaosSurvivorTitle,
+      description: AppStrings.archChaosSurvivorDesc,
       icon: Icons.crisis_alert_rounded,
       tier: AchievementTier.silver,
     ),
     AchievementDef(
       id: 'all_modes',
-      title: 'The Professor',
-      description: 'Win at least one level in all 4 game modes.',
+      title: AppStrings.archAllModesTitle,
+      description: AppStrings.archAllModesDesc,
       icon: Icons.school_rounded,
       tier: AchievementTier.gold,
     ),
@@ -201,22 +203,22 @@ class AchievementCatalog {
     // ── Minimalism ────────────────────────────────────────────────────────────
     AchievementDef(
       id: 'efficient_3',
-      title: 'Efficient Mixer',
-      description: 'Complete a level using 3 drops or fewer.',
+      title: AppStrings.archEfficient3Title,
+      description: AppStrings.archEfficient3Desc,
       icon: Icons.compress_rounded,
       tier: AchievementTier.bronze,
     ),
     AchievementDef(
       id: 'no_hints',
-      title: 'No Cheating!',
-      description: 'Complete 20 levels without using any hints.',
+      title: AppStrings.archNoHintsTitle,
+      description: AppStrings.archNoHintsDesc,
       icon: Icons.visibility_off_rounded,
       tier: AchievementTier.silver,
     ),
     AchievementDef(
       id: 'hint_free_classic',
-      title: 'Purist',
-      description: 'Complete 50 classic levels with zero hints used.',
+      title: AppStrings.archHintFreeClassicTitle,
+      description: AppStrings.archHintFreeClassicDesc,
       icon: Icons.verified_rounded,
       tier: AchievementTier.gold,
     ),
@@ -224,22 +226,22 @@ class AchievementCatalog {
     // ── Economy ───────────────────────────────────────────────────────────────
     AchievementDef(
       id: 'coin_saver_500',
-      title: 'Pocket Full of Coins',
-      description: 'Accumulate 500 coins.',
+      title: AppStrings.archCoinSaver500Title,
+      description: AppStrings.archCoinSaver500Desc,
       icon: Icons.savings_rounded,
       tier: AchievementTier.bronze,
     ),
     AchievementDef(
       id: 'coin_saver_5000',
-      title: 'Rich Alchemist',
-      description: 'Accumulate 5,000 coins.',
+      title: AppStrings.archCoinSaver5000Title,
+      description: AppStrings.archCoinSaver5000Desc,
       icon: Icons.monetization_on_rounded,
       tier: AchievementTier.silver,
     ),
     AchievementDef(
       id: 'coin_saver_25000',
-      title: 'The Mint',
-      description: 'Accumulate 25,000 coins.',
+      title: AppStrings.archCoinSaver25000Title,
+      description: AppStrings.archCoinSaver25000Desc,
       icon: Icons.account_balance_rounded,
       tier: AchievementTier.gold,
     ),
@@ -247,22 +249,22 @@ class AchievementCatalog {
     // ── Daily Dedication ──────────────────────────────────────────────────────
     AchievementDef(
       id: 'streak_3',
-      title: 'Three-Day Habit',
-      description: 'Log in 3 days in a row.',
+      title: AppStrings.archStreak3Title,
+      description: AppStrings.archStreak3Desc,
       icon: Icons.calendar_today_rounded,
       tier: AchievementTier.bronze,
     ),
     AchievementDef(
       id: 'streak_7',
-      title: 'Weekly Devotion',
-      description: 'Maintain a 7-day login streak.',
+      title: AppStrings.archStreak7Title,
+      description: AppStrings.archStreak7Desc,
       icon: Icons.date_range_rounded,
       tier: AchievementTier.silver,
     ),
     AchievementDef(
       id: 'streak_30',
-      title: 'Dedicated Scientist',
-      description: 'Maintain a 30-day login streak.',
+      title: AppStrings.archStreak30Title,
+      description: AppStrings.archStreak30Desc,
       icon: Icons.celebration_rounded,
       tier: AchievementTier.gold,
     ),
@@ -270,17 +272,159 @@ class AchievementCatalog {
     // ── Random Events ─────────────────────────────────────────────────────────
     AchievementDef(
       id: 'chaos_powered',
-      title: 'Chaos-Powered',
-      description: 'Win a level while a random event is active.',
+      title: AppStrings.archChaosPoweredTitle,
+      description: AppStrings.archChaosPoweredDesc,
       icon: Icons.electric_bolt_rounded,
       tier: AchievementTier.bronze,
     ),
     AchievementDef(
       id: 'survive_blackout',
-      title: 'Lights Out Win',
-      description: 'Win a level during a Blackout event.',
+      title: AppStrings.archSurviveBlackoutTitle,
+      description: AppStrings.archSurviveBlackoutDesc,
       icon: Icons.nightlight_rounded,
       tier: AchievementTier.silver,
+    ),
+
+    // ─── Phase 2: Missing & Advanced Achievements ─────────────────────────────
+    AchievementDef(
+      id: 'lab_survivor',
+      title: AppStrings.archLabSurvivorTitle,
+      description: AppStrings.archLabSurvivorDesc,
+      icon: Icons.biotech_outlined,
+      tier: AchievementTier.bronze,
+    ),
+    AchievementDef(
+      id: 'spectral_sync',
+      title: AppStrings.archSpectralSyncTitle,
+      description: AppStrings.archSpectralSyncDesc,
+      icon: Icons.waves_rounded,
+      tier: AchievementTier.gold,
+    ),
+    AchievementDef(
+      id: 'master_chemist',
+      title: AppStrings.archMasterChemistTitle,
+      description: AppStrings.archMasterChemistDesc,
+      icon: Icons.verified_user_rounded,
+      tier: AchievementTier.silver,
+    ),
+    AchievementDef(
+      id: 'blind_master',
+      title: AppStrings.archBlindMasterTitle,
+      description: AppStrings.archBlindMasterDesc,
+      icon: Icons.visibility_off_outlined,
+      tier: AchievementTier.gold,
+    ),
+    AchievementDef(
+      id: 'shopaholic',
+      title: AppStrings.archShopaholicTitle,
+      description: AppStrings.archShopaholicDesc,
+      icon: Icons.shopping_bag_rounded,
+      tier: AchievementTier.gold,
+    ),
+    AchievementDef(
+      id: 'stability_expert',
+      title: AppStrings.archStabilityExpertTitle,
+      description: AppStrings.archStabilityExpertDesc,
+      icon: Icons.balance_rounded,
+      tier: AchievementTier.silver,
+    ),
+    AchievementDef(
+      id: 'speed_runner',
+      title: AppStrings.archSpeedRunnerTitle,
+      description: AppStrings.archSpeedRunnerDesc,
+      icon: Icons.speed_rounded,
+      tier: AchievementTier.silver,
+    ),
+    AchievementDef(
+      id: 'star_collector',
+      title: AppStrings.archStarCollectorTitle,
+      description: AppStrings.archStarCollectorDesc,
+      icon: Icons.auto_awesome_rounded,
+      tier: AchievementTier.bronze,
+    ),
+    AchievementDef(
+      id: 'perfectionist',
+      title: AppStrings.archPerfectionistTitle,
+      description: AppStrings.archPerfectionistDesc,
+      icon: Icons.check_circle_rounded,
+      tier: AchievementTier.bronze,
+    ),
+    AchievementDef(
+      id: 'veteran',
+      title: AppStrings.archVeteranTitle,
+      description: AppStrings.archVeteranDesc,
+      icon: Icons.history_edu_rounded,
+      tier: AchievementTier.bronze,
+    ),
+    AchievementDef(
+      id: 'color_collector',
+      title: AppStrings.archColorCollectorTitle,
+      description: AppStrings.archColorCollectorDesc,
+      icon: Icons.palette_rounded,
+      tier: AchievementTier.silver,
+    ),
+    AchievementDef(
+      id: 'wealthy_scientist',
+      title: AppStrings.archWealthyScientistTitle,
+      description: AppStrings.archWealthyScientistDesc,
+      icon: Icons.savings_outlined,
+      tier: AchievementTier.silver,
+    ),
+    AchievementDef(
+      id: 'big_spender',
+      title: AppStrings.archBigSpenderTitle,
+      description: AppStrings.archBigSpenderDesc,
+      icon: Icons.payments_rounded,
+      tier: AchievementTier.silver,
+    ),
+    AchievementDef(
+      id: 'daily_scholar',
+      title: AppStrings.archDailyScholarTitle,
+      description: AppStrings.archDailyScholarDesc,
+      icon: Icons.menu_book_rounded,
+      tier: AchievementTier.silver,
+    ),
+    AchievementDef(
+      id: 'century_club',
+      title: AppStrings.archCenturyClubTitle,
+      description: AppStrings.archCenturyClubDesc,
+      icon: Icons.auto_graph_rounded,
+      tier: AchievementTier.gold,
+    ),
+    AchievementDef(
+      id: 'chaos_master',
+      title: AppStrings.archChaosMasterTitle,
+      description: AppStrings.archChaosMasterDesc,
+      icon: Icons.warning_amber_rounded,
+      tier: AchievementTier.gold,
+    ),
+    AchievementDef(
+      id: 'echo_maestro',
+      title: AppStrings.archEchoMaestroTitle,
+      description: AppStrings.archEchoMaestroDesc,
+      icon: Icons.music_note_rounded,
+      tier: AchievementTier.gold,
+    ),
+    AchievementDef(
+      id: 'helper_hoarder',
+      title: AppStrings.archHelperHoarderTitle,
+      description: AppStrings.archHelperHoarderDesc,
+      icon: Icons.inventory_2_rounded,
+      tier: AchievementTier.gold,
+    ),
+    AchievementDef(
+      id: 'zero_waste',
+      title: AppStrings.archZeroWasteTitle,
+      description: AppStrings.archZeroWasteDesc,
+      icon: Icons.recycling_rounded,
+      tier: AchievementTier.gold,
+    ),
+    AchievementDef(
+      id: 'legendary_status',
+      title: AppStrings.archLegendaryStatusTitle,
+      description: AppStrings.archLegendaryStatusDesc,
+      icon: Icons.military_tech_outlined,
+      tier: AchievementTier.gold,
     ),
   ];
 
@@ -376,6 +520,35 @@ class AchievementEngine {
     if (ctx.wonWithActiveEvent) tryUnlock('chaos_powered');
     if (ctx.wonDuringBlackout) tryUnlock('survive_blackout');
 
+    // ── Advanced / Phase 2 ────────────────────────────────────────────────────
+    if (ctx.chaosLabPlays >= 5) tryUnlock('lab_survivor');
+    if (ctx.matchPercentage >= 100 && ctx.echoRound > 0) {
+      tryUnlock('spectral_sync');
+    }
+    if (ctx.currentLevelIndex >= 49) tryUnlock('master_chemist');
+    if (ctx.isBlindMode && ctx.stars == 3) tryUnlock('blind_master');
+    if (ctx.unlockedSkinsCount >= 6) tryUnlock('shopaholic');
+    if (ctx.extraDropsUsed == 1) tryUnlock('stability_expert');
+    if (ctx.levelDuration.inSeconds < 5 && ctx.levelDuration.inSeconds > 0) {
+      tryUnlock('speed_runner');
+    }
+    if (ctx.totalStars >= 50) tryUnlock('star_collector');
+    if (ctx.stars == 3) tryUnlock('perfectionist');
+    if (ctx.totalLevelsCompleted >= 10) tryUnlock('veteran');
+    if (ctx.discoveredColorsCount >= 50) tryUnlock('color_collector');
+    if (ctx.totalCoins >= 5000) tryUnlock('wealthy_scientist');
+    if (ctx.totalSpent >= 2000) tryUnlock('big_spender');
+    if (ctx.dailyChallengeCount >= 7) tryUnlock('daily_scholar');
+    if (ctx.currentLevelIndex >= 99) tryUnlock('century_club');
+    if (ctx.chaosStability < 0.15) tryUnlock('chaos_master');
+    if (ctx.echoRound >= 10) tryUnlock('echo_maestro');
+    if (ctx.has10OfEachHelper) tryUnlock('helper_hoarder');
+    if (ctx.dropsUsedThisLevel == ctx.minDropsNeeded &&
+        ctx.minDropsNeeded > 0) {
+      tryUnlock('zero_waste');
+    }
+    if (ctx.totalLevelsCompleted >= 500) tryUnlock('legendary_status');
+
     if (newlyUnlocked.isNotEmpty) {
       await SaveManager.saveAchievements(_unlocked);
     }
@@ -408,6 +581,19 @@ class AchievementContext {
   final int loginStreak;
   final bool wonWithActiveEvent;
   final bool wonDuringBlackout;
+  final int chaosLabPlays;
+  final double matchPercentage;
+  final int currentLevelIndex;
+  final bool isBlindMode;
+  final int unlockedSkinsCount;
+  final int extraDropsUsed;
+  final Duration levelDuration;
+  final int discoveredColorsCount;
+  final int totalSpent;
+  final int dailyChallengeCount;
+  final double chaosStability;
+  final bool has10OfEachHelper;
+  final int minDropsNeeded;
 
   const AchievementContext({
     this.stars = 0,
@@ -430,5 +616,18 @@ class AchievementContext {
     this.loginStreak = 0,
     this.wonWithActiveEvent = false,
     this.wonDuringBlackout = false,
+    this.chaosLabPlays = 0,
+    this.matchPercentage = 0,
+    this.currentLevelIndex = 0,
+    this.isBlindMode = false,
+    this.unlockedSkinsCount = 0,
+    this.extraDropsUsed = 0,
+    this.levelDuration = Duration.zero,
+    this.discoveredColorsCount = 0,
+    this.totalSpent = 0,
+    this.dailyChallengeCount = 0,
+    this.chaosStability = 1.0,
+    this.has10OfEachHelper = false,
+    this.minDropsNeeded = 0,
   });
 }

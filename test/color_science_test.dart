@@ -81,13 +81,13 @@ void main() {
 
     test('Spectral region names are valid', () {
       final validNames = [
-        'Red',
-        'Orange',
-        'Yellow',
-        'Green',
-        'Blue',
-        'Indigo',
-        'Violet',
+        'spectral_red',
+        'spectral_orange',
+        'spectral_yellow',
+        'spectral_green',
+        'spectral_blue',
+        'spectral_indigo',
+        'spectral_violet',
       ];
       for (int wl = 380; wl <= 780; wl += 10) {
         expect(validNames, contains(ColorScience.getSpectralRegion(wl)));

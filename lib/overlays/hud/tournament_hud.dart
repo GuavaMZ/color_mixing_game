@@ -4,7 +4,7 @@ import 'package:color_mixing_deductive/helpers/theme_constants.dart';
 
 class TournamentHUD extends StatelessWidget {
   final ColorMixerGame game;
-  const TournamentHUD({Key? key, required this.game}) : super(key: key);
+  const TournamentHUD({super.key, required this.game});
 
   @override
   Widget build(BuildContext context) {

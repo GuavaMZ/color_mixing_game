@@ -115,6 +115,7 @@ mixin AppStrings {
   static const String hintPureBlack = "hint_pure_black";
   static const String hintNeedsWhite = "hint_needs_white";
   static const String hintNeedsBlack = "hint_needs_black";
+  static const String hint = "hint";
 
   // Shop
   static const String shopTitle = "shop_title";
@@ -195,6 +196,147 @@ mixin AppStrings {
   static const String achievement21Desc = "achievement_21_desc";
   static const String achievement22Title = "achievement_22_title";
   static const String achievement22Desc = "achievement_22_desc";
+
+  // ─── Phase System ─────────────────────────────────────────────────────────
+  static const String phaseSelectTitle = "phase_select_title";
+  static const String phasePrefix = "phase_prefix";
+  static const String phaseLockedHint = "phase_locked_hint";
+  static const String phase1Name = "phase_1_name";
+  static const String phase1Desc = "phase_1_desc";
+  static const String phase2Name = "phase_2_name";
+  static const String phase2Desc = "phase_2_desc";
+  static const String phase3Name = "phase_3_name";
+  static const String phase3Desc = "phase_3_desc";
+  static const String phase4Name = "phase_4_name";
+  static const String phase4Desc = "phase_4_desc";
+  static const String phase5Name = "phase_5_name";
+  static const String phase5Desc = "phase_5_desc";
+  static const String phaseDone = "phase_done";
+  static const String phaseLevelsCount = "phase_levels_count";
+  static const String starsCount = "stars_count";
+  static const String tapToContinue = "tap_to_continue";
+  static const String milestoneUnlocked = "milestone_unlocked";
+  static const String levelUp = "level_up";
+  static const String levelLabel = "level_label";
+  static const String coinsBonusAtLevelUp = "coins_bonus_at_level_up";
+  static const String rankApprentice = "rank_apprentice";
+  static const String rankJuniorChemist = "rank_junior_chemist";
+  static const String rankChemist = "rank_chemist";
+  static const String rankSeniorChemist = "rank_senior_chemist";
+  static const String rankAlchemist = "rank_alchemist";
+  static const String rankGrandAlchemist = "rank_grand_alchemist";
+  static const String rankColorWizard = "rank_color_wizard";
+  static const String rankColorGod = "rank_color_god";
+  static const String tierBronze = "tier_bronze";
+  static const String tierSilver = "tier_silver";
+  static const String tierGold = "tier_gold";
+
+  // Re-aligned Achievement Keys (Specific to IDs)
+  static const String archFirstWinTitle = "arch_first_win_title";
+  static const String archFirstWinDesc = "arch_first_win_desc";
+  static const String archFirstPerfectTitle = "arch_first_perfect_title";
+  static const String archFirstPerfectDesc = "arch_first_perfect_desc";
+  static const String archMadChemistTitle = "arch_mad_chemist_title";
+  static const String archMadChemistDesc = "arch_mad_chemist_desc";
+  static const String archDropCollectorTitle = "arch_drop_collector_title";
+  static const String archDropCollectorDesc = "arch_drop_collector_desc";
+  static const String archFirstHintTitle = "arch_first_hint_title";
+  static const String archFirstHintDesc = "arch_first_hint_desc";
+  static const String archLevel25Title = "arch_level_25_title";
+  static const String archLevel25Desc = "arch_level_25_desc";
+  static const String archLevel50Title = "arch_level_50_title";
+  static const String archLevel50Desc = "arch_level_50_desc";
+  static const String archLevel100Title = "arch_level_100_title";
+  static const String archLevel100Desc = "arch_level_100_desc";
+  static const String archPlayerLevel10Title = "arch_player_level_10_title";
+  static const String archPlayerLevel10Desc = "arch_player_level_10_desc";
+  static const String archPlayerLevel50Title = "arch_player_level_50_title";
+  static const String archPlayerLevel50Desc = "arch_player_level_50_desc";
+  static const String archPlayerLevel100Title = "arch_player_level_100_title";
+  static const String archPlayerLevel100Desc = "arch_player_level_100_desc";
+  static const String archPrestigeTitle = "arch_prestige_title";
+  static const String archPrestigeDesc = "arch_prestige_desc";
+  static const String archPerfect10Title = "arch_perfect_10_title";
+  static const String archPerfect10Desc = "arch_perfect_10_desc";
+  static const String archPerfect50Title = "arch_perfect_50_title";
+  static const String archPerfect50Desc = "arch_perfect_50_desc";
+  static const String archCombo3Title = "arch_combo_3_title";
+  static const String archCombo3Desc = "arch_combo_3_desc";
+  static const String archComboKingTitle = "arch_combo_king_title";
+  static const String archComboKingDesc = "arch_combo_king_desc";
+  static const String archComboLegendTitle = "arch_combo_legend_title";
+  static const String archComboLegendDesc = "arch_combo_legend_desc";
+  static const String archTimeAttackerTitle = "arch_time_attacker_title";
+  static const String archTimeAttackerDesc = "arch_time_attacker_desc";
+  static const String archEchoMasterTitle = "arch_echo_master_title";
+  static const String archEchoMasterDesc = "arch_echo_master_desc";
+  static const String archChaosSurvivorTitle = "arch_chaos_survivor_title";
+  static const String archChaosSurvivorDesc = "arch_chaos_survivor_desc";
+  static const String archAllModesTitle = "arch_all_modes_title";
+  static const String archAllModesDesc = "arch_all_modes_desc";
+  static const String archEfficient3Title = "arch_efficient_3_title";
+  static const String archEfficient3Desc = "arch_efficient_3_desc";
+  static const String archNoHintsTitle = "arch_no_hints_title";
+  static const String archNoHintsDesc = "arch_no_hints_desc";
+  static const String archHintFreeClassicTitle = "arch_hint_free_classic_title";
+  static const String archHintFreeClassicDesc = "arch_hint_free_classic_desc";
+  static const String archCoinSaver500Title = "arch_coin_saver_500_title";
+  static const String archCoinSaver500Desc = "arch_coin_saver_500_desc";
+  static const String archCoinSaver5000Title = "arch_coin_saver_5000_title";
+  static const String archCoinSaver5000Desc = "arch_coin_saver_5000_desc";
+  static const String archCoinSaver25000Title = "arch_coin_saver_25000_title";
+  static const String archCoinSaver25000Desc = "arch_coin_saver_25000_desc";
+  static const String archStreak3Title = "arch_streak_3_title";
+  static const String archStreak3Desc = "arch_streak_3_desc";
+  static const String archStreak7Title = "arch_streak_7_title";
+  static const String archStreak7Desc = "arch_streak_7_desc";
+  static const String archStreak30Title = "arch_streak_30_title";
+  static const String archStreak30Desc = "arch_streak_30_desc";
+  static const String archChaosPoweredTitle = "arch_chaos_powered_title";
+  static const String archChaosPoweredDesc = "arch_chaos_powered_desc";
+  static const String archSurviveBlackoutTitle = "arch_survive_blackout_title";
+  static const String archSurviveBlackoutDesc = "arch_survive_blackout_desc";
+  static const String archLabSurvivorTitle = "arch_lab_survivor_title";
+  static const String archLabSurvivorDesc = "arch_lab_survivor_desc";
+  static const String archSpectralSyncTitle = "arch_spectral_sync_title";
+  static const String archSpectralSyncDesc = "arch_spectral_sync_desc";
+  static const String archMasterChemistTitle = "arch_master_chemist_title";
+  static const String archMasterChemistDesc = "arch_master_chemist_desc";
+  static const String archBlindMasterTitle = "arch_blind_master_title";
+  static const String archBlindMasterDesc = "arch_blind_master_desc";
+  static const String archShopaholicTitle = "arch_shopaholic_title";
+  static const String archShopaholicDesc = "arch_shopaholic_desc";
+  static const String archStabilityExpertTitle = "arch_stability_expert_title";
+  static const String archStabilityExpertDesc = "arch_stability_expert_desc";
+  static const String archSpeedRunnerTitle = "arch_speed_runner_title";
+  static const String archSpeedRunnerDesc = "arch_speed_runner_desc";
+  static const String archStarCollectorTitle = "arch_star_collector_title";
+  static const String archStarCollectorDesc = "arch_star_collector_desc";
+  static const String archPerfectionistTitle = "arch_perfectionist_title";
+  static const String archPerfectionistDesc = "arch_perfectionist_desc";
+  static const String archVeteranTitle = "arch_veteran_title";
+  static const String archVeteranDesc = "arch_veteran_desc";
+  static const String archColorCollectorTitle = "arch_color_collector_title";
+  static const String archColorCollectorDesc = "arch_color_collector_desc";
+  static const String archWealthyScientistTitle =
+      "arch_wealthy_scientist_title";
+  static const String archWealthyScientistDesc = "arch_wealthy_scientist_desc";
+  static const String archBigSpenderTitle = "arch_big_spender_title";
+  static const String archBigSpenderDesc = "arch_big_spender_desc";
+  static const String archDailyScholarTitle = "arch_daily_scholar_title";
+  static const String archDailyScholarDesc = "arch_daily_scholar_desc";
+  static const String archCenturyClubTitle = "arch_century_club_title";
+  static const String archCenturyClubDesc = "arch_century_club_desc";
+  static const String archChaosMasterTitle = "arch_chaos_master_title";
+  static const String archChaosMasterDesc = "arch_chaos_master_desc";
+  static const String archEchoMaestroTitle = "arch_echo_maestro_title";
+  static const String archEchoMaestroDesc = "arch_echo_maestro_desc";
+  static const String archHelperHoarderTitle = "arch_helper_hoarder_title";
+  static const String archHelperHoarderDesc = "arch_helper_hoarder_desc";
+  static const String archZeroWasteTitle = "arch_zero_waste_title";
+  static const String archZeroWasteDesc = "arch_zero_waste_desc";
+  static const String archLegendaryStatusTitle = "arch_legendary_status_title";
+  static const String archLegendaryStatusDesc = "arch_legendary_status_desc";
 
   // Chaos Lab Events
   static const String anomalyDetected = "anomaly_detected";
@@ -669,6 +811,7 @@ mixin AppStrings {
     extraDrops: 'Extra Drops',
     helpDrop: 'Help Drop',
     revealColor: 'Reveal Color',
+    hint: 'Hint',
 
     // Game UI
     precentageMatch: 'Match',
@@ -771,52 +914,129 @@ mixin AppStrings {
     // Achievements
     achievementsTitle: 'ACHIEVEMENTS',
     achievementUnlockedTitle: 'ACHIEVEMENT UNLOCKED',
-    achievement1Title: 'Mad Chemist',
-    achievement1Desc: 'First successful mixture!',
-    achievement2Title: 'Speed Runner',
-    achievement2Desc: 'Complete a level in under 5 seconds.',
-    achievement3Title: 'Star Collector',
-    achievement3Desc: 'Collect 50 stars in total.',
-    achievement4Title: 'Perfectionist',
-    achievement4Desc: 'Get 3 stars on any level.',
-    achievement5Title: 'Veteran',
-    achievement5Desc: 'Complete 10 levels in the game.',
-    achievement6Title: 'Combo King',
-    achievement6Desc: 'Maintain a 10 perfect match combo.',
-    achievement7Title: 'Lab Survivor',
-    achievement7Desc: 'Complete 5 levels in Chaos Lab mode.',
-    achievement8Title: 'Spectral Sync',
-    achievement8Desc: 'Reach 100% match in Color Echo mode.',
-    achievement9Title: 'Master Chemist',
-    achievement9Desc: 'Reach level 50 in Classic mode.',
-    achievement10Title: 'Blind Master',
-    achievement10Desc: 'Complete a level with 3 stars in Blind Mode.',
-    achievement11Title: 'Shopaholic',
-    achievement11Desc: 'Unlock all available beaker skins.',
-    achievement12Title: 'Stability Expert',
-    achievement12Desc: 'Complete a level using exactly one Stability Matrix.',
+    archFirstWinTitle: 'First Formula',
+    archFirstWinDesc: 'Win your very first level.',
+    archFirstPerfectTitle: 'Perfect Blend',
+    archFirstPerfectDesc: 'Achieve a 3-star perfect match.',
+    archMadChemistTitle: 'Mad Chemist',
+    archMadChemistDesc: 'Complete 10 levels in any mode.',
+    archDropCollectorTitle: 'Drop Collector',
+    archDropCollectorDesc: 'Use 500 total drops across all levels.',
+    archFirstHintTitle: 'Need a Clue?',
+    archFirstHintDesc: 'Use a hint for the first time.',
+    archLevel25Title: '25 Levels Deep',
+    archLevel25Desc: 'Complete 25 classic levels.',
+    archLevel50Title: 'Halfway There',
+    archLevel50Desc: 'Complete 50 classic levels.',
+    archLevel100Title: 'Century Scientist',
+    archLevel100Desc: 'Complete 100 classic levels.',
+    archPlayerLevel10Title: 'Junior Chemist',
+    archPlayerLevel10Desc: 'Reach Player Level 10.',
+    archPlayerLevel50Title: 'Alchemist Rank',
+    archPlayerLevel50Desc: 'Reach Player Level 50.',
+    archPlayerLevel100Title: 'Color God',
+    archPlayerLevel100Desc: 'Reach the maximum Player Level 100.',
+    archPrestigeTitle: 'Beyond Mastery',
+    archPrestigeDesc: 'Prestige for the first time.',
+    archPerfect10Title: 'Perfect Streak',
+    archPerfect10Desc: 'Get 3 stars on 10 different levels.',
+    archPerfect50Title: 'Star Hoarder',
+    archPerfect50Desc: 'Collect 150 total stars.',
+    archCombo3Title: 'Triple Threat',
+    archCombo3Desc: 'Achieve a 3-win combo streak.',
+    archComboKingTitle: 'Combo King',
+    archComboKingDesc: 'Achieve a 10-win combo streak.',
+    archComboLegendTitle: 'Combo Legend',
+    archComboLegendDesc: 'Achieve a 20-win combo streak.',
+    archTimeAttackerTitle: 'Speed Demon',
+    archTimeAttackerDesc: 'Win 10 Time Attack levels.',
+    archEchoMasterTitle: 'Echo Master',
+    archEchoMasterDesc: 'Reach round 10 in Color Echo mode.',
+    archChaosSurvivorTitle: 'Chaos Survivor',
+    archChaosSurvivorDesc: 'Survive 10 rounds in Chaos Lab mode.',
+    archAllModesTitle: 'The Professor',
+    archAllModesDesc: 'Win at least one level in all 4 game modes.',
+    archEfficient3Title: 'Efficient Mixer',
+    archEfficient3Desc: 'Complete a level using 3 drops or fewer.',
+    archNoHintsTitle: 'No Cheating!',
+    archNoHintsDesc: 'Complete 20 levels without using any hints.',
+    archHintFreeClassicTitle: 'Purist',
+    archHintFreeClassicDesc: 'Complete 50 classic levels with zero hints used.',
+    archCoinSaver500Title: 'Pocket Full of Coins',
+    archCoinSaver500Desc: 'Accumulate 500 coins.',
+    archCoinSaver5000Title: 'Rich Alchemist',
+    archCoinSaver5000Desc: 'Accumulate 5,000 coins.',
+    archCoinSaver25000Title: 'The Mint',
+    archCoinSaver25000Desc: 'Accumulate 25,000 coins.',
+    archStreak3Title: 'Three-Day Habit',
+    archStreak3Desc: 'Log in 3 days in a row.',
+    archStreak7Title: 'Weekly Devotion',
+    archStreak7Desc: 'Maintain a 7-day login streak.',
+    archStreak30Title: 'Dedicated Scientist',
+    archStreak30Desc: 'Maintain a 30-day login streak.',
+    archChaosPoweredTitle: 'Chaos-Powered',
+    archChaosPoweredDesc: 'Win a level while a random event is active.',
+    archSurviveBlackoutTitle: 'Lights Out Win',
+    archSurviveBlackoutDesc: 'Win a level during a Blackout event.',
+    archLabSurvivorTitle: 'Lab Survivor',
+    archLabSurvivorDesc: 'Play 5 levels in Chaos Lab mode.',
+    archSpectralSyncTitle: 'Spectral Sync',
+    archSpectralSyncDesc: 'Achieve a 100% match in Color Echo mode.',
+    archMasterChemistTitle: 'Master Chemist',
+    archMasterChemistDesc: 'Reach classic level 50.',
+    archBlindMasterTitle: 'Blind Master',
+    archBlindMasterDesc: 'Get 3 stars in a Blind Mode level.',
+    archShopaholicTitle: 'Shopaholic',
+    archShopaholicDesc: 'Unlock at least 6 different beaker skins.',
+    archStabilityExpertTitle: 'Stability Expert',
+    archStabilityExpertDesc: 'Use exactly one Stability Matrix in a level.',
+    archSpeedRunnerTitle: 'Speed Runner',
+    archSpeedRunnerDesc: 'Win a level in under 5 seconds.',
+    archStarCollectorTitle: 'Star Collector',
+    archStarCollectorDesc: 'Collect at least 50 total stars.',
+    archPerfectionistTitle: 'Perfectionist',
+    archPerfectionistDesc: 'Achieve your first 3-star victory.',
+    archVeteranTitle: 'Veteran Chemist',
+    archVeteranDesc: 'Complete a total of 10 levels.',
+    archColorCollectorTitle: 'Color Collector',
+    archColorCollectorDesc: 'Discover 50 distinct colors in your lab.',
+    archWealthyScientistTitle: 'Wealthy Scientist',
+    archWealthyScientistDesc: 'Accumulate a balance of 5,000 coins.',
+    archBigSpenderTitle: 'Big Spender',
+    archBigSpenderDesc: 'Spend at least 2,000 coins in the shop.',
+    archDailyScholarTitle: 'Daily Scholar',
+    archDailyScholarDesc: 'Complete 7 daily challenges.',
+    archCenturyClubTitle: 'Century Club',
+    archCenturyClubDesc: 'Reach classic level 100.',
+    archChaosMasterTitle: 'Chaos Master',
+    archChaosMasterDesc: 'Win a Chaos Lab level with less than 15% stability.',
+    archEchoMaestroTitle: 'Echo Maestro',
+    archEchoMaestroDesc: 'Reach round 10 in a single Color Echo run.',
+    archHelperHoarderTitle: 'Helper Hoarder',
+    archHelperHoarderDesc: 'Possess at least 10 of every helper type.',
+    archZeroWasteTitle: 'Zero Waste',
+    archZeroWasteDesc: 'Win a level using only the minimum drops needed.',
+    archLegendaryStatusTitle: 'Legendary Status',
+    archLegendaryStatusDesc: 'Complete a grand total of 500 levels.',
 
-    // New Achievements
-    achievement13Title: 'Color Collector',
-    achievement13Desc: 'Discover 50 unique colors in the laboratory.',
-    achievement14Title: 'Wealthy Scientist',
-    achievement14Desc: 'Amass 5,000 chemistry credits.',
-    achievement15Title: 'Big Spender',
-    achievement15Desc: 'Spend 2,000 total coins in the Chemical Shop.',
-    achievement16Title: 'Daily Scholar',
-    achievement16Desc: 'Complete 7 daily challenges.',
-    achievement17Title: 'Century Club',
-    achievement17Desc: 'Reach level 100 in Classic mode.',
-    achievement18Title: 'Chaos Master',
-    achievement18Desc: 'Win Chaos Lab with stability below 15%.',
-    achievement19Title: 'Echo Maestro',
-    achievement19Desc: 'Reach round 10 in Color Echo mode.',
-    achievement20Title: 'Helper Hoarder',
-    achievement20Desc: 'Have 10 of each laboratory helper at once.',
-    achievement21Title: 'Zero Waste',
-    achievement21Desc: 'Win with exactly the minimum drops required.',
-    achievement22Title: 'Legendary Status',
-    achievement22Desc: 'Complete 500 levels across all modes.',
+    // ─── Phase System ─────────────────────────────────────────────────────────
+    phaseSelectTitle: 'Choose a Phase',
+    phasePrefix: 'PHASE',
+    phaseLockedHint: 'Complete the previous phase to unlock.',
+    phase1Name: 'Pure Colors',
+    phase1Desc: 'Master the 5 pure colors: Red, Green, Blue, White & Black.',
+    phase2Name: 'Two-Color Mix',
+    phase2Desc: 'Blend every possible 2-color combination.',
+    phase3Name: 'Three-Color Mix',
+    phase3Desc: 'Create more complex shades with 3 colors.',
+    phase4Name: 'Four-Color Mix',
+    phase4Desc: 'Challenge yourself with 4-color compositions.',
+    phase5Name: 'Master Mix',
+    phase5Desc: 'Use all 5 colors to craft the ultimate blends.',
+    phaseDone: 'COMPLETED',
+    phaseLevelsCount: '%s / %s levels',
+    starsCount: '%s/%s',
+
     anomalyDetected: 'ANOMALY DETECTED',
     coinsEarned: '+%s Coins',
     coinsEarnedShort: '+%s',
@@ -1372,6 +1592,22 @@ mixin AppStrings {
         'Intense, sharply twinkling true-white stellar fragments',
     itemLStarlightLore:
         'Microscopic shards of a white dwarf star suspended in a magnetic containment string. Emits pure, undistorted photons.',
+    tapToContinue: 'Tap anywhere to continue',
+    milestoneUnlocked: '⭐ MILESTONE UNLOCKED ⭐',
+    levelUp: 'LEVEL UP!',
+    levelLabel: 'Level',
+    coinsBonusAtLevelUp: '+%s Coins Bonus!',
+    rankApprentice: 'Apprentice',
+    rankJuniorChemist: 'Junior Chemist',
+    rankChemist: 'Chemist',
+    rankSeniorChemist: 'Senior Chemist',
+    rankAlchemist: 'Alchemist',
+    rankGrandAlchemist: 'Grand Alchemist',
+    rankColorWizard: 'Color Wizard',
+    rankColorGod: 'Color God',
+    tierBronze: 'Bronze',
+    tierSilver: 'Silver',
+    tierGold: 'Gold',
     rarityLegendary: 'LEGENDARY',
     termsAcceptanceStatement: 'By playing, you agree to our %s',
     termsOfUseLabel: 'Terms of Use',
@@ -1771,6 +2007,7 @@ mixin AppStrings {
     extraDrops: 'قطرات إضافية',
     helpDrop: 'قطرة مساعدة',
     revealColor: 'كشف اللون',
+    hint: 'تلميح',
 
     // Coin Store
     coinStore: 'متجر العملات',
@@ -1916,6 +2153,41 @@ mixin AppStrings {
     lhubCustomizeLabDesc: 'خصص بيئة مختبرك',
     termsAcceptanceStatement: 'باللعب، أنت توافق على %s',
     termsOfUseLabel: 'شروط الاستخدام',
+    tapToContinue: 'اضغط في أي مكان للمتابعة',
+    milestoneUnlocked: '⭐ تم فتح معلم جديد ⭐',
+    levelUp: 'ارتفاع المستوى!',
+    levelLabel: 'مستوى',
+    coinsBonusAtLevelUp: '+%s عملات مكافأة!',
+    rankApprentice: 'مبتدئ',
+    rankJuniorChemist: 'كيميائي مبتدئ',
+    rankChemist: 'كيميائي',
+    rankSeniorChemist: 'كيميائي خبير',
+    rankAlchemist: 'خيميائي',
+    rankGrandAlchemist: 'خيميائي أعظم',
+    rankColorWizard: 'ساحر الألوان',
+    rankColorGod: 'سيّد الألوان',
+    tierBronze: 'برونزي',
+    tierSilver: 'فضي',
+    tierGold: 'ذهبي',
+
+    // Phase System
+    phaseSelectTitle: 'اختر مرحلة',
+    phasePrefix: 'المرحلة',
+    phaseLockedHint: 'أكمل المرحلة السابقة لفتح هذه المرحلة.',
+    phase1Name: 'ألوان نقية',
+    phase1Desc:
+        'أتقن الألوان النقية الخمسة: الأحمر، الأخضر، الأزرق، الأبيض والأسود.',
+    phase2Name: 'مزيج لونين',
+    phase2Desc: 'امزج كل التركيبات الممكنة من لونين.',
+    phase3Name: 'مزيج ثلاثة ألوان',
+    phase3Desc: 'قم بإنشاء ظلال أكثر تعقيداً باستخدام 3 ألوان.',
+    phase4Name: 'مزيج أربعة ألوان',
+    phase4Desc: 'تحدَّ نفسك بتركيبات من 4 ألوان.',
+    phase5Name: 'المزيج المتقن',
+    phase5Desc: 'استخدم جميع الألوان الخمسة لصياغة المزيج النهائي.',
+    phaseDone: 'مكتمل',
+    phaseLevelsCount: '%s / %s مستوى',
+    starsCount: '%s/%s',
   };
 
   static const Map<String, dynamic> es = {
@@ -2316,6 +2588,7 @@ mixin AppStrings {
     extraDrops: 'Gotas Extra',
     helpDrop: 'Gotas de Ayuda',
     revealColor: 'Revelar Color',
+    hint: 'Pista',
 
     dailyLoginTitle: 'LOGIN DIARIO',
     dailyLoginSubtitle: '¡Vuelve cada día para obtener mejores recompensas!',
@@ -2453,6 +2726,25 @@ mixin AppStrings {
         'La rueda de colores fue inventada por Sir Isaac Newton en 1666.',
     termsAcceptanceStatement: 'Al jugar, aceptas nuestros %s',
     termsOfUseLabel: 'Términos de uso',
+
+    // Phase System
+    phaseSelectTitle: 'Elige una Fase',
+    phasePrefix: 'FASE',
+    phaseLockedHint: 'Completa la fase anterior para desbloquear.',
+    phase1Name: 'Colores Puros',
+    phase1Desc:
+        'Domina los 5 colores puros: Rojo, Verde, Azul, Blanco y Negro.',
+    phase2Name: 'Mezcla de Dos Colores',
+    phase2Desc: 'Mezcla todas las combinaciones posibles de 2 colores.',
+    phase3Name: 'Mezcla de Tres Colores',
+    phase3Desc: 'Crea tonos más complejos con 3 colores.',
+    phase4Name: 'Mezcla de Cuatro Colores',
+    phase4Desc: 'Desafíate con composiciones de 4 colores.',
+    phase5Name: 'Mezcla Maestra',
+    phase5Desc: 'Usa los 5 colores para crear las mezclas definitivas.',
+    phaseDone: 'COMPLETADO',
+    phaseLevelsCount: '%s / %s niveles',
+    starsCount: '%s/%s',
   };
 
   static const Map<String, dynamic> fr = {
@@ -2866,6 +3158,7 @@ mixin AppStrings {
     extraDrops: 'Gouttes Supplémentaires',
     helpDrop: "Goutte d'Aide",
     revealColor: "Révéler la Couleur",
+    hint: 'Indice',
 
     dailyLoginTitle: "RECONN. QUOTID.",
     dailyLoginSubtitle: "Revenez chaque jour pour de meilleures récompenses !",
@@ -2981,5 +3274,24 @@ mixin AppStrings {
     termsOfUseLabel: "Conditions d'utilisation",
     updateReadyDesc:
         'Une mise à jour a été téléchargée. Veuillez redémarrer le jeu pour appliquer les modifications.',
+
+    // Phase System
+    phaseSelectTitle: 'Choisissez une Phase',
+    phasePrefix: 'PHASE',
+    phaseLockedHint: 'Terminez la phase précédente pour débloquer.',
+    phase1Name: 'Couleurs Pures',
+    phase1Desc:
+        'Maîtrisez les 5 couleurs pures : Rouge, Vert, Bleu, Blanc et Noir.',
+    phase2Name: 'Mélange de Deux Couleurs',
+    phase2Desc: 'Mélangez toutes les combinaisons possibles de 2 couleurs.',
+    phase3Name: 'Mélange de Trois Couleurs',
+    phase3Desc: 'Créez des nuances plus complexes avec 3 couleurs.',
+    phase4Name: 'Mélange de Quatre Couleurs',
+    phase4Desc: 'Relevez le défi avec des compositions à 4 couleurs.',
+    phase5Name: 'Mélange Maître',
+    phase5Desc: 'Utilisez les 5 couleurs pour créer les mélanges ultimes.',
+    phaseDone: 'TERMINÉ',
+    phaseLevelsCount: '%s / %s niveaux',
+    starsCount: '%s/%s',
   };
 }

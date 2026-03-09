@@ -964,29 +964,32 @@ class HelperItemCard extends StatelessWidget {
     );
   }
 
-  void _handlePurchase(BuildContext context) {
+  void _handlePurchase(BuildContext context) async {
     AudioManager().playButton();
     if (game.totalCoins.value >= item.price) {
-      game.addCoins(-item.price);
+      bool success = await game.spendCoins(item.price);
+      if (success) {
+        if (item.id == 'lives') {
+          LivesManager().addLives(item.amount);
+        } else {
+          game.addHelper(item.id, item.amount);
+        }
 
-      if (item.id == 'lives') {
-        LivesManager().addLives(item.amount);
-      } else {
-        game.addHelper(item.id, item.amount);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                item.id == 'lives'
+                    ? AppStrings.itemActivated.getString(context)
+                    : AppStrings.helperPurchased.getString(context),
+              ),
+              backgroundColor: AppTheme.success.withValues(alpha: 0.8),
+              duration: const Duration(milliseconds: 1500),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
       }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            item.id == 'lives'
-                ? AppStrings.itemActivated.getString(context)
-                : AppStrings.helperPurchased.getString(context),
-          ),
-          backgroundColor: AppTheme.success.withValues(alpha: 0.8),
-          duration: const Duration(milliseconds: 1500),
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

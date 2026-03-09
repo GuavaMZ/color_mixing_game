@@ -273,7 +273,10 @@ class _StarPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _StarPainter oldDelegate) => true;
+  bool shouldRepaint(covariant _StarPainter oldDelegate) =>
+      oldDelegate.animationValue != animationValue ||
+      oldDelegate.stars != stars ||
+      oldDelegate.color != color;
 }
 
 /// A container that fills with a liquid animation

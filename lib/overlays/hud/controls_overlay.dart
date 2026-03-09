@@ -336,10 +336,20 @@ class ControlsOverlay extends StatelessWidget {
               _buildDropsCounter(context),
 
               // Hint display
-              if (currentLevel.hint.isNotEmpty) ...[
-                SizedBox(height: ResponsiveHelper.spacing(context, 10)),
-                _buildHintDisplay(context, currentLevel.hint),
-              ],
+              ValueListenableBuilder<String?>(
+                valueListenable: game.currentHint,
+                builder: (context, hint, _) {
+                  if (hint == null || hint.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+                  return Column(
+                    children: [
+                      SizedBox(height: ResponsiveHelper.spacing(context, 10)),
+                      _buildHintDisplay(context, hint),
+                    ],
+                  );
+                },
+              ),
             ],
           ),
         );
@@ -582,11 +592,15 @@ class ControlsOverlay extends StatelessWidget {
                 onTap: game.isBlindMode ? () => game.revealHiddenColor() : null,
                 isVisible: game.isBlindMode,
               ),
-              if ((counts['help_drop'] ?? 0) <= 0 &&
-                  game.currentMode == GameMode.classic) ...[
-                const SizedBox(height: 8),
-                _WatchAdHintButton(game: game),
-              ],
+              const SizedBox(height: 8),
+              _buildHelperButton(
+                id: 'hint',
+                icon: Icons.lightbulb_outline,
+                color: AppTheme.electricYellow,
+                count: (game.currentHint.value == null) ? 1 : 0,
+                onTap: () => game.revealHint(),
+                isVisible: true,
+              ),
             ],
           );
         },
@@ -623,6 +637,9 @@ class ControlsOverlay extends StatelessWidget {
         semanticLabel =
             '${AppStrings.revealColor.getString(game.buildContext!)} ($count)';
         break;
+      case 'hint':
+        semanticLabel = AppStrings.hint.getString(game.buildContext!);
+        break;
       default:
         semanticLabel = '$id ($count)';
     }
@@ -658,7 +675,7 @@ class ControlsOverlay extends StatelessWidget {
                   backgroundColor: color.withValues(alpha: 0.1),
                   borderColor: color.withValues(alpha: 0.5),
                 ),
-                if (isVisible)
+                if (isVisible && id != 'hint')
                   Positioned(
                     right: -4,
                     top: -4,
@@ -1283,7 +1300,7 @@ class _PulsingDotState extends State<_PulsingDot>
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _anim,
-      builder: (_, __) => Container(
+      builder: (context, child) => Container(
         width: 7,
         height: 7,
         decoration: BoxDecoration(
@@ -1319,7 +1336,7 @@ class _WatchAdHintButtonState extends State<_WatchAdHintButton> {
     setState(() => _isAdLoading = true);
 
     AdManager().showRewardedAd(
-      onUserEarnedReward: (_, __) {
+      onUserEarnedReward: (ad, reward) {
         if (mounted) {
           setState(() {
             _isAdLoading = false;
@@ -1369,7 +1386,7 @@ class _WatchAdTimeButtonState extends State<_WatchAdTimeButton> {
     setState(() => _isAdLoading = true);
 
     AdManager().showRewardedAd(
-      onUserEarnedReward: (_, __) {
+      onUserEarnedReward: (ad, reward) {
         if (mounted) {
           setState(() {
             _isAdLoading = false;

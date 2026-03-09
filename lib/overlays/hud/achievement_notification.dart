@@ -159,7 +159,7 @@ class _AchievementNotificationState extends State<AchievementNotification>
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
-                              widget.tier.label.toUpperCase(),
+                              widget.tier.labelKey(context).toUpperCase(),
                               style: TextStyle(
                                 color: _glowColor,
                                 fontSize: 9,

@@ -298,7 +298,7 @@ class ResponsiveGrid extends StatelessWidget {
 }
 
 /// Responsive text that scales to fit
-class ResponsiveText extends StatelessWidget {
+class ResponsiveText extends StatefulWidget {
   final String text;
   final TextStyle? style;
   final double maxWidth;
@@ -315,20 +315,40 @@ class ResponsiveText extends StatelessWidget {
   });
 
   @override
+  State<ResponsiveText> createState() => _ResponsiveTextState();
+}
+
+class _ResponsiveTextState extends State<ResponsiveText> {
+  TextStyle? _fittedStyle;
+  String? _lastText;
+  TextStyle? _lastStyle;
+  double? _lastMaxWidth;
+
+  @override
   Widget build(BuildContext context) {
-    final baseStyle = style ?? AppTheme.bodyLarge(context);
-    final fittedStyle = ResponsiveHelper.fitTextToWidth(
-      context,
-      text,
-      baseStyle,
-      maxWidth,
-    );
+    final baseStyle = widget.style ?? AppTheme.bodyLarge(context);
+
+    // Performance optimization: only re-calculate fitting if inputs changed
+    if (_fittedStyle == null ||
+        _lastText != widget.text ||
+        _lastStyle != baseStyle ||
+        _lastMaxWidth != widget.maxWidth) {
+      _lastText = widget.text;
+      _lastStyle = baseStyle;
+      _lastMaxWidth = widget.maxWidth;
+      _fittedStyle = ResponsiveHelper.fitTextToWidth(
+        context,
+        widget.text,
+        baseStyle,
+        widget.maxWidth,
+      );
+    }
 
     return Text(
-      text,
-      style: fittedStyle,
-      textAlign: textAlign,
-      maxLines: maxLines,
+      widget.text,
+      style: _fittedStyle,
+      textAlign: widget.textAlign,
+      maxLines: widget.maxLines,
       overflow: TextOverflow.ellipsis,
     );
   }

@@ -1216,52 +1216,51 @@ class _LabUpgradeHubState extends State<LabUpgradeHub>
 
   Future<void> _purchaseItem(LabItem item) async {
     if (widget.game.totalCoins.value >= item.price) {
-      int newBalance = widget.game.totalCoins.value - item.price;
-      widget.game.totalCoins.value = newBalance;
-      await SaveManager.saveTotalCoins(newBalance);
+      bool success = await widget.game.spendCoins(item.price);
+      if (success) {
+        _unlockedItems.add(item.id);
+        await SaveManager.saveUnlockedLabItems(_unlockedItems);
+        AudioManager().playUnlockSound();
 
-      _unlockedItems.add(item.id);
-      await SaveManager.saveUnlockedLabItems(_unlockedItems);
-      AudioManager().playUnlockSound();
-
-      // Simple unlock celebration
-      if (mounted) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) {
-            Future.delayed(const Duration(milliseconds: 1500), () {
-              if (context.mounted) Navigator.pop(context); // Auto-close
-            });
-            return Center(
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 500),
-                padding: const EdgeInsets.all(32),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      item.rarity.glowColor.withValues(alpha: 0.8),
-                      Colors.transparent,
-                    ],
+        // Simple unlock celebration
+        if (mounted) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) {
+              Future.delayed(const Duration(milliseconds: 1500), () {
+                if (context.mounted) Navigator.pop(context); // Auto-close
+              });
+              return Center(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 500),
+                  padding: const EdgeInsets.all(32),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        item.rarity.glowColor.withValues(alpha: 0.8),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                  child: Icon(
+                    item.icon ?? Icons.science,
+                    size: 100,
+                    color: Colors.white,
                   ),
                 ),
-                child: Icon(
-                  item.icon ?? Icons.science,
-                  size: 100,
-                  color: Colors.white,
-                ),
-              ),
-            );
-          },
-        );
-      }
+              );
+            },
+          );
+        }
 
-      if (_equippedConfig[item.category] == null ||
-          !_unlockedItems.contains(_equippedConfig[item.category])) {
-        await _equipItem(item);
-      } else {
-        setState(() {}); // Update to show unlocked status
+        if (_equippedConfig[item.category] == null ||
+            !_unlockedItems.contains(_equippedConfig[item.category])) {
+          await _equipItem(item);
+        } else {
+          setState(() {}); // Update to show unlocked status
+        }
       }
     } else {
       AudioManager().playError();

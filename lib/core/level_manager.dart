@@ -17,13 +17,14 @@ class LevelManager {
 
   String currentMode = 'classic';
 
-  LevelManager() {
-    // Initial empty state, will be populated by loadLevels
-    classicLevels = [];
-    timeAttackLevels = _generateTimeAttackLevels(100);
+  /// The currently selected phase for the classic level map (1-based).
+  int selectedPhase = 1;
 
-    // Default initialization (will be overwritten by initProgress)
-    for (int i = 1; i <= 100; i++) {
+  LevelManager() {
+    classicLevels = [];
+    timeAttackLevels = _generateTimeAttackLevels(50);
+
+    for (int i = 1; i <= 50; i++) {
       timeAttackLevelStars[i] = i == 1 ? 0 : -1;
     }
   }
@@ -33,7 +34,58 @@ class LevelManager {
   Map<int, int> get levelStars =>
       currentMode == 'classic' ? classicLevelStars : timeAttackLevelStars;
 
-  LevelModel get currentLevel => levels[currentLevelIndex];
+  LevelModel get currentLevel {
+    if (levels.isEmpty) {
+      // Fallback to avoid RangeError if level data failed to load
+      return LevelModel(
+        id: 1,
+        phase: 1,
+        maxDrops: 10,
+        difficultyFactor: 0.5,
+        availableColors: [Colors.red, Colors.green, Colors.blue],
+        targetColor: Colors.red,
+        recipe: {'red': 1},
+        hint: '',
+        isBlindMode: false,
+      );
+    }
+    final safeIndex = currentLevelIndex.clamp(0, levels.length - 1);
+    return levels[safeIndex];
+  }
+
+  // ─── Phase helpers ────────────────────────────────────────────────────────
+
+  /// All levels belonging to a given phase (1-based).
+  List<LevelModel> levelsForPhase(int phaseId) =>
+      classicLevels.where((l) => l.phase == phaseId).toList();
+
+  /// Returns true if the given phase is unlocked.
+  /// Phase 1 is always unlocked. Later phases unlock when all levels of the
+  /// previous phase are completed (stars > 0).
+  bool isPhaseUnlocked(int phaseId) {
+    if (phaseId <= 1) return true;
+    final prevLevels = levelsForPhase(phaseId - 1);
+    if (prevLevels.isEmpty) return false;
+    return prevLevels.every((l) => (classicLevelStars[l.id] ?? -1) > 0);
+  }
+
+  /// Progress (completedCount, totalCount) for a phase.
+  (int, int) phaseProgress(int phaseId) {
+    final phaseLevels = levelsForPhase(phaseId);
+    final completed = phaseLevels
+        .where((l) => (classicLevelStars[l.id] ?? -1) > 0)
+        .length;
+    return (completed, phaseLevels.length);
+  }
+
+  /// Stars earned in a phase.
+  int phaseStars(int phaseId) {
+    return levelsForPhase(
+      phaseId,
+    ).fold(0, (sum, l) => sum + ((classicLevelStars[l.id] ?? 0).clamp(0, 3)));
+  }
+
+  // ─── Navigation ───────────────────────────────────────────────────────────
 
   bool nextLevel() {
     if (currentLevelIndex < levels.length - 1) {
@@ -47,28 +99,46 @@ class LevelManager {
     currentLevelIndex = 0;
   }
 
+  // ─── Loading ──────────────────────────────────────────────────────────────
+
   Future<void> loadLevels() async {
     try {
       final jsonString = await rootBundle.loadString('assets/levels.json');
-      final Map<String, dynamic> data = jsonDecode(jsonString);
-      final List<dynamic> levelsList = data['levels'];
+      final dynamic decoded = jsonDecode(jsonString);
+      final List<dynamic> levelsList = (decoded is Map)
+          ? decoded['levels']
+          : decoded;
 
-      classicLevels = levelsList.map((levelData) {
-        final Map<String, dynamic> recipe = Map<String, int>.from(
-          levelData['recipe'],
-        );
+      final List<LevelModel> loadedLevels = [];
+      for (var levelData in levelsList) {
+        try {
+          final Map<String, dynamic> rawRecipe = levelData['recipe'] ?? {};
+          final Map<String, int> recipe = {
+            'red': (rawRecipe['R'] ?? rawRecipe['red'] ?? 0) as int,
+            'green': (rawRecipe['G'] ?? rawRecipe['green'] ?? 0) as int,
+            'blue': (rawRecipe['B'] ?? rawRecipe['blue'] ?? 0) as int,
+            'white': (rawRecipe['W'] ?? rawRecipe['white'] ?? 0) as int,
+            'black': (rawRecipe['K'] ?? rawRecipe['black'] ?? 0) as int,
+          };
 
-        return _createLevel(
-          id: levelData['id'],
-          recipe: recipe,
-          maxDrops: levelData['maxDrops'],
-          difficulty: (levelData['difficultyFactor'] as num).toDouble(),
-          isBlindMode: levelData['isBlindMode'] ?? false,
-          hintOverride: _mapHint(levelData['hint']),
-        );
-      }).toList();
+          loadedLevels.add(
+            _createLevel(
+              id: levelData['id'] ?? 0,
+              phase: levelData['phase'] ?? 1,
+              recipe: recipe,
+              maxDrops: levelData['maxDrops'] ?? 6,
+              difficulty: ((levelData['difficultyFactor'] ?? 0.5) as num)
+                  .toDouble(),
+              isBlindMode: levelData['isBlindMode'] ?? false,
+              hintOverride: _mapHint(levelData['hint']),
+            ),
+          );
+        } catch (e) {
+          debugPrint("Skipping invalid level entry: $e");
+        }
+      }
+      classicLevels = loadedLevels;
 
-      // Ensure stars map is sized correctly
       for (var level in classicLevels) {
         if (!classicLevelStars.containsKey(level.id)) {
           classicLevelStars[level.id] = level.id == 1 ? 0 : -1;
@@ -86,30 +156,23 @@ class LevelManager {
     timeAttackLevelStars = await SaveManager.loadProgress('timeAttack');
 
     if (classicLevelStars.isEmpty || (classicLevelStars[1] ?? -1) == -1) {
-      classicLevelStars[1] =
-          0; // Level 1 unlocked (using id 1-based indexing from JSON)
-    }
-    // Handle 0-based legacy keys if present
-    if (classicLevelStars.containsKey(0) && !classicLevelStars.containsKey(1)) {
-      classicLevelStars[1] = classicLevelStars[0]!;
+      classicLevelStars[1] = 0;
     }
     if (timeAttackLevelStars.isEmpty || (timeAttackLevelStars[1] ?? -1) == -1) {
       timeAttackLevelStars[1] = 0;
     }
   }
 
-  /// Time Attack Mode: Faster paced, more randomized but still progressive
+  // ─── Time Attack ──────────────────────────────────────────────────────────
+
   List<LevelModel> _generateTimeAttackLevels(int count) {
     final List<LevelModel> result = [];
 
     for (int i = 1; i <= count; i++) {
-      // Simplified generation for Time Attack (keep independent)
-      // ... (Logic could be refined later)
-      // For now, generate a basic spread
       final rng = Random(i + 5000);
       int r = 0, g = 0, b = 0;
       int maxDrops = 10;
-      if (i < 20) {
+      if (i < 10) {
         r = rng.nextInt(3) + 1;
         g = rng.nextInt(3);
       } else {
@@ -123,6 +186,7 @@ class LevelManager {
       result.add(
         _createLevel(
           id: i,
+          phase: 1,
           recipe: {'red': r, 'green': g, 'blue': b},
           maxDrops: maxDrops,
           difficulty: i / count,
@@ -132,8 +196,11 @@ class LevelManager {
     return result;
   }
 
+  // ─── Level Factory ────────────────────────────────────────────────────────
+
   LevelModel _createLevel({
     required int id,
+    required int phase,
     required Map<String, dynamic> recipe,
     required int maxDrops,
     required double difficulty,
@@ -143,7 +210,6 @@ class LevelManager {
     final int r = recipe['red'] ?? 0;
     final int g = recipe['green'] ?? 0;
     final int b = recipe['blue'] ?? 0;
-
     final int white = recipe['white'] ?? 0;
     final int black = recipe['black'] ?? 0;
 
@@ -157,6 +223,7 @@ class LevelManager {
 
     return LevelModel(
       id: id,
+      phase: phase,
       maxDrops: maxDrops,
       difficultyFactor: difficulty,
       availableColors: [
@@ -172,6 +239,8 @@ class LevelManager {
       isBlindMode: isBlindMode,
     );
   }
+
+  // ─── Hint Generation ──────────────────────────────────────────────────────
 
   String _generateSmartHint(int r, int g, int b, int w, int k) {
     if (w > 0 && r == 0 && g == 0 && b == 0 && k == 0) {
@@ -218,52 +287,67 @@ class LevelManager {
     if (hint == null || hint.isEmpty) return AppStrings.hintObserve;
 
     switch (hint) {
-      case "Just Red":
+      case 'hint_pure_red':
+      case 'Just Red':
         return AppStrings.hintPureRed;
-      case "Just Green":
+      case 'hint_pure_green':
+      case 'Just Green':
         return AppStrings.hintPureGreen;
-      case "Just Blue":
+      case 'hint_pure_blue':
+      case 'Just Blue':
         return AppStrings.hintPureBlue;
-      case "Mostly Red":
+      case 'hint_pure_white':
+        return AppStrings.hintPureWhite;
+      case 'hint_pure_black':
+        return AppStrings.hintPureBlack;
+      case 'hint_mostly_red':
+      case 'Mostly Red':
         return AppStrings.hintMostlyRed;
-      case "Mostly Green":
+      case 'hint_mostly_green':
+      case 'Mostly Green':
         return AppStrings.hintMostlyGreen;
-      case "Mostly Blue":
+      case 'hint_mostly_blue':
+      case 'Mostly Blue':
         return AppStrings.hintMostlyBlue;
-      case "Equal Red and Blue make Magenta":
+      case 'hint_mix_rb':
+      case 'Equal Red and Blue make Magenta':
         return AppStrings.hintMixRB;
-      case "Equal Green and Blue make Cyan":
+      case 'hint_mix_gb':
+      case 'Equal Green and Blue make Cyan':
         return AppStrings.hintMixGB;
-      case "Equal Red and Green make Yellow":
+      case 'hint_mix_rg':
+      case 'Equal Red and Green make Yellow':
         return AppStrings.hintMixRG;
-      case "Looks very pale (needs White)":
+      case 'hint_needs_white':
+      case 'Looks very pale (needs White)':
         return AppStrings.hintNeedsWhite;
-      case "Looks very dark (needs Black)":
+      case 'hint_needs_black':
+      case 'Looks very dark (needs Black)':
         return AppStrings.hintNeedsBlack;
-      case "Observe the color carefully":
-        return AppStrings.hintObserve;
-      case "Perfect balance of colors":
+      case 'hint_balance_all':
+      case 'Perfect balance of colors':
         return AppStrings.hintBalanceAll;
+      case 'hint_observe':
+      case 'Observe the color carefully':
+        return AppStrings.hintObserve;
       default:
-        // Check if it's already a hint_ key
-        if (hint.startsWith("hint_")) return hint;
+        if (hint.startsWith('hint_')) return hint;
         return AppStrings.hintObserve;
     }
   }
 
+  // ─── Progress & Unlocking ─────────────────────────────────────────────────
+
   void unlockNextLevel(int currentLevelIndex, int stars) {
     if (levels.isEmpty) return;
 
-    // Update current level star only if it's better
     int levelId = levels[currentLevelIndex].id;
     int existingStars = levelStars[levelId] ?? -1;
     if (stars > existingStars) {
       levelStars[levelId] = stars;
     }
 
-    // Unlock next level
     if (currentLevelIndex < levels.length - 1) {
-      // Logic assumes levels are sorted by ID in the list matches index
       int nextLevelId = levels[currentLevelIndex + 1].id;
       if ((levelStars[nextLevelId] ?? -1) == -1) {
         levelStars[nextLevelId] = 0;

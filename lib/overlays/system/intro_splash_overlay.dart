@@ -28,7 +28,6 @@ class _IntroSplashOverlayState extends State<IntroSplashOverlay>
 
   final ShorebirdUpdater _updater = ShorebirdUpdater();
   String _statusKey = AppStrings.labArchivesInitialized;
-  bool _isUpdating = false;
 
   @override
   void initState() {

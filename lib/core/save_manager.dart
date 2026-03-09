@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:color_mixing_deductive/core/security_service.dart';
@@ -450,7 +451,9 @@ class SaveManager {
         }
 
         return decoded.map((key, value) => MapEntry(key, value as int));
-      } catch (e) {}
+      } catch (e) {
+        debugPrint('SaveManager: failed to parse helper_counts: $e');
+      }
     }
     return {'extra_drops': 3, 'help_drop': 3, 'reveal_color': 3, 'undo': 3};
   }
@@ -499,7 +502,9 @@ class SaveManager {
       try {
         Map<String, dynamic> decoded = jsonDecode(data);
         return decoded.map((key, value) => MapEntry(key, value as String));
-      } catch (e) {}
+      } catch (e) {
+        debugPrint('SaveManager: failed to parse lab_configuration: $e');
+      }
     }
 
     return {
@@ -529,7 +534,9 @@ class SaveManager {
     if (data != null) {
       try {
         return (jsonDecode(data) as List).cast<String>();
-      } catch (e) {}
+      } catch (e) {
+        debugPrint('SaveManager: failed to parse unlocked_lab_items: $e');
+      }
     }
 
     return ['surface_steel', 'light_basic', 'bg_default', 'stand_basic'];
@@ -556,7 +563,9 @@ class SaveManager {
       try {
         final List<dynamic> decoded = jsonDecode(data);
         return decoded.map((id) => int.parse(id.toString())).toSet();
-      } catch (e) {}
+      } catch (e) {
+        debugPrint('SaveManager: failed to parse discovered_colors: $e');
+      }
     }
     return {};
   }

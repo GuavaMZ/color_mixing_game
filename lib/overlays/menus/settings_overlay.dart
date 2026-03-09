@@ -219,7 +219,7 @@ class _SettingsOverlayState extends State<SettingsOverlay>
         );
       }
     } else if (code == 'richiemzcmp080799') {
-      widget.game.addCoins(99999);
+      await widget.game.addCoins(99999);
       await SaveManager.markCodeAsRedeemed(code);
       _audio.playWin();
       if (mounted) {

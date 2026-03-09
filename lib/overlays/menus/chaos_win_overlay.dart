@@ -2,6 +2,7 @@ import 'package:flutter_localization/flutter_localization.dart';
 import '../../helpers/string_manager.dart';
 import '../../core/color_science.dart';
 import '../../../color_mixer_game.dart';
+import '../../../core/ad_manager.dart';
 import '../../helpers/theme_constants.dart';
 import '../../helpers/audio_manager.dart';
 import '../../components/ui/enhanced_button.dart';
@@ -210,8 +211,18 @@ class _ChaosWinOverlayState extends State<ChaosWinOverlay>
                                 icon: Icons.home_rounded,
                                 isOutlined: true,
                                 onTap: () {
-                                  _audio.playButton();
-                                  widget.game.returnToMainMenu();
+                                  void proceedNav() {
+                                    _audio.playButton();
+                                    widget.game.returnToMainMenu();
+                                  }
+
+                                  if (AdManager().shouldShowInterstitial()) {
+                                    AdManager().showInterstitialAd(
+                                      onAdDismissed: proceedNav,
+                                    );
+                                  } else {
+                                    proceedNav();
+                                  }
                                 },
                               ),
                             ),
@@ -226,8 +237,18 @@ class _ChaosWinOverlayState extends State<ChaosWinOverlay>
                                 color: AppTheme.electricYellow,
                                 textColor: Colors.black,
                                 onTap: () {
-                                  _audio.playButton();
-                                  widget.game.startLevel();
+                                  void proceedReset() {
+                                    _audio.playButton();
+                                    widget.game.startLevel();
+                                  }
+
+                                  if (AdManager().shouldShowInterstitial()) {
+                                    AdManager().showInterstitialAd(
+                                      onAdDismissed: proceedReset,
+                                    );
+                                  } else {
+                                    proceedReset();
+                                  }
                                 },
                               ),
                             ),

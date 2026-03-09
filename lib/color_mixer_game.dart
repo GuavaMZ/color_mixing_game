@@ -176,6 +176,12 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   int winPreviousLevel = 0;
   int winPreviousXp = 0;
   int winXpEarned = 0;
+  // ──────────────────────────────────────────────────────────────────────────
+  // Achievements & Rewards
+  // ──────────────────────────────────────────────────────────────────────────
+  final List<AchievementDef> achievementQueue = [];
+  final ValueNotifier<String?> rewardNotification = ValueNotifier(null);
+
   CardDef? winUnlockedCard;
 
   late BackgroundGradient backgroundGradient;
@@ -183,7 +189,6 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   late PatternBackground patternBackground;
   BeakerStand? beakerStand;
   StringLights? stringLights;
-  List<String> unlockedAchievements = [];
   bool globalBlindMode = false;
   bool reducedMotionEnabled = false;
 
@@ -207,6 +212,10 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   double _activeEventElapsed = 0.0;
   bool _randomEventOccurredThisLevel = false;
   bool _cardDroppedThisLevel = false;
+
+  /// Incremented each time a level starts. Used to cancel stale [Future.delayed]
+  /// callbacks from random events that were triggered in a previous session.
+  int _levelSession = 0;
 
   bool get isAnyRandomEventActive =>
       isBlackout ||
@@ -285,7 +294,6 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     loadingProgress.value = 0.2;
     totalStars = await SaveManager.loadTotalStars();
     totalCoins.value = await SaveManager.loadTotalCoins();
-    unlockedAchievements = await SaveManager.loadAchievements();
     globalBlindMode = await SaveManager.loadBlindMode();
     reducedMotionEnabled = await SaveManager.loadReducedMotion();
     randomEventsEnabled = await SaveManager.loadRandomEvents();
@@ -294,7 +302,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     // ── Phase 1: Init meta-progression systems ──────────────────────────────
     await XpManager.instance.init();
     XpManager.instance.attachGame(this);
-    await AchievementEngine.instance.init(unlockedAchievements);
+    final savedAchievements = await SaveManager.loadAchievements();
+    await AchievementEngine.instance.init(savedAchievements);
     await AdaptiveDifficulty.instance.init();
     // ────────────────────────────────────────────────────────────────────────
 
@@ -679,8 +688,6 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     // Haptic feedback for combos
     HapticManager().combo(comboCount.value);
 
-    _audio.playWin();
-
     // Add winning particles (Explosion)
     final explosionColors = [
       targetColor,
@@ -704,23 +711,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     // Add Fireworks Celebration
     add(Fireworks(size: size));
 
-    // Show Achievement (Mock Trigger)
-    if (!unlockedAchievements.contains('mad_chemist')) {
-      unlockedAchievements.add('mad_chemist');
-      SaveManager.saveAchievements(unlockedAchievements);
-      overlays.add('Achievement');
-    }
-
-    // Combo King Achievement
-    if (comboCount.value >= 10 &&
-        !unlockedAchievements.contains('combo_king')) {
-      unlockedAchievements.add('combo_king');
-      SaveManager.saveAchievements(unlockedAchievements);
-      overlays.add('Achievement');
-    }
-
-    // New Achievements Logic
-    _checkAdvAchievements(stars);
+    // Evaluated via AchievementEngine in Phase 2
 
     // Evaluate Daily Challenge Logic
     _evaluateDailyChallenges(stars);
@@ -762,7 +753,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     }
 
     lastEarnedCoins = totalAwarded;
-    addCoins(totalAwarded);
+    await addCoins(totalAwarded);
 
     // Save progress immediately
     if (currentMode == GameMode.classic || currentMode == GameMode.timeAttack) {
@@ -811,40 +802,61 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     }
 
     // Run achievement engine check
-    StatisticsManager.getAllStats().then((stats) {
-      final ctx = AchievementContext(
-        stars: stars,
-        totalLevelsCompleted: stats['totalLevels'] ?? 0,
-        classicLevelsCompleted: stats['classicLevelsCompleted'] ?? 0,
-        totalDropsUsed: stats['totalDrops'] ?? 0,
-        dropsUsedThisLevel: totalDrops.value,
-        hasUsedHint: hasUsedHint,
-        totalStars: totalStars,
-        playerLevel: XpManager.instance.playerLevel.value,
-        prestigeCount: XpManager.instance.prestigeCount.value,
-        highestCombo: comboCount.value > highestCombo
-            ? comboCount.value
-            : highestCombo,
-        timeAttackWins: stats['timeAttackWins'] ?? 0,
-        echoRound: echoRound,
-        chaosRound: chaosRound,
-        hasPlayedAllModes: stats['hasPlayedAllModes'] ?? false,
-        levelsWithoutHints: stats['levelsWithoutHints'] ?? 0,
-        classicPerfectNoHints: stats['classicPerfectNoHints'] ?? 0,
-        totalCoins: totalCoins.value,
-        loginStreak: stats['loginStreak'] ?? 0,
-        wonWithActiveEvent: isAnyRandomEventActive,
-        wonDuringBlackout: isBlackout,
-      );
-      AchievementEngine.instance.check(ctx).then((newIds) {
-        unlockedAchievements = AchievementEngine.instance.unlockedIds.toList();
-        // Show a toast for each new achievement (reuse the Achievement overlay)
-        if (newIds.isNotEmpty && isMounted) {
-          if (!overlays.isActive('Achievement')) {
-            overlays.add('Achievement');
+    final stats = await StatisticsManager.getAllStats();
+    final discoveredColors = await SaveManager.loadDiscoveredColors();
+    final totalSpent = await SaveManager.loadTotalSpent();
+    final dailyCount = await SaveManager.loadDailyChallengeCount();
+
+    final ctx = AchievementContext(
+      stars: stars,
+      totalLevelsCompleted: stats['totalLevels'] ?? 0,
+      classicLevelsCompleted: stats['classicLevelsCompleted'] ?? 0,
+      totalDropsUsed: stats['totalDrops'] ?? 0,
+      dropsUsedThisLevel: totalDrops.value,
+      hasUsedHint: hasUsedHint,
+      totalStars: totalStars,
+      playerLevel: XpManager.instance.playerLevel.value,
+      prestigeCount: XpManager.instance.prestigeCount.value,
+      highestCombo: comboCount.value > highestCombo
+          ? comboCount.value
+          : highestCombo,
+      timeAttackWins: stats['timeAttackWins'] ?? 0,
+      echoRound: echoRound,
+      chaosRound: chaosRound,
+      hasPlayedAllModes: stats['hasPlayedAllModes'] ?? false,
+      levelsWithoutHints: stats['levelsWithoutHints'] ?? 0,
+      classicPerfectNoHints: stats['classicPerfectNoHints'] ?? 0,
+      totalCoins: totalCoins.value,
+      loginStreak: stats['loginStreak'] ?? 0,
+      wonWithActiveEvent: isAnyRandomEventActive,
+      wonDuringBlackout: isBlackout,
+      chaosLabPlays: stats['chaosLabPlays'] ?? 0,
+      matchPercentage: matchPercentage.value,
+      currentLevelIndex: levelManager.currentLevelIndex,
+      isBlindMode: beaker.isBlindMode,
+      unlockedSkinsCount: unlockedSkins.length,
+      extraDropsUsed: helpersUsedInLevel['extra_drops'] ?? 0,
+      levelDuration: DateTime.now().difference(_levelStartTime),
+      discoveredColorsCount: discoveredColors.length,
+      totalSpent: totalSpent,
+      dailyChallengeCount: dailyCount,
+      chaosStability: chaosStability,
+      has10OfEachHelper:
+          helperCounts.value.values.every((v) => v >= 10) &&
+          helperCounts.value.length == 4,
+      minDropsNeeded: levelManager.currentLevel.minDropsNeeded,
+    );
+
+    AchievementEngine.instance.check(ctx).then((newIds) {
+      if (newIds.isNotEmpty && isMounted) {
+        for (final id in newIds) {
+          final def = AchievementCatalog.byId(id);
+          if (def != null) {
+            achievementQueue.add(def);
           }
         }
-      });
+        _showNextAchievement();
+      }
     });
     // ───────────────────────────────────────────────────────────────────────
 
@@ -862,7 +874,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     _winTimer = 1.5;
   }
 
-  void _executeWinTransition() {
+  Future<void> _executeWinTransition() async {
     if (!isMounted) return;
 
     if (currentMode == GameMode.colorEcho) {
@@ -874,7 +886,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       // Base 50, Streak 1.0x multiplier
       int echoCoins = (50 * (1 + echoStreak * 1.0)).toInt();
       lastEarnedCoins = echoCoins;
-      addCoins(echoCoins);
+      await addCoins(echoCoins);
 
       // Milestone reward
       if (echoStreak % 5 == 0) {
@@ -887,7 +899,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       int chaosBaseCoins = 50 + (chaosRound * 10);
       int chaosBonus = (chaosBaseCoins * chaosStability).toInt();
       lastEarnedCoins = chaosBaseCoins + chaosBonus;
-      addCoins(lastEarnedCoins);
+      await addCoins(lastEarnedCoins);
       chaosRound++;
 
       // Chaos Survivor bonus
@@ -913,7 +925,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       // Award some coins
       int tournamentCoins = (accuracy * 2).toInt();
       lastEarnedCoins = tournamentCoins;
-      addCoins(tournamentCoins);
+      await addCoins(tournamentCoins);
 
       overlays.remove('TournamentHUD');
       overlays.add('WinMenu');
@@ -1316,8 +1328,9 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     _previousMatchPct = matchPercentage.value;
 
     // Auto-win if 100% match
-    if (matchPercentage.value == 100.0) {
+    if (matchPercentage.value == 100.0 && !_hasWon) {
       _hasWon = true;
+      AdManager().recordWin();
       showWinEffect();
     }
 
@@ -1415,6 +1428,9 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     helpersUsedInLevel.clear();
     _lastBeakerColor = Colors.transparent;
     _levelStartTime = DateTime.now();
+    currentHint.value = null; // Reset hint
+    hasUsedHint = false;
+    _levelSession++; // Invalidate any pending random-event delayed futures
 
     // Reset Chaos State
     chaosStability = 1.0;
@@ -1523,6 +1539,17 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     _audio.playGameMusic(musicMode);
   }
 
+  void revealHint() {
+    if (currentHint.value != null) return;
+    if (currentMode == GameMode.classic || currentMode == GameMode.timeAttack) {
+      final level = levelManager.currentLevel;
+      currentHint.value = level.hint;
+      hasUsedHint = true;
+      _audio.playButton(); // Play a subtle sound
+      notifyListeners();
+    }
+  }
+
   void goToNextLevel() {
     if (currentMode == GameMode.colorEcho) {
       transitionTo(
@@ -1587,6 +1614,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     if (_hasLost || _hasWon) return;
     _hasLost = true;
     _hasWon = false; // نضمن أن حالة الفوز لم تتحقق
+    AdManager().recordLoss();
 
     disposeRandomEvents();
 
@@ -1608,12 +1636,30 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     }
   }
 
-  void addCoins(int amount) {
+  Future<void> addCoins(int amount) async {
     // Phase 2: Apply VIP coin multiplier
     final multiplied = (amount * VipManager.instance.coinMultiplier).round();
-    totalCoins.value += multiplied;
-    SaveManager.saveTotalCoins(totalCoins.value);
-    notifyListeners();
+    bool success = await SaveManager.addCoins(
+      multiplied,
+      reason: 'Gameplay reward',
+    );
+    if (success) {
+      totalCoins.value = await SaveManager.loadTotalCoins();
+      notifyListeners();
+    }
+  }
+
+  Future<bool> spendCoins(int amount) async {
+    bool success = await SaveManager.spendCoins(
+      amount,
+      reason: 'Store purchase',
+    );
+    if (success) {
+      totalCoins.value = await SaveManager.loadTotalCoins();
+      notifyListeners();
+      return true;
+    }
+    return false;
   }
 
   /// Phase 2: Revive the player after a game over by watching a rewarded ad.
@@ -1636,29 +1682,43 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     blackDrops = 0;
     _cardDroppedThisLevel = false;
 
-    overlays.add('Controls');
+    // Restore the correct HUD for the current mode
+    if (currentMode == GameMode.colorEcho) {
+      overlays.add('ColorEchoHUD');
+    } else if (currentMode == GameMode.chaosLab) {
+      overlays.add('ChaosLabHUD');
+    } else {
+      overlays.add('Controls');
+    }
     _startLevelBgm();
     notifyListeners();
   }
 
-  void buyOrSelectSkin(BeakerType type, int price) {
+  Future<void> buyOrSelectSkin(BeakerType type, int price) async {
     if (unlockedSkins.contains(type)) {
       beaker.type = type; // Select skin
-      SaveManager.saveSelectedSkin(type.toString());
-    } else if (totalCoins.value >= price) {
-      totalCoins.value -= price;
-      unlockedSkins.add(type);
-      beaker.type = type;
-      SaveManager.saveSelectedSkin(type.toString());
+      await SaveManager.saveSelectedSkin(type.toString());
+      notifyListeners();
+    } else {
+      bool success = await SaveManager.spendCoins(
+        price,
+        reason: 'Bought skin ${type.toString()}',
+      );
+      if (success) {
+        totalCoins.value = await SaveManager.loadTotalCoins();
+        unlockedSkins.add(type);
+        beaker.type = type;
+        await SaveManager.saveSelectedSkin(type.toString());
 
-      // Save new state
-      SaveManager.saveTotalCoins(totalCoins.value);
-      List<String> skinNames = unlockedSkins.map((e) => e.toString()).toList();
-      SaveManager.savePurchasedSkins(skinNames);
+        List<String> skinNames = unlockedSkins
+            .map((e) => e.toString())
+            .toList();
+        await SaveManager.savePurchasedSkins(skinNames);
 
-      _audio.playUnlock();
+        _audio.playUnlock();
+        notifyListeners();
+      }
     }
-    notifyListeners();
   }
 
   /// Apply lab config changes immediately to all environment components.
@@ -1776,6 +1836,16 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
   void returnToMainMenu() => navigateToPage('MainMenu', isReverse: true);
 
+  void showPhaseSelect() {
+    currentMode = GameMode.classic;
+    navigateToPage('PhaseSelect', isReverse: false);
+  }
+
+  void showLevelMapForPhase(int phaseId) {
+    levelManager.selectedPhase = phaseId;
+    navigateToPage('LevelMap', isReverse: false);
+  }
+
   void addHelper(String helperId, int amount) {
     Map<String, int> newCounts = Map<String, int>.from(helperCounts.value);
     newCounts[helperId] = (newCounts[helperId] ?? 0) + amount;
@@ -1784,149 +1854,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     notifyListeners();
   }
 
-  void _checkAdvAchievements(int stars) async {
-    final stats = await StatisticsManager.getAllStats();
-
-    // Lab Survivor: 5 levels in Chaos Lab
-    if (currentMode == GameMode.chaosLab &&
-        stats['chaosLabPlays'] >= 5 &&
-        !unlockedAchievements.contains('lab_survivor')) {
-      _unlock('lab_survivor');
-    }
-
-    // Spectral Sync: 100% match in Color Echo
-    if (currentMode == GameMode.colorEcho &&
-        matchPercentage.value == 100 &&
-        !unlockedAchievements.contains('spectral_sync')) {
-      _unlock('spectral_sync');
-    }
-
-    // Master Chemist: Level 50 (index 49)
-    if (levelManager.currentLevelIndex >= 49 &&
-        !unlockedAchievements.contains('master_chemist')) {
-      _unlock('master_chemist');
-    }
-
-    // Blind Master: 3 stars in Blind Mode
-    if (beaker.isBlindMode &&
-        stars == 3 &&
-        !unlockedAchievements.contains('blind_master')) {
-      _unlock('blind_master');
-    }
-
-    // Shopaholic: All 6 skins unlocked (classic, flask, magic, cylinder, hex, round)
-    if (unlockedSkins.length >= 6 &&
-        !unlockedAchievements.contains('shopaholic')) {
-      _unlock('shopaholic');
-    }
-
-    // Stability Expert: Exactly one Stability Matrix used (extra_drops)
-    if (helpersUsedInLevel['extra_drops'] == 1 &&
-        !unlockedAchievements.contains('stability_expert')) {
-      _unlock('stability_expert');
-    }
-
-    // --- BUG FIXES (Previously missing triggers) ---
-
-    // Speed Runner: Under 5 seconds
-    final elapsedSec = DateTime.now().difference(_levelStartTime).inSeconds;
-    if (elapsedSec < 5 && !unlockedAchievements.contains('speed_runner')) {
-      _unlock('speed_runner');
-    }
-
-    // Star Collector: 50 total stars
-    if (totalStars >= 50 && !unlockedAchievements.contains('star_collector')) {
-      _unlock('star_collector');
-    }
-
-    // Perfectionist: First 3 star win
-    if (stars == 3 && !unlockedAchievements.contains('perfectionist')) {
-      _unlock('perfectionist');
-    }
-
-    // Veteran: 10 levels completed
-    if (stats['totalLevels'] >= 10 &&
-        !unlockedAchievements.contains('veteran')) {
-      _unlock('veteran');
-    }
-
-    // --- NEW ACHIEVEMENTS ---
-
-    // Color Collector: Discover 50 colors
-    final discoveredCount = (await SaveManager.loadDiscoveredColors()).length;
-    if (discoveredCount >= 50 &&
-        !unlockedAchievements.contains('color_collector')) {
-      _unlock('color_collector');
-    }
-
-    // Wealthy Scientist: 5000 coins
-    if (totalCoins.value >= 5000 &&
-        !unlockedAchievements.contains('wealthy_scientist')) {
-      _unlock('wealthy_scientist');
-    }
-
-    // Big Spender: Spend 2000 coins
-    final totalSpent = await SaveManager.loadTotalSpent();
-    if (totalSpent >= 2000 && !unlockedAchievements.contains('big_spender')) {
-      _unlock('big_spender');
-    }
-
-    // Daily Scholar: 7 daily challenges
-    final dailyCount = await SaveManager.loadDailyChallengeCount();
-    if (dailyCount >= 7 && !unlockedAchievements.contains('daily_scholar')) {
-      _unlock('daily_scholar');
-    }
-
-    // Century Club: Reach level 100
-    if (levelManager.currentLevelIndex >= 99 &&
-        !unlockedAchievements.contains('century_club')) {
-      _unlock('century_club');
-    }
-
-    // Chaos Master: Win with stability < 15%
-    if (currentMode == GameMode.chaosLab &&
-        chaosStability < 0.15 &&
-        !unlockedAchievements.contains('chaos_master')) {
-      _unlock('chaos_master');
-    }
-
-    // Echo Maestro: Reach Echo Round 10
-    if (currentMode == GameMode.colorEcho &&
-        echoRound >= 10 &&
-        !unlockedAchievements.contains('echo_maestro')) {
-      _unlock('echo_maestro');
-    }
-
-    // Helper Hoarder: 10 of each helper
-    bool has10OfEach =
-        helperCounts.value.values.every((v) => v >= 10) &&
-        helperCounts.value.length == 4;
-    if (has10OfEach && !unlockedAchievements.contains('helper_hoarder')) {
-      _unlock('helper_hoarder');
-    }
-
-    // Zero Waste: Exactly minimum drops
-    final minNeeded = levelManager.currentLevel.minDropsNeeded;
-    if (totalDrops.value == minNeeded &&
-        !unlockedAchievements.contains('zero_waste')) {
-      _unlock('zero_waste');
-    }
-
-    // Legendary Status: 500 levels
-    if (stats['totalLevels'] >= 500 &&
-        !unlockedAchievements.contains('legendary_status')) {
-      _unlock('legendary_status');
-    }
-  }
-
-  void _unlock(String id) {
-    if (!unlockedAchievements.contains(id)) {
-      unlockedAchievements.add(id);
-      SaveManager.saveAchievements(unlockedAchievements);
-    }
-  }
-
-  void _evaluateDailyChallenges(int stars) async {
+  Future<void> _evaluateDailyChallenges(int stars) async {
     // Only fetch challenge if we haven't completed it today
     bool completed = await DailyChallengeManager.isTodayCompleted();
     if (completed) return;
@@ -1964,7 +1892,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       await SaveManager.incrementDailyChallengeCount();
       // Add coins directly. SaveManager is called inside completeChallenge? No, the plan says to call it.
       // Wait, DailyChallengeManager doesn't grant coins. ColorMixerGame should.
-      addCoins(challenge.reward);
+      await addCoins(challenge.reward);
 
       // Show notification overlay
       overlays.add(
@@ -1976,7 +1904,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     }
   }
 
-  void _checkLevelReward() async {
+  Future<void> _checkLevelReward() async {
     if (currentMode != GameMode.classic) return;
 
     // Level IDs are 1-based, currentLevelIndex is 0-based.
@@ -1998,9 +1926,9 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
         await SaveManager.saveBool(rewardKey, true);
 
         // Visual notification
-        // Reusing the Achievement notification for simplicity
-        if (!overlays.isActive('Achievement')) {
-          overlays.add('Achievement');
+        rewardNotification.value = "Level Reward Claimed!";
+        if (!overlays.isActive('RewardToast')) {
+          overlays.add('RewardToast');
         }
       }
     }
@@ -2011,10 +1939,28 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     final selected = helpers[_random.nextInt(helpers.length)];
     addHelper(selected, 1);
 
-    // Quick notification that a helper was found via Achievement overlay
-    if (!overlays.isActive('Achievement')) {
+    // Quick notification that a helper was found via RewardToast overlay
+    rewardNotification.value = "Found ${selected.replaceAll('_', ' ')}!";
+    if (!overlays.isActive('RewardToast')) {
+      overlays.add('RewardToast');
+    }
+  }
+
+  void _showNextAchievement() {
+    if (achievementQueue.isNotEmpty && !overlays.isActive('Achievement')) {
       overlays.add('Achievement');
     }
+  }
+
+  void dismissAchievement() {
+    if (achievementQueue.isNotEmpty) {
+      achievementQueue.removeAt(0);
+    }
+    overlays.remove('Achievement');
+    // Check if more achievements are in queue
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (isMounted) _showNextAchievement();
+    });
   }
 
   void _triggerChaosMeltdown() {
@@ -2114,8 +2060,12 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     // Show visual warning
     overlays.add('RandomEventAlert');
 
+    // Capture the session token so stale callbacks can be rejected
+    final capturedSession = _levelSession;
+
     // Delay actual effect slightly to let the built-in alert finish (2.2 seconds)
     Future.delayed(const Duration(milliseconds: 2200), () {
+      if (_levelSession != capturedSession) return; // Level changed — bail out
       if (currentMode != GameMode.classic &&
           currentMode != GameMode.timeAttack &&
           currentMode != GameMode.chaosLab) {
@@ -2246,6 +2196,9 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
       // Auto-remove effect after duration
       Future.delayed(Duration(milliseconds: (duration * 1000).toInt()), () {
+        if (_levelSession != capturedSession) {
+          return; // Level changed — bail out
+        }
         // Clear active event HUD
         activeEventLabel.value = null;
         activeEventProgress.value = 0.0;

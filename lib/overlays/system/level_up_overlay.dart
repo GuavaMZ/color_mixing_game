@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:color_mixing_deductive/color_mixer_game.dart';
 import 'package:color_mixing_deductive/core/xp_manager.dart';
 import 'package:color_mixing_deductive/helpers/audio_manager.dart';
+import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 
 /// Full-screen animated overlay displayed when the player levels up.
 ///
@@ -188,7 +190,7 @@ class _LevelUpOverlayState extends State<LevelUpOverlay>
                     opacity: _bgFade,
                     child: Center(
                       child: Text(
-                        'Tap anywhere to continue',
+                        AppStrings.tapToContinue.getString(context),
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.4),
                           fontSize: 12,
@@ -243,7 +245,9 @@ class _LevelUpOverlayState extends State<LevelUpOverlay>
           children: [
             // ── Label ───────────────────────────────────────────────────────
             Text(
-              isMilestone ? '⭐ MILESTONE UNLOCKED ⭐' : 'LEVEL UP!',
+              isMilestone
+                  ? AppStrings.milestoneUnlocked.getString(context)
+                  : AppStrings.levelUp.getString(context),
               style: TextStyle(
                 color: accentColor,
                 fontSize: 11,
@@ -292,7 +296,7 @@ class _LevelUpOverlayState extends State<LevelUpOverlay>
             Text(xp.rankEmoji, style: const TextStyle(fontSize: 28)),
             const SizedBox(height: 4),
             Text(
-              xp.rankTitle,
+              xp.rankTitleKey.getString(context),
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 22,
@@ -309,7 +313,7 @@ class _LevelUpOverlayState extends State<LevelUpOverlay>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Level ${widget.newLevel}',
+                      '${AppStrings.levelLabel.getString(context)} ${widget.newLevel}',
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.5),
                         fontSize: 11,
@@ -317,7 +321,7 @@ class _LevelUpOverlayState extends State<LevelUpOverlay>
                       ),
                     ),
                     Text(
-                      'Level ${widget.newLevel + 1}',
+                      '${AppStrings.levelLabel.getString(context)} ${widget.newLevel + 1}',
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.5),
                         fontSize: 11,
@@ -377,7 +381,9 @@ class _LevelUpOverlayState extends State<LevelUpOverlay>
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      '+${widget.coinsBonus} Coins Bonus!',
+                      AppStrings.coinsBonusAtLevelUp
+                          .getString(context)
+                          .replaceFirst('%s', '${widget.coinsBonus}'),
                       style: const TextStyle(
                         color: Color(0xFFFFD700),
                         fontSize: 16,

@@ -107,6 +107,48 @@ class AppTheme {
     );
   }
 
+  static BoxDecoration premiumGlassDecoration({
+    double borderRadius = 24,
+    Color? borderColor,
+    Color? glowColor,
+    bool hasGlow = false,
+  }) {
+    return BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          Colors.white.withValues(alpha: 0.15),
+          Colors.white.withValues(alpha: 0.05),
+        ],
+      ),
+      borderRadius: BorderRadius.circular(borderRadius),
+      border: Border.all(
+        color: borderColor ?? Colors.white.withValues(alpha: 0.2),
+        width: 1.5,
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.4),
+          blurRadius: 12,
+          offset: const Offset(0, 6),
+        ),
+        if (hasGlow)
+          BoxShadow(
+            color: (glowColor ?? neonCyan).withValues(alpha: 0.3),
+            blurRadius: 20,
+            spreadRadius: 2,
+          ),
+        // Inner rim light
+        BoxShadow(
+          color: Colors.white.withValues(alpha: 0.1),
+          blurRadius: 0,
+          spreadRadius: -1,
+        ),
+      ],
+    );
+  }
+
   static Widget primaryButton({
     required BuildContext context,
     required String text,

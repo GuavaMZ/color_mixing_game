@@ -6,6 +6,7 @@ import 'package:color_mixing_deductive/components/ui/animated_card.dart'; // Ani
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import '../../../color_mixer_game.dart';
+import '../../../core/ad_manager.dart';
 import '../../core/lives_manager.dart';
 
 class PauseMenuOverlay extends StatefulWidget {
@@ -61,12 +62,21 @@ class _PauseMenuOverlayState extends State<PauseMenuOverlay>
   }
 
   void _quit() {
-    AudioManager().playButton();
-    if (widget.game.currentMode != GameMode.colorEcho &&
-        widget.game.currentMode != GameMode.chaosLab) {
-      LivesManager().consumeLife();
+    void proceedQuit() {
+      AudioManager().playButton();
+      if (widget.game.currentMode != GameMode.colorEcho &&
+          widget.game.currentMode != GameMode.chaosLab) {
+        LivesManager().consumeLife();
+      }
+      widget.game.returnToMainMenu();
     }
-    widget.game.returnToMainMenu();
+
+    AdManager().recordLoss();
+    if (AdManager().shouldShowInterstitial()) {
+      AdManager().showInterstitialAd(onAdDismissed: proceedQuit);
+    } else {
+      proceedQuit();
+    }
   }
 
   void _giveUp() {
@@ -78,19 +88,28 @@ class _PauseMenuOverlayState extends State<PauseMenuOverlay>
       return;
     }
 
-    // Confirm Give Up -> Exit to Map
-    _audio.playButton();
-    if (widget.game.currentMode != GameMode.colorEcho &&
-        widget.game.currentMode != GameMode.chaosLab) {
-      LivesManager().consumeLife();
+    void proceedGiveUp() {
+      // Confirm Give Up -> Exit to Map
+      _audio.playButton();
+      if (widget.game.currentMode != GameMode.colorEcho &&
+          widget.game.currentMode != GameMode.chaosLab) {
+        LivesManager().consumeLife();
+      }
+      final bool isEcho = widget.game.currentMode == GameMode.colorEcho;
+      widget.game.currentMode = GameMode.none; // Stop timer
+      widget.game.overlays.remove('PauseMenu');
+      if (isEcho) {
+        widget.game.returnToMainMenu();
+      } else {
+        widget.game.navigateToPage('LevelMap', isReverse: true);
+      }
     }
-    final bool isEcho = widget.game.currentMode == GameMode.colorEcho;
-    widget.game.currentMode = GameMode.none; // Stop timer
-    widget.game.overlays.remove('PauseMenu');
-    if (isEcho) {
-      widget.game.returnToMainMenu();
+
+    AdManager().recordLoss();
+    if (AdManager().shouldShowInterstitial()) {
+      AdManager().showInterstitialAd(onAdDismissed: proceedGiveUp);
     } else {
-      widget.game.navigateToPage('LevelMap', isReverse: true);
+      proceedGiveUp();
     }
   }
 

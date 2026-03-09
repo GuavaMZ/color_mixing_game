@@ -5,17 +5,17 @@ import 'package:color_mixing_deductive/helpers/tournament_manager.dart';
 
 class TournamentOverlay extends StatefulWidget {
   final ColorMixerGame game;
-  const TournamentOverlay({Key? key, required this.game}) : super(key: key);
+  const TournamentOverlay({super.key, required this.game});
 
   @override
-  _TournamentOverlayState createState() => _TournamentOverlayState();
+  State<TournamentOverlay> createState() => _TournamentOverlayState();
 }
 
 class _TournamentOverlayState extends State<TournamentOverlay> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.black.withOpacity(0.8),
+      color: Colors.black.withValues(alpha: 0.8),
       child: Center(
         child: Container(
           width: 320,

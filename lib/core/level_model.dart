@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class LevelModel {
   final int id;
+  final int phase; // Which phase this level belongs to (1-5)
   final int maxDrops;
   final double difficultyFactor; // 0 to 1 (determines target color complexity)
   final List<Color> availableColors;
@@ -13,6 +14,7 @@ class LevelModel {
 
   LevelModel({
     required this.id,
+    required this.phase,
     required this.maxDrops,
     required this.difficultyFactor,
     required this.availableColors,

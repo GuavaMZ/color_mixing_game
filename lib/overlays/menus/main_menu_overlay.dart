@@ -106,7 +106,9 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
           ),
 
           // Starfield Effect
-          const StarField(starCount: 80, color: Colors.white),
+          const RepaintBoundary(
+            child: StarField(starCount: 80, color: Colors.white),
+          ),
 
           // Floating Bubbles (Legacy but enhanced)
           ...List.generate(6, (index) => _FloatingBubble(index: index)),
@@ -239,12 +241,13 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                 onTap: () => _navTo('CardCollection'),
                 delay: 250,
               ),
-              _buildUtilButton(
-                icon: Icons.workspace_premium_rounded,
-                tooltip: AppStrings.tournamentTitle.getString(context),
-                onTap: () => _navTo('Tournament'),
-                delay: 300,
-              ),
+              // Temporarily hidden as requested
+              // _buildUtilButton(
+              //   icon: Icons.workspace_premium_rounded,
+              //   tooltip: AppStrings.tournamentTitle.getString(context),
+              //   onTap: () => _navTo('Tournament'),
+              //   delay: 300,
+              // ),
               _buildUtilButton(
                 icon: Icons.science_outlined,
                 tooltip: AppStrings.labUpgradeTitle.getString(context),
@@ -428,82 +431,91 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
     return AnimatedBuilder(
       animation: Listenable.merge([_logoController, _glowController]),
       builder: (context, child) {
-        return Transform.scale(
-          scale: _logoScale.value,
-          child: Column(
-            children: [
-              Container(
-                padding: EdgeInsets.all(ResponsiveHelper.spacing(context, 32)),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      AppTheme.neonCyan.withValues(
-                        alpha: _glowPulse.value * 0.5,
-                      ),
-                      Colors.transparent,
-                    ],
+        return RepaintBoundary(
+          child: Transform.scale(
+            scale: _logoScale.value,
+            child: Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(
+                    ResponsiveHelper.spacing(context, 32),
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppTheme.neonMagenta.withValues(
-                        alpha: _glowPulse.value * 0.3,
-                      ),
-                      blurRadius: 50,
-                      spreadRadius: 10,
-                    ),
-                  ],
-                ),
-                child: Semantics(
-                  label: AppStrings.appTitle.getString(context),
-                  child: ExcludeSemantics(
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.science_rounded,
-                          size: ResponsiveHelper.responsive(
-                            context,
-                            mobile: 56,
-                            tablet: 64,
-                            desktop: 72,
-                          ),
-                          color: Colors.white.withValues(alpha: 0.9),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        AppTheme.neonCyan.withValues(
+                          alpha: _glowPulse.value * 0.5,
                         ),
-                        const SizedBox(height: 16),
-                        Text(
-                          AppStrings.appTitle.getString(context).toUpperCase(),
-                          textAlign: TextAlign.center,
-                          semanticsLabel: AppStrings.appTitle.getString(
-                            context,
-                          ),
-                          style: AppTheme.heading1(context).copyWith(
-                            fontSize: ResponsiveHelper.fontSize(
-                              context,
-                              ResponsiveHelper.responsive(
-                                context,
-                                mobile: 32,
-                                tablet: 36,
-                                desktop: 42,
-                              ),
-                            ),
-                            letterSpacing: 4,
-                            shadows: [
-                              Shadow(color: AppTheme.neonCyan, blurRadius: 20),
-                              Shadow(
-                                // Holographic edge
-                                color: Colors.white,
-                                offset: const Offset(-2, -2),
-                                blurRadius: 5,
-                              ),
-                            ],
-                          ),
-                        ),
+                        Colors.transparent,
                       ],
                     ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppTheme.neonMagenta.withValues(
+                          alpha: _glowPulse.value * 0.3,
+                        ),
+                        blurRadius: 50,
+                        spreadRadius: 10,
+                      ),
+                    ],
+                  ),
+                  child: Semantics(
+                    label: AppStrings.appTitle.getString(context),
+                    child: ExcludeSemantics(
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.science_rounded,
+                            size: ResponsiveHelper.responsive(
+                              context,
+                              mobile: 56,
+                              tablet: 64,
+                              desktop: 72,
+                            ),
+                            color: Colors.white.withValues(alpha: 0.9),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            AppStrings.appTitle
+                                .getString(context)
+                                .toUpperCase(),
+                            textAlign: TextAlign.center,
+                            semanticsLabel: AppStrings.appTitle.getString(
+                              context,
+                            ),
+                            style: AppTheme.heading1(context).copyWith(
+                              fontSize: ResponsiveHelper.fontSize(
+                                context,
+                                ResponsiveHelper.responsive(
+                                  context,
+                                  mobile: 32,
+                                  tablet: 36,
+                                  desktop: 42,
+                                ),
+                              ),
+                              letterSpacing: 4,
+                              shadows: [
+                                Shadow(
+                                  color: AppTheme.neonCyan,
+                                  blurRadius: 20,
+                                ),
+                                Shadow(
+                                  // Holographic edge
+                                  color: Colors.white,
+                                  offset: const Offset(-2, -2),
+                                  blurRadius: 5,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
@@ -520,7 +532,7 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
           gradient: AppTheme.primaryGradient,
           onTap: () {
             AudioManager().playButton();
-            widget.game.selectModeAndStart(GameMode.classic);
+            widget.game.showPhaseSelect();
           },
           delay: 0,
         ),
@@ -1009,18 +1021,20 @@ class _FloatingBubbleState extends State<_FloatingBubble>
   @override
   Widget build(BuildContext context) {
     final size = 50.0 + _random.nextDouble() * 100;
-    return SlideTransition(
-      position: _animation,
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: RadialGradient(
-            colors: [
-              Colors.white.withValues(alpha: 0.012),
-              Colors.white.withValues(alpha: 0.0),
-            ],
+    return RepaintBoundary(
+      child: SlideTransition(
+        position: _animation,
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: RadialGradient(
+              colors: [
+                Colors.white.withValues(alpha: 0.012),
+                Colors.white.withValues(alpha: 0.0),
+              ],
+            ),
           ),
         ),
       ),

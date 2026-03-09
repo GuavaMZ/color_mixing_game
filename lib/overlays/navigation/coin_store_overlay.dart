@@ -58,15 +58,19 @@ class _CoinStoreOverlayState extends State<CoinStoreOverlay>
     );
   }
 
-  void _onPurchaseResult(PurchaseResult result) {
+  void _onPurchaseResult(PurchaseResult result) async {
     if (!mounted) return;
     setState(() => _isProcessing = false);
 
     if (result.success) {
       // Award coins to game
-      final int newBalance = widget.game.totalCoins.value + result.coins;
-      widget.game.totalCoins.value = newBalance;
-      SaveManager.saveTotalCoins(newBalance);
+      bool success = await SaveManager.addCoins(
+        result.coins,
+        reason: 'IAP Purchase',
+      );
+      if (success) {
+        widget.game.totalCoins.value = await SaveManager.loadTotalCoins();
+      }
 
       AudioManager().playWin();
       // Find the bundle that was just purchased

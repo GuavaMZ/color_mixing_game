@@ -2,186 +2,15 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import '../../../color_mixer_game.dart';
+import '../../../core/achievement_engine.dart';
 import '../../helpers/string_manager.dart';
 import '../../helpers/theme_constants.dart';
 import '../../helpers/audio_manager.dart';
 import '../../components/ui/animated_card.dart';
 import '../../components/ui/enhanced_button.dart';
 
-class AchievementData {
-  final String id;
-  final String title;
-  final String description;
-  final IconData icon;
-  final Color color;
-
-  const AchievementData({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.icon,
-    this.color = AppTheme.neonCyan,
-  });
-}
-
 class AchievementsOverlay extends StatefulWidget {
   final ColorMixerGame game;
-
-  static const List<AchievementData> allAchievements = [
-    AchievementData(
-      id: 'mad_chemist',
-      title: AppStrings.achievement1Title,
-      description: AppStrings.achievement1Desc,
-      icon: Icons.science_rounded,
-    ),
-    AchievementData(
-      id: 'speed_runner',
-      title: AppStrings.achievement2Title,
-      description: AppStrings.achievement2Desc,
-      icon: Icons.bolt_rounded,
-      color: Colors.cyanAccent,
-    ),
-    AchievementData(
-      id: 'star_collector',
-      title: AppStrings.achievement3Title,
-      description: AppStrings.achievement3Desc,
-      icon: Icons.auto_awesome_rounded,
-      color: Colors.amber,
-    ),
-    AchievementData(
-      id: 'perfectionist',
-      title: AppStrings.achievement4Title,
-      description: AppStrings.achievement4Desc,
-      icon: Icons.emoji_events_rounded,
-      color: Colors.orangeAccent,
-    ),
-    AchievementData(
-      id: 'veteran',
-      title: AppStrings.achievement5Title,
-      description: AppStrings.achievement5Desc,
-      icon: Icons.military_tech_rounded,
-      color: Colors.purpleAccent,
-    ),
-    AchievementData(
-      id: 'combo_king',
-      title: AppStrings.achievement6Title,
-      description: AppStrings.achievement6Desc,
-      icon: Icons.workspace_premium_rounded,
-      color: Colors.orange,
-    ),
-    AchievementData(
-      id: 'lab_survivor',
-      title: AppStrings.achievement7Title,
-      description: AppStrings.achievement7Desc,
-      icon: Icons.science_rounded,
-      color: Colors.lightGreenAccent,
-    ),
-    AchievementData(
-      id: 'spectral_sync',
-      title: AppStrings.achievement8Title,
-      description: AppStrings.achievement8Desc,
-      icon: Icons.sync_rounded,
-      color: Colors.blueAccent,
-    ),
-    AchievementData(
-      id: 'master_chemist',
-      title: AppStrings.achievement9Title,
-      description: AppStrings.achievement9Desc,
-      icon: Icons.auto_awesome_rounded,
-      color: Colors.yellowAccent,
-    ),
-    AchievementData(
-      id: 'blind_master',
-      title: AppStrings.achievement10Title,
-      description: AppStrings.achievement10Desc,
-      icon: Icons.visibility_off_rounded,
-      color: Colors.grey,
-    ),
-    AchievementData(
-      id: 'shopaholic',
-      title: AppStrings.achievement11Title,
-      description: AppStrings.achievement11Desc,
-      icon: Icons.shopping_bag_rounded,
-      color: Colors.pinkAccent,
-    ),
-    AchievementData(
-      id: 'stability_expert',
-      title: AppStrings.achievement12Title,
-      description: AppStrings.achievement12Desc,
-      icon: Icons.vertical_align_center_rounded,
-      color: Colors.tealAccent,
-    ),
-    AchievementData(
-      id: 'color_collector',
-      title: AppStrings.achievement13Title,
-      description: AppStrings.achievement13Desc,
-      icon: Icons.palette_rounded,
-      color: Colors.deepPurpleAccent,
-    ),
-    AchievementData(
-      id: 'wealthy_scientist',
-      title: AppStrings.achievement14Title,
-      description: AppStrings.achievement14Desc,
-      icon: Icons.account_balance_wallet_rounded,
-      color: Colors.amberAccent,
-    ),
-    AchievementData(
-      id: 'big_spender',
-      title: AppStrings.achievement15Title,
-      description: AppStrings.achievement15Desc,
-      icon: Icons.shopping_cart_rounded,
-      color: Colors.redAccent,
-    ),
-    AchievementData(
-      id: 'daily_scholar',
-      title: AppStrings.achievement16Title,
-      description: AppStrings.achievement16Desc,
-      icon: Icons.calendar_today_rounded,
-      color: Colors.blueAccent,
-    ),
-    AchievementData(
-      id: 'century_club',
-      title: AppStrings.achievement17Title,
-      description: AppStrings.achievement17Desc,
-      icon: Icons.workspace_premium_rounded,
-      color: Colors.orangeAccent,
-    ),
-    AchievementData(
-      id: 'chaos_master',
-      title: AppStrings.achievement18Title,
-      description: AppStrings.achievement18Desc,
-      icon: Icons.warning_amber_rounded,
-      color: Colors.deepOrangeAccent,
-    ),
-    AchievementData(
-      id: 'echo_maestro',
-      title: AppStrings.achievement19Title,
-      description: AppStrings.achievement19Desc,
-      icon: Icons.record_voice_over_rounded,
-      color: Colors.indigoAccent,
-    ),
-    AchievementData(
-      id: 'helper_hoarder',
-      title: AppStrings.achievement20Title,
-      description: AppStrings.achievement20Desc,
-      icon: Icons.inventory_2_rounded,
-      color: Colors.greenAccent,
-    ),
-    AchievementData(
-      id: 'zero_waste',
-      title: AppStrings.achievement21Title,
-      description: AppStrings.achievement21Desc,
-      icon: Icons.eco_rounded,
-      color: Colors.lightGreenAccent,
-    ),
-    AchievementData(
-      id: 'legendary_status',
-      title: AppStrings.achievement22Title,
-      description: AppStrings.achievement22Desc,
-      icon: Icons.stars_rounded,
-      color: Colors.yellowAccent,
-    ),
-  ];
 
   const AchievementsOverlay({super.key, required this.game});
 
@@ -251,11 +80,12 @@ class _AchievementsOverlayState extends State<AchievementsOverlay>
                       Expanded(
                         child: ListView.builder(
                           physics: const BouncingScrollPhysics(),
-                          itemCount: AchievementsOverlay.allAchievements.length,
+                          itemCount: AchievementCatalog.all.length,
                           itemBuilder: (context, index) {
-                            final achievement =
-                                AchievementsOverlay.allAchievements[index];
-                            final isUnlocked = widget.game.unlockedAchievements
+                            final achievement = AchievementCatalog.all[index];
+                            final isUnlocked = AchievementEngine
+                                .instance
+                                .unlockedIds
                                 .contains(achievement.id);
                             return _AchievementCard(
                               achievement: achievement,
@@ -289,8 +119,8 @@ class _AchievementsOverlayState extends State<AchievementsOverlay>
   }
 
   Widget _buildHeader(BuildContext context) {
-    final int unlockedCount = widget.game.unlockedAchievements.length;
-    final int totalCount = AchievementsOverlay.allAchievements.length;
+    final int unlockedCount = AchievementEngine.instance.unlockedIds.length;
+    final int totalCount = AchievementCatalog.all.length;
 
     return Column(
       children: [
@@ -368,7 +198,7 @@ class _AchievementsOverlayState extends State<AchievementsOverlay>
 }
 
 class _AchievementCard extends StatefulWidget {
-  final AchievementData achievement;
+  final AchievementDef achievement;
   final bool isUnlocked;
   final int delay;
 
@@ -435,7 +265,7 @@ class _AchievementCardState extends State<_AchievementCard>
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: widget.isUnlocked
-                ? widget.achievement.color.withValues(alpha: 0.3)
+                ? widget.achievement.tier.color.withValues(alpha: 0.3)
                 : Colors.white12,
           ),
         ),
@@ -446,17 +276,17 @@ class _AchievementCardState extends State<_AchievementCard>
               alignment: Alignment.center,
               children: [
                 if (widget.isUnlocked)
-                  _BadgeGlow(color: widget.achievement.color),
+                  _BadgeGlow(color: widget.achievement.tier.color),
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: widget.isUnlocked
-                        ? widget.achievement.color.withValues(alpha: 0.15)
+                        ? widget.achievement.tier.color.withValues(alpha: 0.15)
                         : Colors.black.withValues(alpha: 0.4),
                     border: Border.all(
                       color: widget.isUnlocked
-                          ? widget.achievement.color
+                          ? widget.achievement.tier.color
                           : Colors.white12,
                       width: 2.5,
                     ),
