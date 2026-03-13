@@ -1688,14 +1688,11 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     isTimeUp = false;
     timeLeft = maxTime;
 
-    maxDrops = drops;
-    totalDrops.value = 0;
-    rDrops = 0;
-    gDrops = 0;
-    bDrops = 0;
-    whiteDrops = 0;
-    blackDrops = 0;
+    maxDrops += drops;
+    dropsLimitReached.value = false;
     _cardDroppedThisLevel = false;
+
+    _updateGameState();
 
     // Restore the correct HUD for the current mode
     if (currentMode == GameMode.colorEcho) {
