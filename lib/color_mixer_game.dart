@@ -53,6 +53,23 @@ import 'package:flutter/material.dart';
 
 enum GameMode { classic, timeAttack, colorEcho, chaosLab, tournament, none }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// CHAOS LAB CONSTANTS
+// ═══════════════════════════════════════════════════════════════════════════
+// Base stability decay per second (0.3% of stability lost each second)
+const double _chaosBaseDecayRate = 0.003;
+// Additional decay per round completed (0.1% per round)
+const double _chaosRoundDecayFactor = 0.001;
+// Instability multiplier - decay increases as stability drops (0.8% per 1% lost)
+const double _chaosInstabilityMultiplier = 0.008;
+// Phase thresholds
+const double _chaosPhaseStableThreshold = 0.7;   // Above 70% = STABLE
+const double _chaosPhaseCautionThreshold = 0.4;  // 40-70% = CAUTION
+// Event timing
+const double _chaosEventMinInterval = 5.0;       // Minimum seconds between events
+const double _chaosEventMaxInterval = 20.0;      // Maximum seconds between events
+// ═══════════════════════════════════════════════════════════════════════════
+
 class ColorMixerGame extends FlameGame with ChangeNotifier {
   late Beaker beaker;
   late Color targetColor;
@@ -453,9 +470,10 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
       // Chaos Stability Decay - Accelerates as stability drops
       if (currentMode == GameMode.chaosLab) {
-        // Dynamic decay: faster as stability decreases + round scaling
-        double decayRate =
-            0.003 + chaosRound * 0.001 + (1.0 - chaosStability) * 0.008;
+        // Dynamic decay: base + round scaling + instability multiplier
+        double decayRate = _chaosBaseDecayRate +
+            (chaosRound * _chaosRoundDecayFactor) +
+            ((1.0 - chaosStability) * _chaosInstabilityMultiplier);
         chaosStability -= decayRate * dt;
         if (chaosStability < 0) chaosStability = 0;
 
@@ -463,10 +481,10 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
           _handleGameOver();
         }
 
-        // Update chaos phase based on stability
-        if (chaosStability > 0.7) {
+        // Update chaos phase based on stability thresholds
+        if (chaosStability > _chaosPhaseStableThreshold) {
           chaosPhase.value = 'STABLE';
-        } else if (chaosStability > 0.4) {
+        } else if (chaosStability > _chaosPhaseCautionThreshold) {
           chaosPhase.value = 'CAUTION';
         } else {
           chaosPhase.value = 'CRITICAL';
@@ -559,7 +577,10 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
         if (_eventTimer <= 0) {
           _triggerChaosMeltdown();
           // Stability based frequency: more events as stability drops
-          _eventTimer = 5.0 + (chaosStability * 15.0);
+          // Range: 5-20 seconds based on stability (lower stability = more frequent)
+          _eventTimer = _chaosEventMinInterval +
+              (chaosStability *
+                  (_chaosEventMaxInterval - _chaosEventMinInterval));
         }
       } else if (randomEventsEnabled &&
           (currentMode == GameMode.classic ||

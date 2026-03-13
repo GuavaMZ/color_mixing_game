@@ -49,8 +49,9 @@ class RuntimeIntegrityChecker {
   /// Check if running on an emulator/simulator
   Future<bool> _checkEmulator() async {
     try {
+      final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+
       if (Platform.isAndroid) {
-        final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
         final AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
 
         final isEmulator =
@@ -62,7 +63,23 @@ class RuntimeIntegrityChecker {
             androidInfo.product.contains('sdk_gphone');
 
         return isEmulator;
+      } else if (Platform.isIOS) {
+        final IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+
+        // iOS simulator detection:
+        // - Simulator runs on macOS and reports model as "x86_64" or "arm64" (M1 Macs)
+        // - Physical devices report actual device model (iPhone14,2, etc.)
+        // - isPhysicalDevice returns false on simulator
+        final isSimulator =
+            !iosInfo.isPhysicalDevice ||
+            iosInfo.model == 'x86_64' ||
+            iosInfo.model == 'arm64' ||
+            iosInfo.utsname.machine == 'x86_64' ||
+            iosInfo.utsname.machine == 'arm64';
+
+        return isSimulator;
       }
+
       return false;
     } catch (e) {
       return false;
