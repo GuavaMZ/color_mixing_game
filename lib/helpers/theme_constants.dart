@@ -394,11 +394,9 @@ class ResponsiveHelper {
       scale = 0.85; // Small phones
     } else if (width < 400) {
       scale = 0.92; // Budget phones
-    } else if (width >= 600 && width < 900) {
-      scale = 1.1; // Tablets
-    } else if (width >= 900) {
-      scale = 1.2; // Large tablets
     }
+    // No upscaling for tablets/large screens — layouts handle spacing via
+    // Expanded / SizedBox and the textScaler is locked to noScaling.
 
     return baseSize * scale;
   }

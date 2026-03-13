@@ -12,6 +12,8 @@ import '../../components/ui/responsive_components.dart';
 import '../../components/ui/animated_card.dart';
 import '../../components/ui/coins_widget.dart';
 import '../../helpers/daily_login_manager.dart';
+import '../../core/version_check_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MainMenuOverlay extends StatefulWidget {
   final ColorMixerGame game;
@@ -63,7 +65,79 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
     // Check for Daily Login
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkDailyLogin();
+      _checkVersion();
     });
+  }
+
+  Future<void> _checkVersion() async {
+    final status = await VersionCheckService.instance.checkUpdate();
+    if (mounted && status != UpdateStatus.upToDate) {
+      _showUpdateDialog(status == UpdateStatus.mandatoryUpdate);
+    }
+  }
+
+  void _showUpdateDialog(bool isMandatory) {
+    showDialog(
+      context: context,
+      barrierDismissible: !isMandatory,
+      builder: (context) => PopScope(
+        canPop: !isMandatory,
+        child: AlertDialog(
+          backgroundColor: AppTheme.primaryDark,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(
+              color: isMandatory
+                  ? Colors.red.withValues(alpha: 0.5)
+                  : AppTheme.neonCyan.withValues(alpha: 0.5),
+              width: 2,
+            ),
+          ),
+          title: Row(
+            children: [
+              Icon(
+                isMandatory ? Icons.system_update_alt : Icons.update,
+                color: isMandatory ? Colors.red : AppTheme.neonCyan,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                AppStrings.updateAvailable.getString(context),
+                style: const TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
+          content: Text(
+            isMandatory
+                ? "A critical update is required to continue playing. Please update to the latest version."
+                : AppStrings.updateDesc.getString(context),
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.8)),
+          ),
+          actions: [
+            if (!isMandatory)
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  AppStrings.later.getString(context),
+                  style: const TextStyle(color: Colors.white54),
+                ),
+              ),
+            ElevatedButton(
+              onPressed: () async {
+                final url = Uri.parse(GlobalConstants.playStoreUrl);
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url, mode: LaunchMode.externalApplication);
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isMandatory ? Colors.red : AppTheme.neonCyan,
+                foregroundColor: Colors.black,
+              ),
+              child: Text(AppStrings.download.getString(context)),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _checkDailyLogin() async {

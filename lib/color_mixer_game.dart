@@ -46,6 +46,7 @@ import 'package:color_mixing_deductive/helpers/haptic_manager.dart';
 import 'package:color_mixing_deductive/helpers/statistics_manager.dart';
 import 'package:color_mixing_deductive/helpers/tournament_manager.dart';
 import 'dart:math';
+import 'dart:async';
 import 'package:flame/game.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
@@ -154,6 +155,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
 
   DateTime _levelStartTime = DateTime.now();
   double _winTimer = -1.0;
+  Completer<void>? _winAnimationCompleter;
 
   // Combo System
   final ValueNotifier<int> comboCount = ValueNotifier<int>(0);
@@ -425,7 +427,10 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       _winTimer -= dt;
       if (_winTimer <= 0) {
         _winTimer = -1.0;
-        _executeWinTransition();
+        if (_winAnimationCompleter != null &&
+            !_winAnimationCompleter!.isCompleted) {
+          _winAnimationCompleter!.complete();
+        }
       }
     }
 
@@ -670,6 +675,9 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   Future<void> showWinEffect() async {
     if (overlays.isActive('WinMenu')) return;
 
+    _winAnimationCompleter = Completer<void>();
+    _winTimer = 1.5; // Start the visual delay immediately
+
     disposeRandomEvents();
 
     _audio.playWin();
@@ -871,7 +879,14 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       }
     }
 
-    _winTimer = 1.5;
+    // Wait for the visual timer to complete if it hasn't already
+    if (_winTimer > 0 &&
+        _winAnimationCompleter != null &&
+        !_winAnimationCompleter!.isCompleted) {
+      await _winAnimationCompleter!.future;
+    }
+
+    _executeWinTransition();
   }
 
   Future<void> _executeWinTransition() async {

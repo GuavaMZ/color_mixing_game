@@ -211,6 +211,23 @@ class AdManager {
     VoidCallback? onAdFailed,
   }) {
     if (_isRewardedAdReady && _rewardedAd != null) {
+      // Attach dismiss/fail callbacks BEFORE showing so onAdClosed always fires.
+      _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
+        onAdDismissedFullScreenContent: (ad) {
+          ad.dispose();
+          onAdClosed?.call();
+          _isRewardedAdReady = false;
+          loadRewardedAd();
+        },
+        onAdFailedToShowFullScreenContent: (ad, err) {
+          debugPrint('Rewarded Ad failed to show: $err');
+          ad.dispose();
+          onAdClosed?.call();
+          _isRewardedAdReady = false;
+          loadRewardedAd();
+          onAdFailed?.call();
+        },
+      );
       onAdOpened?.call();
       _rewardedAd!.show(onUserEarnedReward: onUserEarnedReward);
       _rewardedAd = null;
