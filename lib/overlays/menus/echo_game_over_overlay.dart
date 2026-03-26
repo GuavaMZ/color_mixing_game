@@ -147,7 +147,7 @@ class _EchoGameOverOverlayState extends State<EchoGameOverOverlay>
                               const SizedBox(height: 12),
                               _buildDiagnosticRow(
                                 context,
-                                "SPECTRAL DRIFT",
+                                AppStrings.spectralDrift.getString(context),
                                 "+${drift.toStringAsFixed(1)} ΔE",
                                 AppTheme.neonMagenta,
                               ),
@@ -296,11 +296,11 @@ class _EchoGameOverOverlayState extends State<EchoGameOverOverlay>
   String _getSurvivalTip(BuildContext context) {
     // Basic logic to pick a tip for Echo mode
     final tips = [
-      "Use small droplets of Red/Green/Blue for fine tuning.",
-      "Sync loss occurs when you run out of drops or time.",
-      "The wavelength indicator helps identify the target's spectral region.",
-      "Watch the 'ALMOST' pulse; it indicates you are 80%+ synced.",
-      "White and Black drops can shift luminance without changing hue significantly.",
+      AppStrings.echoTip1.getString(context),
+      AppStrings.echoTip2.getString(context),
+      AppStrings.echoTip3.getString(context),
+      AppStrings.echoTip4.getString(context),
+      AppStrings.echoTip5.getString(context),
     ];
     return tips[widget.game.echoRound % tips.length];
   }

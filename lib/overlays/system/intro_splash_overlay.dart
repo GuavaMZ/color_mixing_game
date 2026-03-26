@@ -8,6 +8,7 @@ import 'package:color_mixing_deductive/color_mixer_game.dart';
 import 'package:shorebird_code_push/shorebird_code_push.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:color_mixing_deductive/core/save_manager.dart';
+import 'package:restart_app/restart_app.dart';
 
 class IntroSplashOverlay extends StatefulWidget {
   final ColorMixerGame game;
@@ -135,16 +136,14 @@ class _IntroSplashOverlayState extends State<IntroSplashOverlay>
       builder: (context) => PopScope(
         canPop: false,
         child: AlertDialog(
-          backgroundColor: AppTheme.primaryDark.withValues(alpha: 0.95),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
-            side: const BorderSide(color: AppTheme.neonCyan, width: 2),
-          ),
+          backgroundColor: const Color(0xFF1E2A4A),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           title: Text(
             AppStrings.updateReady.getString(context),
-            style: AppTheme.heading1(
-              context,
-            ).copyWith(color: Colors.white, fontSize: 24),
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
             textAlign: TextAlign.center,
           ),
           content: Column(
@@ -178,10 +177,10 @@ class _IntroSplashOverlayState extends State<IntroSplashOverlay>
                 ),
               ),
               onPressed: () {
-                SystemNavigator.pop();
+                Restart.restartApp();
               },
               child: Text(
-                AppStrings.quit.getString(context),
+                AppStrings.restart.getString(context),
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),

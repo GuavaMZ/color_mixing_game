@@ -75,6 +75,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   late Color targetColor;
   bool _hasWon = false;
   bool _hasLost = false;
+  bool _isTransitioning = false;
   int rDrops = 0, gDrops = 0, bDrops = 0;
   int whiteDrops = 0, blackDrops = 0;
   bool isBlindMode = false;
@@ -267,16 +268,21 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     bool isReverse = false,
     VoidCallback? midpointAction,
   }) {
+    if (_isTransitioning) return;
+    _isTransitioning = true;
+
     if (_transitionCallback != null) {
       _transitionCallback!(() {
         if (overlayToRemove.isNotEmpty) overlays.remove(overlayToRemove);
         midpointAction?.call();
         if (overlayToAdd.isNotEmpty) overlays.add(overlayToAdd);
+        _isTransitioning = false;
       }, isReverse: isReverse);
     } else {
       if (overlayToRemove.isNotEmpty) overlays.remove(overlayToRemove);
       midpointAction?.call();
       if (overlayToAdd.isNotEmpty) overlays.add(overlayToAdd);
+      _isTransitioning = false;
     }
   }
 
@@ -605,12 +611,15 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     }
 
     // Throttled win condition check ONLY if color changed
-    if (!_hasWon && beaker.currentColor != _lastBeakerColor) {
+    if (!_hasWon &&
+        !_isTransitioning &&
+        beaker.currentColor != _lastBeakerColor) {
       _winCheckTimer += dt;
       if (_winCheckTimer >= _winCheckInterval) {
         _winCheckTimer = 0.0;
         _lastBeakerColor = beaker.currentColor;
-        if (ColorLogic.checkMatch(beaker.currentColor, targetColor) >= 93.0) {
+        if (ColorLogic.checkMatch(beaker.currentColor, targetColor) >= 93.0 &&
+            _isRecipeIngredientsFulfilled()) {
           _hasWon = true;
           showWinEffect();
         }
@@ -642,7 +651,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     _randomEventOccurredThisLevel = false;
     _earthquakeOffset = Vector2.zero();
 
-    // Restore beaker state
+    // Restore beaker state from current level setting
     beaker.isBlindMode = isBlindMode;
 
     // Reset HUD
@@ -975,17 +984,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     _hasWon = false;
     _hasLost = false;
     overlays.remove('EchoWin');
-    beaker.clearContents();
-    totalDrops.value = 0;
-    matchPercentage.value = 0;
-    rDrops = 0;
-    gDrops = 0;
-    bDrops = 0;
-    whiteDrops = 0;
-    blackDrops = 0;
-    dropsLimitReached.value = false;
-    dropHistory.clear();
-    _previousMatchPct = 0.0;
+    _resetGameplayVariables();
     startLevel();
     notifyListeners();
   }
@@ -995,17 +994,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     _hasWon = false;
     _hasLost = false;
     overlays.remove('ChaosWin');
-    beaker.clearContents();
-    totalDrops.value = 0;
-    matchPercentage.value = 0;
-    rDrops = 0;
-    gDrops = 0;
-    bDrops = 0;
-    whiteDrops = 0;
-    blackDrops = 0;
-    dropsLimitReached.value = false;
-    dropHistory.clear();
-    _previousMatchPct = 0.0;
+    _resetGameplayVariables();
     startLevel();
     notifyListeners();
   }
@@ -1013,6 +1002,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   void resetGame() {
     _hasWon = false;
     _hasLost = false;
+    _resetGameplayVariables();
+
     comboCount.value = 0; // Reset combo on retry
     // Remove overlays if they exist
     overlays.remove('WinMenu');
@@ -1040,18 +1031,23 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       '',
       '',
       midpointAction: () {
-        beaker.clearContents();
-        totalDrops.value = 0;
-        matchPercentage.value = 0;
-        rDrops = 0;
-        gDrops = 0;
-        bDrops = 0;
-        whiteDrops = 0;
-        blackDrops = 0;
-        dropsLimitReached.value = false;
         startLevel();
       },
     );
+  }
+
+  void _resetGameplayVariables() {
+    beaker.clearContents();
+    totalDrops.value = 0;
+    matchPercentage.value = 0;
+    rDrops = 0;
+    gDrops = 0;
+    bDrops = 0;
+    whiteDrops = 0;
+    blackDrops = 0;
+    dropsLimitReached.value = false;
+    dropHistory.clear();
+    _previousMatchPct = 0.0;
   }
 
   void startTournamentMode() {
@@ -1364,7 +1360,9 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     _previousMatchPct = matchPercentage.value;
 
     // Auto-win if 100% match
-    if (matchPercentage.value == 100.0 && !_hasWon) {
+    if (matchPercentage.value == 100.0 &&
+        !_hasWon &&
+        _isRecipeIngredientsFulfilled()) {
       _hasWon = true;
       AdManager().recordWin();
       showWinEffect();
@@ -1380,6 +1378,28 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     } else {
       dropsLimitReached.value = false;
     }
+  }
+
+  bool _isRecipeIngredientsFulfilled() {
+    // Non-level modes don't have a fixed recipe
+    if (currentMode != GameMode.classic && currentMode != GameMode.timeAttack) {
+      return true;
+    }
+
+    final recipe = levelManager.currentLevel.recipe;
+    final rRequired = (recipe['red'] ?? 0) as int;
+    final gRequired = (recipe['green'] ?? 0) as int;
+    final bRequired = (recipe['blue'] ?? 0) as int;
+    final wRequired = (recipe['white'] ?? 0) as int;
+    final kRequired = (recipe['black'] ?? 0) as int;
+
+    if (rRequired > 0 && rDrops == 0) return false;
+    if (gRequired > 0 && gDrops == 0) return false;
+    if (bRequired > 0 && bDrops == 0) return false;
+    if (wRequired > 0 && whiteDrops == 0) return false;
+    if (kRequired > 0 && blackDrops == 0) return false;
+
+    return true;
   }
 
   void resetMixing() {
@@ -1420,13 +1440,18 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   }
 
   void startLevel() {
+    _hasWon = false;
+    _hasLost = false;
+    _dropCooldownTimer = 0.0;
+    dropCooldownProgress.value = 1.0;
+
     _startLevelBgm(); // Start gameplay music
 
     if (currentMode == GameMode.colorEcho) {
       targetColor = ColorLogic.generateRandomHardColor();
       // Progressive difficulty: reduce drops and time each round
       maxDrops = (30 - echoRound).clamp(15, 30);
-      isBlindMode = Random().nextBool(); // 50% chance of blind mode in echo
+      isBlindMode = _random.nextBool(); // 50% chance of blind mode in echo
     } else if (currentMode == GameMode.chaosLab) {
       // Chaos Lab Mode: Unstable, random target colors
       targetColor = ColorLogic.generateRandomHardColor();
@@ -1445,16 +1470,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     }
 
     // Thoroughly reset game state
-    rDrops = 0;
-    gDrops = 0;
-    bDrops = 0;
-    whiteDrops = 0;
-    blackDrops = 0;
-    totalDrops.value = 0;
-    matchPercentage.value = 0;
-    dropsLimitReached.value = false;
-    _hasWon = false;
-    _hasLost = false;
+    _resetGameplayVariables();
+
     isColorBlindEvent = false;
     isDoubleCoinActive = false;
     _evaporationVisualOffset = 0.0;
@@ -1466,6 +1483,9 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     _levelStartTime = DateTime.now();
     currentHint.value = null; // Reset hint
     hasUsedHint = false;
+
+    // Apply isBlindMode to beaker immediately
+    beaker.isBlindMode = isBlindMode;
     _levelSession++; // Invalidate any pending random-event delayed futures
 
     // Reset Chaos State
@@ -1587,6 +1607,10 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
   }
 
   void goToNextLevel() {
+    _hasWon = false;
+    _hasLost = false;
+    _resetGameplayVariables();
+
     if (currentMode == GameMode.colorEcho) {
       transitionTo(
         'WinMenu',
@@ -1610,7 +1634,15 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
         },
       );
     } else {
-      navigateToPage('LevelMap', isReverse: true);
+      // Phase complete — navigate to Level Map with reverse transition
+      transitionTo(
+        'WinMenu',
+        'LevelMap',
+        isReverse: true,
+        midpointAction: () {
+          // Additional phase complete logic could go here
+        },
+      );
     }
     notifyListeners();
   }

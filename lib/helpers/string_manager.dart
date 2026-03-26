@@ -116,6 +116,25 @@ mixin AppStrings {
   static const String hintNeedsWhite = "hint_needs_white";
   static const String hintNeedsBlack = "hint_needs_black";
   static const String hint = "hint";
+  static const String containmentAtLoss = "containment_at_loss";
+  static const String matchAccuracy = "match_accuracy";
+  static const String spectralDrift = "spectral_drift";
+  static const String containmentMeltdown = "containment_meltdown";
+  static const String unknownSystemError = "unknown_system_error";
+
+  // Survival Tips (Chaos)
+  static const String survivalTip1 = "survival_tip_1";
+  static const String survivalTip2 = "survival_tip_2";
+  static const String survivalTip3 = "survival_tip_3";
+  static const String survivalTip4 = "survival_tip_4";
+  static const String survivalTip5 = "survival_tip_5";
+
+  // Echo Tips
+  static const String echoTip1 = "echo_tip_1";
+  static const String echoTip2 = "echo_tip_2";
+  static const String echoTip3 = "echo_tip_3";
+  static const String echoTip4 = "echo_tip_4";
+  static const String echoTip5 = "echo_tip_5";
 
   // Shop
   static const String shopTitle = "shop_title";
@@ -611,6 +630,7 @@ mixin AppStrings {
   static const String downloadingUpdate = "downloading_update";
   static const String updateReady = "update_ready";
   static const String updateReadyDesc = "update_ready_desc";
+  static const String restart = "restart_text";
 
   // Event Labels
   static const String eventGlitch = "event_glitch";
@@ -1043,8 +1063,8 @@ mixin AppStrings {
     checkingForUpdates: 'Checking for updates...',
     downloadingUpdate: 'Downloading update...',
     updateReady: 'Update ready!',
-    updateReadyDesc:
-        'An update has been downloaded. Please restart the game to apply changes.',
+    updateReadyDesc: 'An update has been downloaded. Please restart the game to apply changes.',
+    restart: 'Restart',
 
     // Tutorial
     tutorial: 'Tutorial',
@@ -1225,6 +1245,30 @@ mixin AppStrings {
     signalDiagnostics: 'Signal Diagnostics',
     survivalTip: 'Survival Tip',
     meltdownReport: 'Meltdown Report',
+    containmentAtLoss: 'CONTAINMENT AT LOSS',
+    matchAccuracy: 'MATCH ACCURACY',
+    spectralDrift: 'SPECTRAL DRIFT',
+    containmentMeltdown: 'Containment Meltdown',
+    unknownSystemError: 'Unknown System Error',
+
+    // Survival Tips (Chaos)
+    survivalTip1:
+        "Accurate drops recover stability! Focus on matching the target color.",
+    survivalTip2: "Watch the chaos phases: STABLE -> CAUTION -> CRITICAL.",
+    survivalTip3:
+        "Blackouts, wind, and reflections trigger faster at low stability.",
+    survivalTip4: "Don't panic! Even small adjustments can prevent a meltdown.",
+    survivalTip5:
+        "The reactor frequency (wavelength) gives you a hint about the target color.",
+
+    // Echo Tips
+    echoTip1: "Use small droplets of Red/Green/Blue for fine tuning.",
+    echoTip2: "Sync loss occurs when you run out of drops or time.",
+    echoTip3:
+        "The wavelength indicator helps identify the target's spectral region.",
+    echoTip4: "Watch the 'ALMOST' pulse; it indicates you are 80%+ synced.",
+    echoTip5:
+        "White and Black drops can shift luminance without changing hue significantly.",
     madChemistTitle: 'Mad Chemist',
     madChemistDesc: 'First successful mixture!',
     skipTutorialTitle: 'Skip Tutorial?',
@@ -1777,8 +1821,8 @@ mixin AppStrings {
     checkingForUpdates: 'جاري البحث عن تحديثات...',
     downloadingUpdate: 'جاري تنزيل التحديث...',
     updateReady: 'التحديث جاهز!',
-    updateReadyDesc:
-        'تم تنزيل تحديث. يرجى إعادة تشغيل اللعبة لتطبيق التغييرات.',
+    updateReadyDesc: 'تم تنزيل تحديث. يرجى إعادة تشغيل اللعبة لتطبيق التغييرات.',
+    restart: 'إعادة التشغيل',
 
     // Tutorial
     tutorial: 'التعليمات',
@@ -1930,6 +1974,25 @@ mixin AppStrings {
     signalDiagnostics: 'تشخيص الإشارة',
     survivalTip: 'نصيحة للبقاء',
     meltdownReport: 'تقرير الانصهار',
+    containmentAtLoss: 'الاحتواء عند الفقدان',
+    matchAccuracy: 'دقة المطابقة',
+    spectralDrift: 'الانحراف الطيفي',
+    containmentMeltdown: 'انصهار الاحتواء',
+    unknownSystemError: 'خطأ غير معروف في النظام',
+
+    // Survival Tips (Chaos)
+    survivalTip1: "القطرات الدقيقة تستعيد الاستقرار! ركز على مطابقة لون الهدف.",
+    survivalTip2: "راقب مراحل الفوضى: مستقر -> حذر -> حرج.",
+    survivalTip3: "التعتيم والرياح والانعكاسات تحدث بشكل أسرع عند انخفاض الاستقرار.",
+    survivalTip4: "لا داعي للذعر! حتى التعديلات الصغيرة يمكن أن تمنع الانهيار.",
+    survivalTip5: "تردد المفاعل (الطول الموجي) يعطيك تلميحاً عن لون الهدف.",
+
+    // Echo Tips
+    echoTip1: "استخدم قطرات صغيرة من الأحمر/الأخضر/الأزرق للضبط الدقيق.",
+    echoTip2: "يحدث فقدان المزامنة عند نفاد القطرات أو الوقت.",
+    echoTip3: "يساعد مؤشر الطول الموجي في تحديد المنطقة الطيفية للهدف.",
+    echoTip4: "راقب نبض 'تقريباً'؛ فهو يشير إلى أنك متزامن بنسبة +80%.",
+    echoTip5: "يمكن للقطرات البيضاء والسوداء تغيير السطوع دون تغيير التدرج بشكل كبير.",
     madChemistTitle: 'كيميائي مجنون',
     madChemistDesc: 'أول خليط ناجح!',
     skipTutorialTitle: 'تخطي التعليمات؟',
@@ -2737,6 +2800,30 @@ mixin AppStrings {
     signalDiagnostics: 'Diagnóstico de Señal',
     survivalTip: 'Consejo de Supervivencia',
     meltdownReport: 'Informe de Colapso',
+    containmentAtLoss: 'CONTENCIÓN AL PERDER',
+    matchAccuracy: 'PRECISIÓN DE COINCIDENCIA',
+    spectralDrift: 'DERIVA ESPECTRAL',
+    containmentMeltdown: 'Colapso de Contención',
+    unknownSystemError: 'Error de Sistema Desconocido',
+
+    // Survival Tips (Chaos)
+    survivalTip1:
+        "¡Las gotas precisas recuperan la estabilidad! Concéntrate en coincidir con el color objetivo.",
+    survivalTip2: "Mira las fases del caos: ESTABLE -> PRECAUCIÓN -> CRÍTICO.",
+    survivalTip3:
+        "Apagones, viento y reflejos se activan más rápido con baja estabilidad.",
+    survivalTip4: "¡No entres en pánico! Incluso pequeños ajustes pueden prevenir un colapso.",
+    survivalTip5:
+        "La frecuencia del reactor (longitud de onda) te da una pista sobre el color objetivo.",
+
+    // Echo Tips
+    echoTip1: "Usa gotas pequeñas de Rojo/Verde/Azul para un ajuste fino.",
+    echoTip2: "La pérdida de sincronización ocurre cuando te quedas sin gotas o tiempo.",
+    echoTip3:
+        "El indicador de longitud de onda ayuda a identificar la región espectral del objetivo.",
+    echoTip4: "Mira el pulso 'CASI'; indica que estás sincronizado al 80%+.",
+    echoTip5:
+        "Las gotas blancas y negras pueden cambiar la luminancia sin cambiar el tono significativamente.",
     madChemistTitle: 'Químico Loco',
     madChemistDesc: '¡Primera mezcla exitosa!',
     skipTutorialTitle: '¿Saltar Tutorial?',
@@ -2770,6 +2857,7 @@ mixin AppStrings {
     updateAvailable: 'Actualización Disponible',
     updateReadyDesc:
         'Se ha descargado una actualización. Por favor, reinicia el juego para aplicar los cambios.',
+    restart: 'Reiniciar',
     updateDesc:
         'Hay una nueva actualización disponible. ¿Quieres descargarla ahora?',
     later: 'Más tarde',
@@ -3575,6 +3663,30 @@ mixin AppStrings {
     signalDiagnostics: 'Diagnostic du Signal',
     survivalTip: 'Conseil de Survie',
     meltdownReport: 'Rapport d\'Effondrement',
+    containmentAtLoss: 'CONFINEMENT À LA PERTE',
+    matchAccuracy: 'PRÉCISION DÉ CORRESPONDANCE',
+    spectralDrift: 'DÉRIVE SPECTRALE',
+    containmentMeltdown: 'Effondrement du Confinement',
+    unknownSystemError: 'Erreur Système Inconnue',
+
+    // Survival Tips (Chaos)
+    survivalTip1:
+        "Les gouttes précises restaurent la stabilité ! Concentrez-vous sur la couleur cible.",
+    survivalTip2: "Surveillez les phases : STABLE -> ATTENTION -> CRITIQUE.",
+    survivalTip3:
+        "Les pannes, le vent et les reflets se déclenchent plus vite à basse stabilité.",
+    survivalTip4: "Ne paniquez pas ! Même de petits ajustements peuvent éviter l'effondrement.",
+    survivalTip5:
+        "La fréquence du réacteur (longueur d'onde) vous donne un indice sur la cible.",
+
+    // Echo Tips
+    echoTip1: "Utilisez de petites gouttes de Rouge/Vert/Bleu pour l'ajustement fin.",
+    echoTip2: "La perte de synchro survient quand vous manquez de gouttes ou de temps.",
+    echoTip3:
+        "L'indicateur de longueur d'onde aide à identifier la région spectrale cible.",
+    echoTip4: "Surveillez l'impulsion 'PRESQUE' ; elle indique une synchro à 80%+.",
+    echoTip5:
+        "Les gouttes blanches et noires changent la luminance sans trop modifier la teinte.",
     madChemistTitle: 'Chimiste Fou',
     madChemistDesc: 'Premier mélange réussi !',
     skipTutorialTitle: 'Passer le Tutoriel ?',
@@ -3770,6 +3882,7 @@ mixin AppStrings {
     termsOfUseLabel: "Conditions d'utilisation",
     updateReadyDesc:
         'Une mise à jour a été téléchargée. Veuillez redémarrer le jeu pour appliquer les modifications.',
+    restart: 'Redémarrer',
 
     // Phase System
     phaseSelectTitle: 'Choisissez une Phase',

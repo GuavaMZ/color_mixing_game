@@ -45,6 +45,17 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
           widget.game.reviveWithDrops(15);
         }
       },
+      onAdFailed: () {
+        if (mounted && _isAdLoading) {
+          setState(() => _isAdLoading = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppStrings.adNotReady.getString(context)),
+              backgroundColor: Colors.redAccent,
+            ),
+          );
+        }
+      },
     );
 
     // Stop spinner if ad failed to load (async fail silently handled inside AdManager for now,

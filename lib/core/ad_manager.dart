@@ -130,7 +130,7 @@ class AdManager {
   }
 
   bool shouldShowInterstitial() {
-    return _wonLevelsCount >= 3 || _triesCount >= 3;
+    return _wonLevelsCount >= 2 || _triesCount >= 2;
   }
 
   void showInterstitialAd({VoidCallback? onAdDismissed}) {

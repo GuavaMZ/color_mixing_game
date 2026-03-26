@@ -138,14 +138,14 @@ class _ChaosGameOverOverlayState extends State<ChaosGameOverOverlay>
                               const SizedBox(height: 12),
                               _buildDiagnosticRow(
                                 context,
-                                "CONTAINMENT AT LOSS",
+                                AppStrings.containmentAtLoss.getString(context),
                                 "${(widget.game.chaosStability * 100).toInt()}%",
                                 Colors.white70,
                               ),
                               const SizedBox(height: 12),
                               _buildDiagnosticRow(
                                 context,
-                                "MATCH ACCURACY",
+                                AppStrings.matchAccuracy.getString(context),
                                 "${match.toStringAsFixed(1)}%",
                                 Colors.white70,
                               ),
@@ -290,23 +290,25 @@ class _ChaosGameOverOverlayState extends State<ChaosGameOverOverlay>
   }
 
   String _getCauseOfFailure(BuildContext context) {
-    if (widget.game.chaosStability <= 0) return "Containment Meltdown";
+    if (widget.game.chaosStability <= 0) {
+      return AppStrings.containmentMeltdown.getString(context);
+    }
     if (widget.game.timeLeft <= 0) {
       return AppStrings.timeExpired.getString(context);
     }
     if (widget.game.totalDrops.value >= widget.game.maxDrops) {
       return AppStrings.dropsExceeded.getString(context);
     }
-    return "Unknown System Error";
+    return AppStrings.unknownSystemError.getString(context);
   }
 
   String _getSurvivalTip(BuildContext context) {
     final tips = [
-      "Accurate drops recover stability! Focus on matching the target color.",
-      "Watch the chaos phases: STABLE -> CAUTION -> CRITICAL.",
-      "Blackouts, wind, and reflections trigger faster at low stability.",
-      "Don't panic! Even small adjustments can prevent a meltdown.",
-      "The reactor frequency (wavelength) gives you a hint about the target color.",
+      AppStrings.survivalTip1.getString(context),
+      AppStrings.survivalTip2.getString(context),
+      AppStrings.survivalTip3.getString(context),
+      AppStrings.survivalTip4.getString(context),
+      AppStrings.survivalTip5.getString(context),
     ];
     return tips[widget.game.chaosRound % tips.length];
   }
