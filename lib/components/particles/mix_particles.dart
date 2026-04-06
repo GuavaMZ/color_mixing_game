@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../../color_mixer_game.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 /// Enhanced particles that appear when drops mix in the beaker
 class MixParticles extends PositionComponent
@@ -9,7 +10,7 @@ class MixParticles extends PositionComponent
   final Color dropColor;
   final Vector2 mixPosition;
   final List<_MixParticle> _particles = [];
-  final Random _random = Random();
+  final Random _random = GlobalConstants.sharedRandom;
   double _lifetime = 0;
   final double maxLifetime = 1.5;
 

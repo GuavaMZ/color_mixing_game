@@ -2,10 +2,11 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../../color_mixer_game.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 class GravityFluxEffect extends PositionComponent
     with HasGameReference<ColorMixerGame> {
-  final Random _random = Random();
+  final Random _random = GlobalConstants.sharedRandom;
   final List<_FluxLine> _lines = [];
   double _timer = 0;
 
@@ -94,5 +95,5 @@ class _FluxLine {
     required this.speed,
     required this.opacity,
     required this.width,
-  }) : y = Random().nextDouble() * 300;
+  }) : y = GlobalConstants.sharedRandom.nextDouble() * 300;
 }

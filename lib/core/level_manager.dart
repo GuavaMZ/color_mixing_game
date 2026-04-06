@@ -6,6 +6,7 @@ import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show compute;
 
 class LevelManager {
   int currentLevelIndex = 0;
@@ -104,40 +105,7 @@ class LevelManager {
   Future<void> loadLevels() async {
     try {
       final jsonString = await rootBundle.loadString('assets/levels.json');
-      final dynamic decoded = jsonDecode(jsonString);
-      final List<dynamic> levelsList = (decoded is Map)
-          ? decoded['levels']
-          : decoded;
-
-      final List<LevelModel> loadedLevels = [];
-      for (var levelData in levelsList) {
-        try {
-          final Map<String, dynamic> rawRecipe = levelData['recipe'] ?? {};
-          final Map<String, int> recipe = {
-            'red': (rawRecipe['R'] ?? rawRecipe['red'] ?? 0) as int,
-            'green': (rawRecipe['G'] ?? rawRecipe['green'] ?? 0) as int,
-            'blue': (rawRecipe['B'] ?? rawRecipe['blue'] ?? 0) as int,
-            'white': (rawRecipe['W'] ?? rawRecipe['white'] ?? 0) as int,
-            'black': (rawRecipe['K'] ?? rawRecipe['black'] ?? 0) as int,
-          };
-
-          loadedLevels.add(
-            _createLevel(
-              id: levelData['id'] ?? 0,
-              phase: levelData['phase'] ?? 1,
-              recipe: recipe,
-              maxDrops: levelData['maxDrops'] ?? 6,
-              difficulty: ((levelData['difficultyFactor'] ?? 0.5) as num)
-                  .toDouble(),
-              isBlindMode: levelData['isBlindMode'] ?? false,
-              hintOverride: _mapHint(levelData['hint']),
-            ),
-          );
-        } catch (e) {
-          debugPrint("Skipping invalid level entry: $e");
-        }
-      }
-      classicLevels = loadedLevels;
+      classicLevels = await compute(_parseLevels, jsonString);
 
       for (var level in classicLevels) {
         if (!classicLevelStars.containsKey(level.id)) {
@@ -147,6 +115,44 @@ class LevelManager {
     } catch (e) {
       debugPrint("Error loading levels: $e");
     }
+  }
+
+  static List<LevelModel> _parseLevels(String jsonString) {
+    final dynamic decoded = jsonDecode(jsonString);
+    final List<dynamic> levelsList = (decoded is Map)
+        ? decoded['levels']
+        : decoded;
+
+    final List<LevelModel> loadedLevels = [];
+    for (var levelData in levelsList) {
+      try {
+        final Map<String, dynamic> rawRecipe = levelData['recipe'] ?? {};
+        final Map<String, int> recipe = {
+          'red': (rawRecipe['R'] ?? rawRecipe['red'] ?? 0) as int,
+          'green': (rawRecipe['G'] ?? rawRecipe['green'] ?? 0) as int,
+          'blue': (rawRecipe['B'] ?? rawRecipe['blue'] ?? 0) as int,
+          'white': (rawRecipe['W'] ?? rawRecipe['white'] ?? 0) as int,
+          'black': (rawRecipe['K'] ?? rawRecipe['black'] ?? 0) as int,
+        };
+
+        loadedLevels.add(
+          _createLevel(
+            id: levelData['id'] ?? 0,
+            phase: levelData['phase'] ?? 1,
+            recipe: recipe,
+            maxDrops: levelData['maxDrops'] ?? 6,
+            difficulty: ((levelData['difficultyFactor'] ?? 0.5) as num)
+                .toDouble(),
+            isBlindMode: levelData['isBlindMode'] ?? false,
+            hintOverride: _mapHint(levelData['hint']),
+          ),
+        );
+      } catch (e) {
+        // Since we are in an isolate, we can't use debugPrint directly if we want to be safe,
+        // but Flutter's compute usually handles it or we just ignore.
+      }
+    }
+    return loadedLevels;
   }
 
   Future<void> initProgress() async {
@@ -198,7 +204,7 @@ class LevelManager {
 
   // ─── Level Factory ────────────────────────────────────────────────────────
 
-  LevelModel _createLevel({
+  static LevelModel _createLevel({
     required int id,
     required int phase,
     required Map<String, dynamic> recipe,
@@ -242,7 +248,7 @@ class LevelManager {
 
   // ─── Hint Generation ──────────────────────────────────────────────────────
 
-  String _generateSmartHint(int r, int g, int b, int w, int k) {
+  static String _generateSmartHint(int r, int g, int b, int w, int k) {
     if (w > 0 && r == 0 && g == 0 && b == 0 && k == 0) {
       return AppStrings.hintPureWhite;
     }
@@ -283,7 +289,7 @@ class LevelManager {
     return AppStrings.hintObserve;
   }
 
-  String _mapHint(String? hint) {
+  static String _mapHint(String? hint) {
     if (hint == null || hint.isEmpty) return AppStrings.hintObserve;
 
     switch (hint) {

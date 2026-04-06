@@ -1,8 +1,9 @@
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:color_mixing_deductive/core/lab_catalog.dart';
+import '../../color_mixer_game.dart';
 
-class PatternBackground extends Component with HasGameReference {
+class PatternBackground extends Component with HasGameReference<ColorMixerGame> {
   Sprite? _starSprite;
   LabItem? config;
 
@@ -34,6 +35,12 @@ class PatternBackground extends Component with HasGameReference {
 
   void updateConfig(LabItem? newConfig) {
     config = newConfig;
+  }
+
+  @override
+  void renderTree(Canvas canvas) {
+    if (!game.isActivelyPlayingLevel) return;
+    super.renderTree(canvas);
   }
 
   @override

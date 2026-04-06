@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 /// Manages visual effects like particles, confetti, and shimmers
 class VisualEffectManager {
@@ -9,7 +10,7 @@ class VisualEffectManager {
 
   /// Create a confetti explosion at a specific position
   List<Widget> createConfetti(Offset position, {int count = 20}) {
-    final random = Random();
+    final random = GlobalConstants.sharedRandom;
     return List.generate(count, (index) {
       final angle = random.nextDouble() * 2 * pi;
       final speed = random.nextDouble() * 100 + 50;
@@ -121,6 +122,11 @@ class _ShimmerEffectState extends State<ShimmerEffect>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
+  // Cached shader — only rebuilt when value changes by a meaningful delta
+  Shader? _cachedShader;
+  Rect? _lastBounds;
+  double _lastShaderValue = -1;
+
   @override
   void initState() {
     super.initState();
@@ -134,30 +140,40 @@ class _ShimmerEffectState extends State<ShimmerEffect>
     super.dispose();
   }
 
+  Shader _buildShader(Rect bounds) {
+    return LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [widget.baseColor, widget.highlightColor, widget.baseColor],
+      stops: [
+        (_controller.value - 0.3).clamp(0.0, 1.0),
+        _controller.value.clamp(0.0, 1.0),
+        (_controller.value + 0.3).clamp(0.0, 1.0),
+      ],
+    ).createShader(bounds);
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _controller,
+      // Pass child outside builder so it is NOT rebuilt every tick
+      child: widget.child,
       builder: (context, child) {
         return ShaderMask(
           blendMode: BlendMode.srcATop,
           shaderCallback: (bounds) {
-            return LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                widget.baseColor,
-                widget.highlightColor,
-                widget.baseColor,
-              ],
-              stops: [
-                _controller.value - 0.3,
-                _controller.value,
-                _controller.value + 0.3,
-              ],
-            ).createShader(bounds);
+            // Recreate shader only when value changes by >1% or bounds change
+            if (_cachedShader == null ||
+                _lastBounds != bounds ||
+                (_controller.value - _lastShaderValue).abs() > 0.01) {
+              _lastShaderValue = _controller.value;
+              _lastBounds = bounds;
+              _cachedShader = _buildShader(bounds);
+            }
+            return _cachedShader!;
           },
-          child: widget.child,
+          child: child,
         );
       },
     );
@@ -179,7 +195,7 @@ class _StarFieldState extends State<StarField>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   final List<_Star> _stars = [];
-  final Random _random = Random();
+  final Random _random = GlobalConstants.sharedRandom;
 
   @override
   void initState() {
@@ -345,15 +361,22 @@ class _WaveClipper extends CustomClipper<Path> {
   Path getClip(Size size) {
     final path = Path();
     final y = size.height * (1 - value);
+    final waveH = size.height * 0.025; // wave amplitude
+    final halfW = size.width / 2;
 
-    path.moveTo(0, y);
-
-    for (double i = 0; i <= size.width; i++) {
-      path.lineTo(
-        i,
-        y + sin((i / size.width * 2 * pi) + wavePhase) * size.height * 0.05,
-      );
-    }
+    // Two smooth cubic bezier arcs instead of ~400 pixel-by-pixel lineTos.
+    // Visually identical ripple at a fraction of the CPU cost.
+    path.moveTo(0, y + sin(wavePhase) * waveH);
+    path.cubicTo(
+      halfW * 0.5, y - waveH * 2,
+      halfW * 0.5, y + waveH * 2,
+      halfW, y + sin(wavePhase + pi) * waveH,
+    );
+    path.cubicTo(
+      halfW * 1.5, y - waveH * 2,
+      halfW * 1.5, y + waveH * 2,
+      size.width, y + sin(wavePhase) * waveH,
+    );
 
     path.lineTo(size.width, size.height);
     path.lineTo(0, size.height);
@@ -363,7 +386,9 @@ class _WaveClipper extends CustomClipper<Path> {
 
   @override
   bool shouldReclip(covariant _WaveClipper oldClipper) {
-    return value != oldClipper.value || wavePhase != oldClipper.wavePhase;
+    // Only reclip when value or wavePhase changes meaningfully (>0.5% threshold)
+    return (value - oldClipper.value).abs() > 0.005 ||
+        (wavePhase - oldClipper.wavePhase).abs() > 0.01;
   }
 }
 
@@ -463,7 +488,8 @@ class _ExplosionPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_ExplosionPainter oldDelegate) => true;
+  bool shouldRepaint(_ExplosionPainter old) =>
+      old.progress != progress || old.color != color;
 }
 
 /// A pulsing effect for important UI elements

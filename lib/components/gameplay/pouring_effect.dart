@@ -3,6 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flame/particles.dart';
 import 'package:flutter/material.dart';
 import '../../color_mixer_game.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 class PouringEffect extends PositionComponent
     with HasGameReference<ColorMixerGame> {
@@ -41,7 +42,7 @@ class PouringEffect extends PositionComponent
         _hittingSurface = true;
       }
       // Add splashes while pouring
-      if (Random().nextDouble() < 0.3) {
+      if (GlobalConstants.sharedRandom.nextDouble() < 0.3) {
         _spawnSplash();
       }
     } else {
@@ -68,7 +69,7 @@ class PouringEffect extends PositionComponent
         count: 3,
         lifespan: 0.4,
         generator: (i) {
-          final rng = Random();
+          final rng = GlobalConstants.sharedRandom;
           final speed = 50.0 + rng.nextDouble() * 100.0;
           final angle =
               -pi / 2 + (rng.nextDouble() - 0.5) * 1.5; // Upwards spread

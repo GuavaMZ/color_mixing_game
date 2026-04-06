@@ -4,12 +4,13 @@ import 'package:color_mixing_deductive/helpers/audio_manager.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flutter/material.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 class AcidBlob extends PositionComponent
     with TapCallbacks, HasGameReference<ColorMixerGame> {
   double opacity = 0.9;
   final Paint _paint = Paint();
-  final Random _random = Random();
+  final Random _random = GlobalConstants.sharedRandom;
   final Path _blobPath = Path();
 
   AcidBlob({required Vector2 position, required double size}) {
@@ -73,7 +74,7 @@ class AcidBlob extends PositionComponent
 }
 
 class AcidSplatter extends Component with HasGameReference<ColorMixerGame> {
-  final Random _random = Random();
+  final Random _random = GlobalConstants.sharedRandom;
 
   @override
   Future<void> onLoad() async {

@@ -3,10 +3,11 @@ import 'package:flame/components.dart';
 import 'package:flame/particles.dart';
 import 'package:flutter/material.dart';
 import '../../color_mixer_game.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 /// A disaster effect that pushes drops and shows wind particles.
 class WindForceEffect extends Component with HasGameReference<ColorMixerGame> {
-  final Random _random = Random();
+  final Random _random = GlobalConstants.sharedRandom;
   double _particleTimer = 0;
   double _forceDirection = 1.0; // 1.0 for right, -1.0 for left
   double _timer = 0;

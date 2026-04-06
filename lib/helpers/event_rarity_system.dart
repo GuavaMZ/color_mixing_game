@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:color_mixing_deductive/helpers/string_manager.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 /// Event rarity levels for random events
 enum EventRarity {
@@ -44,7 +45,7 @@ class EventConfig {
 
 /// Manages random event selection with weighted probabilities
 class EventRaritySystem {
-  static final Random _random = Random();
+  static final Random _random = GlobalConstants.sharedRandom;
 
   /// All available events with their configurations
   static const List<EventConfig> events = [

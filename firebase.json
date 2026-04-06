@@ -1,1 +1,36 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"color-lab-game","appId":"1:426190934584:android:42dd3adb87a2043d8c4ccd","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"color-lab-game","configurations":{"android":"1:426190934584:android:42dd3adb87a2043d8c4ccd","ios":"1:426190934584:ios:9a15953017cfe2238c4ccd"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "color-lab-game",
+          "appId": "1:426190934584:android:42dd3adb87a2043d8c4ccd",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "color-lab-game",
+          "configurations": {
+            "android": "1:426190934584:android:42dd3adb87a2043d8c4ccd",
+            "ios": "1:426190934584:ios:9a15953017cfe2238c4ccd"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

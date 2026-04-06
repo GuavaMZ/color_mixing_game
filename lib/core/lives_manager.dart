@@ -119,6 +119,14 @@ class LivesManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Specialized reward for watching an ad. 
+  /// Usually grants 1 life to play immediately.
+  void grantAdRewardLife() {
+    addLives(1);
+    // Track this event for analytics/anti-abuse if needed
+    debugPrint('LivesManager: Life granted via Rewarded Ad');
+  }
+
   void _startRegenTimer() {
     _regenTimer?.cancel();
 

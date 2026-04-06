@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:color_mixing_deductive/helpers/haptic_manager.dart';
 
 import '../../../color_mixer_game.dart';
@@ -11,6 +10,7 @@ import '../../components/ui/responsive_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import '../../core/ad_manager.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 class ControlsOverlay extends StatelessWidget {
   const ControlsOverlay({super.key, required this.game});
@@ -27,7 +27,7 @@ class ControlsOverlay extends StatelessWidget {
         if (game.isEarthquake) {
           uiOffset = Offset(game.earthquakeOffset.x, game.earthquakeOffset.y);
         } else if (game.isUiGlitching) {
-          final random = Random();
+          final random = GlobalConstants.sharedRandom;
           uiOffset = Offset(
             (random.nextDouble() - 0.5) * 15,
             (random.nextDouble() - 0.5) * 15,
@@ -750,7 +750,7 @@ class _MatchPercentageDisplay extends StatelessWidget {
 
     // Determine if we should show the glitch effect
     final displayValue = game.isUiGlitching
-        ? "${(Random().nextInt(99) + 1)}%"
+        ? "${(GlobalConstants.sharedRandom.nextInt(99) + 1)}%"
         : (game.isBlackout ? "??%" : "${value.toStringAsFixed(0)}%");
 
     return TweenAnimationBuilder<double>(
@@ -1336,6 +1336,7 @@ class _WatchAdHintButtonState extends State<_WatchAdHintButton> {
     setState(() => _isAdLoading = true);
 
     AdManager().showRewardedAd(
+      game: widget.game,
       onUserEarnedReward: (ad, reward) {
         if (mounted) {
           setState(() {
@@ -1386,6 +1387,7 @@ class _WatchAdTimeButtonState extends State<_WatchAdTimeButton> {
     setState(() => _isAdLoading = true);
 
     AdManager().showRewardedAd(
+      game: widget.game,
       onUserEarnedReward: (ad, reward) {
         if (mounted) {
           setState(() {

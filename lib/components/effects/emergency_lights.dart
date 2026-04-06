@@ -3,10 +3,11 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../../helpers/audio_manager.dart';
 import '../../color_mixer_game.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 /// Emergency alarm lights that flicker in the corners during Chaos Lab Mode
 class EmergencyLights extends Component with HasGameReference<ColorMixerGame> {
-  final Random _random = Random();
+  final Random _random = GlobalConstants.sharedRandom;
   double _flickerTimer = 0;
   double _nextFlickerTime = 0.2;
   double _opacity = 0.8;

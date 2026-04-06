@@ -1,6 +1,6 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:color_mixing_deductive/core/save_manager.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 enum CardRarity { common, rare, epic, legendary }
 
@@ -90,7 +90,7 @@ class CardCollectionManager {
 
     // Apply weighted drop logic if no specific guarantee
     if (guaranteeRarity == null) {
-      double chance = Random().nextDouble();
+      double chance = GlobalConstants.sharedRandom.nextDouble();
       CardRarity targetRarity = CardRarity.common;
 
       if (chance > 0.95) {
@@ -108,7 +108,7 @@ class CardCollectionManager {
       }
     }
 
-    final rolled = available[Random().nextInt(available.length)];
+    final rolled = available[GlobalConstants.sharedRandom.nextInt(available.length)];
     await unlockCard(rolled.id);
     return rolled;
   }

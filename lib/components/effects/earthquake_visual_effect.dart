@@ -2,10 +2,11 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../../color_mixer_game.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 class EarthquakeVisualEffect extends Component
     with HasGameReference<ColorMixerGame> {
-  final Random _random = Random();
+  final Random _random = GlobalConstants.sharedRandom;
   final List<_DustParticle> _particles = [];
 
   @override

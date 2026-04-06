@@ -368,6 +368,9 @@ class _SeasonPassOverlayState extends State<SeasonPassOverlay>
   }
 
   Widget _buildPremiumCTA() {
+    // TEMPORARILY HIDDEN
+    return const SizedBox.shrink();
+    /*
     return ValueListenableBuilder<bool>(
       valueListenable: _manager.isPremium,
       builder: (context, isPremium, child) {
@@ -447,8 +450,10 @@ class _SeasonPassOverlayState extends State<SeasonPassOverlay>
         );
       },
     );
+    */
   }
 
+/*
   void _showPremiumDialog() {
     showDialog(
       context: context,
@@ -525,6 +530,7 @@ class _SeasonPassOverlayState extends State<SeasonPassOverlay>
       ),
     );
   }
+  */
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

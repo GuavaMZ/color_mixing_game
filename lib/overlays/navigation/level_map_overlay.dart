@@ -57,7 +57,7 @@ class _LevelMapOverlayState extends State<LevelMapOverlay>
     if (status == -1) return;
 
     if (LivesManager().lives <= 0) {
-      NoLivesDialog.show(context);
+      NoLivesDialog.show(context, widget.game);
       return;
     }
 

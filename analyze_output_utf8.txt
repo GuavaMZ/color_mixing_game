@@ -1,0 +1,20 @@
+﻿Analyzing color_mixing_deductive...                             
+
+warning - Unused import: 'dart:math' - lib\core\card_collection_manager.dart:1:8 - unused_import
+warning - Unused import: 'dart:math' - lib\helpers\audio_manager.dart:4:8 - unused_import
+warning - Unused import: 'package:color_mixing_deductive/helpers/global_variables.dart' - lib\helpers\global_variables.dart:2:8 - unused_import
+   info - Statements in a for should be enclosed in a block - lib\helpers\performance_manager.dart:22:31 - curly_braces_in_flow_control_structures
+warning - Unused import: 'dart:math' - lib\overlays\hud\controls_overlay.dart:1:8 - unused_import
+   info - The import of 'package:flutter/services.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart' - lib\overlays\system\intro_splash_overlay.dart:5:8 - unnecessary_import
+warning - Unused import: 'package:flutter/material.dart' - test\verify_fix.dart:2:8 - unused_import
+   info - Don't invoke 'print' in production code - test\verify_fix.dart:51:3 - avoid_print
+   info - Don't invoke 'print' in production code - test\verify_fix.dart:56:3 - avoid_print
+   info - Don't invoke 'print' in production code - test\verify_fix.dart:62:3 - avoid_print
+   info - Don't invoke 'print' in production code - test\verify_fix.dart:69:3 - avoid_print
+   info - Don't invoke 'print' in production code - test\verify_fix.dart:71:3 - avoid_print
+   info - Don't invoke 'print' in production code - test\verify_fix_standalone.dart:49:3 - avoid_print
+   info - Don't invoke 'print' in production code - test\verify_fix_standalone.dart:54:3 - avoid_print
+   info - Don't invoke 'print' in production code - test\verify_fix_standalone.dart:60:3 - avoid_print
+   info - Don't invoke 'print' in production code - test\verify_fix_standalone.dart:67:3 - avoid_print
+   info - Don't invoke 'print' in production code - test\verify_fix_standalone.dart:69:3 - avoid_print
+

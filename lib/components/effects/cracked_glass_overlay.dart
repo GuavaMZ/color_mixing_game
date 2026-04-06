@@ -3,12 +3,13 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../../../helpers/audio_manager.dart';
 import '../../../color_mixer_game.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 /// Cracked glass overlay for Chaos Lab Mode
 class CrackedGlassOverlay extends Component
     with HasGameReference<ColorMixerGame> {
   final List<List<Offset>> _cracks = [];
-  final Random _random = Random();
+  final Random _random = GlobalConstants.sharedRandom;
 
   @override
   void onMount() {

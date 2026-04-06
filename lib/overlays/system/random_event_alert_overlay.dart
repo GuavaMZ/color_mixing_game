@@ -7,6 +7,7 @@ import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
 import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 /// Cinematic random event alert overlay.
 /// Phase 1 (0–1.0 s): pulsing red vignette ring + "INCOMING ANOMALY" text.
@@ -225,7 +226,7 @@ class _GlitchOverlay extends StatelessWidget {
 
 class _GlitchPainter extends CustomPainter {
   final double pulseIntensity;
-  final Random _random = Random();
+  final Random _random = GlobalConstants.sharedRandom;
 
   _GlitchPainter({required this.pulseIntensity});
 

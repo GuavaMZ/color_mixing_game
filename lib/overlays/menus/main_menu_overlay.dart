@@ -309,12 +309,12 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
                 onTap: () => _navTo('Gallery'),
                 delay: 200,
               ),
-              _buildUtilButton(
-                icon: Icons.style_rounded,
-                tooltip: AppStrings.cardCollectionTitle.getString(context),
-                onTap: () => _navTo('CardCollection'),
-                delay: 250,
-              ),
+              // _buildUtilButton(
+              //   icon: Icons.style_rounded,
+              //   tooltip: AppStrings.cardCollectionTitle.getString(context),
+              //   onTap: () => _navTo('CardCollection'),
+              //   delay: 250,
+              // ),
               // Temporarily hidden as requested
               // _buildUtilButton(
               //   icon: Icons.workspace_premium_rounded,
@@ -463,39 +463,39 @@ class _MainMenuOverlayState extends State<MainMenuOverlay>
             fontSize: 16,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           ),
-          const SizedBox(width: 6),
-          TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0.0, end: 1.0),
-            duration: const Duration(milliseconds: 800),
-            curve: Curves.elasticOut,
-            builder: (context, v, child) =>
-                Transform.scale(scale: v, child: child),
-            child: GestureDetector(
-              onTap: () {
-                AudioManager().playButton();
-                widget.game.transitionTo('MainMenu', 'CoinStore');
-              },
-              child: Container(
-                width: 34,
-                height: 34,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    colors: [Colors.amber, Colors.orange],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.amber.withValues(alpha: 0.5),
-                      blurRadius: 10,
-                    ),
-                  ],
-                ),
-                child: const Icon(Icons.add, color: Colors.white, size: 20),
-              ),
-            ),
-          ),
+          // const SizedBox(width: 6),
+          // TweenAnimationBuilder<double>(
+          //   tween: Tween(begin: 0.0, end: 1.0),
+          //   duration: const Duration(milliseconds: 800),
+          //   curve: Curves.elasticOut,
+          //   builder: (context, v, child) =>
+          //       Transform.scale(scale: v, child: child),
+          //   child: GestureDetector(
+          //     onTap: () {
+          //       AudioManager().playButton();
+          //       widget.game.transitionTo('MainMenu', 'CoinStore');
+          //     },
+          //     child: Container(
+          //       width: 34,
+          //       height: 34,
+          //       decoration: BoxDecoration(
+          //         shape: BoxShape.circle,
+          //         gradient: const LinearGradient(
+          //           colors: [Colors.amber, Colors.orange],
+          //           begin: Alignment.topLeft,
+          //           end: Alignment.bottomRight,
+          //         ),
+          //         boxShadow: [
+          //           BoxShadow(
+          //             color: Colors.amber.withValues(alpha: 0.5),
+          //             blurRadius: 10,
+          //           ),
+          //         ],
+          //       ),
+          //       child: const Icon(Icons.add, color: Colors.white, size: 20),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );
@@ -1064,7 +1064,7 @@ class _FloatingBubbleState extends State<_FloatingBubble>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _animation;
-  final Random _random = Random();
+  final Random _random = GlobalConstants.sharedRandom;
 
   @override
   void initState() {

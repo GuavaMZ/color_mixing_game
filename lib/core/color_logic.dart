@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:color_mixing_deductive/core/color_science.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 class ColorLogic {
   static Color createMixedColor(
@@ -96,7 +97,7 @@ class ColorLogic {
   }
 
   static Color generateRandomHardColor() {
-    final random = Random();
+    final random = GlobalConstants.sharedRandom;
     // A hard color usually has mixed values across R, G, B
     // We avoid primary/secondary by giving each channel a decent range
     int r = 40 + random.nextInt(170);

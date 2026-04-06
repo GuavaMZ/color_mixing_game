@@ -6,6 +6,7 @@ import 'package:color_mixing_deductive/helpers/audio_manager.dart';
 import 'package:color_mixing_deductive/helpers/string_manager.dart';
 import 'package:color_mixing_deductive/helpers/theme_constants.dart';
 import 'package:flutter_localization/flutter_localization.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 /// Full-screen animated overlay displayed when the player levels up.
 ///
@@ -44,7 +45,7 @@ class _LevelUpOverlayState extends State<LevelUpOverlay>
   late Animation<double> _particleFade;
 
   final List<_Particle> _particles = [];
-  final Random _rng = Random();
+  final Random _rng = GlobalConstants.sharedRandom;
 
   @override
   void initState() {

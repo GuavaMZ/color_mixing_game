@@ -6,9 +6,11 @@ import '../../core/lives_manager.dart';
 import '../../core/ad_manager.dart';
 import '../../helpers/audio_manager.dart';
 import '../../components/ui/enhanced_button.dart';
+import '../../../color_mixer_game.dart';
 
 class NoLivesDialog extends StatelessWidget {
-  const NoLivesDialog({super.key});
+  final ColorMixerGame game;
+  const NoLivesDialog({super.key, required this.game});
 
   @override
   Widget build(BuildContext context) {
@@ -77,8 +79,9 @@ class NoLivesDialog extends StatelessWidget {
               onTap: () {
                 AudioManager().playButton();
                 AdManager().showRewardedAd(
+                  game: game,
                   onUserEarnedReward: (ad, reward) {
-                    LivesManager().addLives(1);
+                    LivesManager().grantAdRewardLife();
                     Navigator.pop(context);
                   },
                   onAdFailed: () {
@@ -111,7 +114,7 @@ class NoLivesDialog extends StatelessWidget {
     );
   }
 
-  static void show(BuildContext context) {
-    showDialog(context: context, builder: (context) => const NoLivesDialog());
+  static void show(BuildContext context, ColorMixerGame game) {
+    showDialog(context: context, builder: (context) => NoLivesDialog(game: game));
   }
 }

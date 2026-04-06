@@ -181,22 +181,68 @@ class _CoinStoreOverlayState extends State<CoinStoreOverlay>
               children: [
                 _buildHeader(context),
                 Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+                  child: Stack(
                     children: [
-                      _buildSubtitle(context),
-                      const SizedBox(height: 24),
-                      ...kCoinBundles.map(
-                        (bundle) => _CoinBundleCard(
-                          bundle: bundle,
-                          isProcessing: _isProcessing,
-                          shimmerController: _shimmerController,
-                          pulseController: _pulseController,
-                          onTap: () => _handlePurchase(bundle),
+                      ListView(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+                        children: [
+                          _buildSubtitle(context),
+                          const SizedBox(height: 24),
+                          ...kCoinBundles.map(
+                            (bundle) => _CoinBundleCard(
+                              bundle: bundle,
+                              isProcessing: _isProcessing,
+                              shimmerController: _shimmerController,
+                              pulseController: _pulseController,
+                              onTap: () => _handlePurchase(bundle),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          _buildRestoreButton(context),
+                        ],
+                      ),
+                      // ── Coming Soon Overlay ──────────────────────────────
+                      Positioned.fill(
+                        child: ClipRRect(
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+                            child: Container(
+                              color: Colors.black.withValues(alpha: 0.75),
+                              child: Center(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.lock_clock_rounded,
+                                      color: Colors.amber,
+                                      size: 72,
+                                    ),
+                                    const SizedBox(height: 20),
+                                    Text(
+                                      AppStrings.comingSoon
+                                          .getString(context)
+                                          .toUpperCase(),
+                                      style:
+                                          AppTheme.heading2(context).copyWith(
+                                        color: Colors.white,
+                                        letterSpacing: 4,
+                                        fontWeight: FontWeight.w900,
+                                        shadows: [
+                                          const Shadow(
+                                            color: Colors.amber,
+                                            blurRadius: 20,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 24),
-                      _buildRestoreButton(context),
+                      // ──────────────────────────────────────────────────────
                     ],
                   ),
                 ),

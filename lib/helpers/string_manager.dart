@@ -31,6 +31,7 @@ mixin AppStrings {
   static const String settings = "settings";
   static const String play = "play";
   static const String shop = "shop";
+  static const String comingSoon = "coming_soon";
 
   // Level map
   static const String levelMap = "level_map";
@@ -403,6 +404,8 @@ mixin AppStrings {
   static const String watchAdRevive = "watch_ad_revive";
   static const String watchAdHint = "watch_ad_hint";
   static const String watchAdTime = "watch_ad_time";
+  static const String watchAdDouble = "watch_ad_double";
+  static const String doubleCoinsSuccess = "double_coins_success";
   static const String adNotReady = "ad_not_ready";
   static const String reviveSuccess = "revive_success";
 
@@ -853,6 +856,7 @@ mixin AppStrings {
     // Menu
     play: 'Play',
     shop: 'Shop',
+    comingSoon: 'Coming Soon...',
     settings: 'Settings',
     levelText: 'Level',
     classicMode: 'CLASSIC MODE',
@@ -1152,6 +1156,8 @@ mixin AppStrings {
     watchAdRevive: '📺 Watch Ad → Revive (15 drops)',
     watchAdHint: '📺 Watch Ad → Free Hint',
     watchAdTime: '📺 Watch Ad → +10 Seconds',
+    watchAdDouble: '📺 Watch Ad → Double Coins',
+    doubleCoinsSuccess: 'Double Coins active! Reward doubled.',
     adNotReady: 'Ad loading, please try again in a moment.',
     reviveSuccess: 'You\'ve been revived! 15 drops restored.',
 
@@ -1686,6 +1692,7 @@ mixin AppStrings {
     // Menu
     play: 'لعب',
     shop: 'المتجر',
+    comingSoon: 'قريباً...',
     settings: 'الإعدادات',
     levelText: 'المستوى',
     classicMode: 'الوضع الكلاسيكي',
@@ -2511,6 +2518,7 @@ mixin AppStrings {
     // Menu
     play: 'Jugar',
     shop: 'Tienda',
+    comingSoon: 'Próximamente...',
     settings: 'Ajustes',
     levelText: 'Nivel',
     classicMode: 'MODO CLÁSICO',

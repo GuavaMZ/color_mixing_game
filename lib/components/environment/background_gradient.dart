@@ -2,7 +2,7 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../../color_mixer_game.dart';
 
-class BackgroundGradient extends PositionComponent with HasGameReference {
+class BackgroundGradient extends PositionComponent with HasGameReference<ColorMixerGame> {
   List<Color>? configColors;
 
   BackgroundGradient({this.configColors});
@@ -12,10 +12,16 @@ class BackgroundGradient extends PositionComponent with HasGameReference {
   }
 
   @override
+  void renderTree(Canvas canvas) {
+    if (!game.isActivelyPlayingLevel) return;
+    super.renderTree(canvas);
+  }
+
+  @override
   void render(Canvas canvas) {
     super.render(canvas);
 
-    final isEcho = (game as ColorMixerGame).currentMode == GameMode.colorEcho;
+    final isEcho = game.currentMode == GameMode.colorEcho;
 
     // Use configured colors if available, otherwise default to mode-specific colors
     final List<Color> colors = configColors != null && configColors!.isNotEmpty

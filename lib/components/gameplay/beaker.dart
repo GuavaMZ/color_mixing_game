@@ -136,20 +136,19 @@ class Beaker extends PositionComponent with HasGameReference<ColorMixerGame> {
     _liquidSurfacePaint.color = displayColor.withValues(alpha: 0.9);
 
     if (_lastGradientColor != displayColor || _lastShaderSize != size) {
+      // Cache darkened colors locally so we only compute HSL conversion once
+      final dark05 = _darken(displayColor, 0.05);
+      final dark1 = _darken(displayColor, 0.1);
+      final dark2 = _darken(displayColor, 0.2);
+
       // 1. Liquid Volume Gradient: Darker at bottom, brighter at edges
       _liquidGradientShader = RadialGradient(
         center: const Alignment(0.0, -0.5),
         radius: 1.5,
         colors: [
           displayColor.withValues(alpha: 0.95), // Core brightness
-          _darken(
-            displayColor,
-            0.1,
-          ).withValues(alpha: 0.95), // Deeper bottom/edges
-          _darken(
-            displayColor,
-            0.2,
-          ).withValues(alpha: 1.0), // Slightly darker very bottom
+          dark1.withValues(alpha: 0.95), // Deeper bottom/edges
+          dark2.withValues(alpha: 1.0), // Slightly darker very bottom
         ],
         stops: const [0.0, 0.6, 1.0],
       ).createShader(Rect.fromLTWH(0, 0, size.x, size.y));
@@ -160,8 +159,8 @@ class Beaker extends PositionComponent with HasGameReference<ColorMixerGame> {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          _darken(displayColor, 0.05).withValues(alpha: 0.5),
-          _darken(displayColor, 0.1).withValues(alpha: 0.8),
+          dark05.withValues(alpha: 0.5),
+          dark1.withValues(alpha: 0.8),
         ],
         stops: const [0.0, 1.0],
       ).createShader(Rect.fromLTWH(0, 0, size.x, size.y));
@@ -257,7 +256,7 @@ class Beaker extends PositionComponent with HasGameReference<ColorMixerGame> {
     }
 
     // 3. Render Front Glass and Details
-    _renderFrontGlass(canvas);
+    _renderFrontGlass(canvas, beakerPath);
   }
 
   void _renderLiquidInterior(Canvas canvas) {
@@ -445,19 +444,18 @@ class Beaker extends PositionComponent with HasGameReference<ColorMixerGame> {
     }
   }
 
-  void _renderFrontGlass(Canvas canvas) {
-    final Path beakerPath = _getBeakerPathCached();
+  void _renderFrontGlass(Canvas canvas, Path beakerPath) {
     canvas.drawPath(beakerPath, _glassFrontPaint);
     canvas.drawPath(beakerPath, _rimPaint);
 
     // Highlights
-    _renderHighlights(canvas);
+    _renderHighlights(canvas, beakerPath);
   }
 
-  void _renderHighlights(Canvas canvas) {
+  void _renderHighlights(Canvas canvas, Path beakerPath) {
     // Save state and clip to beaker interior so highlights conform precisely to any shape
     canvas.save();
-    canvas.clipPath(_getBeakerPathCached());
+    canvas.clipPath(beakerPath);
 
     final double w = size.x;
     final double h = size.y;

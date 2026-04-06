@@ -2,10 +2,11 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:color_mixing_deductive/components/gameplay/beaker.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 class SurfaceSteam extends PositionComponent with HasGameReference {
   final Beaker beaker;
-  final Random _random = Random();
+  final Random _random = GlobalConstants.sharedRandom;
   double _timer = 0;
   final List<_SteamParticle> _particles = [];
 

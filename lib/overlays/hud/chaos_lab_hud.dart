@@ -43,11 +43,14 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: widget.game,
-      builder: (context, child) {
-        // Adjust pulse speed based on stability
+    // Use ValueListenableBuilder on chaosPhase (STABLE/CAUTION/CRITICAL) instead
+    // of ListenableBuilder on the game object — rebuilds only on discrete phase
+    // transitions rather than every frame a double changed.
+    return ValueListenableBuilder<String>(
+      valueListenable: widget.game.chaosPhase,
+      builder: (context, phase, child) {
         final stability = widget.game.chaosStability.clamp(0.0, 1.0);
+        // Adjust pulse speed based on stability
         _pulseController.duration = Duration(
           milliseconds: (300 + stability * 700).toInt(),
         );
@@ -163,6 +166,7 @@ class _ChaosLabHUDState extends State<ChaosLabHUD>
       },
     );
   }
+
 
   Widget _buildWarningPanel(BuildContext context) {
     if (widget.game.chaosStability >= 0.5 &&

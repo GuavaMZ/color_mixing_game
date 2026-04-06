@@ -48,8 +48,46 @@ class _ChaosGameOverOverlayState extends State<ChaosGameOverOverlay>
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
+    bool _reviveUsed = false;
+    bool _isAdLoading = false;
+
+    void _watchAdToRevive() {
+      if (_isAdLoading) return;
+      setState(() => _isAdLoading = true);
+
+      AdManager().showRewardedAd(
+        game: widget.game,
+        onUserEarnedReward: (ad, reward) {
+          if (mounted) {
+            setState(() {
+              _reviveUsed = true;
+              _isAdLoading = false;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(AppStrings.reviveSuccess.getString(context)),
+                backgroundColor: Colors.green,
+              ),
+            );
+            widget.game.reviveWithDrops(15);
+          }
+        },
+        onAdFailed: () {
+          if (mounted) {
+            setState(() => _isAdLoading = false);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(AppStrings.adNotReady.getString(context)),
+                backgroundColor: Colors.redAccent,
+              ),
+            );
+          }
+        },
+      );
+    }
+
+    @override
+    Widget build(BuildContext context) {
     final match = widget.game.matchPercentage.value;
     final cause = _getCauseOfFailure(context);
     final tip = _getSurvivalTip(context);
@@ -196,6 +234,23 @@ class _ChaosGameOverOverlayState extends State<ChaosGameOverOverlay>
                         ),
 
                         const SizedBox(height: 32),
+
+                        // ── Phase 2: Rewarded Ad Revive ──────────────────────
+                        if (!_reviveUsed) ...[
+                          SizedBox(
+                            width: double.infinity,
+                            child: EnhancedButton(
+                              label: _isAdLoading
+                                  ? '...'
+                                  : AppStrings.watchAdRevive.getString(context),
+                              icon: Icons.personal_video_rounded,
+                              color: Colors.amber,
+                              onTap: _watchAdToRevive,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                        // ──────────────────────────────────────────────────
 
                         // Buttons
                         Row(

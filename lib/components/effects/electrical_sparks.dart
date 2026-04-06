@@ -3,6 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import '../../helpers/audio_manager.dart';
 import '../../color_mixer_game.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 /// Individual spark particle
 class Spark {
@@ -19,7 +20,7 @@ class Spark {
     required this.maxLifetime,
     required this.color,
   }) : lifetime = 0,
-       size = 2 + Random().nextDouble() * 3;
+       size = 2 + GlobalConstants.sharedRandom.nextDouble() * 3;
 
   void update(double dt) {
     position += velocity * dt;
@@ -36,7 +37,7 @@ class Spark {
 /// Electrical sparks effect for Chaos Lab Mode
 class ElectricalSparks extends Component with HasGameReference<ColorMixerGame> {
   final List<Spark> _sparks = [];
-  final Random _random = Random();
+  final Random _random = GlobalConstants.sharedRandom;
   double _burstTimer = 0;
   double _nextBurstTime = 1.5;
 

@@ -96,6 +96,9 @@ void main() async {
     SaveManager.initialize(null);
   }
 
+  // Initialize Ads
+  await AdManager().initialize();
+
   // Set preferred orientations for mobile
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

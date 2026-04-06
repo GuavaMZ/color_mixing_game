@@ -2,10 +2,11 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:color_mixing_deductive/color_mixer_game.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 class BubbleParticles extends PositionComponent
     with HasGameReference<ColorMixerGame> {
-  final Random _rnd = Random();
+  final Random _rnd = GlobalConstants.sharedRandom;
   final List<_Bubble> _bubbles = [];
   double _spawnTimer = 0.0;
   double liquidLevel = 0.0;

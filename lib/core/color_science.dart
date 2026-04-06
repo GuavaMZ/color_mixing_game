@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:vector_math/vector_math_64.dart' show Vector3;
 import '../helpers/string_manager.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 /// Scientific color analysis utilities for Color Lab.
 ///
@@ -193,7 +194,7 @@ class ColorScience {
   static String getColorFact(Color color) {
     final hsv = HSVColor.fromColor(color);
     final hue = hsv.hue;
-    final rng = Random();
+    final rng = GlobalConstants.sharedRandom;
 
     // Facts curated by hue region + general pool
     final List<String> facts;

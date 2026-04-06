@@ -5,13 +5,14 @@ import 'package:flame/particles.dart';
 import 'package:flutter/material.dart';
 
 import '../../color_mixer_game.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 /// A disaster effect where the beaker leaks liquid.
 /// The player must tap the cracks to fix them.
 class LeakingBeakerEffect extends Component
     with HasGameReference<ColorMixerGame> {
   final List<_LeakPoint> _leaks = [];
-  final Random _random = Random();
+  final Random _random = GlobalConstants.sharedRandom;
 
   @override
   void onMount() {
@@ -87,7 +88,7 @@ class _LeakPoint extends PositionComponent with TapCallbacks, DragCallbacks {
     size = Vector2.all(60); // Increased hit area for better swiping
     anchor = Anchor.center;
 
-    final random = Random();
+    final random = GlobalConstants.sharedRandom;
     for (int i = 0; i < 4; i++) {
       _crackLines.add(
         Offset(

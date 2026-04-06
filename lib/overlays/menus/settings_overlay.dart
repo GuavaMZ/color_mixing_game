@@ -11,7 +11,6 @@ import '../../components/ui/animated_card.dart';
 import '../../components/ui/enhanced_button.dart';
 import '../../core/lives_manager.dart';
 import '../../core/save_manager.dart';
-import '../../core/vip_manager.dart';
 import 'package:shorebird_code_push/shorebird_code_push.dart';
 
 class SettingsOverlay extends StatefulWidget {
@@ -479,6 +478,7 @@ class _SettingsOverlayState extends State<SettingsOverlay>
 
                       const SizedBox(height: 24),
 
+                      /* 
                       // ── VIP Scientist Section ──────────────────────────────
                       ValueListenableBuilder<bool>(
                         valueListenable: VipManager.instance.isVip,
@@ -636,8 +636,8 @@ class _SettingsOverlayState extends State<SettingsOverlay>
                           );
                         },
                       ),
-
                       const SizedBox(height: 24),
+                      */
 
                       // Tutorial Button
                       SizedBox(
@@ -692,25 +692,26 @@ class _SettingsOverlayState extends State<SettingsOverlay>
     );
   }
 
-  Widget _vipBenefitRow(String emoji, String text) {
+  /*
+  Widget _vipBenefitRow(String icon, String text) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.only(bottom: 6),
       child: Row(
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 16)),
+          Text(icon, style: const TextStyle(fontSize: 14)),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               text,
-              style: AppTheme.bodySmall(
-                context,
-              ).copyWith(color: Colors.white70),
+              style: const TextStyle(color: Colors.white70, fontSize: 13),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
       ),
     );
   }
+  */
 }
 
 class _SettingsTile extends StatelessWidget {
@@ -837,54 +838,32 @@ class _LanguageSelector extends StatelessWidget {
     required this.onChanged,
   });
 
-  static const Map<String, String> _languages = {
-    'en': 'EN',
-    'ar': 'AR',
-    'es': 'ES',
-    'fr': 'FR',
-  };
-
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
-        color: AppTheme.primaryMedium.withValues(alpha: 0.3),
+        color: Colors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: _languages.entries.map((entry) {
-          final isSelected = entry.key == currentLocale;
-          return GestureDetector(
-            onTap: () => onChanged(entry.key),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                gradient: isSelected ? AppTheme.secondaryGradient : null,
-                color: isSelected ? null : Colors.transparent,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: isSelected
-                    ? [
-                        BoxShadow(
-                          color: AppTheme.neonMagenta.withValues(alpha: 0.3),
-                          blurRadius: 6,
-                        ),
-                      ]
-                    : [],
-              ),
-              child: Text(
-                entry.value,
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: isSelected ? 1.0 : 0.5),
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-          );
-        }).toList(),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: currentLocale,
+          dropdownColor: AppTheme.primaryDark,
+          icon: Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: AppTheme.neonCyan,
+            size: 20,
+          ),
+          items: const [
+            DropdownMenuItem(value: 'en', child: Text('English', style: TextStyle(color: Colors.white, fontSize: 13))),
+            DropdownMenuItem(value: 'tr', child: Text('Türkçe', style: TextStyle(color: Colors.white, fontSize: 13))),
+          ],
+          onChanged: (value) {
+            if (value != null) onChanged(value);
+          },
+        ),
       ),
     );
   }

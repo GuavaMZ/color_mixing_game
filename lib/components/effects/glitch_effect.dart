@@ -5,10 +5,11 @@ import '../../helpers/audio_manager.dart';
 import '../../helpers/haptic_manager.dart';
 import '../../helpers/theme_constants.dart';
 import '../../color_mixer_game.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 /// Glitch effect overlay for Chaos Lab Mode
 class GlitchEffect extends Component with HasGameReference<ColorMixerGame> {
-  final Random _random = Random();
+  final Random _random = GlobalConstants.sharedRandom;
   double _glitchTimer = 0;
   double _nextGlitchTime = 2.0;
   bool _isGlitching = false;

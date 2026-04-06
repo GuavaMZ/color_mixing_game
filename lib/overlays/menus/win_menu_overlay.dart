@@ -4,7 +4,6 @@ import '../../../color_mixer_game.dart';
 import '../../../core/ad_manager.dart';
 import '../../../core/color_science.dart';
 import '../../../core/xp_manager.dart';
-import '../../../core/card_collection_manager.dart';
 import '../../helpers/string_manager.dart';
 import '../../helpers/theme_constants.dart';
 import '../../helpers/audio_manager.dart';
@@ -30,6 +29,8 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
 
   // Confetti particles
   List<Widget> _confetti = [];
+  bool _doubleCoinsUsed = false;
+  bool _isAdLoading = false;
 
   @override
   void initState() {
@@ -165,6 +166,7 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
                                   ),
 
                                   // Newly unlocked card (if any)
+                                  /*
                                   if (widget.game.winUnlockedCard != null) ...[
                                     _buildCardSection(
                                       context,
@@ -177,6 +179,7 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
                                       ),
                                     ),
                                   ],
+                                  */
 
                                   // Coins Earned Display
                                   _buildCoinsEarnedDisplay(context, stars),
@@ -259,6 +262,25 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
                               ),
                             ),
                           ),
+
+                          // ── Double Coins Button ──────────────────────────────
+                          if (!_doubleCoinsUsed) ...[
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              width: double.infinity,
+                              child: EnhancedButton(
+                                label: _isAdLoading
+                                    ? '...'
+                                    : AppStrings.watchAdDouble.getString(context),
+                                icon: Icons.auto_awesome_rounded,
+                                color: Colors.amber,
+                                onTap: _watchAdToDouble,
+                              ),
+                            ),
+                          ],
+                          // ──────────────────────────────────────────────────────
+
+                          const SizedBox(height: 16),
 
                           // Pinned Bottom Actions
                           Row(
@@ -543,6 +565,7 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
     );
   }
 
+  /*
   Widget _buildCardSection(BuildContext context, CardDef card) {
     return TweenAnimationBuilder<double>(
       duration: const Duration(milliseconds: 1000),
@@ -614,9 +637,49 @@ class _WinMenuOverlayState extends State<WinMenuOverlay>
       },
     );
   }
+  */
+
+  void _watchAdToDouble() {
+    if (_isAdLoading) return;
+    setState(() => _isAdLoading = true);
+
+    AdManager().showRewardedAd(
+      game: widget.game,
+      onUserEarnedReward: (ad, reward) {
+        if (mounted) {
+          setState(() {
+            _doubleCoinsUsed = true;
+            _isAdLoading = false;
+          });
+          // Double the already earned amount
+          final originalEarned = widget.game.lastEarnedCoins;
+          widget.game.addCoins(originalEarned, reason: 'ad_double_reward');
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppStrings.doubleCoinsSuccess.getString(context)),
+              backgroundColor: Colors.amber,
+            ),
+          );
+        }
+      },
+      onAdFailed: () {
+        if (mounted) {
+          setState(() => _isAdLoading = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppStrings.adNotReady.getString(context)),
+              backgroundColor: Colors.redAccent,
+            ),
+          );
+        }
+      },
+    );
+  }
 
   Widget _buildCoinsEarnedDisplay(BuildContext context, int stars) {
     int coins = widget.game.lastEarnedCoins;
+    if (_doubleCoinsUsed) coins *= 2; // UI reflect the doubled state
 
     return RepaintBoundary(
       child: TweenAnimationBuilder<int>(

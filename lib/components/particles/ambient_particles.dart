@@ -2,11 +2,12 @@ import 'dart:math';
 import 'package:color_mixing_deductive/color_mixer_game.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 /// Ambient floating particles for a relaxing atmosphere
 class AmbientParticles extends Component with HasGameReference<ColorMixerGame> {
   final List<FloatingBubble> bubbles = [];
-  final Random random = Random();
+  final Random random = GlobalConstants.sharedRandom;
   final int particleCount = 15;
   List<Color>? configColors;
 
@@ -22,6 +23,12 @@ class AmbientParticles extends Component with HasGameReference<ColorMixerGame> {
             : null,
       );
     }
+  }
+
+  @override
+  void renderTree(Canvas canvas) {
+    if (!game.isActivelyPlayingLevel) return;
+    super.renderTree(canvas);
   }
 
   @override
@@ -41,6 +48,7 @@ class AmbientParticles extends Component with HasGameReference<ColorMixerGame> {
           color: configColors != null && configColors!.isNotEmpty
               ? configColors![random.nextInt(configColors!.length)]
               : null,
+          random: random,
         ),
       );
     }
@@ -48,6 +56,9 @@ class AmbientParticles extends Component with HasGameReference<ColorMixerGame> {
 
   @override
   void update(double dt) {
+    // Fix #16/#19: Skip logical updates when not visible (in menus)
+    if (!game.isActivelyPlayingLevel) return;
+    
     super.update(dt);
 
     final effectiveDt = game.reducedMotionEnabled ? dt * 0.1 : dt;
@@ -78,9 +89,10 @@ class FloatingBubble {
     required this.position,
     required this.size,
     required this.speed,
+    required Random random,
     this.color,
-  }) : opacity = 0.1 + Random().nextDouble() * 0.2,
-       phase = Random().nextDouble() * pi * 2,
+  }) : opacity = 0.1 + random.nextDouble() * 0.2,
+       phase = random.nextDouble() * pi * 2,
        _highlightPaint = Paint()..style = PaintingStyle.fill,
        _gradientPaint = Paint();
 
@@ -88,7 +100,6 @@ class FloatingBubble {
   Color? _lastBaseColor;
   double? _lastOpacity;
   double? _lastSize;
-  Offset? _lastCenter;
 
   void updateColor(Color? newColor) {
     color = newColor;
@@ -107,7 +118,7 @@ class FloatingBubble {
     // Reset when off screen
     if (position.y < -size) {
       position.y = screenSize.y + size;
-      position.x = Random().nextDouble() * screenSize.x;
+      position.x = GlobalConstants.sharedRandom.nextDouble() * screenSize.x;
     }
 
     // Keep within horizontal bounds
@@ -118,43 +129,47 @@ class FloatingBubble {
   void render(Canvas canvas) {
     // Determine color base
     final baseColor = color ?? Colors.white;
-    final center = Offset(position.x, position.y);
 
-    // Only recreate shader if essential properties changed
+    // Fix #5: Do not include position/center in the shader cache key.
+    // The shader is built at origin (0,0), and we translate the canvas to render it.
     if (_cachedShader == null ||
         _lastBaseColor != baseColor ||
         _lastOpacity != opacity ||
-        _lastSize != size ||
-        _lastCenter != center) {
+        _lastSize != size) {
       _lastBaseColor = baseColor;
       _lastOpacity = opacity;
       _lastSize = size;
-      _lastCenter = center;
 
       final gradient = RadialGradient(
         colors: [
-          baseColor.withValues(alpha: opacity * 0.8),
-          baseColor.withValues(alpha: opacity * 0.3),
-          baseColor.withValues(alpha: 0),
+           baseColor.withValues(alpha: opacity * 0.8),
+           baseColor.withValues(alpha: opacity * 0.3),
+           baseColor.withValues(alpha: 0),
         ],
         stops: const [0.0, 0.7, 1.0],
       );
 
+      // Create shader centered at (0,0)
       _cachedShader = gradient.createShader(
-        Rect.fromCircle(center: center, radius: size),
+        Rect.fromCircle(center: Offset.zero, radius: size),
       );
       _gradientPaint.shader = _cachedShader;
     }
 
-    canvas.drawCircle(center, size, _gradientPaint);
+    canvas.save();
+    canvas.translate(position.x, position.y);
+    
+    // Draw bubble
+    canvas.drawCircle(Offset.zero, size, _gradientPaint);
 
     // Add highlight
     _highlightPaint.color = Colors.white.withValues(alpha: opacity * 1.5);
-
     canvas.drawCircle(
-      Offset(position.x - size * 0.3, position.y - size * 0.3),
+      Offset(-size * 0.3, -size * 0.3),
       size * 0.3,
       _highlightPaint,
     );
+    
+    canvas.restore();
   }
 }

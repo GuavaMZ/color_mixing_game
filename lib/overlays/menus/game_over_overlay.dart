@@ -29,6 +29,7 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
     setState(() => _isAdLoading = true);
 
     AdManager().showRewardedAd(
+      game: widget.game,
       onUserEarnedReward: (ad, reward) {
         if (mounted) {
           setState(() {
@@ -183,7 +184,7 @@ class _GameOverOverlayState extends State<GameOverOverlay> {
                             onTap: () {
                               void proceedReset() {
                                 if (LivesManager().lives <= 0) {
-                                  NoLivesDialog.show(context);
+                                  NoLivesDialog.show(context, widget.game);
                                   return;
                                 }
                                 AudioManager().playButton();

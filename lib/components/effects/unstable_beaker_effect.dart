@@ -1,11 +1,12 @@
 import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 /// Unstable beaker visual effect for Chaos Lab Mode
 /// Adds pulsing glow, color shifting, and bubbling animation
 class UnstableBeakerEffect extends Component {
-  final Random _random = Random();
+  final Random _random = GlobalConstants.sharedRandom;
   double _pulseTimer = 0;
   double _colorShiftTimer = 0;
   double _bubbleTimer = 0;
@@ -121,7 +122,7 @@ class _Bubble {
     lifetime += dt;
 
     // Wobble sideways
-    x += (Random().nextDouble() - 0.5) * 10 * dt;
+    x += (GlobalConstants.sharedRandom.nextDouble() - 0.5) * 10 * dt;
   }
 
   bool get isDead => lifetime >= maxLifetime || y < -150;

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flame/particles.dart';
 import 'package:flutter/material.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 class WinningParticles extends Component {
   final Vector2 position;
@@ -24,7 +25,7 @@ class WinningParticles extends Component {
         count: 100, // Lots of confetti
         lifespan: 3.5,
         generator: (i) {
-          final random = Random();
+          final random = GlobalConstants.sharedRandom;
           final color = colors[random.nextInt(colors.length)];
           final angle = random.nextDouble() * pi * 2;
           final speed = 150 + random.nextDouble() * 250;

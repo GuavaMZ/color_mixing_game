@@ -2,9 +2,10 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flame/particles.dart';
 import 'package:flutter/material.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 class Fireworks extends PositionComponent {
-  final Random _rnd = Random();
+  final Random _rnd = GlobalConstants.sharedRandom;
   double _timer = 0;
   double _lifetime = 0;
   final double _maxLifetime =

@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flame/particles.dart';
 import 'package:flutter/material.dart';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 class EchoParticles extends Component {
   final Vector2 position;
@@ -22,7 +23,7 @@ class EchoParticles extends Component {
         count: 15,
         lifespan: 1.5,
         generator: (i) {
-          final random = Random();
+          final random = GlobalConstants.sharedRandom;
           final angle = random.nextDouble() * pi * 2;
           final speed = 40 + random.nextDouble() * 60;
 

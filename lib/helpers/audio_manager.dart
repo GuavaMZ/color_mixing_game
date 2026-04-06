@@ -1,7 +1,7 @@
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:math';
+import 'package:color_mixing_deductive/helpers/global_variables.dart';
 
 /// Centralized audio management with caching and volume controls
 class AudioManager {
@@ -44,6 +44,7 @@ class AudioManager {
   static const String _sfxKey = 'sfx_enabled';
   static const String _musicKey = 'music_enabled';
 
+  // The set of loaded sound file names
   final Set<String> _loadedSounds = {};
 
   String? _currentBgm;
@@ -58,7 +59,7 @@ class AudioManager {
       _sfxEnabled = prefs.getBool(_sfxKey) ?? true;
       _musicEnabled = prefs.getBool(_musicKey) ?? true;
 
-      // Preload available sound effects
+      // Preload available sound effects and background music
       final soundsToLoad = [
         dropSound,
         winSound,
@@ -72,6 +73,10 @@ class AudioManager {
         sparkSound,
         alarmSound,
         steamSound,
+        // Fix #12: Preload BGM to avoid stuttering on track change
+        bgmClassic,
+        bgmTime,
+        bgmEcho,
       ];
 
       for (final sound in soundsToLoad) {
@@ -97,8 +102,8 @@ class AudioManager {
     }
   }
 
-  /// Play sound effect
-  Future<void> playSfx(String sound, {double? volume}) async {
+  /// Play sound effect synchronously using FlameAudio's optimized pool
+  void playSfx(String sound, {double? volume}) {
     if (!_sfxEnabled || !_initialized) return;
 
     if (!_loadedSounds.contains(sound)) {
@@ -107,7 +112,9 @@ class AudioManager {
     }
 
     try {
-      await FlameAudio.play(sound, volume: volume ?? _sfxVolume);
+      // Use FlameAudio.play for low-latency SoundPool integration on Android
+      // This helps resolve the delay on playing SFX.
+      FlameAudio.play(sound, volume: volume ?? _sfxVolume);
     } catch (e) {
       debugPrint('AudioManager: Failed to play $sound - $e');
     }
@@ -138,8 +145,10 @@ class AudioManager {
   void playCrack() => playSfx(crackSound, volume: 0.6);
 
   /// Play glitch sound
-  void playGlitch() =>
-      playSfx(glitchSounds[Random().nextInt(glitchSounds.length)], volume: 0.5);
+  void playGlitch() => playSfx(
+    glitchSounds[GlobalConstants.sharedRandom.nextInt(glitchSounds.length)],
+    volume: 0.5,
+  );
 
   /// Play electrical spark sound
   void playSpark() => playSfx(sparkSound, volume: 0.4);
