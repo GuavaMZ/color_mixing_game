@@ -624,8 +624,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
       if (_winCheckTimer >= _winCheckInterval) {
         _winCheckTimer = 0.0;
         _lastBeakerColor = beaker.currentColor;
-        if (ColorLogic.checkMatch(beaker.currentColor, targetColor) >= 93.0 &&
-            _isRecipeIngredientsFulfilled()) {
+        if (ColorLogic.checkMatch(beaker.currentColor, targetColor) >= 93.0) {
           _hasWon = true;
           showWinEffect();
         }
@@ -1333,10 +1332,8 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     }
     _previousMatchPct = matchPercentage.value;
 
-    // Auto-win if 100% match
     if (matchPercentage.value == 100.0 &&
-        !_hasWon &&
-        _isRecipeIngredientsFulfilled()) {
+        !_hasWon) {
       _hasWon = true;
       AdManager().recordWin();
       showWinEffect();
@@ -1354,27 +1351,7 @@ class ColorMixerGame extends FlameGame with ChangeNotifier {
     }
   }
 
-  bool _isRecipeIngredientsFulfilled() {
-    // Non-level modes don't have a fixed recipe
-    if (currentMode != GameMode.classic && currentMode != GameMode.timeAttack) {
-      return true;
-    }
 
-    final recipe = levelManager.currentLevel.recipe;
-    final rRequired = (recipe['red'] ?? 0) as int;
-    final gRequired = (recipe['green'] ?? 0) as int;
-    final bRequired = (recipe['blue'] ?? 0) as int;
-    final wRequired = (recipe['white'] ?? 0) as int;
-    final kRequired = (recipe['black'] ?? 0) as int;
-
-    if (rRequired > 0 && rDrops == 0) return false;
-    if (gRequired > 0 && gDrops == 0) return false;
-    if (bRequired > 0 && bDrops == 0) return false;
-    if (wRequired > 0 && whiteDrops == 0) return false;
-    if (kRequired > 0 && blackDrops == 0) return false;
-
-    return true;
-  }
 
   void resetMixing() {
     _audio.playReset();
